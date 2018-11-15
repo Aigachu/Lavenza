@@ -1,0 +1,10 @@
+# -------------------------------------
+#              Git Ignores
+# -------------------------------------
+settings.js
+config.js
+node_modules/
+config/
+db/
+.idea
+core-settings.js

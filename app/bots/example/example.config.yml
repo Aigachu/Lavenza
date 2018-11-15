@@ -1,0 +1,21 @@
+#
+# Project Lavenza II
+# Copyright 2017-2018 Aigachu, All Rights Reserved
+#
+# License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
+#
+# {??? - ???}
+# https://discordapp.com/oauth2/authorize?&client_id=1234567890&scope=bot&permissions=1546959939
+#
+# @see - https://discordapp.com/developers/applications/me
+#
+clients:
+  discord:
+    token: '12345'
+    cprefix: '!L'
+    activity: ''
+    intro: ''
+
+# twitch:
+#   token: '12345'
+#   cprefix: '!L'
