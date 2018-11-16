@@ -21,80 +21,72 @@ class Morgana {
   /**
    * Send output to the console.
    *
-   * This uses Futaba to manage text with Dictionaries.
+   * When passed text, this function uses Futaba to manage text with
+   * Dictionaries.
    *
    * You can also send a completely custom string. Futaba will simply return
    * the string as is if a corresponding ID isn't found in any dictionaries.
    *
    * @see ./Futaba
    *
-   * @param text
+   * @param message
    *   The text to send to the console, or in some/most cases the ID of the
    *   string to send. If an ID is sent, text will be fetched from Dictionaries.
-   * @param placeholders
+   * @param placeholder_values
    *   If an array of strings is set here, it will be used to replace any
    *   placeholders in the text provided above. Futaba has more information on
    *   this, so peek at her code for more info!
-   * @param format
-   *   Customize console formatting.
+   * @param type
+   *   Type of console log to print.
    */
-  static io(text, placeholders = []) {
+  static log(message, {placeholder_values, type} = {}) {
 
-    // Output the text, interpreted by Futaba, to the console.
-    console.log(Futaba.interpret(text, placeholders));
-  }
+    // Fetch output interpretation by Futaba.
+    let output = Futaba.interpret(message, placeholder_values);
 
-  /**
-   * Shortcut function to send a success message to the console.
-   *
-   * The SUCCESS key in the Dictionary has many options. It chooses one of them
-   * randomly.
-   */
-  static success() {
-    console.log(Futaba.interpret('SUCCESS').info);
-  }
+    switch (type) {
 
-  /**
-   * Throws a status to the console.
-   *
-   * @param text
-   *   Text to send to the console.
-   * @param placeholders
-   *   If an array of strings is set here, it will be used to replace any
-   *   placeholders in the text provided above. Futaba has more information on
-   *   this, so peek at her code for more info!
-   */
-  static status(text, placeholders = []) {
-    console.log(Futaba.interpret(text, placeholders).status);
-  }
+      case 'status':
+        console.log(output.status);
+        break;
 
-  /**
-   * Throws an error to the console.
-   *
-   * If an error level higher than 2 is provided, the application will exit.
-   *
-   * @param level
-   *   Error level of the error being thrown.
-   * @param text
-   *   Text to send to the console.
-   * @param placeholders
-   *   If an array of strings is set here, it will be used to replace any
-   *   placeholders in the text provided above. Futaba has more information on
-   *   this, so peek at her code for more info!
-   */
-  static error(level, text, placeholders = []) {
+      case 'success':
+        console.log(Futaba.interpret('SUCCESS').info);
+        break;
 
-    // Send appropriate error message using the level.
-    console.log(Futaba.interpret('ERROR_LEVEL_' + level).error);
-    // Send error details.
-    console.log(Futaba.interpret(text, placeholders).error);
+      case 'error':
+        console.log(Futaba.interpret('ERROR').error);
+        console.log(output.error);
+        break;
 
-    // If the error level is higher than 2, we must exit the application.
-    // Let's try to avoid this, shall we?
-    if (level > 2) {
-      this.io('DECLARE_EXIT');
-      process.exit(1);
+      default:
+        console.log(output);
+        break;
     }
+  }
+
+  /**
+   * Shortcut to set a success message.
+   * @inheritdoc
+   */
+  static success(message = 'SUCCESS', placeholder_values = []) {
+    this.log(message, {placeholder_values: placeholder_values, type: 'success'});
+  }
+
+  /**
+   * Shortcut to set a status message.
+   * @inheritdoc
+   */
+  static status(message, placeholder_values = []) {
+    this.log(message, {placeholder_values: placeholder_values, type: 'status'});
+  }
+
+  /**
+   * Shortcut to set a error message.
+   * @inheritdoc
+   */
+  static error(message = 'ERROR', placeholder_values = []) {
+    this.log(message, {placeholder_values: placeholder_values, type: 'error'});
   }
 
 }

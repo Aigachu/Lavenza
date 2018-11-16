@@ -26,6 +26,12 @@ module.exports = {
       'Smooth moves Joker!',
       'Whoa! A critical hit!',
   ],
+  ERROR: [
+      '!!!ERROR!!!',
+      'Oh shit...Something went wrong Joker...',
+      'Oh my god suck my DYACK...',
+      `Must be Javascript's fault...`,
+  ],
 
   // === Bot Preparations ===
   START_BOT_REG: 'Starting Bot Registration process...',
@@ -37,12 +43,9 @@ module.exports = {
 
   // === Errors ===
   DECLARE_EXIT: 'Lavenza will now shut down due to the error. Fix me please. ;_;',
-  NO_BOT_CONFIG_FOUND: 'Bot folders could not be located in the /bots folder at the root of the application. Did you create any?\n' +
+  NO_BOT_CONFIG_FOLDER_FOUND: 'Bot folders could not be located in the /bots folder at the root of the application. Did you create any?\n' +
                         'Bot configuration can be created by following the example found in /bots/example directory.',
+  BOT_CONFIG_FILE_NOT_FOUND: 'Bot configuration file not found for {@1}. Please create a configuration file based on the /bots/example/example.config.yml file.',
   BOT_DIRECTORY_CRAWL_FAILURE: 'An error occurred when Akechi tried to find the bot folders in the /bots folder. Please fix the code!',
-  ERROR_LEVEL_0: '!!!ERROR!!!',
-  ERROR_LEVEL_1: '!!!ERROR!!!',
-  ERROR_LEVEL_2: '!!!ERROR!!!',
-  ERROR_LEVEL_3: '!!!FATAL ERROR!!!',
 
 };

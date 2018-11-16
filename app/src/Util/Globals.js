@@ -67,31 +67,8 @@ global.Packages = {
 
 };
 
-/**
- * === Paths ===
- * We keep a list of paths here to avoid having to fetch them all the time.
- */
-global.Paths = {};
-
-// Provide global variable exposing path to the root of the application.
-global.Paths.ROOT = Packages.arp.path;
-
-// Provide global variable exposing path to the bots folder.
-global.Paths.BOTS = Paths.ROOT + '/bots';
-
-/**
- * === Keys ===
- * Keys are specific strings that the application will sometimes look for.
- * Consider this core configuration that is easy to change if ever.
- */
-global.Keys = {
-
-  // The name of the bot config file the application will search for.
-  BOT_CONFIG_FILE_NAME: 'config.yml',
-
-};
-
 // Set console color themes.
+/** @see https://www.npmjs.com/package/colors */
 Packages.colors.setTheme({
   silly: 'rainbow',
   input: 'grey',
@@ -104,3 +81,30 @@ Packages.colors.setTheme({
   debug: 'blue',
   error: 'red'
 });
+
+/**
+ * === Keys ===
+ * Keys are specific strings that the application will sometimes look for.
+ * Consider this core configuration that is easy to change if ever.
+ */
+global.Keys = {
+
+  // The name of the bot config file the application will search for.
+  BOT_CONFIG_FILE_NAME: 'config.yml',
+
+  // The name of the folder containing the different bots.
+  BOT_FOLDER_NAME: 'bots',
+
+};
+
+/**
+ * === Paths ===
+ * We keep a list of paths here to avoid having to fetch them all the time.
+ */
+global.Paths = {};
+
+// Provide global variable exposing path to the root of the application.
+global.Paths.ROOT = Packages.arp.path;
+
+// Provide global variable exposing path to the bots folder.
+global.Paths.BOTS = Paths.ROOT + '/' + Keys.BOT_FOLDER_NAME;

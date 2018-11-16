@@ -8,24 +8,39 @@
 // Confidants.
 const Akechi = require("../Confidants/Akechi");
 
+// Includes.
+const ClientFactory = require("./Client/ClientFactory");
+
 /**
  * Provides a class for Bot objects
  */
 class Bot {
-  constructor(name, directory) {
+  constructor(name, directory, config) {
     this.name = name;
-    this.config = Akechi.readYamlFile(directory + '/' + Keys.BOT_CONFIG_FILE_NAME);
+    this.directory = directory;
+    this.config = config;
+  }
+
+  deploy() {
+    this.authenticateClients();
   }
 
   prepare() {
     this.initializeClients();
   }
 
+  authenticateClients() {
+    this.clients.every(client => {
+      client.authenticate();
+      return true;
+    });
+  }
+
   initializeClients() {
-    let clients = this.config.clients;
-    clients.forEach((object, key) => {
-      console.log(key);
-      console.log(object);
+    this.clients = [];
+    let clientConfigs = this.config.clients;
+    clientConfigs.forEach((config, key) => {
+      this.clients.push(ClientFactory.build(key, config, this));
     });
   }
 }

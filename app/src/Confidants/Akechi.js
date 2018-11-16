@@ -15,6 +15,14 @@
  */
 class Akechi {
 
+  static async readFile(path) {
+    try {
+      return Packages.fs.readFileSync(path);
+    } catch(error) {
+      throw new Error(error)
+    }
+  }
+
   /**
    * Read a .yml file a return an object with the contents.
    *
@@ -24,14 +32,14 @@ class Akechi {
    * @returns {*|void}
    *   Returns object if successful.
    */
-  static readYamlFile(file) {
+  static async readYamlFile(file) {
+
+    // Read the file data.
+    let fileData = await this.readFile(file);
+
     // Get document, or throw exception on error
-    try {
-      return Packages.yaml.safeLoad(Packages.fs.readFileSync(file, 'utf8'));
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
+    return Packages.yaml.safeLoad(fileData);
+
   }
 
   /**
@@ -42,8 +50,11 @@ class Akechi {
    * @param path
    *   The source directory to search in.
    */
-  static getDirectoriesFrom(path) {
-    return this.getFilesFrom(path, true);
+  static async getDirectoriesFrom(path) {
+
+    // Fetch directories from the requested path.
+    return await this.getFilesFrom(path, true);
+
   }
 
   /**
@@ -54,7 +65,7 @@ class Akechi {
    * @param dirs
    *   If this is true, directories will be returned instead.
    */
-  static getFilesFrom(source, dirs = false) {
+  static async getFilesFrom(source, dirs = false) {
 
     // Get the list of files.
     let files = Packages.fs.readdirSync(source).map(name => Packages.path.join(source, name));

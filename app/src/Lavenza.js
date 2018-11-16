@@ -18,6 +18,8 @@ const BotBunker = require('./Bot/BotBunker');
 
 // Confidants.
 const Morgana = require('./Confidants/Morgana');
+const Igor = require('./Confidants/Igor');
+
 
 /**
  * Provides class for the core of the Lavenza application.
@@ -46,30 +48,30 @@ class Lavenza {
    *
    * We simply like to remain clean and continue to separate things properly.
    */
-  static ignite() {
-
-    Packages.colors.setTheme({
-      custom: [],
-    });
+  static async ignite() {
 
     // Some flavor text for the console.
     Morgana.status('INITIALIZING', [this.version]);
 
     // Fire necessary preparations.
     // The application can end here if we hit an error in the prep function.
-    this.prepare();
+    await this.prepare().catch(Igor.stop);
 
     // If preparations go through without problems, go for run tasks.
     // Run tasks should be done only after all prep is complete.
-    this.run();
+    await this.run().catch(Igor.stop);
+
+    // If everything runs smoothly, return true.
+    return true;
 
   }
 
   /**
    * Run all necessary software.
    */
-  static run() {
-
+  static async run() {
+    // Deploy bots from the BotBunker.
+    await BotBunker.deploy().catch(Igor.stop);
   }
 
   /**
@@ -78,13 +80,13 @@ class Lavenza {
    * This function should return a promise to make for some proper synchronous
    * execution. We don't want Lavenza doing run() before/while this executes.
    */
-  static prepare() {
+  static async prepare() {
 
     // Some more flavor.
-    Morgana.status('BEGINNING_PREP');
+    Morgana.log('BEGINNING_PREP');
 
     // Run Bot Bunker deploy functions.
-    BotBunker.prepare();
+    await BotBunker.prepare().catch(Igor.stop);
 
   }
 

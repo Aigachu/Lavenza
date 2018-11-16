@@ -4,8 +4,10 @@
 #
 # License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
 #
-# {??? - ???}
-# https://discordapp.com/oauth2/authorize?&client_id=1234567890&scope=bot&permissions=1546959939
+# {BOT_NAME - BOT_TITLE}
+#
+# === Discord Info ===
+# Server Add URL
 #
 # @see - https://discordapp.com/developers/applications/me
 #
@@ -15,7 +17,12 @@ clients:
     cprefix: '!L'
     activity: ''
     intro: ''
+    add_url: 'https://discordapp.com/oauth2/authorize?&client_id=1234567890&scope=bot&permissions=1546959939'
 
 # twitch:
+#   token: '12345'
+#   cprefix: '!L'
+
+# slack:
 #   token: '12345'
 #   cprefix: '!L'
