@@ -2,24 +2,23 @@
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
  *
- * License: https://github.com/Aigachu/Lavenza/blob/master/LICENSE
+ * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-// Confidants.
-const Sojiro = require('./Sojiro');
-
 // Includes.
-const Dictionary = require('../Dictionary/Dictionary');
+import Dictionary from '../Dictionary/Dictionary';
 
 /**
  * Provides a class that handles Dictionary and Database management.
+ *
+ * Another name for this could be the TextManager.
  *
  * Futaba essentially hacks into a bunch of sh*t and interprets the whole world
  * for us in the game. Here, she'll handle database and dictionary management.
  *
  * I could call this class Medjed instead...LOL.
  */
-class Futaba {
+export default class Futaba {
 
   /**
    * Takes a text and attempts ot search the dictionaries for it.
@@ -50,7 +49,7 @@ class Futaba {
     let text = Dictionary[key];
 
     if (Array.isArray(text)) {
-      text = Sojiro.getRandomElementFromArray(text);
+      text = Lavenza.getRandomElementFromArray(text);
     }
 
     placeholders.forEach((placeholder, index) => {
@@ -59,6 +58,5 @@ class Futaba {
 
     return text;
   }
-}
 
-module.exports = Futaba;
+}

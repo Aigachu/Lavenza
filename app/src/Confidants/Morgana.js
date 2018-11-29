@@ -2,21 +2,20 @@
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
  *
- * License: https://github.com/Aigachu/Lavenza/blob/master/LICENSE
+ * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
-
-// Confidants.
-const Futaba = require('./Futaba');
 
 /**
  * Provides a class that handles input/output to the console & errors.
+ *
+ * Another name for this could be the LoggerManager.
  *
  * My thought process? Well Morgana talks a lot in P5. So I named my console
  * manager after him. Clever right?
  *
  * Honestly I just needed an excuse to use their names in my code. I love it.
  */
-class Morgana {
+export default class Morgana {
 
   /**
    * Send output to the console.
@@ -42,7 +41,7 @@ class Morgana {
   static log(message, {placeholder_values, type} = {}) {
 
     // Fetch output interpretation by Futaba.
-    let output = Futaba.interpret(message, placeholder_values);
+    let output = Lavenza.Futaba.interpret(message, placeholder_values);
 
     switch (type) {
 
@@ -50,12 +49,16 @@ class Morgana {
         console.log(output.status);
         break;
 
+      case 'warning':
+        console.log(output.warning);
+        break;
+
       case 'success':
-        console.log(Futaba.interpret('SUCCESS').info);
+        console.log(output.success);
         break;
 
       case 'error':
-        console.log(Futaba.interpret('ERROR').error);
+        console.log(Lavenza.Futaba.interpret('ERROR').error);
         console.log(output.error);
         break;
 
@@ -66,29 +69,37 @@ class Morgana {
   }
 
   /**
-   * Shortcut to set a success message.
-   * @inheritdoc
+   * Shortcut to send a success message.
+   * @inheritDoc
    */
-  static success(message = 'SUCCESS', placeholder_values = []) {
+  static success(message, placeholder_values = []) {
+    message = message || 'SUCCESS';
     this.log(message, {placeholder_values: placeholder_values, type: 'success'});
   }
 
   /**
    * Shortcut to set a status message.
-   * @inheritdoc
+   * @inheritDoc
    */
   static status(message, placeholder_values = []) {
     this.log(message, {placeholder_values: placeholder_values, type: 'status'});
   }
 
   /**
-   * Shortcut to set a error message.
-   * @inheritdoc
+   * Shortcut to set a status message.
+   * @inheritDoc
    */
-  static error(message = 'ERROR', placeholder_values = []) {
+  static warn(message, placeholder_values = []) {
+    this.log(message, {placeholder_values: placeholder_values, type: 'warning'});
+  }
+
+  /**
+   * Shortcut to set a error message.
+   * @inheritDoc
+   */
+  static error(message, placeholder_values = []) {
+    message = message || 'ERROR';
     this.log(message, {placeholder_values: placeholder_values, type: 'error'});
   }
 
 }
-
-module.exports = Morgana;

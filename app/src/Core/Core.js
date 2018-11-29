@@ -2,35 +2,24 @@
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
  *
- * License: https://github.com/Aigachu/Lavenza/blob/master/LICENSE
+ * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
+ *
  */
 
-// Get all globals that are used across the application.
-// We wanna manage all of them in one place for organization!
-require('./Util/Globals');
-
-// Get extensions.
-// We manage all extensions to core prototypes in this file.
-require('./Util/Extensions');
-
-// Includes for various namespaces & objects.
-const BotBunker = require('./Bot/BotBunker');
-
-// Confidants.
-const Morgana = require('./Confidants/Morgana');
-const Igor = require('./Confidants/Igor');
-
+// Managers.
+import BotManager from '../Bot/BotManager';
+import TalentManager from '../Talent/TalentManager';
 
 /**
- * Provides class for the core of the Lavenza application.
+ * Provides class for the Core of the Lavenza application.
  *
- * Most of the core business happens here, though specified features will be
+ * Most of the Core business happens here, though specified features will be
  * properly divided into respective classes. We're going for full-blown OOP
  * here. Let's try to make, and KEEP, this clean now!
  *
  * Lavenza hates dirty code. ;)
  */
-class Lavenza {
+export default class Core {
 
   // Lavenza's Version.
   // Remember to increment this you bean!
@@ -43,23 +32,21 @@ class Lavenza {
    *
    * That's why it's called ignite...
    *
-   * This function simply handles all preparation and launching, though as you
-   * can probably see, there isn't much going on here...
+   * This function simply handles all preparation and launching.
    *
-   * We simply like to remain clean and continue to separate things properly.
    */
   static async ignite() {
 
     // Some flavor text for the console.
-    Morgana.status('INITIALIZING', [this.version]);
+    Lavenza.status('INITIALIZING', [this.version]);
 
     // Fire necessary preparations.
     // The application can end here if we hit an error in the prep function.
-    await this.prepare().catch(Igor.stop);
+    await this.prepare().catch(Lavenza.stop);
 
     // If preparations go through without problems, go for run tasks.
     // Run tasks should be done only after all prep is complete.
-    await this.run().catch(Igor.stop);
+    await this.run().catch(Lavenza.stop);
 
     // If everything runs smoothly, return true.
     return true;
@@ -71,7 +58,7 @@ class Lavenza {
    */
   static async run() {
     // Deploy bots from the BotBunker.
-    await BotBunker.deploy().catch(Igor.stop);
+    await BotManager.deploy().catch(Lavenza.stop);
   }
 
   /**
@@ -83,13 +70,20 @@ class Lavenza {
   static async prepare() {
 
     // Some more flavor.
-    Morgana.log('BEGINNING_PREP');
+    Lavenza.log('BEGINNING_PREP');
 
-    // Run Bot Bunker deploy functions.
-    await BotBunker.prepare().catch(Igor.stop);
+    // Run preparation functions for the Talent Manager.
+    await TalentManager.prepare().catch(Lavenza.stop);
+
+    // Some more flavor.
+    Lavenza.log('Talent Manager Ready.');
+
+    // Run preparation functions for the Bot Manager.
+    await BotManager.prepare().catch(Lavenza.stop);
+
+    // Some more flavor.
+    Lavenza.log('Bot Manager Ready.');
 
   }
 
 }
-
-module.exports = Lavenza;

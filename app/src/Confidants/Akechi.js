@@ -2,22 +2,29 @@
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
  *
- * License: https://github.com/Aigachu/Lavenza/blob/master/LICENSE
+ * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
+
+// Modules.
+import fs from 'fs';
+import yaml from 'js-yaml';
+import path from 'path';
 
 /**
  * Provides a class that handles searching for files and directories in the app.
+ *
+ * Another name for this could be the FileManager.
  *
  * Akechi is a detective. He'll handle all the file management and searching for
  * this application.
  *
  * He may have been the villain...But I love the guy.
  */
-class Akechi {
+export default class Akechi {
 
   static async readFile(path) {
     try {
-      return Packages.fs.readFileSync(path);
+      return fs.readFileSync(path);
     } catch(error) {
       throw new Error(error)
     }
@@ -38,7 +45,7 @@ class Akechi {
     let fileData = await this.readFile(file);
 
     // Get document, or throw exception on error
-    return Packages.yaml.safeLoad(fileData);
+    return yaml.safeLoad(fileData);
 
   }
 
@@ -68,7 +75,7 @@ class Akechi {
   static async getFilesFrom(source, dirs = false) {
 
     // Get the list of files.
-    let files = Packages.fs.readdirSync(source).map(name => Packages.path.join(source, name));
+    let files = fs.readdirSync(source).map(name => path.join(source, name));
 
     // Return directories if the flag is set.
     if (dirs === true) {
@@ -87,9 +94,7 @@ class Akechi {
    *   Returns true if the source is a directory, returns false otherwise.
    */
   static isDirectory(source) {
-    return Packages.fs.lstatSync(source).isDirectory();
+    return fs.lstatSync(source).isDirectory();
   }
 
 }
-
-module.exports = Akechi;

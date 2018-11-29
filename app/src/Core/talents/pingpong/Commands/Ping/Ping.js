@@ -5,9 +5,10 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-export default {
-  Discord: 'discord',
-  Twitch: 'twitch',
-  Slack: 'slack',
-  Skype: 'a funny joke',
-};
+class Ping extends Lavenza.Command {
+  static execute(content, message, bot, client) {
+    message.reply('Pong!');
+  }
+}
+
+module.exports = Ping;

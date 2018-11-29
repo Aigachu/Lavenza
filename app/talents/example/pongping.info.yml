@@ -1,0 +1,4 @@
+name: 'Pong Ping Talent'
+description: 'Give bot the ability to say "Ping!" when it hears "Pong!" from anyone.'
+version: 1.0.0
+class: 'PongPing'

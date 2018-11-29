@@ -2,11 +2,16 @@
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
  *
- * License: https://github.com/Aigachu/Lavenza/blob/master/LICENSE
+ * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
+
+// Modules.
+import _ from 'underscore';
 
 /**
  * Provides a class that handles input/output to the console & errors.
+ *
+ * Another name for this could be the HelperManager.
  *
  * So Sojiro basically housed us and provided us with the essentials to live.
  *
@@ -14,7 +19,7 @@
  *
  * Thanks Daddy Sojiro!
  */
-class Sojiro {
+export default class Sojiro {
 
   /**
    * Utility function to return a random element from a given array.
@@ -30,18 +35,15 @@ class Sojiro {
     return array[Math.floor(Math.random()*array.length)];
   }
 
+  static removeFromArray(array, element) {
+    return array.filter(e => e !== element);
+  }
+
   static isEmpty(variable) {
-    if (Array.isArray(variable)) {
-      return variable.length < 1;
+    if (typeof variable === 'function') {
+      return false;
     }
-
-    if (variable.constructor === Object) {
-      return Packages._.isEmpty(variable);
-    }
-
-    return (variable === undefined || variable === null || !variable.length);
+    return _.isEmpty(variable);
   }
 
 }
-
-module.exports = Sojiro;

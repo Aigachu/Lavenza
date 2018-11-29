@@ -2,12 +2,13 @@
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
  *
- * License: https://github.com/Aigachu/Lavenza/blob/master/LICENSE
+ * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
-
 
 /**
  * Provides a collection of strings to be used across the application.
+ *
+ * @todo - We'll be converting to https://www.npmjs.com/package/i18n down the line, which will be much better AND allow for translations to other languages! Hype!
  *
  * This allows us to manage all of our strings in Dictionaries.
  *
@@ -15,7 +16,7 @@
  *
  * @see ../Confidants/Futaba
  */
-module.exports = {
+export default {
 
   // === Status Messages ===
   INITIALIZING: 'Welcome to Lavenza II!\nInitializing Lavenza v@1...\n',
@@ -36,7 +37,26 @@ module.exports = {
   // === Bot Preparations ===
   START_BOT_REG: 'Starting Bot Registration process...',
   START_BOT_DIR_FETCH: 'Step 1: Fetching bot directories...',
-  FILTER_IGNORED_BOTS: 'Step 2: Filtering ignored bots...',
+  REGISTER_BOTS: 'Step 2: Registering bots...',
+  BOT_REGISTERED: 'Successfully registered @1!',
+  BOT_INACTIVE: 'The {@1} bot was found, but it is currently set as inactive. It will be ignored.',
+
+  // === Talents ===
+  START_TALENT_LOAD: 'Starting Talent Loading process...',
+  CORE_TALENT_LOADED: 'Loaded {@1} core talent!',
+  CUSTOM_TALENT_LOADED: 'Loaded {@1} custom talent!',
+  NO_COMMANDS_FOUND_FOR_TALENT: 'There were no commands defined for the {@1} talent. This might not be normal!',
+  NO_TALENT_CONFIG_FOUND_FOR_BOT: 'The {@1} bot has no talent configuration! No custom talents will be loaded for it.',
+  CUSTOM_TALENT_NOT_FOUND: 'The {@1} custom talent was not found and could not be loaded.',
+  COMMAND_CONFIG_FILE_NOT_FOUND: 'Could not locate a config file for the {@1} command in the {@2} talent. This command will not work.',
+  COMMAND_PLATFORM_CONFIG_MISSING: 'The [platforms] key is missing from the configuration in the {@1} command of the {@2} talent. This command will not be functional.',
+  COMMAND_CLASS_MISSING: 'Command class could not be loaded for the {@1} command in the {@2} talent.',
+  NO_LISTENERS_FOUND_FOR_TALENT: 'There are no listeners defined in the {@1} talent!',
+  TALENT_DOES_NOT_EXIST: 'The {@1} talent does not exist!',
+
+  // === Discord ===
+  DISCORD_CLIENT_DISCONNECT: 'Discord client for {@1} has disconnected...',
+  DISCORD_CLIENT_CONNECT: 'Discord client for {@1} has connected!',
 
   // === Warnings ===
   BOT_DIRECTORY_FOUND_BUT_NO_CONFIG: 'A bot directory (@1) was located, but a config.yml file is missing for it. Please create one for the bot to run properly.',
@@ -47,5 +67,6 @@ module.exports = {
                         'Bot configuration can be created by following the example found in /bots/example directory.',
   BOT_CONFIG_FILE_NOT_FOUND: 'Bot configuration file not found for {@1}. Please create a configuration file based on the /bots/example/example.config.yml file.',
   BOT_DIRECTORY_CRAWL_FAILURE: 'An error occurred when Akechi tried to find the bot folders in the /bots folder. Please fix the code!',
+  CLIENT_AUTHENTICATION_FAILURE: 'Failed to authenticate the {@1} client for @2. You may want to check authentication configurations.',
 
-};
+}

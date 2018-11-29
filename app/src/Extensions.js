@@ -1,11 +1,4 @@
 /**
- * Project Lavenza
- * Copyright 2017-2018 Aigachu, All Rights Reserved
- *
- * License: https://github.com/Aigachu/Lavenza/blob/master/LICENSE
- */
-
-/**
  * Object.prototype.forEach() polyfill
  * https://gomakethings.com/looping-through-objects-with-es6/
  * @author Chris Ferdinandi

@@ -1,0 +1,38 @@
+name: 'Main Command'
+description: 'Command that selects a new main for you, because you actually had trouble finding one! Wow...'
+
+# Path to the main class containing the logic of the command
+class: 'MainCommand'
+
+key: 'main'
+
+aliases:
+  - 'smain'
+
+input: []
+
+options: []
+
+cooldown:
+  global: 0
+  user: 0
+
+clients: '*'
+
+clients_config:
+  discord:
+    authorization:
+      guilds: []
+      channels: []
+      pms: false
+      users: []
+      oplevel: 0
+      cooldown:
+        global: 0
+        user: 0
+
+  twitch:
+    authorization: []
+
+  slack:
+    authorization: []

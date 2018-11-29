@@ -2,9 +2,12 @@
   "name": "lavenza-ii",
   "version": "0.0.1",
   "description": "???",
-  "main": "./src/Lavenza",
+  "main": "src/Heart",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=6.0.0"
   },
   "repository": {
     "type": "git",
@@ -26,18 +29,36 @@
   ],
   "dependencies": {
     "app-root-path": "^2.1.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
     "colors": "^1.3.2",
     "discord.js": "^11.4.2",
     "dotenv": "^6.1.0",
     "erlpack": "^0.1.2",
+    "eslint-plugin-mocha": "^5.2.0",
     "glob": "^7.1.3",
     "google": "^2.1.0",
     "js-yaml": "^3.12.0",
+    "minimist": "^1.2.0",
+    "module-alias": "^2.1.0",
     "moment": "^2.22.2",
     "tmi": "^2.0.0",
     "twitch-api-v5": "^2.0.4",
     "underscore": "^1.9.1",
     "uws": "^99.0.0",
+    "validate": "^4.5.1",
     "zlib-sync": "^0.1.4"
-  }
+  },
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-security": "^1.4.0"
+  },
+  "_moduleAliases": {
+    "@Command": "src/Bot/Command/Command.js"
+  },
+  "_moduleDirectories": [
+    "modules"
+  ]
 }

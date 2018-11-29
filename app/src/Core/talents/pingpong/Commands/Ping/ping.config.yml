@@ -1,0 +1,39 @@
+name: 'Ping Command'
+description: 'Command that simply orders the bot to say "Pong!"'
+
+# Path to the main class containing the logic of the command
+class: 'Ping'
+
+key: 'ping'
+
+aliases:
+  - 'pingu'
+  - 'pingo'
+
+input: []
+
+options: []
+
+cooldown:
+  global: 0
+  user: 0
+
+clients: '*'
+
+clients_config:
+  discord:
+    authorization:
+      guilds: []
+      channels: []
+      pms: false
+      users: []
+      oplevel: 0
+      cooldown:
+        global: 0
+        user: 0
+
+  twitch:
+    authorization: []
+
+  slack:
+    authorization: []

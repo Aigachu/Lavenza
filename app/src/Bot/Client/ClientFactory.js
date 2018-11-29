@@ -2,16 +2,16 @@
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
  *
- * License: https://github.com/Aigachu/Lavenza/blob/master/LICENSE
+ * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
 // Includes
-const ClientTypes = require('./ClientTypes');
-const DiscordClient = require('./DiscordClient/DiscordClient');
-// const TwitchClient = require('./TwitchClient/TwitchClient');
-// const SlackClient = require('./SlackClient/SlackClient');
+import ClientTypes from './ClientTypes';
+import DiscordClient from './DiscordClient/DiscordClient';
+// import TwitchClient from './TwitchClient/TwitchClient';
+// import SlackClient from './SlackClient/SlackClient';
 
-class ClientFactory {
+export default class ClientFactory {
 
   static build(type, config, bot) {
     let client = {};
@@ -33,5 +33,3 @@ class ClientFactory {
   }
 
 }
-
-module.exports = ClientFactory;

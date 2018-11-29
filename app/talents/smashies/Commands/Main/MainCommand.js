@@ -5,9 +5,8 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-export default {
-  Discord: 'discord',
-  Twitch: 'twitch',
-  Slack: 'slack',
-  Skype: 'a funny joke',
-};
+class MainCommand extends Lavenza.Command {
+
+}
+
+module.exports = MainCommand;

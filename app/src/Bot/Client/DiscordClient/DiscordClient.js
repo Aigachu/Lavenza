@@ -2,11 +2,12 @@
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
  *
- * License: https://github.com/Aigachu/Lavenza/blob/master/LICENSE
+ * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-// Includes.
-const DiscordJSClient = Packages.DiscordJS.Client;
+// Imports.
+import ClientTypes from '../ClientTypes';
+import {Client as DiscordJSClient} from 'discord.js';
 
 /**
  * Provides a class for Discord Clients managed in Lavenza.
@@ -16,7 +17,7 @@ const DiscordJSClient = Packages.DiscordJS.Client;
  *
  * @see https://discord.js.org/#/
  */
-class DiscordClient extends DiscordJSClient {
+export default class DiscordClient extends DiscordJSClient {
   constructor(config, bot) {
     // Call the constructor of the Discord Client parent Class.
     super();
@@ -24,38 +25,50 @@ class DiscordClient extends DiscordJSClient {
     // Assign the bot to the current client.
     this.bot = bot;
 
+    // Just a utility value to track the client type.
+    this.type = ClientTypes.Discord;
+
     // Assign configurations to the client.
     this.config = config;
 
     // Command prefix, also set in the Maiden's 'settings.js'.
-    this.command_prefix = config.command_prefix;
+    this.command_prefix = config.command_prefix || bot.config.command_prefix;
 
     // Event: When the client connects to Discord and is ready.
     this.on('ready', () => {
-      // Do stuff here.
+      Lavenza.success('DISCORD_CLIENT_CONNECT', [this.bot.name]);
     });
 
     // Event: When the discord client receives a message.
     this.on('message', (message) => {
-      if (message.content === 'ping') {
-        message.reply('Pong!');
-      }
+      this.bot.listen(message, this);
     });
 
     // Event: When the clients disconnects from Discord.
     this.on('disconnected', () => {
-      // Do stuff here.
+      Lavenza.status('DISCORD_CLIENT_DISCONNECT', [this.bot.name]);
+    });
+
+    // Event: When the clients disconnects from Discord.
+    this.on('error', () => {
+      Lavenza.error('ERROR_OCCURRED', [this.bot.name]);
     });
 
   }
 
+  async loadTalents(config) {
+
+  }
+
+  /**
+   * Authenticate the client. (Login to Discord)
+   * @returns {Promise<void>}
+   */
   async authenticate() {
     try {
       await super.login(this.config.token);
     } catch(error) {
-      console.log(error);
+      Lavenza.throw('CLIENT_AUTHENTICATION_FAILURE', [this.type, this.bot.name]);
     }
   }
 }
-
-module.exports = DiscordClient;
