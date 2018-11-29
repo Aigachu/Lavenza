@@ -74,7 +74,7 @@ export default class TalentManager {
     // Set the list of core talents. This is simply the list of keys. Bots use this later.
     // Since we never actually store the reference to the Talents themselves in the bots, we need these keys.
     // We also need a way to easily get the list of all core talents, separate from the custom ones.
-    this.coreTalentList = Object.keys(this.talents.core);
+    this.coreTalentList = Object.keys(this.talents);
 
   }
 

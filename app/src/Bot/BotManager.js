@@ -142,7 +142,7 @@ export default class BotManager {
 
       // If the configuration is empty, stop here.
       // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
-      if (!Lavenza.isEmpty(config)) {
+      if (Lavenza.isEmpty(config)) {
         Lavenza.warn('BOT_CONFIG_FILE_NOT_FOUND', [name]);
         return;
       }

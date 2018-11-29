@@ -62,7 +62,7 @@ export default class Bot {
     this.talents = TalentManager.coreTalentList;
 
     // Check if there are custom talents defined.
-    if (this.config.talents) {
+    if (Lavenza.isEmpty(this.config.talents)) {
       Lavenza.warn('NO_TALENT_CONFIG_FOUND_FOR_BOT', [this.name]);
       return;
     }
@@ -107,10 +107,10 @@ export default class Bot {
 
     // Await the processing of all talents loaded in the bot.
     /** @catch Stop execution. */
-    await Promise.all(this.talents.all.map(async talent => {
+    await Promise.all(this.talents.map(async talent => {
 
       // Merge the bot's commands with the Talent's commands.
-      this.commands = Object.assign({}, this.commands, TalentManager.talents.all[talent].commands);
+      this.commands = Object.assign({}, this.commands, TalentManager.talents[talent].commands);
 
     })).catch(Lavenza.stop);
 
@@ -135,10 +135,10 @@ export default class Bot {
 
     // Await the processing of all talents loaded in the bot.
     /** @catch Stop execution. */
-    await Promise.all(this.talents.all.map(async talentKey => {
+    await Promise.all(this.talents.map(async talentKey => {
 
       // Merge the bot's listeners with the Talent's listeners.
-      this.listeners = [...this.listeners, ...TalentManager.talents.all[talentKey].listeners]
+      this.listeners = [...this.listeners, ...TalentManager.talents[talentKey].listeners]
 
     })).catch(Lavenza.stop);
 

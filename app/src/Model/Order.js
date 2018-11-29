@@ -24,9 +24,9 @@ export default class Order {
    * @param {Resonance} resonance
    *   The resonance that this order originates from.
    */
-  constructor(command, arguments, resonance) {
+  constructor(command, args, resonance) {
     this.command = command;
-    this.arguments = arguments;
+    this.args = args;
     this.resonance = resonance;
   }
 

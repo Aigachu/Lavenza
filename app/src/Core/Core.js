@@ -71,9 +71,15 @@ export default class Core {
    */
   static async run() {
 
+    // Some more flavor.
+    Lavenza.status('BOT_MANAGER_DEPLOY');
+
     // Deploy bots from the BotBunker.
     /** @catch Stop execution. */
     await BotManager.deploy().catch(Lavenza.stop);
+
+    // Some more flavor.
+    Lavenza.success('BOT_MANAGER_DEPLOYED');
 
   }
 
@@ -100,7 +106,7 @@ export default class Core {
     await TalentManager.prepare().catch(Lavenza.stop);
 
     // Some more flavor.
-    Lavenza.log('TALENT_MANAGER_READY');
+    Lavenza.success('TALENT_MANAGER_READY');
 
     // Some more flavor.
     Lavenza.status('BOT_MANAGER_PREP');
@@ -110,7 +116,7 @@ export default class Core {
     await BotManager.prepare().catch(Lavenza.stop);
 
     // Some more flavor.
-    Lavenza.log('Bot Manager Ready.');
+    Lavenza.success('BOT_MANAGER_READY');
 
   }
 

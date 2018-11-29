@@ -38,12 +38,18 @@ export default {
 
   // === Bot Preparations ===
   BOT_MANAGER_PREP: '<BotManager>: Launching preparations...',
+  BOT_MANAGER_DEPLOY: '<BotManager>: Deploying...',
   START_BOT_REG: 'Starting Bot Registration process...',
   START_BOT_DIR_FETCH: 'Step 1: Fetching bot directories...',
   REGISTER_BOTS: 'Step 2: Registering bots...',
   BOT_REGISTERED: 'Successfully registered @1!',
   BOT_INACTIVE: 'The {@1} bot was found, but it is currently set as inactive. It will be ignored.',
   BOT_MANAGER_READY: '<BotManager>: Preparations completed!',
+  CLIENTS_INITIALIZED_FOR_BOT: 'Clients successfully initialized for {@1}!',
+  CLIENTS_AUTHENTICATED_FOR_BOT: 'Clients successfully authenticated for {@1}!',
+  BOT_MANAGER_DEPLOYED: '<BotManager>: Deployment complete!',
+  COMMANDS_SET_FOR_BOT: 'Commands successfully inherited from all talents for {@1}!',
+  LISTENERS_SET_FOR_BOT: 'Listeners successfully set & inherited from all talents for {@1}!',
 
   // === Talents ===
   TALENT_MANAGER_PREP: '<TalentManager>: Launching preparations...',
@@ -59,6 +65,8 @@ export default {
   NO_LISTENERS_FOUND_FOR_TALENT: 'There are no listeners defined in the {@1} talent!',
   TALENT_DOES_NOT_EXIST: 'The {@1} talent does not exist!',
   TALENT_MANAGER_READY: '<TalentManager>: Preparations completed!',
+  TALENTS_LOADED_FOR_BOT: 'Talents successfully granted to {@1}',
+  ERROR_LOADING_TALENT: 'An error occurred when trying to load the {@1} custom talent. Please verify that it truly exists and is properly configured.',
 
   // === Discord ===
   DISCORD_CLIENT_DISCONNECT: 'Discord client for {@1} has disconnected...',
