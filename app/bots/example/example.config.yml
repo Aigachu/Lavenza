@@ -11,12 +11,35 @@
 #
 # @see - https://discordapp.com/developers/applications/me
 #
+
+# Main command prefix.
+# The command prefix can be overridden per client. A default one is necessary, though.
+cprefix: ';-'
+
+# Talents configuration.
+# Set the list of custom talents this bot should have.
+# You must enter the exact name of the directory of the custom talent.
+talents:
+  - example
+
+# Clients
+# Configurations for which clients this bot will access and other details.
 clients:
+
+  # Discord Configurations
   discord:
+
+    # Bot Token
     token: '12345'
-    cprefix: '!L'
+
+    # Command Prefix override if needed.
+    # cprefix: ';-d'
+
+    # Activity to set to the bot when it's running.
     activity: ''
-    intro: ''
+
+    # URL to add the bot to other servers.
+    # This is here so that the bot can send its own URL to others.
     add_url: 'https://discordapp.com/oauth2/authorize?&client_id=1234567890&scope=bot&permissions=1546959939'
 
 # twitch:

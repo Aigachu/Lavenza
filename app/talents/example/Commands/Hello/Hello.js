@@ -6,21 +6,21 @@
  */
 
 /**
- * Ping command.
+ * Hello command.
  *
- * Literally just replies with 'Pong!'.
+ * Literally just replies with 'Hello!'.
  *
  * A great testing command.
  */
-class Ping extends Lavenza.Command {
+class Hello extends Lavenza.Command {
 
   /**
    * @inheritDoc
    */
   static execute(order, resonance) {
-    resonance.message.reply('Pong!');
+    resonance.message.reply('Hello!');
   }
 
 }
 
-module.exports = Ping;
+module.exports = Hello;

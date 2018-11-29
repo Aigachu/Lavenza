@@ -8,7 +8,7 @@
 /**
  * A wonderful listener!
  */
-class WonderfulListener extends Lavenza.Listener {
+class WonderfulListenerExample extends Lavenza.Listener {
 
   /**
    * @inheritDoc
@@ -36,4 +36,4 @@ class WonderfulListener extends Lavenza.Listener {
   }
 }
 
-module.exports = WonderfulListener;
+module.exports = WonderfulListenerExample;

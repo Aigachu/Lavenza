@@ -22,6 +22,14 @@ import path from 'path';
  */
 export default class Akechi {
 
+  /**
+   * Simply read a file from a given path.
+   *
+   * @param {string} path
+   *   Path to the file to read.
+   *
+   * @returns {Promise.<void>}
+   */
   static async readFile(path) {
     try {
       return fs.readFileSync(path);

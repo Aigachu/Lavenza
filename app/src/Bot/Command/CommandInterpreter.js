@@ -8,21 +8,52 @@
 // Modules.
 import minimist from 'minimist';
 
+/**
+ * Provides an Interpreter for Commands.
+ *
+ * This class will determine if a command has been heard by the Bot. It takes a resonance and analyzes it accordingly.
+ */
 export default class CommandInterpreter {
-  static interpret(content, message, bot, client) {
+
+  /**
+   * Interpret a Resonance, attempting to find a command in the raw content.
+   *
+   * @param {Resonance} resonance
+   *   The Resonance that will be interpreted.
+   *
+   * @returns {*}
+   */
+  static interpret(resonance) {
 
     // Attempt to get a command from the content.
-    let result = this.getCommand(content, bot, client);
+    let result = this.getCommand(resonance.content, resonance.bot, resonance.client);
 
-    // First, we check if this is a command.
-    // To do this, we'll use a function to check if the content has the format of a command.
+    // If no command is found, we have nothing to do.
     if (!result) {
       return false;
     }
 
-    return result;
+    // Craft Order and send it back.
+    return new Lavenza.Order(result.command, result.args, resonance);
   }
 
+  /**
+   * Get a command from a message.
+   *
+   * This command accepts the raw content, the bot and the client to make some checks.
+   *
+   * The checks and analysis will determine if a command exists in the resonance.
+   *
+   * @param {string} content
+   *   Raw content obtained from the resonance.
+   * @param {Bot} bot
+   *   Bot that heard the message.
+   * @param {*} client
+   *   Client that sent the message.
+   *
+   * @returns {*}
+   *   Returns data about a command if there is a command. Returns false otherwise.
+   */
   static getCommand(content, bot, client) {
 
     // Split content with spaces.
@@ -62,4 +93,5 @@ export default class CommandInterpreter {
       args: args
     };
   }
+
 }

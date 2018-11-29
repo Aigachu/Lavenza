@@ -7,15 +7,18 @@
 
 /**
  * This is the entry point for the application.
- * Everything in here will be stored in an export called Heart, and placed in a global that is accessible across
- * the application.
+ * Everything in here will be stored in an export called "Heart", and placed in a global called "Lavenza"
+ * that is accessible across the application. This makes development a lot easier and prevents us from having
+ * to import a lot of classes across the code.
  */
 
 // Include extensions to Javascript.
+// See the file for more deets.
 import './Extensions';
 
 // Register module alias paths.
 // This allows our code to resolve paths to modules that reside in specific folders, instead of solely node_modules.
+// Better organization overall.
 import 'module-alias/register';
 
 // Load Environment Variables from .env file at the root of the project.
@@ -28,20 +31,27 @@ import colors from 'colors';
 
 // Lavenza's core.
 // This class is the main handler of the application.
+// This is where the wonderful ignite() function is, as well as the rest of the bootstrapping.
 import Core from './Core/Core';
 
 // Confidants.
-// Re-usable functionality is managed in Confidants. Shoutouts to Persona 5!
+// Re-usable functionality is managed in what I'm calling Confidants for this project. Shoutouts to Persona 5!
+// Each confidant has a specific use. See each of their files for more deets.
 import Akechi from './Confidants/Akechi';
 import Futaba from'./Confidants/Futaba';
 import Igor from './Confidants/Igor';
 import Morgana from './Confidants/Morgana';
 import Sojiro from './Confidants/Sojiro';
 
-// Models.
+// Classes & Models.
+// These are classes that are extended or used across the application. We import them here once.
+// They are linked in the global for easy access.
 import Command from './Bot/Command/Command';
 import Talent from './Talent/Talent';
 import Listener from './Bot/Listener/Listener';
+import Resonance from './Model/Resonance';
+import Order from './Model/Order';
+
 
 // Configure colors for console.
 // Set console color themes.
@@ -77,6 +87,7 @@ let Keys = {
 };
 
 // Define the Heart of the module.
+// This is the object that is later set as a global.
 const Heart = {
   // Core Lavenza Class.
   Lavenza: Core,
@@ -92,6 +103,8 @@ const Heart = {
   Command: Command,
   Talent: Talent,
   Listener: Listener,
+  Resonance: Resonance,
+  Order: Order,
 
   // Function shortcuts for Confidants.
   log: Morgana.log,

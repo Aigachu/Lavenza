@@ -18,6 +18,15 @@ import {Client as DiscordJSClient} from 'discord.js';
  * @see https://discord.js.org/#/
  */
 export default class DiscordClient extends DiscordJSClient {
+
+  /**
+   * DiscordClient constructor.
+   *
+   * @param {Object} config
+   *   Configuration object to create the client with, fetched from the bot's configuration file.
+   * @param {Bot} bot
+   *   Bot that this client is linked to.
+   */
   constructor(config, bot) {
     // Call the constructor of the Discord Client parent Class.
     super();
@@ -56,17 +65,16 @@ export default class DiscordClient extends DiscordJSClient {
 
   }
 
-  async loadTalents(config) {
-
-  }
-
   /**
    * Authenticate the client. (Login to Discord)
+   *
    * @returns {Promise<void>}
    */
   async authenticate() {
     try {
-      await super.login(this.config.token);
+      // Await the login in of this client.
+      /** @catch Stop execution. */
+      await super.login(this.config.token).catch(Lavenza.stop);
     } catch(error) {
       Lavenza.throw('CLIENT_AUTHENTICATION_FAILURE', [this.type, this.bot.name]);
     }

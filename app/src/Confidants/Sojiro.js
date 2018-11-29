@@ -13,7 +13,7 @@ import _ from 'underscore';
  *
  * Another name for this could be the HelperManager.
  *
- * So Sojiro basically housed us and provided us with the essentials to live.
+ * So Sojiro basically housed us and provided us with the essentials to live in Persona 5.
  *
  * Here, he's providing us with the utilities to make our life easier.
  *
@@ -26,8 +26,9 @@ export default class Sojiro {
    *
    * Self-Explanatory.
    *
-   * @param array
+   * @param {Array} array
    *   Array to get random element from.
+   *
    * @returns {*}
    *   Returns a random element.
    */
@@ -35,14 +36,36 @@ export default class Sojiro {
     return array[Math.floor(Math.random()*array.length)];
   }
 
+  /**
+   * Utility function to remove a targeted element from an array.
+   *
+   * @param {Array} array
+   *   Array to remove an element from.
+   * @param {*} element
+   *   Element to be removed.
+   */
   static removeFromArray(array, element) {
     return array.filter(e => e !== element);
   }
 
+  /**
+   * Utility function to check if a variable is empty.
+   *
+   * @param {*} variable
+   *   Variable to check.
+   *
+   * @returns {boolean}
+   *   Evaluates to true if empty, false otherwise.
+   */
   static isEmpty(variable) {
+    // So underscore is cool and all...
+    // BUT any FUNCTION passed to its isEmpty evaluates to TRUE for...I don't know what reason.
+    // Here we handle this case.
     if (typeof variable === 'function') {
       return false;
     }
+
+    // If it's not a function, underscore SHOULD cover the rest of the cases.
     return _.isEmpty(variable);
   }
 

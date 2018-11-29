@@ -8,19 +8,21 @@
 /**
  * Provides a collection of strings to be used across the application.
  *
- * @todo - We'll be converting to https://www.npmjs.com/package/i18n down the line, which will be much better AND allow for translations to other languages! Hype!
+ * @TODO - We'll be converting to https://www.npmjs.com/package/i18n down the line, which will be much better AND allow for translations to other languages! Hype!
  *
- * This allows us to manage all of our strings in Dictionaries.
+ * This allows us to manage all of our strings in one place.
  *
  * Much easier to modify strings in the future.
  *
  * @see ../Confidants/Futaba
+ *   Futaba uses this dictionary. When using the Lavenza logging functions, you can provide a 'Key' instead of a real
+ *   line of text, and Futaba will translate it by checking if the key exists in this dictionary. Pretty handy.
  */
 export default {
 
   // === Status Messages ===
   INITIALIZING: 'Welcome to Lavenza II!\nInitializing Lavenza v@1...\n',
-  BEGINNING_PREP: 'Beginning preparations!...',
+  PREPARATION_PHASE: 'Executing phase: PREPARATION!',
   SUCCESS: [
       'All right, Joker! Very smooth!',
       'All good! Moving on.',
@@ -35,13 +37,16 @@ export default {
   ],
 
   // === Bot Preparations ===
+  BOT_MANAGER_PREP: '<BotManager>: Launching preparations...',
   START_BOT_REG: 'Starting Bot Registration process...',
   START_BOT_DIR_FETCH: 'Step 1: Fetching bot directories...',
   REGISTER_BOTS: 'Step 2: Registering bots...',
   BOT_REGISTERED: 'Successfully registered @1!',
   BOT_INACTIVE: 'The {@1} bot was found, but it is currently set as inactive. It will be ignored.',
+  BOT_MANAGER_READY: '<BotManager>: Preparations completed!',
 
   // === Talents ===
+  TALENT_MANAGER_PREP: '<TalentManager>: Launching preparations...',
   START_TALENT_LOAD: 'Starting Talent Loading process...',
   CORE_TALENT_LOADED: 'Loaded {@1} core talent!',
   CUSTOM_TALENT_LOADED: 'Loaded {@1} custom talent!',
@@ -53,6 +58,7 @@ export default {
   COMMAND_CLASS_MISSING: 'Command class could not be loaded for the {@1} command in the {@2} talent.',
   NO_LISTENERS_FOUND_FOR_TALENT: 'There are no listeners defined in the {@1} talent!',
   TALENT_DOES_NOT_EXIST: 'The {@1} talent does not exist!',
+  TALENT_MANAGER_READY: '<TalentManager>: Preparations completed!',
 
   // === Discord ===
   DISCORD_CLIENT_DISCONNECT: 'Discord client for {@1} has disconnected...',

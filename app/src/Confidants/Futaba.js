@@ -33,29 +33,36 @@ export default class Futaba {
    *
    * @see ../Dictionary/Dictionary
    *
-   * @param key
+   * @param {string} key
    *   Key to interpret and search dictionaries for.
-   * @param placeholders
+   * @param {Array} placeholders
    *   Placeholders texts, if any, to replace any found in the string.
    * @returns {*}
    *   Final string interpreted, or returns the key if no dictionary matching
    *   was successful.
    */
   static interpret(key, placeholders = []) {
+
+    // First thing's first, we check the Dictionary. If a key is not set, we return the text 'as is'.
     if (Dictionary[key] === undefined) {
       return key;
     }
 
+    // We fetch the text from the Dictionary.
     let text = Dictionary[key];
 
+    // If the text is an array, we fetch a random element from it.
+    // This is fun, because you can have varying texts.
     if (Array.isArray(text)) {
       text = Lavenza.getRandomElementFromArray(text);
     }
 
+    // Replace any placeholders.
     placeholders.forEach((placeholder, index) => {
       text = text.replace('@' + (index + 1), placeholder);
     });
 
+    // Return the finished text.
     return text;
   }
 

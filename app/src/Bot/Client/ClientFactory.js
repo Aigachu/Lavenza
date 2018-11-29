@@ -11,8 +11,27 @@ import DiscordClient from './DiscordClient/DiscordClient';
 // import TwitchClient from './TwitchClient/TwitchClient';
 // import SlackClient from './SlackClient/SlackClient';
 
+/**
+ * Provide a factory class that manages the creation of the right client given a type.
+ */
 export default class ClientFactory {
 
+  /**
+   * Creates a client instance given a type, bot and configuration.
+   *
+   * Each type of client has a different class. We will properly decouple and manage the functionality of each type of
+   * client.
+   *
+   * @param {string} type
+   *   Type of client to build.
+   * @param {Object} config
+   *   Configuration object to create the client with, fetched from the bot's configuration file.
+   * @param {Bot} bot
+   *   Bot that this client will be linked to.
+   *
+   * @returns {{}}
+   *   Client that was instantiated.
+   */
   static build(type, config, bot) {
     let client = {};
     switch (type) {
