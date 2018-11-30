@@ -49,7 +49,7 @@ export default class Bot {
 
     // Create the collection for this bot if it doesn't already exist.
     /** @catch Stop execution. */
-    await Lavenza.Gestalt.createCollection(`${this.name}`).catch(Lavenza.stop);
+    // await Lavenza.Gestalt.createCollection(`${this.name}`).catch(Lavenza.stop);
 
   }
 

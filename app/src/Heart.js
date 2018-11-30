@@ -139,7 +139,7 @@ const Heart = {
     CORE: RootPath + '/' + Keys.CORE_FUNCTIONALITY_FOLDER_NAME,
     BOTS: RootPath + '/' + Keys.BOT_FOLDER_NAME,
     TALENTS: {
-      CORE: RootPath + '/src' + '/' + Keys.CORE_FUNCTIONALITY_FOLDER_NAME + '/' + Keys.TALENTS_FOLDER_NAME,
+      CORE: RootPath + '/' + Keys.CORE_FUNCTIONALITY_FOLDER_NAME + '/' + Keys.TALENTS_FOLDER_NAME,
       CUSTOM: RootPath + '/' + Keys.TALENTS_FOLDER_NAME
     },
   },

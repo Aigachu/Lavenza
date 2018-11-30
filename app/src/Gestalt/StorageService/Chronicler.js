@@ -33,5 +33,7 @@ export default class Chronicler extends StorageService {
      return undefined;
   }
 
-  static buildCollection(path)
+  static buildCollection(path) {
+
+  }
 }
