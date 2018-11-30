@@ -17,11 +17,11 @@ export default class Order {
   /**
    * Order constructor.
    *
-   * @param {Command} command
+   * @param {Lavenza.Command} command
    *   The command that must be executed with this order.
-   * @param {Array} arguments
+   * @param {Array} args
    *   The arguments sent with the order.
-   * @param {Resonance} resonance
+   * @param {Lavenza.Resonance} resonance
    *   The resonance that this order originates from.
    */
   constructor(command, args, resonance) {

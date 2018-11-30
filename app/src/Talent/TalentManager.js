@@ -101,20 +101,20 @@ export default class TalentManager {
 
     // Get the info file for the talent.
     /** @catch Pocket error. */
-    let infoFilePath = directory + '/' + name + '.info.yml';
-    let info = await Lavenza.Akechi.readYamlFile(infoFilePath).catch(Lavenza.continue);
+    let configFilePath = directory + '/' + name + '.config.yml';
+    let config = await Lavenza.Akechi.readYamlFile(configFilePath).catch(Lavenza.continue);
 
     // If the info is empty, we gotta stop here. They are mandatory.
     // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
-    if (Lavenza.isEmpty(info)) {
+    if (Lavenza.isEmpty(config)) {
       Lavenza.throw('TALENT_INFO_FILE_NOT_FOUND', [name]);
     }
 
     // Set the directory to the info. It's useful information to have in the Talent itself!
-    info.directory = directory;
+    config.directory = directory;
 
     // Require the class.
-    let talent = require(directory + '/' + info.class);
+    let talent = require(directory + '/' + config.class);
 
     // If the talent could not be loading somehow, we end here.
     if (Lavenza.isEmpty(talent)) {
@@ -124,9 +124,12 @@ export default class TalentManager {
     // Await building of the talent.
     // Talents have build tasks too and are also singletons. We'll run them here.
     /** @catch Stop execution. */
-    await talent.build(info).catch(Lavenza.stop);
+    await talent.build(config).catch(Lavenza.stop);
 
     // Register the talent to the Manager.
     this.talents[name] = talent;
+
+    // Add a little success message for this particular talent.
+    Lavenza.success('CUSTOM_TALENT_LOADED', [name]);
   }
 }

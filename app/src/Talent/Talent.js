@@ -27,16 +27,17 @@ export default class Talent {
    * Since Talents will be singletons, there is no constructor. Each talent will call this function once to set
    * their properties.
    *
-   * @param {Object} info
-   *   The information used to build the Talent. Provided from a '?.info.yml' file found in the Talent's folder.
+   * @param {Object} config
+   *   The configuration used to build the Talent. Provided from a '?.info.yml' file found in the Talent's folder.
    *
    * @returns {Promise.<void>}
    */
-  static async build(info) {
-    this.id = path.basename(info.directory); // Here we get the name of the directory and set it as the ID.
-    this.description = info.description;
-    this.version = info.version;
-    this.directory = info.directory;
+  static async build(config) {
+    this.id = path.basename(config.directory); // Here we get the name of the directory and set it as the ID.
+    this.description = config.description;
+    this.version = config.version;
+    this.directory = config.directory;
+    this.signature = Lavenza.Signature.sign('talent', this.id);
 
     // Await the process of loading commands.
     /** @catch Continue execution. */

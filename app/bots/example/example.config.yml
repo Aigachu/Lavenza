@@ -4,15 +4,6 @@
 #
 # License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
 #
-# {BOT_NAME - BOT_TITLE}
-#
-# === Discord Info ===
-# Server Add URL
-#
-# @see - https://discordapp.com/developers/applications/me
-#
-
-
 
 # Reader-Friendly name of the bot.
 name: 'Example Boterino'
@@ -35,6 +26,7 @@ clients:
   discord:
 
     # Bot Token
+    # Keep this secure and don't share it! Never commit it in a repository!
     token: '12345'
 
     # Command Prefix override if needed.

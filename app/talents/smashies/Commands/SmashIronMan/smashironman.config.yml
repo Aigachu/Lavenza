@@ -1,0 +1,61 @@
+# Reader-Friendly name of the command.
+name: 'Smash IronMan Command'
+
+# Command description. This may be used in the bot and seen by users. Make it good!
+description: 'Get a list of characters to use in an ironman.'
+
+# Path to the main class containing the logic of the command, relative to this directory.
+class: 'SmashIronMan'
+
+# Command key. This is what users will use to invoke the command.
+key: 'smashironman'
+
+# Additional "keys" that can be used to invoke the command.
+aliases:
+  - 'ironman'
+  - 'siman'
+
+# Coming soon...
+#input: []
+#
+#options: []
+#
+#cooldown:
+#  global: 0
+#  user: 0
+
+# Clients where this command will function.
+# If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.
+clients:
+  - discord
+
+# Client specific configurations.
+clients_config:
+
+  # Discord configurations.
+  discord:
+    # Authorizations
+    authorization:
+      # Servers where this command can work. If empty, works everywhere.
+      guilds: []
+      # Channels where this command can work. If empty, works everywhere.
+      channels: []
+      # Determines whether or not this command can work in direct messages with the bot.
+      pms: false
+      # Determines which users can use this command.
+      users: []
+      # Determines level of operation needed to use this command. A value of 0 means everyone can use it.
+      oplevel: 0
+
+    # Cooldown times in seconds.
+    # global - all user cooldown.
+    # user - user specific cooldown.
+    cooldown:
+      global: 0
+      user: 0
+
+#  twitch:
+#    authorization: []
+#
+#  slack:
+#    authorization: []

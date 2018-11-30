@@ -18,7 +18,7 @@ export default class CommandInterpreter {
   /**
    * Interpret a Resonance, attempting to find a command in the raw content.
    *
-   * @param {Resonance} resonance
+   * @param {Lavenza.Resonance} resonance
    *   The Resonance that will be interpreted.
    *
    * @returns {*}
@@ -71,6 +71,7 @@ export default class CommandInterpreter {
       splitContent = content.replace(client.command_prefix, client.command_prefix + ' ').split(' ');
     }
 
+    // Attempt the fetch the command from the bot.
     let command = bot.getCommand(splitContent[1]);
 
     // If the command doesn't exist, we'll stop here.
@@ -85,7 +86,7 @@ export default class CommandInterpreter {
     }
 
     // Next, we'll build the input as well.
-    let args = minimist(splitContent);
+    let args = minimist(splitContent.slice(2));
 
     // Return our findings.
     return {

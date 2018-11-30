@@ -35,11 +35,22 @@ export default class Bot {
     this.config = config;
     this.directory = config.directory;
 
+    // Check the storage for any available stored configurations that need to override the defaults.
+
+
     // Initializations.
     this.clients = {};
     this.talents = {};
     this.commands = {};
     this.listeners = [];
+  }
+
+  async buildStorage() {
+
+    // Create the collection for this bot if it doesn't already exist.
+    /** @catch Stop execution. */
+    await Lavenza.Gestalt.createCollection(`${this.name}`).catch(Lavenza.stop);
+
   }
 
   /**
@@ -87,7 +98,7 @@ export default class Bot {
    * @param {string} commandKey
    *   The key of the command to search for.
    *
-   * @returns {Command}
+   * @returns {Lavenza.Command}
    */
   getCommand(commandKey) {
     return this.commands[commandKey];
@@ -274,6 +285,10 @@ export default class Bot {
    * @returns {Promise.<void>}
    */
   async prepare() {
+
+    // Await storage preparations for this bot.
+    /** @catch Stop execution. */
+    await this.buildStorage().catch(Lavenza.stop);
 
     // Await client initialization.
     /** @catch Stop execution. */

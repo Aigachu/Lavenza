@@ -23,6 +23,36 @@ import path from 'path';
 export default class Akechi {
 
   /**
+   * Create a directory at a given path.
+   *
+   * @param {string} path
+   *   Path to create directory in.
+   * @returns {Promise<void>}
+   */
+  static async createDirectory(path) {
+    if (!fs.existsSync(path)){
+      fs.mkdirSync(path);
+    }
+  }
+
+  /**
+   * Create a directory at a given path.
+   *
+   * @param {string} path
+   *   Path to create directory in.
+   * @returns {boolean}
+   */
+  static directoryExists(path) {
+    if (fs.existsSync(path) && !this.isDirectory(path)){
+      return false;
+    }
+
+    if (!fs.existsSync(path)){
+      return false;
+    }
+  }
+
+  /**
    * Simply read a file from a given path.
    *
    * @param {string} path

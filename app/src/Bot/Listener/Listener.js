@@ -21,7 +21,7 @@ export default class Listener {
    * Since Listeners will be singletons, there is no constructor. Listeners can call this function once to set
    * their properties.
    *
-   * @param {Talent} talent
+   * @param {Lavenza.Talent} talent
    *   The talent that this listener belongs to, if any. Core listeners most likely won't have a talent.
    *
    * @returns {Promise.<void>}

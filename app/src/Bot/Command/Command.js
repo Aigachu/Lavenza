@@ -26,7 +26,7 @@ export default class Command {
    *
    * @param {Object} config
    *   Configuration read from the command's '.config.yml' file in the command's directory.
-   * @param {Talent} talent
+   * @param {Lavenza.Talent} talent
    *   Talent that this command is a child of.
    *
    * @returns {Promise.<void>}
@@ -38,6 +38,7 @@ export default class Command {
     this.aliases.push(this.key);
     this.activators = this.aliases;
     this.clients = config.clients || {};
+    this.signature = Lavenza.Signature.sign(this.talent.id, 'command', this.key);
   }
 
   /**
@@ -47,9 +48,9 @@ export default class Command {
    *
    * You can access the bot through the resonance, as well as any of the bot's clients.
    *
-   * @param {Order} order
+   * @param {Lavenza.Order} order
    *   Order sent by the CommandInterpreter, including the command arguments and more information.
-   * @param {Resonance} resonance
+   * @param {Lavenza.Resonance} resonance
    *   Resonance that invoked this command. All information about the client and message are here.
    */
   static execute(order, resonance) {
@@ -69,6 +70,6 @@ export default class Command {
    *   Returns true if the command is allowed to be executed in the client. Returns false otherwise.
    */
   static allowedInClient(clientType) {
-    return !(this.clients !== {} && this.clients !== '*' && !this.clients[clientType]);
+    return (this.clients !== {} && this.clients !== '*' && (this.clients.includes(clientType) || this.clients === clientType));
   }
 }

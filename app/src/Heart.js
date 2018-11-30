@@ -32,7 +32,7 @@ import colors from 'colors';
 // Lavenza's core.
 // This class is the main handler of the application.
 // This is where the wonderful ignite() function is, as well as the rest of the bootstrapping.
-import Core from './Core/Core';
+import Core from './Core';
 
 // Confidants.
 // Re-usable functionality is managed in what I'm calling Confidants for this project. Shoutouts to Persona 5!
@@ -43,12 +43,17 @@ import Igor from './Confidants/Igor';
 import Morgana from './Confidants/Morgana';
 import Sojiro from './Confidants/Sojiro';
 
+// Services.
+// Services are classes used by Lavenza that normally communicate with exterior applications.
+import Gestalt from './Gestalt/Gestalt';
+
 // Classes & Models.
 // These are classes that are extended or used across the application. We import them here once.
 // They are linked in the global for easy access.
 import Command from './Bot/Command/Command';
 import Talent from './Talent/Talent';
 import Listener from './Bot/Listener/Listener';
+import Signature from './Model/Signature';
 import Resonance from './Model/Resonance';
 import Order from './Model/Order';
 
@@ -74,7 +79,7 @@ colors.setTheme({
 let RootPath = arp.path;
 let Keys = {
   // Core functionality folders name.
-  CORE_FUNCTIONALITY_FOLDER_NAME: 'Core',
+  CORE_FUNCTIONALITY_FOLDER_NAME: 'core',
 
   // The name of the bot config file the application will search for.
   BOT_CONFIG_FILE_NAME: 'config.yml',
@@ -99,10 +104,14 @@ const Heart = {
   Morgana: Morgana,
   Sojiro: Sojiro,
 
+  // Services.
+  Gestalt: Gestalt,
+
   // Models.
   Command: Command,
   Talent: Talent,
   Listener: Listener,
+  Signature: Signature,
   Resonance: Resonance,
   Order: Order,
 
@@ -119,6 +128,7 @@ const Heart = {
   isEmpty: Sojiro.isEmpty,
   getRandomElementFromArray: Sojiro.getRandomElementFromArray,
   removeFromArray: Sojiro.removeFromArray,
+  wait: Sojiro.wait,
 
   // Keys.
   Keys: Keys,
@@ -126,7 +136,7 @@ const Heart = {
   // Shortcuts to important paths.
   Paths: {
     ROOT: RootPath,
-    CORE: RootPath + '/src' + '/' + Keys.CORE_FUNCTIONALITY_FOLDER_NAME,
+    CORE: RootPath + '/' + Keys.CORE_FUNCTIONALITY_FOLDER_NAME,
     BOTS: RootPath + '/' + Keys.BOT_FOLDER_NAME,
     TALENTS: {
       CORE: RootPath + '/src' + '/' + Keys.CORE_FUNCTIONALITY_FOLDER_NAME + '/' + Keys.TALENTS_FOLDER_NAME,
