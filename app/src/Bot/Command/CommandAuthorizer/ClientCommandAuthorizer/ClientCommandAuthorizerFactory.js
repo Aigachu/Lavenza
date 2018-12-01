@@ -1,6 +1,3 @@
-import ClientTypes from "../../../Client/ClientTypes";
-import DiscordClient from "../../../Client/DiscordClient/DiscordClient";
-
 /**
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
@@ -10,11 +7,16 @@ import DiscordClient from "../../../Client/DiscordClient/DiscordClient";
 
 // Imports.
 import DiscordClientCommandAuthorizer from './DiscordClientCommandAuthorizer';
+import ClientTypes from "../../../Client/ClientTypes";
+import DiscordClient from "../../../Client/DiscordClient/DiscordClient";
 
+/**
+ *
+ */
 export default class ClientCommandAuthorizerFactory {
 
   static build(order, resonance) {
-    switch (type) {
+    switch (resonance.client.type) {
       case ClientTypes.Discord:
         return DiscordClientCommandAuthorizer;
 

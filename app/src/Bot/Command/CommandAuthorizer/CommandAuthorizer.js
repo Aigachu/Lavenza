@@ -24,7 +24,7 @@ export default class CommandAuthorizer {
 
     // We'll do MANY checks to see if it should be unauthorized.
     // First, we must know our context. Depending on the client, we call a different authorizer.
-    let clientAuthorizer = ClientCommandAuthorizerFactory.build(order, resonance);ß
+    let clientAuthorizer = ClientCommandAuthorizerFactory.build(order, resonance);
 
     // If the client authorizer fails, we gotta go.
     if (!clientAuthorizer.authorize(order, resonance)) {

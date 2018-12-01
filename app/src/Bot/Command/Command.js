@@ -26,7 +26,7 @@ export default class Command {
    *
    * @param {Object} config
    *   Configuration read from the command's '.config.yml' file in the command's directory.
-   * @param {Lavenza.Talent} talent
+   * @param {Talent|Lavenza.Talent} talent
    *   Talent that this command is a child of.
    *
    * @returns {Promise.<void>}
@@ -67,6 +67,14 @@ export default class Command {
    *   Returns true if the command is allowed to be executed in the client. Returns false otherwise.
    */
   static allowedInClient(clientType) {
-    return (this.config.clients !== {} && this.config.clients !== '*' && (this.config.clients.includes(clientType) || this.config.clients === clientType));
+    let allowedForTalent =
+      (this.talent.config.clients !== {} && this.talent.config.clients !== '*' && (this.talent.config.clients.includes(clientType) || this.talent.config.clients === clientType))
+    || (this.talent.config.clients === {} || this.talent.config.clients === '*');
+
+    let allowedForCommand =
+      (this.config.clients !== {} && this.config.clients !== '*' && (this.config.clients.includes(clientType) || this.config.clients === clientType))
+    || (this.config.clients === {} || this.config.clients === '*');
+
+    return allowedForTalent && allowedForCommand;
   }
 }

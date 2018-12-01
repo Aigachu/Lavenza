@@ -11,4 +11,4 @@ version: 1.0.0
 class: 'PingPong'
 
 # Determine which clients this talent should be enabled in.
-clients: '*' `
+clients: '*'

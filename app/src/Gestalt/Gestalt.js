@@ -71,33 +71,33 @@ export default class Gestalt {
         await this.sync(talent.config, `/bots/${bot.name}/talents/${talent.id}`).catch(Lavenza.stop);
       })).catch(Lavenza.stop);
 
-      // Await creation of clients collection for the bot.
-      /** @catch Stop execution. */
-      await this.createCollection(`/bots/${bot.name}/clients`, `bot.${bot.name}.clients`).catch(Lavenza.stop);
-
-      await Promise.all(Object.keys(bot.clients).map(async clientKey => {
-        let client = bot.clients[clientKey];
-        // Create a database collection for the instantiated Client, inside the bot.
-        /** @catch Stop execution. */
-        await this.createCollection(`/bots/${bot.name}/clients/${client.type}`, `bot.client.${client.type}`).catch(Lavenza.stop);
-
-        await Promise.all(Object.keys(bot.commands).map(async commandKey => {
-          let command = bot.commands[commandKey];
-          // Create a database collection for the commands inside of the client of a bot.
-          /** @catch Stop execution. */
-          await this.createCollection(`/bots/${bot.name}/clients/${client.type}/commands`, `bot.client.${client.type}.commands`).catch(Lavenza.stop);
-          await this.sync(command.config, `/bots/${bot.name}/clients/${client.type}/commands/${command.config.key}`).catch(Lavenza.stop);
-        })).catch(Lavenza.stop);
-
-        await Promise.all(bot.talents.map(async talentKey => {
-          let talent = TalentManager.talents[talentKey];
-          // Create a database collection for the talents inside of the client of a bot.
-          /** @catch Stop execution. */
-          await this.createCollection(`/bots/${bot.name}/clients/${client.type}/talents`, `bot.client.${client.type}.talents`).catch(Lavenza.stop);
-          await this.sync(talent.config, `/bots/${bot.name}/clients/${client.type}/talents/${talent.id}`).catch(Lavenza.stop);
-        })).catch(Lavenza.stop);
-
-      })).catch(Lavenza.stop);
+      // // Await creation of clients collection for the bot.
+      // /** @catch Stop execution. */
+      // await this.createCollection(`/bots/${bot.name}/clients`, `bot.${bot.name}.clients`).catch(Lavenza.stop);
+      //
+      // await Promise.all(Object.keys(bot.clients).map(async clientKey => {
+      //   let client = bot.clients[clientKey];
+      //   // Create a database collection for the instantiated Client, inside the bot.
+      //   /** @catch Stop execution. */
+      //   await this.createCollection(`/bots/${bot.name}/clients/${client.type}`, `bot.client.${client.type}`).catch(Lavenza.stop);
+      //
+      //   await Promise.all(Object.keys(bot.commands).map(async commandKey => {
+      //     let command = bot.commands[commandKey];
+      //     // Create a database collection for the commands inside of the client of a bot.
+      //     /** @catch Stop execution. */
+      //     await this.createCollection(`/bots/${bot.name}/clients/${client.type}/commands`, `bot.client.${client.type}.commands`).catch(Lavenza.stop);
+      //     await this.sync(command.config, `/bots/${bot.name}/clients/${client.type}/commands/${command.config.key}`).catch(Lavenza.stop);
+      //   })).catch(Lavenza.stop);
+      //
+      //   await Promise.all(bot.talents.map(async talentKey => {
+      //     let talent = TalentManager.talents[talentKey];
+      //     // Create a database collection for the talents inside of the client of a bot.
+      //     /** @catch Stop execution. */
+      //     await this.createCollection(`/bots/${bot.name}/clients/${client.type}/talents`, `bot.client.${client.type}.talents`).catch(Lavenza.stop);
+      //     await this.sync(talent.config, `/bots/${bot.name}/clients/${client.type}/talents/${talent.id}`).catch(Lavenza.stop);
+      //   })).catch(Lavenza.stop);
+      //
+      // })).catch(Lavenza.stop);
     })).catch(Lavenza.stop);
   }
 
@@ -131,7 +131,7 @@ export default class Gestalt {
   static async sync(config, source) {
     let dbConfig = await Lavenza.Gestalt.get(source).catch(Lavenza.stop);
     if (!Lavenza.isEmpty(dbConfig)) {
-      return dbConfig;
+      return Object.assign({}, config, dbConfig);
     } else {
       await this.post(source, config).catch(Lavenza.stop);
       return config;

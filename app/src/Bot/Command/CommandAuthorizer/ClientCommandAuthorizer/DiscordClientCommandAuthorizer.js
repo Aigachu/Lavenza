@@ -29,5 +29,7 @@ export default class DiscordClientCommandAuthorizer {
     // Check if the command is allowed to be used in the current channel.
 
     // Check if the command is allowed to be used in the current channel for this bot.
+
+    return true;
   }
 }
