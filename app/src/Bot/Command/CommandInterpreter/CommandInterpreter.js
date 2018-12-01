@@ -18,7 +18,7 @@ export default class CommandInterpreter {
   /**
    * Interpret a Resonance, attempting to find a command in the raw content.
    *
-   * @param {Lavenza.Resonance} resonance
+   * @param {Resonance} resonance
    *   The Resonance that will be interpreted.
    *
    * @returns {*}
@@ -88,7 +88,7 @@ export default class CommandInterpreter {
     // Next, we'll build the input as well.
     let args = minimist(splitContent.slice(2));
 
-    // Return our findings.
+    // Return our findings.`
     return {
       command: command,
       args: args

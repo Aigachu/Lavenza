@@ -53,6 +53,23 @@ export default class Akechi {
   }
 
   /**
+   * Create a directory at a given path.
+   *
+   * @param {string} path
+   *   Path to create directory in.
+   * @returns {boolean}
+   */
+  static fileExists(path) {
+    try {
+      fs.statSync(path);
+      return true;
+    }
+    catch (err) {
+      return false;
+    }
+  }
+
+  /**
    * Simply read a file from a given path.
    *
    * @param {string} path
@@ -84,6 +101,29 @@ export default class Akechi {
 
     // Get document, or throw exception on error
     return yaml.safeLoad(fileData);
+
+  }
+
+  /**
+   * Write a .yml file a return an object with the contents.
+   *
+   * @param {string} path
+   *   Path to write the file to.
+   *
+   * @param {Object} output
+   *   Output to write to the file.
+   */
+  static async writeYamlFile(path, output) {
+
+    if (!path.endsWith('.yml')) {
+      path += '.yml';
+    }
+
+    fs.writeFile(path, yaml.safeDump(output), function(err) {
+      if (err) {
+        Lavenza.Igor.throw(err);
+      }
+    });
 
   }
 
@@ -132,7 +172,11 @@ export default class Akechi {
    *   Returns true if the source is a directory, returns false otherwise.
    */
   static isDirectory(source) {
-    return fs.lstatSync(source).isDirectory();
+    try {
+      return fs.lstatSync(source).isDirectory();
+    } catch(error) {
+      return false;
+    }
   }
 
 }

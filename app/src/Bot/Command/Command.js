@@ -32,13 +32,10 @@ export default class Command {
    * @returns {Promise.<void>}
    */
   static async build(config, talent) {
+
     this.talent = talent;
-    this.key = config.key; // @TODO - Add validation to check if the key is all in lowercase.
-    this.aliases = config.aliases;
-    this.aliases.push(this.key);
-    this.activators = this.aliases;
-    this.clients = config.clients || {};
-    this.signature = Lavenza.Signature.sign(this.talent.id, 'command', this.key);
+    this.config = config;
+
   }
 
   /**
@@ -70,6 +67,6 @@ export default class Command {
    *   Returns true if the command is allowed to be executed in the client. Returns false otherwise.
    */
   static allowedInClient(clientType) {
-    return (this.clients !== {} && this.clients !== '*' && (this.clients.includes(clientType) || this.clients === clientType));
+    return (this.config.clients !== {} && this.config.clients !== '*' && (this.config.clients.includes(clientType) || this.config.clients === clientType));
   }
 }

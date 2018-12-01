@@ -9,6 +9,7 @@
 // Managers.
 import BotManager from './Bot/BotManager';
 import TalentManager from './Talent/TalentManager';
+import Gestalt from './Gestalt/Gestalt';
 
 /**
  * Provides class for the Core of the Lavenza application.
@@ -117,6 +118,16 @@ export default class Core {
 
     // Some more flavor.
     Lavenza.success('BOT_MANAGER_READY');
+    
+    // Some more flavor.
+    Lavenza.status('GESTALT_PREP');
+
+    // Run preparation handler for the Database service.
+    /** @catch Stop execution. */
+    await Gestalt.prepare().catch(Lavenza.stop);
+
+    // Some more flavor.
+    Lavenza.status('GESTALT_READY');
 
   }
 

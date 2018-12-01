@@ -14,72 +14,44 @@
  */
 export default class StorageService {
 
+  static async request({protocol = '', endpoint, payload = {}} = {}) {
+    switch(protocol) {
+      case 'get':
+        return await this.get(endpoint).catch(Lavenza.stop);
+
+      case 'post':
+        return await this.post(endpoint, payload).catch(Lavenza.stop);
+
+      case 'update':
+        return await this.update(endpoint, payload).catch(Lavenza.stop);
+
+      case 'delete':
+        return await this.delete(endpoint, payload).catch(Lavenza.stop);
+    }
+  }
+
   static async build() {
     Lavenza.throw(`You must implement a build() method in the ${this.constructor} class.`);
   }
 
-  static async getItem(path) {
-    Lavenza.throw(`You must implement a getItem() method in the ${this.constructor} class.`);
-  }
-
-  static async createItem(path) {
-    Lavenza.throw(`You must implement a createItem() method in the ${this.constructor} class.`);
-  }
-
-  static async getCollection(path) {
+  static async createCollection(endpoint, items) {
     Lavenza.throw(`You must implement a getCollection() method in the ${this.constructor} class.`);
   }
 
-  static async createCollection(path) {
-    Lavenza.throw(`You must implement a createCollection() method in the ${this.constructor} class.`);
+  static async get(endpoint) {
+    Lavenza.throw(`You must implement a get() method in the ${this.constructor} class.`);
   }
 
-  // /**
-  //  * Get method for this Storage Service.
-  //  *
-  //  * Each storage service should accept an API format such as '/bots/servers/{id}/config' in the parameter,
-  //  * and perform fetching operations accordingly.
-  //  *
-  //  * If this default one is called, we must throw an error.
-  //  *
-  //  * @param {string} ref
-  //  *   Reference to the requested data.
-  //  *
-  //  */
-  // static async get(ref) {
-  //   Lavenza.throw(`You must implement a get() method in the ${this.constructor} class.`);
-  // }
-  //
-  // /**
-  //  * Get method for this Storage Service.
-  //  *
-  //  * Each storage service should accept an API format such as '/bots/servers/{id}/config' in the parameter,
-  //  * and perform creation operations accordingly.
-  //  *
-  //  * If this default one is called, we must throw an error.
-  //  *
-  //  * @param {string} ref
-  //  *   Reference to the requested data.
-  //  *
-  //  */
-  // static async post(ref) {
-  //   Lavenza.throw(`You must implement a post() method in the ${this.constructor} class.`);
-  // }
-  //
-  // /**
-  //  * Post method for this Storage Service.
-  //  *
-  //  * Each storage service should accept an API format such as '/bots/servers/{id}/config' in the parameter,
-  //  * and perform update operations accordingly.
-  //  *
-  //  * If this default one is called, we must throw an error.
-  //  *
-  //  * @param {string} ref
-  //  *   Reference to the requested data.
-  //  *
-  //  */
-  // static async update(ref) {
-  //   Lavenza.throw(`You must implement a update() method in the ${this.constructor} class.`);
-  // }
+  static async post(endpoint, payload) {
+    Lavenza.throw(`You must implement a post() method in the ${this.constructor} class.`);
+  }
+
+  static async update(endpoint, payload) {
+    Lavenza.throw(`You must implement a update() method in the ${this.constructor} class.`);
+  }
+
+  static async delete(endpoint, payload) {
+    Lavenza.throw(`You must implement a update() method in the ${this.constructor} class.`);
+  }
 
 }

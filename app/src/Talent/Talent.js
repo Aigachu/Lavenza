@@ -34,10 +34,8 @@ export default class Talent {
    */
   static async build(config) {
     this.id = path.basename(config.directory); // Here we get the name of the directory and set it as the ID.
-    this.description = config.description;
-    this.version = config.version;
+    this.config = config;
     this.directory = config.directory;
-    this.signature = Lavenza.Signature.sign('talent', this.id);
 
     // Await the process of loading commands.
     /** @catch Continue execution. */
@@ -46,6 +44,7 @@ export default class Talent {
     // Await the process of loading listeners.
     /** @catch Continue execution. */
     await this.loadListeners().catch(Lavenza.continue);
+
   }
 
   /**
@@ -60,6 +59,7 @@ export default class Talent {
 
     // Initialize the property. We'll store all commands here.
     this.commands = {};
+    this.commandAliases = {};
 
     // Determine the path to this Talent's commands.
     // Each command has its own directory. We'll get the list here.
@@ -112,7 +112,7 @@ export default class Talent {
 
       // Set command aliases.
       config.aliases.forEach(alias => {
-        this.commands[alias] = command;
+        this.commandAliases[alias] = command.config.key;
       });
 
     })).catch(Lavenza.stop);

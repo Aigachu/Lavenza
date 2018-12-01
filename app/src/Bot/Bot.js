@@ -8,7 +8,7 @@
 // Imports.
 import ClientFactory from './Client/ClientFactory';
 import TalentManager from '../Talent/TalentManager';
-import CommandListener from './Command/CommandListener';
+import CommandListener from './Command/CommandListener/CommandListener';
 import ClientTypes from "./Client/ClientTypes";
 
 /**
@@ -35,21 +35,52 @@ export default class Bot {
     this.config = config;
     this.directory = config.directory;
 
-    // Check the storage for any available stored configurations that need to override the defaults.
-
-
     // Initializations.
     this.clients = {};
-    this.talents = {};
+    this.talents = [];
     this.commands = {};
+    this.commandAliases = {};
     this.listeners = [];
   }
 
-  async buildStorage() {
+  /**
+   * Deployment handler for this Bot.
+   *
+   * Authenticates the clients.
+   *
+   * @returns {Promise.<void>}
+   */
+  async deploy() {
 
-    // Create the collection for this bot if it doesn't already exist.
+    // Await clients authentication.
     /** @catch Stop execution. */
-    // await Lavenza.Gestalt.createCollection(`${this.name}`).catch(Lavenza.stop);
+    await this.authenticateClients().catch(Lavenza.stop);
+  }
+
+  /**
+   * Preparation handler for the Bot.
+   *
+   * Initializes clients, talents, commands and listeners.
+   *
+   * @returns {Promise.<void>}
+   */
+  async prepare() {
+
+    // Await client initialization.
+    /** @catch Stop execution. */
+    await this.initializeClients().catch(Lavenza.stop);
+
+    // Await talent grants.
+    /** @catch Stop execution. */
+    await this.grantTalents().catch(Lavenza.stop);
+
+    // Await command inheritance.
+    /** @catch Stop execution. */
+    await this.setCommands().catch(Lavenza.stop);
+
+    // Await listener initialization & inheritance.
+    /** @catch Stop execution. */
+    await this.setListeners().catch(Lavenza.stop);
 
   }
 
@@ -101,6 +132,9 @@ export default class Bot {
    * @returns {Lavenza.Command}
    */
   getCommand(commandKey) {
+    if (!Lavenza.isEmpty(this.commandAliases[commandKey])) {
+      return this.commands[this.commandAliases[commandKey]];
+    }
     return this.commands[commandKey];
   }
 
@@ -122,6 +156,7 @@ export default class Bot {
 
       // Merge the bot's commands with the Talent's commands.
       this.commands = Object.assign({}, this.commands, TalentManager.talents[talent].commands);
+      this.commandAliases = Object.assign({}, this.commandAliases, TalentManager.talents[talent].commandAliases);
 
     })).catch(Lavenza.stop);
 
@@ -261,51 +296,6 @@ export default class Bot {
       // case ClientTypes.Slack:
       //   return message;
     }
-  }
-
-  /**
-   * Deployment handler for this Bot.
-   *
-   * Authenticates the clients.
-   *
-   * @returns {Promise.<void>}
-   */
-  async deploy() {
-
-    // Await clients authentication.
-    /** @catch Stop execution. */
-    await this.authenticateClients().catch(Lavenza.stop);
-  }
-
-  /**
-   * Preparation handler for the Bot.
-   *
-   * Initializes clients, talents, commands and listeners.
-   *
-   * @returns {Promise.<void>}
-   */
-  async prepare() {
-
-    // Await storage preparations for this bot.
-    /** @catch Stop execution. */
-    await this.buildStorage().catch(Lavenza.stop);
-
-    // Await client initialization.
-    /** @catch Stop execution. */
-    await this.initializeClients().catch(Lavenza.stop);
-
-    // Await talent grants.
-    /** @catch Stop execution. */
-    await this.grantTalents().catch(Lavenza.stop);
-
-    // Await command inheritance.
-    /** @catch Stop execution. */
-    await this.setCommands().catch(Lavenza.stop);
-
-    // Await listener initialization & inheritance.
-    /** @catch Stop execution. */
-    await this.setListeners().catch(Lavenza.stop);
-
   }
 
   /**

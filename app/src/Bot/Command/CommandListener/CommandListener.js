@@ -5,9 +5,10 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-// Models.
-import Listener from '../Listener/Listener';
-import CommandInterpreter from './CommandInterpreter';
+// Imports.
+import Listener from '../../Listener/Listener';
+import CommandInterpreter from '../CommandInterpreter/CommandInterpreter';
+import CommandAuthorizer from '../CommandAuthorizer/CommandAuthorizer';
 
 /**
  * Provides a class for the CommandListener.
@@ -29,6 +30,11 @@ export default class CommandListener extends Listener {
 
     // If there is no order, we do nothing after all.
     if (!order) {
+      return;
+    }
+
+    // The CommandAuthorizer checks if the command is authorized in the current context.
+    if (!CommandAuthorizer.authorize(order, resonance)) {
       return;
     }
 
