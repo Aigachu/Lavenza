@@ -1,0 +1,60 @@
+# Reader-Friendly name of the command.
+name: 'Config Command'
+
+# Command description. This may be used in the bot and seen by users. Make it good!
+description: 'Command that simply orders the bot to say "Hello!"'
+
+# Path to the main class containing the logic of the command, relative to this directory.
+class: 'Config'
+
+# Command key. This is what users will use to invoke the command.
+key: 'config'
+
+# Additional "keys" that can be used to invoke the command.
+aliases:
+  - 'conf'
+
+# Coming soon...
+#input: []
+#
+#options: []
+#
+
+# Configure the global cooldown of the command.
+# By default, commands will have a cooldown of 5 seconds.
+cooldown:
+  global: 5
+  user: 5
+
+# Clients where this command will function.
+# If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.
+clients: '*'
+
+# Client specific configurations.
+clients.config:
+
+  # Discord configurations.
+  discord:
+    # Authorizations
+    authorization:
+      # Servers where this command can work. If empty, works everywhere.
+      guilds: []
+      # Channels where this command can work. If empty, works everywhere.
+      channels: []
+      # Determines whether or not this command can work in direct messages with the bot.
+      pms: false
+      # Determines which users can use this command.
+      users: []
+      # Determines level of operation needed to use this command. A value of 0 means everyone can use it.
+      oplevel: 0
+
+    # Cooldown overrides for Discord, if needed.
+    cooldown:
+      global: 5
+      user: 5
+
+#  twitch:
+#    authorization: []
+#
+#  slack:
+#    authorization: []

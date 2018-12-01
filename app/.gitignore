@@ -3,3 +3,4 @@ bots/**
 .env
 database/**
 !database/.gitkeep
+node_modules
