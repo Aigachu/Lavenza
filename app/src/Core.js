@@ -97,6 +97,13 @@ export default class Core {
   static async prepare() {
 
     // Some more flavor.
+    Lavenza.status('GESTALT_PREP');
+
+    // Run preparation handler for the Database service.
+    /** @catch Stop execution. */
+    await Gestalt.prepare().catch(Lavenza.stop);
+
+    // Some more flavor.
     Lavenza.status('PREPARATION_PHASE');
 
     // Some more flavor.
@@ -118,13 +125,13 @@ export default class Core {
 
     // Some more flavor.
     Lavenza.success('BOT_MANAGER_READY');
-    
+
     // Some more flavor.
-    Lavenza.status('GESTALT_PREP');
+    Lavenza.status('GESTALT_BOOTSTRAP8');
 
     // Run preparation handler for the Database service.
     /** @catch Stop execution. */
-    await Gestalt.prepare().catch(Lavenza.stop);
+    await Gestalt.bootstrap().catch(Lavenza.stop);
 
     // Some more flavor.
     Lavenza.status('GESTALT_READY');

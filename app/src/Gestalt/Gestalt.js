@@ -34,13 +34,10 @@ export default class Gestalt {
     await storageService.build().catch(Lavenza.stop);
     this.storageService = storageService;
 
-    // Bootstrap and synchronize database.
-    await this.bootstrap().catch(Lavenza.stop);
-
   }
 
   static async bootstrap() {
-    await this.bootstrapTalentDatabase().catch(Lavenza.stop);
+    // await this.bootstrapTalentDatabase().catch(Lavenza.stop);
     await this.bootstrapBotDatabase().catch(Lavenza.stop);
   }
 
@@ -55,74 +52,28 @@ export default class Gestalt {
       this.createCollection(`/bots/${bot.name}`, `bot.${bot.name}`).catch(Lavenza.stop);
       bot.config = await this.sync(bot.config, `/bots/${bot.name}/config`).catch(Lavenza.stop);
 
+      // Create a database collection for the commands inside of a bot.
+      /** @catch Stop execution. */
+      await this.createCollection(`/bots/${bot.name}/commands`, `bot.${bot.name}.commands`).catch(Lavenza.stop);
+
       await Promise.all(Object.keys(bot.commands).map(async commandKey => {
         let command = bot.commands[commandKey];
         // Create a database collection for the commands inside of the client of a bot.
         /** @catch Stop execution. */
-        await this.createCollection(`/bots/${bot.name}/commands`, `bot.commands`).catch(Lavenza.stop);
-        await this.sync(command.config, `/bots/${bot.name}/commands/${command.config.key}`).catch(Lavenza.stop);
+        await this.createCollection(`/bots/${bot.name}/commands/${command.config.key}`, `bot.${bot.name}.commands.${command.config.key}`).catch(Lavenza.stop);
+        await this.sync(command.config, `/bots/${bot.name}/commands/${command.config.key}/config`).catch(Lavenza.stop);
       })).catch(Lavenza.stop);
+
+      // Create a database collection for the talents inside of a bot.
+      /** @catch Stop execution. */
+      await this.createCollection(`/bots/${bot.name}/talents`, `bot.${bot.name}.talents`).catch(Lavenza.stop);
 
       await Promise.all(bot.talents.map(async talentKey => {
         let talent = TalentManager.talents[talentKey];
         // Create a database collection for the talents inside of the client of a bot.
         /** @catch Stop execution. */
-        await this.createCollection(`/bots/${bot.name}/talents`, `bot.talents`).catch(Lavenza.stop);
-        await this.sync(talent.config, `/bots/${bot.name}/talents/${talent.id}`).catch(Lavenza.stop);
-      })).catch(Lavenza.stop);
-
-      // // Await creation of clients collection for the bot.
-      // /** @catch Stop execution. */
-      // await this.createCollection(`/bots/${bot.name}/clients`, `bot.${bot.name}.clients`).catch(Lavenza.stop);
-      //
-      // await Promise.all(Object.keys(bot.clients).map(async clientKey => {
-      //   let client = bot.clients[clientKey];
-      //   // Create a database collection for the instantiated Client, inside the bot.
-      //   /** @catch Stop execution. */
-      //   await this.createCollection(`/bots/${bot.name}/clients/${client.type}`, `bot.client.${client.type}`).catch(Lavenza.stop);
-      //
-      //   await Promise.all(Object.keys(bot.commands).map(async commandKey => {
-      //     let command = bot.commands[commandKey];
-      //     // Create a database collection for the commands inside of the client of a bot.
-      //     /** @catch Stop execution. */
-      //     await this.createCollection(`/bots/${bot.name}/clients/${client.type}/commands`, `bot.client.${client.type}.commands`).catch(Lavenza.stop);
-      //     await this.sync(command.config, `/bots/${bot.name}/clients/${client.type}/commands/${command.config.key}`).catch(Lavenza.stop);
-      //   })).catch(Lavenza.stop);
-      //
-      //   await Promise.all(bot.talents.map(async talentKey => {
-      //     let talent = TalentManager.talents[talentKey];
-      //     // Create a database collection for the talents inside of the client of a bot.
-      //     /** @catch Stop execution. */
-      //     await this.createCollection(`/bots/${bot.name}/clients/${client.type}/talents`, `bot.client.${client.type}.talents`).catch(Lavenza.stop);
-      //     await this.sync(talent.config, `/bots/${bot.name}/clients/${client.type}/talents/${talent.id}`).catch(Lavenza.stop);
-      //   })).catch(Lavenza.stop);
-      //
-      // })).catch(Lavenza.stop);
-    })).catch(Lavenza.stop);
-  }
-
-  static async bootstrapTalentDatabase() {
-    // Await creation of Talents Collection.
-    /** @catch Stop execution. */
-    await this.createCollection('/talents', 'talents').catch(Lavenza.stop);
-
-    // Await creation of Commands Collection.
-    /** @catch Stop execution. */
-    await this.createCollection('/commands', 'commands').catch(Lavenza.stop);
-
-    await Promise.all(Object.keys(TalentManager.talents).map(async talentKey => {
-      let talent = TalentManager.talents[talentKey];
-      // Create a database collection for instantiated Talent.
-      /** @catch Stop execution. */
-      await this.createCollection(`/talents/${talent.id}`, `talent.${talent.id}`).catch(Lavenza.stop);
-      talent.config = await this.sync(talent.config, `/talents/${talent.id}/config`).catch(Lavenza.stop);
-
-      await Promise.all(Object.keys(talent.commands).map(async commandKey => {
-        let command = talent.commands[commandKey];
-        // Create a database collection for the instantiated Command.
-        /** @catch Stop execution. */
-        await this.createCollection(`/commands/${command.config.key}`, `command.${command.config.key}`).catch(Lavenza.stop);
-        command.config = await this.sync(command.config, `/commands/${command.config.key}/config`).catch(Lavenza.stop);
+        await this.createCollection(`/bots/${bot.name}/talents/${talent.id}`, `bot.${bot.name}.talents.${talent.id}`).catch(Lavenza.stop);
+        await this.sync(talent.config, `/bots/${bot.name}/talents/${talent.id}/config`).catch(Lavenza.stop);
       })).catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);

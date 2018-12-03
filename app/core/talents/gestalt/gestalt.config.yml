@@ -12,3 +12,20 @@ class: 'Gestalt'
 
 # Determine which clients this talent should be enabled in.
 clients: '*'
+
+# Clients configuration.
+clients.config:
+  discord:
+    enabled: true
+    authorization:
+      blacklist:
+        all: false
+        guilds: []
+        channels: []
+      whitelist:
+        all: false
+        guilds: []
+        channels: []
+
+#  twitch:
+#    excluded_channels: []

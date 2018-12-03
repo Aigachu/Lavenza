@@ -49,8 +49,8 @@ class Gestalt extends Lavenza.Command {
     switch(protocol) {
       case 'get':
         Lavenza.Gestalt.get(endpoint).then(result => {
-          let result = JSON.stringify(result, null, '\t')
-          resonance.message.reply('```\n' + result + '\n```');
+          resultToString = JSON.stringify(result, null, '\t')
+          resonance.message.reply('```\n' + resultToString + '\n```');
         }).catch(error => {
           resonance.message.reply('Could not retrieve data. Maybe it doesn\'t exist!');
         });

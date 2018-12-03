@@ -18,7 +18,7 @@ export default class Resonance {
    *
    * @param {string} content
    *   The raw string content of the message received. This is deciphered by the bot.
-   * @param {*} message
+   * @param {Message} message
    *   The message object received, unmodified. This is useful, since different clients might send different kinds of
    *   messages. It's always nice to have the original message.
    * @param {Bot} bot

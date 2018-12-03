@@ -5,31 +5,43 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Imports.
+import ClientCommandAuthorizer from './ClientCommandAuthorizer';
+
 /**
  * Provides an Authorizer for commands.
  *
  * This class will handle the authorization of an already determined order.
  */
-export default class DiscordClientCommandAuthorizer {
+export default class DiscordClientCommandAuthorizer extends ClientCommandAuthorizer {
 
   /**
    *
    * @param order
    * @param resonance
+   * @param config
    */
-  static authorize(order, resonance) {
-    // Check if the command's talent is allowed to be used in the current server.
+  static authorize(order, resonance, config) {
 
-    // Check if the command's talent is allowed to be used in the current server for this bot.
 
-    // Check if the command is allowed to be used in the current server.
 
-    // Check if the command is allowed to be used in the current server for this bot.
+    // If the configuration is empty, we have no checks to make.
+    if (Lavenza.isEmpty(config)) {
+      return true;
+    }
 
-    // Check if the command is allowed to be used in the current channel.
+    // Let's get all the data we need to make checks.
+    let botDiscordUser = resonance.client.user;
+    let messageAuthorUser = resonance.message.author;
 
-    // Check if the command is allowed to be used in the current channel for this bot.
+
+    // Check if user is allowed to use this command.
+    if (!Lavenza.config.authorization)
 
     return true;
+  }
+
+  static userIsAllowed(user, config) {
+
   }
 }

@@ -22,15 +22,37 @@ export default class CommandAuthorizer {
    */
   static authorize(order, resonance) {
 
-    // We'll do MANY checks to see if it should be unauthorized.
-    // First, we must know our context. Depending on the client, we call a different authorizer.
-    let clientAuthorizer = ClientCommandAuthorizerFactory.build(order, resonance);
+    // Let's get the necessary configurations we need.
+    this.getCommandClientConfig(order, resonance.bot).then(config => {
 
-    // If the client authorizer fails, we gotta go.
-    if (!clientAuthorizer.authorize(order, resonance)) {
-      return false;
+      // We'll do MANY checks to see if it should be unauthorized.
+      // First, we must know our context. Depending on the client, we call a different authorizer.
+      let clientAuthorizer = ClientCommandAuthorizerFactory.build(order, resonance);
+
+      // If the client authorizer fails, we gotta go.
+      if (!clientAuthorizer.authorize(order, resonance, config)) {
+        return false;
+      }
+
+      return true;
+    });
+
+  }
+
+  /**
+   *
+   * @param order
+   * @param {Bot} bot
+   */
+  static async getCommandClientConfig(order, bot) {
+    let baseCommandConfig = order.command.config;
+    let databaseCommandConfig = await Lavenza.Gestalt.get(`/bots/${bot.name}/commands/${order.command.config.key}/config`).catch(Lavenza.stop);
+
+    if (!Lavenza.isEmpty(databaseCommandConfig)) {
+      return databaseCommandConfig;
     }
 
-    return true;
+    return baseCommandConfig;
   }
+
 }
