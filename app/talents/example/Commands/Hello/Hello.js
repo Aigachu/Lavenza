@@ -17,7 +17,7 @@ class Hello extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static execute(order, resonance) {
+  static async execute(order, resonance) {
     resonance.message.reply('Hello!');
   }
 

@@ -16,7 +16,7 @@ class SmashIronMan extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static execute(order, resonance) {
+  static async execute(order, resonance) {
     // Get all SSB4 character directories from the maiden's assets folder.
     let smash4_character_directories = fs.readdirSync(this.talent.directory + '/assets/portraits/smash4');
 

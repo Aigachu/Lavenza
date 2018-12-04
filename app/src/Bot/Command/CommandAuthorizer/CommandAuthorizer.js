@@ -17,13 +17,20 @@ export default class CommandAuthorizer {
     this.resonance = resonance;
     this.bot = this.resonance.bot;
     this.type = resonance.client.type;
-    this.masters = this.bot.config.clients[this.type].masters;
-    this.operators = this.bot.config.clients[this.type].operators;
   }
 
   async build() {
     await this.setCommandClientConfig().catch(Lavenza.stop);
+
+    // Get the bot configuration.
+    let config = await this.resonance.bot.getActiveConfig().catch(Lavenza.stop);
+    this.masters = config.clients[this.type].masters;
+    this.operators = config.clients[this.type].operators;
     this.cooldowns = this.commandClientConfig.cooldown || this.commandConfig.cooldown;
+  }
+
+  async authorize() {
+    Lavenza.throw('All Command Authorizers must implement the authorize() method. This is the abstract version being called from the parent class.');
   }
 
   setCooldown() {
@@ -34,7 +41,7 @@ export default class CommandAuthorizer {
     if (this.cooldowns.user !== 0) Lavenza.Makoto.set('command', this.order.command.config.key, this.resonance.message.author, this.cooldowns.user * 1000);
   }
 
-  cooldownIsActive() {
+  async cooldownIsActive() {
     // Using the cooldown manager, we check if the command is on cooldown first.
     // Cooldowns are individual per user. So if a user uses a command, it's not on cooldown for everyone.
     if (Lavenza.Makoto.check('command', this.order.command.config.key, 0)) {
@@ -51,7 +58,7 @@ export default class CommandAuthorizer {
   }
 
   async setCommandClientConfig() {
-    let commandConfig = await Lavenza.Gestalt.get(`/bots/${this.resonance.bot.name}/commands/${this.order.command.config.key}/config`).catch(Lavenza.stop);
+    let commandConfig = await this.order.command.getActiveConfigForBot(this.bot).catch(Lavenza.stop);
 
     if (Lavenza.isEmpty(commandConfig)) {
       commandConfig = this.order.command.config;

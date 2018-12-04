@@ -22,34 +22,35 @@ export default class CommandListener extends Listener {
   /**
    * @inheritDoc
    */
-  static listen(resonance) {
+  static async listen(resonance) {
 
     // Use the CommandInterpreter to find out if there's a command in the resonance.
     // If there's a command, the interpreter will return an order.
-    CommandInterpreter.interpret(resonance).then(order => {
+    let order = await CommandInterpreter.interpret(resonance).catch(Lavenza.stop);
 
-      // If there is no order, we do nothing after all.
-      if (!order) {
-        return;
-      }
+    // If there is no order, we do nothing after all.
+    if (!order) {
+      return;
+    }
 
-      CommandAuthorizerFactory.build(order, resonance).then(authorizer => {
-        // The CommandAuthorizer checks if the command is authorized in the current context.
-        if (!authorizer.authorize()) {
-          return;
-        }
+    let authorizer = await CommandAuthorizerFactory.build(order, resonance).catch(Lavenza.stop);
 
-        // Check if cooldowns are on.
-        if (authorizer.cooldownIsActive()) {
-          return;
-        }
+    // Check if cooldowns are on.
+    let cooldownIsActive = await authorizer.cooldownIsActive().catch(Lavenza.stop);
+    if (cooldownIsActive) {
+      return;
+    }
 
-        // If an order was found, execute it.
-        order.execute();
+    // The CommandAuthorizer checks if the command is authorized in the current context.
+    let authorized = await authorizer.authorize().catch(Lavenza.stop);
+    if (!authorized) {
+      return;
+    }
 
-        authorizer.setCooldown();
-      });
-    });
+    // If an order was found, execute it.
+    order.execute();
+
+    authorizer.setCooldown();
 
   }
 }

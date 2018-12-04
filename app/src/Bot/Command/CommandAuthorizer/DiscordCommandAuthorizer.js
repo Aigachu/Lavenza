@@ -24,7 +24,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
     this.channel = this.resonance.message.channel;
   }
 
-  authorize() {
+  async authorize() {
 
     // If the configuration is empty, we have no checks to make.
     if (Lavenza.isEmpty(this.commandClientConfig)) {

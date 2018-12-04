@@ -256,17 +256,17 @@ export default class Bot {
    *   Client where the Message Object was heard from.
    *
    */
-  listen(message, client) {
+  async listen(message, client) {
 
     // First we decipher the message we just obtained.
-    let content = this.constructor.decipher(message, client);
+    let content = await this.constructor.decipher(message, client);
 
     // Construct a 'Resonance'.
     let resonance = new Lavenza.Resonance(content, message, this, client);
 
     // Fire all of the bot's listeners.
-    this.listeners.every(listener => {
-      listener.listen(resonance);
+    this.listeners.every(async listener => {
+      listener.listen(resonance).catch(Lavenza.stop);
       return true;
     });
 
@@ -285,7 +285,7 @@ export default class Bot {
    *
    * @returns {string|StringResolvable}
    */
-  static decipher(message, client) {
+  static async decipher(message, client) {
 
     // Depending on the Client Type, decipher the message accordingly.
     switch (client.type) {

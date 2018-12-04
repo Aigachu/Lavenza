@@ -22,10 +22,11 @@ aliases:
 #
 
 # Configure the global cooldown of the command.
-# By default, commands will have a cooldown of 5 seconds.
+# By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
 cooldown:
-  global: 5
+  global: 0
   user: 5
+
 # Clients where this command will function.
 # If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.
 clients:
@@ -58,9 +59,10 @@ clients.config:
       # Determines level of operation needed to use this command. A value of 0 means everyone can use it.
       oplevel: 0
 
-    # Cooldown overrides for Discord, if needed.
+    # Configure the global cooldown of the command.
+    # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
     cooldown:
-      global: 5
+      global: 0
       user: 5
 
 #  twitch:

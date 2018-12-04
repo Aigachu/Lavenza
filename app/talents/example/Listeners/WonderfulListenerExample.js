@@ -13,7 +13,7 @@ class WonderfulListenerExample extends Lavenza.Listener {
   /**
    * @inheritDoc
    */
-  static listen(resonance) {
+  static async listen(resonance) {
 
     // Say wonderful!
     this.sayWonderfulToo(resonance);

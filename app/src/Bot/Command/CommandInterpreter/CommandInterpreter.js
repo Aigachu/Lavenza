@@ -66,7 +66,7 @@ export default class CommandInterpreter {
 
     // If the content starts with the command prefix, it's a command.
     if (!splitContent[0].startsWith(cprefix)) {
-      Lavenza.warn('Text does not start with command prefix. No command found');
+      // Lavenza.warn('Text does not start with command prefix. No command found');
       return false
     }
 

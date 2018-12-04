@@ -5,6 +5,9 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Modules.
+import _ from 'underscore';
+
 // Imports.
 import StorageService from '../StorageService';
 import Collection from './Collection/Collection';
@@ -55,7 +58,29 @@ export default class Chronicler extends StorageService {
     await Lavenza.Akechi.writeYamlFile(endpoint, payload).catch(Lavenza.stop);
   }
 
-  static async update(endpoint, payload) {
+  static async update(endpoint, payload, target = []) {
+    let data = this.get(endpoint);
+
+    if (Lavenza.isEmpty(data)) {
+      Lavenza.throw('There is no data at this endpoint.');
+      return;
+    }
+
+    let dataToUpdate = data;
+
+    if (!Lavenza.isEmpty(target)) {
+      let targetParts = target.split('.');
+      for (part of targetParts) {
+        if (Lavenza.isEmpty(dataToUpdate[part])) {
+          Lavenza.throw('Invalid target was requested. No data found to update.');
+          return;
+        }
+        dataToUpdate = dataToUpdate[part];
+      }
+    }
+
+    let position = null;
+
     console.log('UPDATE: ' + endpoint);
   }
 }
