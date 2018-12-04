@@ -40,11 +40,6 @@ export default class DiscordClient extends DiscordJSClient {
     // Assign configurations to the client.
     this.config = config;
 
-    // Command prefix, also set in the Maiden's 'settings.js'.
-    this.command_prefix = config.command_prefix || bot.config.command_prefix;
-
-
-
     // Event: When the client connects to Discord and is ready.
     this.on('ready', () => {
       Lavenza.success('DISCORD_CLIENT_CONNECT', [this.bot.name]);

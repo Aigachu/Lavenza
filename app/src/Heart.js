@@ -44,7 +44,7 @@ import Morgana from './Confidants/Morgana';
 import Sojiro from './Confidants/Sojiro';
 
 // Services.
-// Services are classes used by Lavenza that normally communicate with exterior applications.
+// Services are main components of Lavenza.
 import Gestalt from './Gestalt/Gestalt';
 
 // Classes & Models.
@@ -53,7 +53,6 @@ import Gestalt from './Gestalt/Gestalt';
 import Command from './Bot/Command/Command';
 import Talent from './Talent/Talent';
 import Listener from './Bot/Listener/Listener';
-import Signature from './Model/Signature';
 import Resonance from './Model/Resonance';
 import Order from './Model/Order';
 
@@ -111,7 +110,6 @@ const Heart = {
   Command: Command,
   Talent: Talent,
   Listener: Listener,
-  Signature: Signature,
   Resonance: Resonance,
   Order: Order,
 

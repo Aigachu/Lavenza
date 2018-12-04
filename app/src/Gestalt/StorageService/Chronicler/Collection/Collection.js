@@ -19,17 +19,19 @@ export default class Collection {
   async values() {
     // Get all files & directories from directory.
     let data = {};
-    let directories = Lavenza.Akechi.getDirectoriesFrom(this.path);
-    let files = Lavenza.Akechi.getFilesFrom(this.path);
+    let directories = await Lavenza.Akechi.getDirectoriesFrom(this.path).catch(Lavenza.stop);
+    let files = await Lavenza.Akechi.getFilesFrom(this.path).catch(Lavenza.stop);
 
     await Promise.all(directories.map(async directory => {
       let name = path.basename(directory);
-      data[name] = new this.constructor(directory).values();
+      let collection = new this.constructor(directory);
+      data[name] = await collection.values().catch(Lavenza.stop);
     })).catch(Lavenza.stop);
 
     await Promise.all(files.map(async file => {
       let name = path.basename(file);
-      data[name] = new Item(file).values();
+      let item = new Item(file);
+      data[name] = await item.values().catch(Lavenza.stop);
     })).catch(Lavenza.stop);
 
     return data;

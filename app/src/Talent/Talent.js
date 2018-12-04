@@ -47,6 +47,10 @@ export default class Talent {
 
   }
 
+  static async getActiveConfigForBot(botName) {
+    return await Lavenza.Gestalt.get(`/bots/${botName}/talents/${this.id}/config`).catch(Lavenza.stop);
+  }
+
   /**
    * Auto-Load all commands from the 'Commands' folder nested in the Talent's directory.
    *

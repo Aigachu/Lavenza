@@ -39,11 +39,13 @@ export default class Chronicler extends StorageService {
 
   static async get(endpoint) {
     if (Lavenza.Akechi.fileExists(endpoint + '.yml')) {
-      return new Item(endpoint + '.yml').values();
+      let item = new Item(endpoint + '.yml');
+      return await item.values().catch(Lavenza.stop);
     }
 
     if (Lavenza.Akechi.isDirectory(endpoint)) {
-      return new Collection(endpoint).values();
+      let collection = new Collection(endpoint);
+      return await collection.values().catch(Lavenza.stop);
     }
 
     return {};

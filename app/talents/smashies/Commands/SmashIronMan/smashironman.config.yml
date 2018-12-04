@@ -36,16 +36,25 @@ clients.config:
 
   # Discord configurations.
   discord:
-    # Authorizations
+
+    # Authorization configuration.
     authorization:
-      # Servers where this command can work. If empty, works everywhere.
-      guilds: []
-      # Channels where this command can work. If empty, works everywhere.
-      channels: []
+
+      # Blacklist - Prevent use of the command in certain contexts.
+      blacklist:
+        guilds: []
+        channels: []
+        users: []
+
+      # Whitelist - Permit use of the command in contexts where the command is globally blacklisted.
+      whitelist:
+        guilds: []
+        channels: []
+        users: []
+
       # Determines whether or not this command can work in direct messages with the bot.
       pms: false
-      # Determines which users can use this command.
-      users: []
+
       # Determines level of operation needed to use this command. A value of 0 means everyone can use it.
       oplevel: 0
 

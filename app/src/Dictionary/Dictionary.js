@@ -36,6 +36,11 @@ export default {
       `Must be Javascript's fault...`,
   ],
 
+  // === Gestalt ===
+  GESTALT_PREP: '<Gestalt>: Initializing...',
+  GESTALT_BOOTSTRAP: '<Gestalt>: Bootstrapping database...',
+  GESTALT_READY: '<Gestalt>: Ready.',
+
   // === Bot Preparations ===
   BOT_MANAGER_PREP: '<BotManager>: Launching preparations...',
   BOT_MANAGER_DEPLOY: '<BotManager>: Deploying...',

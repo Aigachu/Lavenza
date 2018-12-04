@@ -15,6 +15,10 @@ aliases:
   - 'hey'
   - 'hi'
 
+# Set whether or not this command is activated.
+# A deactivated command is only accessible if you or your environment are whitelisted.
+# active: false
+
 # Coming soon...
 #input: []
 #
@@ -37,12 +41,16 @@ clients.config:
   # Discord configurations.
   discord:
 
-    # Authorizations
+    # Authorization configuration.
     authorization:
+
+      # Blacklist - Prevent use of the command in certain contexts.
       blacklist:
         guilds: []
         channels: []
         users: []
+
+      # Whitelist - Permit use of the command in contexts where the command is globally blacklisted.
       whitelist:
         guilds: []
         channels: []
@@ -50,6 +58,7 @@ clients.config:
 
       # Determines whether or not this command can work in direct messages with the bot.
       pms: false
+
       # Determines level of operation needed to use this command. A value of 0 means everyone can use it.
       oplevel: 0
 

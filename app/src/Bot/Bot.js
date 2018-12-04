@@ -43,6 +43,10 @@ export default class Bot {
     this.listeners = [];
   }
 
+  async getActiveConfig() {
+    return await Lavenza.Gestalt.get(`/bots/${this.name}/config`).catch(Lavenza.stop);
+  }
+
   /**
    * Deployment handler for this Bot.
    *
@@ -251,7 +255,6 @@ export default class Bot {
    * @param {*} client
    *   Client where the Message Object was heard from.
    *
-   * @returns {Promise.<void>}
    */
   listen(message, client) {
 

@@ -23,10 +23,9 @@ export default class CommandInterpreter {
    *
    * @returns {*}
    */
-  static interpret(resonance) {
-
+  static async interpret(resonance) {
     // Attempt to get a command from the content.
-    let result = this.getCommand(resonance.content, resonance.bot, resonance.client);
+    let result = await this.getCommand(resonance.content, resonance.bot, resonance.client).catch(Lavenza.stop);
 
     // If no command is found, we have nothing to do.
     if (!result) {
@@ -54,34 +53,43 @@ export default class CommandInterpreter {
    * @returns {*}
    *   Returns data about a command if there is a command. Returns false otherwise.
    */
-  static getCommand(content, bot, client) {
+  static async getCommand(content, bot, client) {
 
     // Split content with spaces.
     let splitContent = content.split(' ');
 
+    // Get the bot configuration.
+    let config = await bot.getActiveConfig().catch(Lavenza.stop);
+
+    // Get command prefix.
+    let cprefix = config.clients[client.type].command_prefix || config.command_prefix;
+
     // If the content starts with the command prefix, it's a command.
-    if (!splitContent[0].startsWith(client.command_prefix)) {
+    if (!splitContent[0].startsWith(cprefix)) {
+      Lavenza.warn('Text does not start with command prefix. No command found');
       return false
     }
 
     // At this point we know it's a command. We'll need to find out which command was called.
     // First, we'll format the string accordingly if needed.
     // If a user enters a command attached to the prefix, we separate them.
-    if (splitContent[0].length !== client.command_prefix.length) {
-      splitContent = content.replace(client.command_prefix, client.command_prefix + ' ').split(' ');
+    if (splitContent[0].length !== cprefix.length) {
+      splitContent = content.replace(cprefix, cprefix + ' ').split(' ');
     }
 
     // Attempt the fetch the command from the bot.
-    let command = bot.getCommand(splitContent[1]);
+    let command = bot.getCommand(splitContent[1].toLowerCase());
 
     // If the command doesn't exist, we'll stop here.
     if (!command) {
+      Lavenza.warn('No command found');
       return false;
     }
 
     // Now we do one final check to see if this command is allowed to be used in this client.
     // We check the command configuration for this.
     if (!command.allowedInClient(client.type)) {
+      Lavenza.warn('Command found, but not allowed in client. Returning.');
       return false;
     }
 
@@ -93,6 +101,7 @@ export default class CommandInterpreter {
       command: command,
       args: args
     };
+
   }
 
 }

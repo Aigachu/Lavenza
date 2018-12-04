@@ -5,9 +5,6 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-// Imports.
-import ClientCommandAuthorizerFactory from './ClientCommandAuthorizer/ClientCommandAuthorizerFactory';
-
 /**
  * Provides an Authorizer for commands.
  *
@@ -15,44 +12,28 @@ import ClientCommandAuthorizerFactory from './ClientCommandAuthorizer/ClientComm
  */
 export default class CommandAuthorizer {
 
-  /**
-   *
-   * @param order
-   * @param resonance
-   */
-  static authorize(order, resonance) {
-
-    // Let's get the necessary configurations we need.
-    this.getCommandClientConfig(order, resonance.bot).then(config => {
-
-      // We'll do MANY checks to see if it should be unauthorized.
-      // First, we must know our context. Depending on the client, we call a different authorizer.
-      let clientAuthorizer = ClientCommandAuthorizerFactory.build(order, resonance);
-
-      // If the client authorizer fails, we gotta go.
-      if (!clientAuthorizer.authorize(order, resonance, config)) {
-        return false;
-      }
-
-      return true;
-    });
-
+  constructor(order, resonance) {
+    this.order = order;
+    this.resonance = resonance;
+    this.bot = this.resonance.bot;
+    this.type = resonance.client.type;
+    this.masters = this.bot.config.clients[this.type].masters;
+    this.operators = this.bot.config.clients[this.type].operators;
   }
 
-  /**
-   *
-   * @param order
-   * @param {Bot} bot
-   */
-  static async getCommandClientConfig(order, bot) {
-    let baseCommandConfig = order.command.config;
-    let databaseCommandConfig = await Lavenza.Gestalt.get(`/bots/${bot.name}/commands/${order.command.config.key}/config`).catch(Lavenza.stop);
+  async build() {
+    await this.setCommandClientConfig().catch(Lavenza.stop);
+  }
 
-    if (!Lavenza.isEmpty(databaseCommandConfig)) {
-      return databaseCommandConfig;
+  async setCommandClientConfig() {
+    let commandConfig = await Lavenza.Gestalt.get(`/bots/${this.resonance.bot.name}/commands/${this.order.command.config.key}/config`).catch(Lavenza.stop);
+
+    if (Lavenza.isEmpty(commandConfig)) {
+      commandConfig = this.order.command.config;
     }
 
-    return baseCommandConfig;
+    this.commandConfig = commandConfig;
+    this.commandClientConfig = this.commandConfig['clients.config'][this.type];
   }
 
 }

@@ -29,11 +29,11 @@ clients:
     # Each bot needs a set of people it will listen to above everyone else.
     # Here we have the IDs of the people that should have all access rights.
     masters:
-      - 77517077325287424 # Aigachu
+      - '77517077325287424' # Aigachu
     # Operators are a level below masters.
     operators:
-      - 82530619355037696 # Avion
-      - 77577477425201152 # Dango
+      - '82530619355037696' # Avion
+      - '77577477425201152' # Dango
 
     # Bot Token
     # Keep this secure and don't share it! Never commit it in a repository!
