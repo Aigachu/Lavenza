@@ -23,6 +23,31 @@ export default class CommandAuthorizer {
 
   async build() {
     await this.setCommandClientConfig().catch(Lavenza.stop);
+    this.cooldowns = this.commandClientConfig.cooldown || this.commandConfig.cooldown;
+  }
+
+  setCooldown() {
+    // Cools the command globally after usage.
+    if (this.cooldowns.global !== 0) Lavenza.Makoto.set('command', this.order.command.config.key, 0, this.cooldowns.global * 1000);
+
+    // Cools the command after usage for the user.
+    if (this.cooldowns.user !== 0) Lavenza.Makoto.set('command', this.order.command.config.key, this.resonance.message.author, this.cooldowns.user * 1000);
+  }
+
+  cooldownIsActive() {
+    // Using the cooldown manager, we check if the command is on cooldown first.
+    // Cooldowns are individual per user. So if a user uses a command, it's not on cooldown for everyone.
+    if (Lavenza.Makoto.check('command', this.order.command.config.key, 0)) {
+      this.resonance.message.reply(`That command is on global cooldown. :) Please wait!`);
+      return true;
+    }
+
+    if (Lavenza.Makoto.check('command', this.order.command.config.key, this.resonance.message.author.id)) {
+      this.resonance.message.reply(`That command is on cooldown. :) Please wait!`);
+      return true;
+    }
+
+    return false
   }
 
   async setCommandClientConfig() {

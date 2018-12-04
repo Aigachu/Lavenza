@@ -27,7 +27,7 @@ export default class CommandListener extends Listener {
     // Use the CommandInterpreter to find out if there's a command in the resonance.
     // If there's a command, the interpreter will return an order.
     CommandInterpreter.interpret(resonance).then(order => {
-      // console.log(order);
+
       // If there is no order, we do nothing after all.
       if (!order) {
         return;
@@ -39,8 +39,15 @@ export default class CommandListener extends Listener {
           return;
         }
 
+        // Check if cooldowns are on.
+        if (authorizer.cooldownIsActive()) {
+          return;
+        }
+
         // If an order was found, execute it.
         order.execute();
+
+        authorizer.setCooldown();
       });
     });
 

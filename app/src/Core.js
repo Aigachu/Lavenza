@@ -140,6 +140,8 @@ export default class Core {
     // Some more flavor.
     Lavenza.status('GESTALT_READY');
 
+    Lavenza.Makoto.build();
+
   }
 
 }

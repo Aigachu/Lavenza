@@ -42,6 +42,7 @@ import Futaba from'./Confidants/Futaba';
 import Igor from './Confidants/Igor';
 import Morgana from './Confidants/Morgana';
 import Sojiro from './Confidants/Sojiro';
+import Makoto from "./Confidants/Makoto";
 
 // Services.
 // Services are main components of Lavenza.
@@ -55,7 +56,6 @@ import Talent from './Talent/Talent';
 import Listener from './Bot/Listener/Listener';
 import Resonance from './Model/Resonance';
 import Order from './Model/Order';
-
 
 // Configure colors for console.
 // Set console color themes.
@@ -93,6 +93,7 @@ let Keys = {
 // Define the Heart of the module.
 // This is the object that is later set as a global.
 const Heart = {
+
   // Core Lavenza Class.
   Lavenza: Core,
 
@@ -102,6 +103,7 @@ const Heart = {
   Igor: Igor,
   Morgana: Morgana,
   Sojiro: Sojiro,
+  Makoto: Makoto,
 
   // Services.
   Gestalt: Gestalt,

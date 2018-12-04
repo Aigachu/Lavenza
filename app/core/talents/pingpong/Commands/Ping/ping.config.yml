@@ -24,7 +24,7 @@ aliases:
 # Configure the global cooldown of the command.
 # By default, commands will have a cooldown of 5 seconds.
 cooldown:
-  global: 5
+  global: 0
   user: 5
 
 # Clients where this command will function.
@@ -60,7 +60,7 @@ clients.config:
 
     # Cooldown overrides for Discord, if needed.
     cooldown:
-      global: 5
+      global: 0
       user: 5
 
 #  twitch:
