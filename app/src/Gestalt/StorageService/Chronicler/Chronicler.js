@@ -6,8 +6,7 @@
  */
 
 // Modules.
-import _ from 'underscore';
-
+import lodash from 'lodash';
 // Imports.
 import StorageService from '../StorageService';
 import Collection from './Collection/Collection';
@@ -27,7 +26,9 @@ export default class Chronicler extends StorageService {
   }
 
   static async request({protocol = '', endpoint, payload = {}} = {}) {
-    endpoint = this.root + endpoint;
+    if (!endpoint.startsWith(this.root)) {
+      endpoint = this.root + endpoint;
+    }
     return await super.request({
       protocol: protocol,
       endpoint: endpoint,
@@ -41,6 +42,7 @@ export default class Chronicler extends StorageService {
   }
 
   static async get(endpoint) {
+    Lavenza.status('GET: ' + endpoint);
     if (Lavenza.Akechi.fileExists(endpoint + '.yml')) {
       let item = new Item(endpoint + '.yml');
       return await item.values().catch(Lavenza.stop);
@@ -55,32 +57,23 @@ export default class Chronicler extends StorageService {
   }
 
   static async post(endpoint, payload) {
+    Lavenza.status('POST: ' + endpoint);
     await Lavenza.Akechi.writeYamlFile(endpoint, payload).catch(Lavenza.stop);
   }
 
-  static async update(endpoint, payload, target = []) {
-    let data = this.get(endpoint);
+  static async update(endpoint, payload) {
+    Lavenza.status('UPDATE: ' + endpoint);
+    let data = await this.get(endpoint).catch(Lavenza.stop);
 
     if (Lavenza.isEmpty(data)) {
       Lavenza.throw('There is no data at this endpoint.');
       return;
     }
 
-    let dataToUpdate = data;
+    let updatedData = lodash.merge(data, payload);
 
-    if (!Lavenza.isEmpty(target)) {
-      let targetParts = target.split('.');
-      for (part of targetParts) {
-        if (Lavenza.isEmpty(dataToUpdate[part])) {
-          Lavenza.throw('Invalid target was requested. No data found to update.');
-          return;
-        }
-        dataToUpdate = dataToUpdate[part];
-      }
-    }
+    await this.post(endpoint, updatedData).catch(Lavenza.stop);
 
-    let position = null;
-
-    console.log('UPDATE: ' + endpoint);
+    return await this.get(endpoint).catch(Lavenza.stop);
   }
 }

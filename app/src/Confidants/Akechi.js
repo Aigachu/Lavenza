@@ -7,6 +7,7 @@
 
 // Modules.
 import fs from 'fs';
+import fsrfp from 'fs-readfile-promise';
 import yaml from 'js-yaml';
 import path from 'path';
 
@@ -74,15 +75,9 @@ export default class Akechi {
    *
    * @param {string} path
    *   Path to the file to read.
-   *
-   * @returns {Promise.<void>}
    */
   static async readFile(path) {
-    try {
-      return fs.readFileSync(path);
-    } catch(error) {
-      throw new Error(error)
-    }
+    return await fsrfp(path).catch(Lavenza.stop);
   }
 
   /**
@@ -97,7 +92,7 @@ export default class Akechi {
   static async readYamlFile(file) {
 
     // Read the file data.
-    let fileData = await this.readFile(file);
+    let fileData = await this.readFile(file).catch(Lavenza.stop);
 
     // Get document, or throw exception on error
     return yaml.safeLoad(fileData);

@@ -26,7 +26,7 @@ export default class StorageService {
         return await this.update(endpoint, payload).catch(Lavenza.stop);
 
       case 'delete':
-        return await this.delete(endpoint, payload).catch(Lavenza.stop);
+        return await this.delete(endpoint).catch(Lavenza.stop);
     }
   }
 

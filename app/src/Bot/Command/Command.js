@@ -38,8 +38,8 @@ export default class Command {
 
   }
 
-  static async getActiveConfigForBot(botName) {
-    return await Lavenza.Gestalt.get(`/bots/${botName}/commands/${this.config.key}/config`).catch(Lavenza.stop);
+  static async getActiveConfigForBot(bot) {
+    return await Lavenza.Gestalt.get(`/bots/${bot.name}/commands/${this.config.key}/config`).catch(Lavenza.stop);
   }
 
   /**

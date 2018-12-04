@@ -7,6 +7,7 @@
 
 // Modules.
 import _ from 'underscore';
+import jsonic from 'jsonic';
 
 /**
  * Hello command.
@@ -45,19 +46,31 @@ class Gestalt extends Lavenza.Command {
 
     let protocol = order.args._[0];
     let endpoint = order.args._[1];
+    let payload = jsonic(order.args._.slice(2).join(' ')) || {};
 
     switch (protocol) {
       case 'get':
-        let result = await Lavenza.Gestalt.get(endpoint).catch(Lavenza.stop);
+        let getResult = await Lavenza.Gestalt.get(endpoint).catch(Lavenza.stop);
 
-        if (Lavenza.isEmpty(result)) {
+        if (Lavenza.isEmpty(getResult)) {
           resonance.message.reply('No data found for that path, sadly. :(');
           return;
         }
 
-        let resultToString = JSON.stringify(result, null, '\t')
-        resonance.message.reply('```\n' + resultToString + '\n```');
+        let getResultToString = JSON.stringify(getResult, null, '\t');
+        resonance.message.reply('```\n' + getResultToString + '\n```');
+        break;
 
+      case 'update':
+        let updateResult = await Lavenza.Gestalt.update(endpoint, payload).catch(Lavenza.continue);
+
+        if (Lavenza.isEmpty(updateResult)) {
+          resonance.message.reply('No data found at that path, sadly. :(');
+          return;
+        }
+
+        let updateResultToString = JSON.stringify(updateResult, null, '\t');
+        resonance.message.reply('```\n' + updateResultToString + '\n```');
         break;
     }
   }

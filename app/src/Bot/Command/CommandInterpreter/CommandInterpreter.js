@@ -33,7 +33,7 @@ export default class CommandInterpreter {
     }
 
     // Craft Order and send it back.
-    return new Lavenza.Order(result.command, result.args, resonance);
+    return new Lavenza.Order(result.command, result.args, result.config, resonance);
   }
 
   /**
@@ -59,10 +59,10 @@ export default class CommandInterpreter {
     let splitContent = content.split(' ');
 
     // Get the bot configuration.
-    let config = await bot.getActiveConfig().catch(Lavenza.stop);
+    let botConfig = await bot.getActiveConfig().catch(Lavenza.stop);
 
     // Get command prefix.
-    let cprefix = config.clients[client.type].command_prefix || config.command_prefix;
+    let cprefix = botConfig.clients[client.type].command_prefix || botConfig.command_prefix;
 
     // If the content starts with the command prefix, it's a command.
     if (!splitContent[0].startsWith(cprefix)) {
@@ -96,9 +96,18 @@ export default class CommandInterpreter {
     // Next, we'll build the input as well.
     let args = minimist(splitContent.slice(2));
 
+    // Get the command configuration and build the configuration object for this order.
+    let commandConfig = await command.getActiveConfigForBot(bot).catch(Lavenza.stop);
+
+    let config = {
+      bot: botConfig,
+      command: commandConfig
+    };
+
     // Return our findings.`
     return {
       command: command,
+      config: config,
       args: args
     };
 

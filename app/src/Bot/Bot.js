@@ -335,13 +335,16 @@ export default class Bot {
     // Get the keys of the clients, that should match the names defined in ClientTypes.
     let clientKeys = Object.keys(this.config.clients);
 
+    // Get active config once.
+    let activeConfig = await this.getActiveConfig().catch(Lavenza.stop);
+
     // Await the processing and initialization of all clients in the configurations.
     /** @catch Stop execution. */
     await Promise.all(clientKeys.map(key => {
 
       // Uses the ClientFactory to build the appropriate factory given the type.
       // The client is then set to the bot.
-      this.clients[key] = ClientFactory.build(key, this.config.clients[key], this);
+      this.clients[key] = ClientFactory.build(key, activeConfig.clients[key], this);
 
     })).catch(Lavenza.stop);
 

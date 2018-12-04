@@ -17,16 +17,15 @@ export default class CommandAuthorizer {
     this.resonance = resonance;
     this.bot = this.resonance.bot;
     this.type = resonance.client.type;
+    this.commandConfig = this.order.config.command;
+    this.commandClientConfig = this.commandConfig['clients.config'][this.type];
+    this.masters = this.order.config.bot.clients[this.type].masters;
+    this.operators = this.order.config.bot.clients[this.type].operators;
+    this.cooldowns = this.commandClientConfig.cooldown || this.commandConfig.cooldown;
   }
 
   async build() {
-    await this.setCommandClientConfig().catch(Lavenza.stop);
 
-    // Get the bot configuration.
-    let config = await this.resonance.bot.getActiveConfig().catch(Lavenza.stop);
-    this.masters = config.clients[this.type].masters;
-    this.operators = config.clients[this.type].operators;
-    this.cooldowns = this.commandClientConfig.cooldown || this.commandConfig.cooldown;
   }
 
   async authorize() {
@@ -35,37 +34,26 @@ export default class CommandAuthorizer {
 
   setCooldown() {
     // Cools the command globally after usage.
-    if (this.cooldowns.global !== 0) Lavenza.Makoto.set('command', this.order.command.config.key, 0, this.cooldowns.global * 1000);
+    if (this.cooldowns.global !== 0) Lavenza.Makoto.set('command', this.commandConfig.key, 0, this.cooldowns.global * 1000);
 
     // Cools the command after usage for the user.
-    if (this.cooldowns.user !== 0) Lavenza.Makoto.set('command', this.order.command.config.key, this.resonance.message.author, this.cooldowns.user * 1000);
+    if (this.cooldowns.user !== 0) Lavenza.Makoto.set('command', this.commandConfig.key, this.resonance.message.author, this.cooldowns.user * 1000);
   }
 
   async cooldownIsActive() {
     // Using the cooldown manager, we check if the command is on cooldown first.
     // Cooldowns are individual per user. So if a user uses a command, it's not on cooldown for everyone.
-    if (Lavenza.Makoto.check('command', this.order.command.config.key, 0)) {
+    if (Lavenza.Makoto.check('command', this.commandConfig.key, 0)) {
       this.resonance.message.reply(`That command is on global cooldown. :) Please wait!`);
       return true;
     }
 
-    if (Lavenza.Makoto.check('command', this.order.command.config.key, this.resonance.message.author.id)) {
+    if (Lavenza.Makoto.check('command', this.commandConfig.key, this.resonance.message.author.id)) {
       this.resonance.message.reply(`That command is on cooldown. :) Please wait!`);
       return true;
     }
 
     return false
-  }
-
-  async setCommandClientConfig() {
-    let commandConfig = await this.order.command.getActiveConfigForBot(this.bot).catch(Lavenza.stop);
-
-    if (Lavenza.isEmpty(commandConfig)) {
-      commandConfig = this.order.command.config;
-    }
-
-    this.commandConfig = commandConfig;
-    this.commandClientConfig = this.commandConfig['clients.config'][this.type];
   }
 
 }

@@ -43,6 +43,9 @@ export default class DiscordClient extends DiscordJSClient {
     // Event: When the client connects to Discord and is ready.
     this.on('ready', () => {
       Lavenza.success('DISCORD_CLIENT_CONNECT', [this.bot.name]);
+
+      // Set game text.
+      this.user.setActivity(this.config.activity).catch(console.error);
     });
 
     // Event: When the discord client receives a message.
