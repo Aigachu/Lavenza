@@ -33,7 +33,11 @@ export default class ClientFactory {
    *   Client that was instantiated.
    */
   static build(type, config, bot) {
+
+    // Initialize the object.
     let client = {};
+
+    // Depending on the requested type, we build the appropriate client.
     switch (type) {
       case ClientTypes.Discord:
         client = new DiscordClient(config, bot);

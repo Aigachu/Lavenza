@@ -22,7 +22,7 @@ class SmashMain extends Lavenza.Command {
   static async execute(order, resonance) {
 
     // Path to the Smash 4 Portraits Directory.
-    let smash4PortraitsDirectory = this.talent.directory + '/assets/portraits/smash4';
+    let smash4PortraitsDirectory = this.talent.directory + '/assets/portraits/ultimate';
 
     // Build the suspense...
     resonance.message.reply("! Your new main is..._drumroll_");

@@ -66,9 +66,6 @@ export default class TalentManager {
       /** @catch Stop execution. */
       await this.loadTalent(directory).catch(Lavenza.stop);
 
-      // Add a little success message for this particular talent.
-      Lavenza.success('CORE_TALENT_LOADED', [name]);
-
     })).catch(Lavenza.stop);
 
     // Set the list of core talents. This is simply the list of keys. Bots use this later.
@@ -130,6 +127,6 @@ export default class TalentManager {
     this.talents[name] = talent;
 
     // Add a little success message for this particular talent.
-    Lavenza.success('CUSTOM_TALENT_LOADED', [name]);
+    Lavenza.success('TALENT_LOADED', [name]);
   }
 }

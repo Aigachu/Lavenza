@@ -35,14 +35,15 @@ export default class Gestalt {
 
     // Set a variable to manage collections effectively.
     // When a collection is created, a tag is associated with it. This allows easy retrieval of a collection later.
-    this.collections = {};
+    // this.collections = {};
 
     // The default storage service is the Chronicler.
     /** @see ./StorageService/Chronicler/Chronicler */
-    // @TODO - Dynamic selection of StorageService instead of having to save it here. Maybe .env variables? Or a configuration file at the root of the application.
+      // @TODO - Dynamic selection of StorageService instead of having to save it here. Maybe .env variables? Or a configuration file at the root of the application.
     let storageService = Chronicler;
 
-    // We run the build functions of the storage service and assign it to Gestalt.
+    // Await the build process of the storage service and assign it to Gestalt.
+    /** @catch Stop execution. */
     await storageService.build().catch(Lavenza.stop);
     this.storageService = storageService;
 
@@ -57,11 +58,11 @@ export default class Gestalt {
    */
   static async bootstrap() {
 
-    // Await creation of Bots Collection.
+    // Await creation of the Bots collection.
     /** @catch Stop execution. */
     await this.createCollection('/bots', 'bots').catch(Lavenza.stop);
 
-    // Await bootstrapping of Bot data.
+    // Await bootstrapping of each bot's data.
     /** @catch Stop execution. */
     await Promise.all(BotManager.bots.map(async bot => {
 
@@ -77,7 +78,7 @@ export default class Gestalt {
       /** @catch Stop execution. */
       await this.createCollection(`/bots/${bot.name}/talents`, `bot.${bot.name}.talents`).catch(Lavenza.stop);
 
-      // Await the bootstrapping of Talents data.
+      // Await the bootstrapping of each talent's data.
       /** @catch Stop execution. */
       await Promise.all(bot.talents.map(async talentKey => {
 
@@ -120,47 +121,159 @@ export default class Gestalt {
   /**
    * Synchronize data between the active storage service and the defaults in the code.
    *
-   * @param config
-   * @param source
-   * @returns {Promise<*>}
+   * @param {Object} config
+   *   Configuration to sync to the selected source.
+   * @param {String} source
+   *   The source that needs to be synced.
+   *
+   * @returns {Promise<Object>}
+   *   Returns the synced configuration.
    */
   static async sync(config, source) {
+
+    // Await initial fetch of data that may already exist.
+    /** @catch Stop execution. */
     let dbConfig = await Lavenza.Gestalt.get(source).catch(Lavenza.stop);
+
+    // If the configuration already exists, we'll want to sync the provided configuration with the source.
+    // We merge both together. This MIGHT NOT be necessary? But it works for now.
     if (!Lavenza.isEmpty(dbConfig)) {
       return Object.assign({}, config, dbConfig);
-    } else {
-      await this.post(source, config).catch(Lavenza.stop);
-      return config;
     }
+
+    // Await creation of database entry for the configuration, since it doesn't exist.
+    /** @catch Stop execution. */
+    await this.post(source, config).catch(Lavenza.stop);
+    return config;
+
   }
 
+  /**
+   * Create a collection in the storage service.
+   *
+   * We need to keep in mind that we're using mostly JSON storage in this context.
+   * This makes use of Collections & Items.
+   *
+   * @param {String} endpoint
+   *   Location where to create the collection.
+   * @param {String} tag
+   *   Each collection needs to be provided a tag. This makes them a lot easier to retrieve in the code if needed.
+   *   @TODO - Deprecate this. LOL.
+   * @param {Object} payload
+   *   The data of the Collection to create.
+   *
+   * @returns {Promise<void>}
+   */
   static async createCollection(endpoint, tag, payload = {}) {
-    let collection = await this.storageService.createCollection(endpoint, payload).catch(Lavenza.stop);
-    this.collections[tag] = endpoint;
+
+    // Each storage service creates collections in their own way. We await this process.
+    /** @catch Stop execution. */
+    await this.storageService.createCollection(endpoint, payload).catch(Lavenza.stop);
+    // this.collections[tag] = endpoint;
+
   }
 
-  static async collection(tag) {
-    return this.get(this.collections[tag]);
-  }
-
+  /**
+   * Make a request using the storage service.
+   *
+   * The linked storage service implements it's own methods of storing and accessing data. Gestalt simply calls those.
+   *
+   * @param {String} protocol
+   *   The protocol we want to use.
+   *   The are four: GET, POST, UPDATE, DELETE.
+   *    - GET: Fetch and retrieve data from a path/endpoint.
+   *    - POST: Create data at a path/endpoint.
+   *    - UPDATE: Adjust data at a path/endpoint.
+   *    - DELETE: Remove data at a path/endpoint.
+   * @param {String} endpoint
+   *   The string path/endpoint of where to apply the protocol.
+   * @param {Object} payload
+   *   The data, if needed, to apply the protocol. GET/DELETE will not need a payload.
+   *
+   * @returns {Promise<*>}
+   *   The result of the protocol call, if applicable.
+   */
   static async request({protocol = '', endpoint, payload = {}} = {}) {
-    return await this.storageService.request({protocol: protocol, endpoint: endpoint, payload: payload}).catch(Lavenza.stop);
+
+    // Await the request function call of the storage service.
+    /** @catch Stop execution. */
+    return await this.storageService.request({
+      protocol: protocol,
+      endpoint: endpoint,
+      payload: payload
+    }).catch(Lavenza.stop);
+
   }
 
+  /**
+   * Process a GET request using the storage service.
+   *
+   * @param {String} endpoint
+   *   Path to get data from.
+   *
+   * @returns {Promise<*>}
+   *   Data retrieved, if it succeeded.
+   */
   static async get(endpoint) {
+
+    // Await GET request of the Storage Service.
+    /** @catch Stop execution. */
     return await this.request({protocol: 'get', endpoint: endpoint}).catch(Lavenza.stop);
+
   }
 
+  /**
+   * Process a POST request using the storage service.
+   *
+   * @param {String} endpoint
+   *   Path to push data to.
+   * @param {Object} payload
+   *   Data to push to the endpoint.
+   *
+   * @returns {Promise<*|void>}
+   *   Data pushed, if applicable.
+   */
   static async post(endpoint, payload) {
+
+    // Await POST request of the Storage Service.
+    /** @catch Stop execution. */
     return await this.request({protocol: 'post', endpoint: endpoint, payload: payload}).catch(Lavenza.stop);
+
   }
 
+  /**
+   * Process a UPDATE request using the storage service.
+   *
+   * @param {String} endpoint
+   *   Path to push data to.
+   * @param {Object} payload
+   *   Data to update at the endpoint.
+   *
+   * @returns {Promise<*|void>}
+   *   Data update, if applicable.
+   */
   static async update(endpoint, payload) {
+
+    // Await UPDATE request of the Storage Service.
+    /** @catch Stop execution. */
     return await this.request({protocol: 'update', endpoint: endpoint, payload: payload}).catch(Lavenza.stop);
+
   }
 
-  static async delete(endpoint, payload) {
-    return await this.request({protocol: 'delete', endpoint: endpoint, payload: payload}).catch(Lavenza.stop);
+  /**
+   * Process a DELETE request using the storage service.
+   *
+   * @param {String} endpoint
+   *   Path to delete data at.
+   *
+   * @returns {Promise<void>}
+   */
+  static async delete(endpoint) {
+
+    // Await DELETE request of the Storage Service.
+    /** @catch Stop execution. */
+    return await this.request({protocol: 'delete', endpoint: endpoint}).catch(Lavenza.stop);
+
   }
 
 }

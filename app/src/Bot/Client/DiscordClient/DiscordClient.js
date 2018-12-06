@@ -28,6 +28,7 @@ export default class DiscordClient extends DiscordJSClient {
    *   Bot that this client is linked to.
    */
   constructor(config, bot) {
+
     // Call the constructor of the Discord Client parent Class.
     super();
 

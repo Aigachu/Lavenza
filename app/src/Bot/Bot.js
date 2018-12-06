@@ -43,8 +43,18 @@ export default class Bot {
     this.listeners = [];
   }
 
+  /**
+   * Get the active configuration from the database for this Bot.
+   *
+   * @returns {Promise<Object>}
+   *   Returns the configuration fetched from the database.
+   */
   async getActiveConfig() {
+
+    // We use Gestalt to make a call to the database storage service and return the data.
+    /** @catch Stop execution. */
     return await Lavenza.Gestalt.get(`/bots/${this.name}/config`).catch(Lavenza.stop);
+
   }
 
   /**
@@ -55,6 +65,10 @@ export default class Bot {
    * @returns {Promise.<void>}
    */
   async deploy() {
+
+    // Await client initialization.
+    /** @catch Stop execution. */
+    await this.initializeClients().catch(Lavenza.stop);
 
     // Await clients authentication.
     /** @catch Stop execution. */
@@ -69,10 +83,6 @@ export default class Bot {
    * @returns {Promise.<void>}
    */
   async prepare() {
-
-    // Await client initialization.
-    /** @catch Stop execution. */
-    await this.initializeClients().catch(Lavenza.stop);
 
     // Await talent grants.
     /** @catch Stop execution. */

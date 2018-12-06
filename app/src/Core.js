@@ -73,6 +73,9 @@ export default class Core {
   static async run() {
 
     // Some more flavor.
+    Lavenza.status('EXECUTION_PHASE');
+
+    // Some more flavor.
     Lavenza.status('BOT_MANAGER_DEPLOY');
 
     // Deploy bots from the BotBunker.
@@ -80,7 +83,10 @@ export default class Core {
     await BotManager.deploy().catch(Lavenza.stop);
 
     // Some more flavor.
-    Lavenza.success('BOT_MANAGER_DEPLOYED');
+    Lavenza.status('BOT_MANAGER_DEPLOYED');
+
+    // Some more flavor.
+    Lavenza.status('EXECUTION_PHASE_COMPLETED');
 
   }
 
@@ -118,7 +124,7 @@ export default class Core {
     await TalentManager.prepare().catch(Lavenza.stop);
 
     // Some more flavor.
-    Lavenza.success('TALENT_MANAGER_READY');
+    Lavenza.status('TALENT_MANAGER_READY');
 
     // Some more flavor.
     Lavenza.status('BOT_MANAGER_PREP');
@@ -128,19 +134,27 @@ export default class Core {
     await BotManager.prepare().catch(Lavenza.stop);
 
     // Some more flavor.
-    Lavenza.success('BOT_MANAGER_READY');
+    Lavenza.status('BOT_MANAGER_READY');
 
     // Some more flavor.
     Lavenza.status('GESTALT_BOOTSTRAP');
 
-    // Run preparation handler for the Database service.
+    // Run bootstrap handler for Gestalt.
+    // This is the process that creates and syncs the database.
     /** @catch Stop execution. */
     await Gestalt.bootstrap().catch(Lavenza.stop);
 
     // Some more flavor.
     Lavenza.status('GESTALT_READY');
 
-    Lavenza.Makoto.build();
+    // Await Makoto's Preparation.
+    // Makoto is the cooldown manager. She needs to be initialized here.
+    // No announcements needed for this. She can prepare quietly.
+    /** @catch Stop execution. */
+    Lavenza.Makoto.build().catch(Lavenza.stop);
+
+    // Some more flavor.
+    Lavenza.status('PREPARATION_PHASE_COMPLETE');
 
   }
 

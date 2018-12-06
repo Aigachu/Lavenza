@@ -22,7 +22,10 @@ export default {
 
   // === Status Messages ===
   INITIALIZING: 'Welcome to Lavenza II!\nInitializing Lavenza v@1...\n',
-  PREPARATION_PHASE: 'Executing phase: PREPARATION!',
+  PREPARATION_PHASE: 'PHASE 1: PREPARATION!',
+  PREPARATION_PHASE_COMPLETE: 'PHASE 1 COMPLETED SUCCESSFULLY!',
+  EXECUTION_PHASE: 'PHASE 2: JACK IN! LAVENZA! EXECUTE!!!',
+  EXECUTION_PHASE_COMPLETED: 'PHASE 2 COMPLETED SUCCESSFULLY!',
   SUCCESS: [
       'All right, Joker! Very smooth!',
       'All good! Moving on.',
@@ -59,8 +62,7 @@ export default {
   // === Talents ===
   TALENT_MANAGER_PREP: '<TalentManager>: Launching preparations...',
   START_TALENT_LOAD: 'Starting Talent Loading process...',
-  CORE_TALENT_LOADED: 'Loaded {@1} core talent!',
-  CUSTOM_TALENT_LOADED: 'Loaded {@1} custom talent!',
+  TALENT_LOADED: 'Loaded {@1} talent!',
   NO_COMMANDS_FOUND_FOR_TALENT: 'There were no commands defined for the {@1} talent. This might not be normal!',
   NO_TALENT_CONFIG_FOUND_FOR_BOT: 'The {@1} bot has no talent configuration! No custom talents will be loaded for it.',
   CUSTOM_TALENT_NOT_FOUND: 'The {@1} custom talent was not found and could not be loaded.',

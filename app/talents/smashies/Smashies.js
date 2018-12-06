@@ -6,12 +6,12 @@
  */
 
 /**
- * Smashies Talent.
+ * Smashies!
+ *
+ * This Talent manages all commands and behaviors related to Smash. It provides a wide range of cool features to use.
  */
 class Smashies extends Lavenza.Talent {
-  // The possibilities are endless, my lord...
-  // ...That's not a Persona 5 reference...It's me being dumb...
-  // No but seriously, you can do whatever you want here. Commands are linked to their Talents, and they can easily interest with this class.
+
 }
 
 module.exports = Smashies;

@@ -47,8 +47,22 @@ export default class Talent {
 
   }
 
-  static async getActiveConfigForBot(botName) {
-    return await Lavenza.Gestalt.get(`/bots/${botName}/talents/${this.id}/config`).catch(Lavenza.stop);
+  /**
+   * Get the active configuration from the database for this Talent, in the context of a Bot.
+   *
+   * @param {Bot} bot
+   *   The bot context for the configuration we want to fetch. Each bot can have different configuration overrides
+   *   for talents.
+   *
+   * @returns {Promise<Object>}
+   *   Returns the configuration fetched from the database.
+   */
+  static async getActiveConfigForBot(bot) {
+
+    // Await Gestalt's API call to get the configuration from the storage.
+    /** @catch Stop execution. */
+    return await Lavenza.Gestalt.get(`/bots/${bot.name}/talents/${this.id}/config`).catch(Lavenza.stop);
+
   }
 
   /**

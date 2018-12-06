@@ -24,16 +24,18 @@ export default class CommandInterpreter {
    * @returns {*}
    */
   static async interpret(resonance) {
+
     // Attempt to get a command from the content.
-    let result = await this.getCommand(resonance.content, resonance.bot, resonance.client).catch(Lavenza.stop);
+    /** @catch Stop execution. */
+    let order = await this.getCommand(resonance.content, resonance.bot, resonance.client, resonance).catch(Lavenza.stop);
 
     // If no command is found, we have nothing to do.
-    if (!result) {
+    if (!order) {
       return false;
     }
 
-    // Craft Order and send it back.
-    return new Lavenza.Order(result.command, result.args, result.config, resonance);
+    // Otherwise, craft Order and send it back to the listener.
+    return order;
   }
 
   /**
@@ -49,35 +51,40 @@ export default class CommandInterpreter {
    *   Bot that heard the message.
    * @param {*} client
    *   Client that sent the message.
+   * @param {Resonance} resonance
+   *   The resonance received from the listener.
    *
    * @returns {*}
    *   Returns data about a command if there is a command. Returns false otherwise.
    */
-  static async getCommand(content, bot, client) {
+  static async getCommand(content, bot, client, resonance) {
 
     // Split content with spaces.
+    // i.e. If the input is '! ping hello', then we get ['!', 'ping', 'hello'].
     let splitContent = content.split(' ');
 
-    // Get the bot configuration.
+    // Get the active bot configuration from the database.
+    /** @catch Stop execution. */
     let botConfig = await bot.getActiveConfig().catch(Lavenza.stop);
 
     // Get command prefix.
+    // If there is a command prefix override for this client, we will set it. If not, we grab the default.
+    // @TODO - Add Server/Channel overrides for this as well.
     let cprefix = botConfig.clients[client.type].command_prefix || botConfig.command_prefix;
 
-    // If the content starts with the command prefix, it's a command.
+    // If the content doesn't start with the command prefix, it's not a command.
     if (!splitContent[0].startsWith(cprefix)) {
-      // Lavenza.warn('Text does not start with command prefix. No command found');
       return false
     }
 
     // At this point we know it's a command. We'll need to find out which command was called.
     // First, we'll format the string accordingly if needed.
-    // If a user enters a command attached to the prefix, we separate them.
+    // If a user enters a command attached to the prefix, we separate them here.
     if (splitContent[0].length !== cprefix.length) {
       splitContent = content.replace(cprefix, cprefix + ' ').split(' ');
     }
 
-    // Attempt the fetch the command from the bot.
+    // Attempt to fetch the command from the bot.
     let command = bot.getCommand(splitContent[1].toLowerCase());
 
     // If the command doesn't exist, we'll stop here.
@@ -93,23 +100,19 @@ export default class CommandInterpreter {
       return false;
     }
 
-    // Next, we'll build the input as well.
+    // Next, we'll build the arguments as well, using minimist.
     let args = minimist(splitContent.slice(2));
 
     // Get the command configuration and build the configuration object for this order.
+    // We want to send the bot config and the command config back with the Order.
     let commandConfig = await command.getActiveConfigForBot(bot).catch(Lavenza.stop);
-
     let config = {
       bot: botConfig,
       command: commandConfig
     };
 
-    // Return our findings.`
-    return {
-      command: command,
-      config: config,
-      args: args
-    };
+    // Return our crafted Order.
+    return new Lavenza.Order(command, args, config, resonance);
 
   }
 
