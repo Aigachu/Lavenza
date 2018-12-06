@@ -93,7 +93,7 @@ export default class Chronicler extends StorageService {
     }
 
     // If nothing was found, return an empty object.
-    Lavenza.warn('<Chronicler>: GET request returned an empty object: ' + path);
+    Lavenza.warn('<Chronicler>: GET request returned an empty object: ' + endpoint);
     return {};
   }
 

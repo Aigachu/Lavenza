@@ -28,26 +28,30 @@ export default class Makoto {
    * @param {String/Number}   scope    Who does this cooldown restrict? i.e. For a user, it's their ID.
    * @param {Number}          duration Lifetime of the cooldown.
    */
-  static set(type, key, scope, duration) {
+  static set(bot, type, key, scope, duration) {
+
+    if (!(bot in this.cooldowns)) {
+      this.cooldowns[bot] = {};
+    }
 
     // Set object for this cooldown type if it doesn't exist.
-    if (!(type in this.cooldowns)) {
-      this.cooldowns[type] = {};
+    if (!(type in this.cooldowns[bot])) {
+      this.cooldowns[bot][type] = {};
     }
 
     // Initialize array for this cooldown key if it doesn't exist.
-    if (!(key in this.cooldowns[type])) {
-      this.cooldowns[type][key] = [];
+    if (!(key in this.cooldowns[bot][type])) {
+      this.cooldowns[bot][type][key] = [];
     }
 
     // Set the cooldown into the array.
-    this.cooldowns[type][key].push(scope);
+    this.cooldowns[bot][type][key].push(scope);
 
     // Start the countdown for the duration.
     // Note: Not sure why I use a promise here. I think I wanted to be cool. ¯\_(ツ)_/¯
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        this.unset(type, key, scope);
+        this.unset(bot, type, key, scope);
         resolve("Remove cooldown now!"); // Yay! Everything went well!
         reject("Something went wrong!"); // Ugh...
       }, duration);
@@ -60,10 +64,10 @@ export default class Makoto {
    * @param {String}          key      Key of the cooldown being set. i.e. For a command, we'll set the command key.
    * @param {String/Number}  scope    Who does this cooldown restrict? i.e. For a user, it's their ID.
    */
-  static unset(type, key, scope) {
+  static unset(bot, type, key, scope) {
 
     // Remove the cooldown.
-    this.cooldowns[type][key].splice(this.cooldowns[type][key].indexOf(scope), 1);
+    this.cooldowns[bot][type][key].splice(this.cooldowns[bot][type][key].indexOf(scope), 1);
 
   }
 
@@ -73,24 +77,28 @@ export default class Makoto {
    * @param {String}          key      Key of the cooldown being set. i.e. For a command, we'll set the command key.
    * @param {String/Number}  scope    Who does this cooldown restrict? i.e. For a user, it's their ID.
    */
-  static check(type, key, scope) {
+  static check(bot, type, key, scope) {
+
+    if (!(bot in this.cooldowns)) {
+      return false;
+    }
 
     // If the type isn't set, then the cooldown surely isn't set.
     // For example, if a command is called,
     // but the 'cooldown' type isn't found, then there are no cooldowns for commands at all.
-    if (!(type in this.cooldowns)) {
+    if (!(type in this.cooldowns[bot])) {
       return false;
     }
 
     // If the key isn't set, then the cooldown surely isn't set.
     // For example, if for the ping command,
     // the key 'ping' isn't found, then there are no cooldowns for the ping command.
-    if (!(key in this.cooldowns[type])) {
+    if (!(key in this.cooldowns[bot][type])) {
       return false;
     }
 
     // Returns whether or not the cooldown exists.
-    return (this.cooldowns[type][key].indexOf(scope) > -1);
+    return (this.cooldowns[bot][type][key].indexOf(scope) > -1);
 
   }
 }

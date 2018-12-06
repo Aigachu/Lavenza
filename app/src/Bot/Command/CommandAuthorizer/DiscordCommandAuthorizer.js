@@ -19,7 +19,6 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    * @returns {Promise<void>}
    */
   async build() {
-    await super.build().catch(Lavenza.stop);
     this.botUser = this.resonance.client.user;
     this.authorUser = this.resonance.message.author;
     this.msg = this.resonance.message;

@@ -41,10 +41,11 @@ export default class CommandAuthorizer {
    * authorizes commands in their own way through their respective Authorizers. They will however each call this
    * default authorize function that should be used by all.
    *
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>}
    */
   async authorize() {
     // No defaults yet...
+    return true;
   }
 
   /**
@@ -52,10 +53,14 @@ export default class CommandAuthorizer {
    */
   cool() {
     // Cools the command globally after usage.
-    if (this.cooldowns.global !== 0) Lavenza.Makoto.set('command', this.commandConfig.key, 0, this.cooldowns.global * 1000);
+    if (this.cooldowns.global !== 0) {
+      Lavenza.Makoto.set(this.bot.name, 'command', this.commandConfig.key, 0, this.cooldowns.global * 1000);
+    }
 
     // Cools the command after usage for the user.
-    if (this.cooldowns.user !== 0) Lavenza.Makoto.set('command', this.commandConfig.key, this.resonance.message.author, this.cooldowns.user * 1000);
+    if (this.cooldowns.user !== 0) {
+      Lavenza.Makoto.set(this.bot.name, 'command', this.commandConfig.key, this.resonance.message.author.id, this.cooldowns.user * 1000);
+    }
   }
 
   /**
@@ -68,13 +73,23 @@ export default class CommandAuthorizer {
   async isCooled() {
     // Using the cooldown manager, we check if the command is on cooldown first.
     // Cooldowns are individual per user. So if a user uses a command, it's not on cooldown for everyone.
-    if (Lavenza.Makoto.check('command', this.commandConfig.key, 0)) {
-      this.resonance.message.reply(`That command is on global cooldown. :) Please wait!`);
+    if (Lavenza.Makoto.check(this.bot.name, 'command', this.commandConfig.key, 0)) {
+      this.resonance.message.reply(`That command is on global cooldown. :) Please wait!`).then(async message => {
+        this.resonance.message.delete();
+        Lavenza.wait(5).then( () => {
+          message.delete().catch(Lavenza.continue);
+        });
+      });
       return true;
     }
 
-    if (Lavenza.Makoto.check('command', this.commandConfig.key, this.resonance.message.author.id)) {
-      this.resonance.message.reply(`That command is on cooldown. :) Please wait!`);
+    if (Lavenza.Makoto.check(this.bot.name, 'command', this.commandConfig.key, this.resonance.message.author.id)) {
+      this.resonance.message.reply(`That command is on cooldown. :) Please wait!`).then(async message => {
+        this.resonance.message.delete();
+        Lavenza.wait(5).then( () => {
+          message.delete().catch(Lavenza.continue);
+        });
+      });
       return true;
     }
 

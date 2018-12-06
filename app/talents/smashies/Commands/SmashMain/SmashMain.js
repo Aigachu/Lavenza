@@ -12,6 +12,11 @@ import DiscordJS from 'discord.js';
 /**
  * Smash Main command.
  *
+ * @TODO - Major refactoring incoming!
+ *  - First, we want to be able to select which game to select a new main for.
+ *  - Next, we need to have a class (Fighter) for each character object and save their information in the database.
+ *  - Next, we need to have a class (Game/Title) for each smash game, and customize their icon and name.
+ *
  * Selects a main for you!
  */
 class SmashMain extends Lavenza.Command {
@@ -24,20 +29,30 @@ class SmashMain extends Lavenza.Command {
     // Path to the Smash 4 Portraits Directory.
     let smash4PortraitsDirectory = this.talent.directory + '/assets/portraits/ultimate';
 
-    // Build the suspense...
-    resonance.message.reply("! Your new main is..._drumroll_");
-
     // Get the random main.
-    let file = this.getRandomPortraitFromDirectory(smash4PortraitsDirectory);
+    let character = this.getRandomCharacterPortraitFromDirectory(smash4PortraitsDirectory);
 
     // Build Discord Attachment.
-    let attachment = new DiscordJS.Attachment(file);
+    let attachment = new DiscordJS.Attachment(character.portrait, character.filename);
 
-    // Send the main.
-    resonance.message.channel.send(attachment)
-      .then((message) => {
-        // Do nothing.
-      }).catch(console.error);
+    resonance.client.sendEmbed(resonance.message.channel, {
+      title: `${character.name}`,
+      header: {
+        text: 'Super Smash Bros. Ultimate',
+        icon: 'attachment://icon.png'
+      },
+      footer: {
+        text: `${resonance.message.author.username}'s new main!`,
+        icon: resonance.message.author.avatarURL
+      },
+      attachments: [
+        attachment,
+        new DiscordJS.Attachment(`${this.talent.directory}/icon.png`, 'icon.png')
+      ],
+      image: `attachment://${character.filename}`,
+      // thumbnail: `attachment://icon.png`
+
+    }).catch(Lavenza.continue);
   }
 
   /**
@@ -46,7 +61,7 @@ class SmashMain extends Lavenza.Command {
    * @param {string} directory
    *   Path to the directory containing the sub directories.
    */
-  static getRandomPortraitFromDirectory(directory) {
+  static getRandomCharacterPortraitFromDirectory(directory) {
 
     // Get the list of sub directories from the directory.
     let subDirectories = fs.readdirSync(directory);
@@ -62,7 +77,11 @@ class SmashMain extends Lavenza.Command {
     let file = files[Math.floor(Math.random() * files.length)];
 
     // Return full path to the file.
-    return directory + '/' + subDirectoryName + '/' + file;
+    return {
+      portrait: directory + '/' + subDirectoryName + '/' + file,
+      filename: file,
+      name: subDirectoryName
+    };
 
   }
 

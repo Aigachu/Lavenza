@@ -31,7 +31,7 @@ export default class Core {
    *   Value of the version, that's literally written right under this.
    */
   static get version() {
-    return '0.2.2';
+    return '0.3.1';
   }
 
   /**

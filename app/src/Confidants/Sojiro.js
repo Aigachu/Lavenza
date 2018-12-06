@@ -72,13 +72,13 @@ export default class Sojiro {
   /**
    * Utility function to wait a given amount of time.
    *
-   * @param {int} milliseconds The amount of time to wait for.
+   * @param {int} seconds The amount of seconds to wait for.
    *
    * @returns {Promise<any>}
    *   Returns a Promise you can use to chain code execution.
    */
-  static wait(milliseconds) {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  static wait(seconds) {
+    return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   }
 
 }

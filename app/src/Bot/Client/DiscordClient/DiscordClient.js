@@ -7,7 +7,7 @@
 
 // Imports.
 import ClientTypes from '../ClientTypes';
-import {Client as DiscordJSClient} from 'discord.js';
+import {Client as DiscordJSClient, RichEmbed as Embed, Attachment} from 'discord.js';
 
 /**
  * Provides a class for Discord Clients managed in Lavenza.
@@ -63,6 +63,101 @@ export default class DiscordClient extends DiscordJSClient {
     this.on('error', () => {
       Lavenza.error('ERROR_OCCURRED', [this.bot.name]);
     });
+
+  }
+
+  /**
+   * Send a embed to a channel.
+   *
+   * @see https://leovoel.github.io/embed-visualizer/
+   *
+   * @param {*} destination
+   *   The destination can be a channel or a user.
+   * @param {string} title
+   *   The title of the rich embed.
+   * @param {string} description
+   *   The description of the rich embed.
+   * @param {Object} header
+   *   Object that should contain the *text* of the header and the *icon* if applicable.
+   * @param {string} url
+   *   URL of the rich embed.
+   * @param {string} color
+   *   Color of the left border of the rich embed.
+   * @param {string} image
+   *   Main image of the rich embed. Usually an attachment reference.
+   * @param {string} thumbnail
+   *   Main thumbnail of the rich embed. Usually an attachment reference.
+   * @param {Array} fields
+   *   Fields of the rich embed.
+   * @param {Object} footer
+   *   Object that should contain the *text* of the footer and the *icon* if applicable.
+   * @param {Array<Attachment>} attachments
+   *   Array of attachments to attach to the embed.
+   *
+   * @returns {Promise<void>}
+   */
+  async sendEmbed(destination, {title, description, header, url, color, image, thumbnail, fields, footer, attachments} = {}) {
+
+    // Create the embed instance.
+    let embed = new Embed();
+
+    // Manage default values.
+    color = color || '0x1C1CF0';
+
+    // Set default values.
+    embed.setColor(color);
+    embed.setTimestamp(new Date());
+
+    // Set Title if any.
+    if (title) {
+      embed.setTitle(title);
+    }
+
+    // Set Description if any.
+    if (description) {
+      embed.setDescription(description);
+    }
+
+    // Set Header/Author if any.
+    if (header) {
+      embed.setAuthor(header.text, header.icon);
+    }
+
+    // Set Footer if any.
+    if (footer) {
+      embed.setFooter(footer.text, footer.icon);
+    }
+
+    // Set Thumbnail if any.
+    if (thumbnail) {
+      embed.setThumbnail(thumbnail);
+    }
+
+    // Set Image if any.
+    if (image) {
+      embed.setImage(image);
+    }
+
+    // Set fields, if any.
+    if (fields) {
+      fields.every(field => {
+        embed.addField(field.name, field.text);
+        return true;
+      });
+    }
+
+    // Set attachments, if any.
+    if (attachments) {
+      embed.attachFiles(attachments);
+    }
+
+    // If url is set, we set it here.
+    if (url) {
+      embed.setURL(url);
+    }
+
+    // Send the embed.
+    destination.send(embed);
 
   }
 
