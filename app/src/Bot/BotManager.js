@@ -114,13 +114,36 @@ export default class BotManager {
     // Initialize variable that will contain all bots.
     this.bots = [];
 
-    // Fetch all bot directories from the 'bots' folder at the root of the application.
-    /** @catch Stop execution. */
-    let botDirectories = await Lavenza.Akechi.getDirectoriesFrom(Lavenza.Paths.BOTS).catch(Lavenza.pocket);
+    // Initialize the array to store bot directories.
+    let botDirectories = [];
 
-    // If for some reason, bot directories could not be loaded, we stop the app.
-    if (botDirectories === undefined) {
-      Lavenza.throw('NO_BOT_CONFIG_FOLDER_FOUND');
+    // Check if specific bots were set to run in the core.
+    if (Lavenza.Core.bots) {
+
+      // Await the processing of all bots that were set to run.
+      await Promise.all(Lavenza.Core.bots.map(bot => {
+
+        // We check if a bot directory exists for this bot. If not, we have to throw an error.
+        if (!Lavenza.Akechi.directoryExists(Lavenza.Paths.BOTS + '/' + bot)) {
+          console.log(Lavenza.Paths.BOTS + '/' + bot);
+          Lavenza.throw(`No bot directory found for ${bot}.`);
+        }
+
+        // If the directory exist, we can set it up for processing later.
+        botDirectories.push(Lavenza.Paths.BOTS + '/' + bot);
+
+      })).catch(Lavenza.throw);
+
+    } else {
+
+      // Fetch all bot directories from the 'bots' folder at the root of the application.
+      /** @catch Stop execution. */
+      botDirectories = await Lavenza.Akechi.getDirectoriesFrom(Lavenza.Paths.BOTS).catch(Lavenza.pocket);
+
+      // If for some reason, bot directories could not be loaded, we stop the app.
+      if (botDirectories === undefined) {
+        Lavenza.throw('NO_BOT_CONFIG_FOLDER_FOUND');
+      }
     }
 
     // Loop through all directories found in the /bots folder.

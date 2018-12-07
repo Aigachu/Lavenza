@@ -64,7 +64,7 @@ export default class Command {
    * @param {Lavenza.Resonance} resonance
    *   Resonance that invoked this command. All information about the client and message are here.
    */
-  static execute(order, resonance) {
+  static async execute(order, resonance) {
     // Default execute function. Does nothing.
     Lavenza.warn('You should probably add an execute function to this command!');
   }

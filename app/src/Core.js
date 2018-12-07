@@ -44,9 +44,15 @@ export default class Core {
    *
    * All tasks done in the EXECUTION phase are in the run() function.
    *
+   * @param {Array<string>} bots
+   *   Array of ids of bots we want to load.
+   *
    * @returns {Promise.<void>}
    */
-  static async ignite() {
+  static async ignite(bots = undefined) {
+
+    // If bots were provided, we set them here.
+    this.bots = bots;
 
     // Some flavor text for the console.
     Lavenza.status('INITIALIZING', [this.version]);

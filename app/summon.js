@@ -30,12 +30,20 @@
 // Since we want a head start on ES6, we use this.
 require('./includes/babelify');
 
+// Load CLI arguments.
+let argv = require('minimist')(process.argv.slice(2));
+
+let bots = undefined;
+if ('bot' in argv) {
+  bots = [argv['bot']];
+}
+
 // Load Lavenza module.
 /** @see ./src/Heart.js */
-const Lavenza = require('./').default.Lavenza;
+const Lavenza = require('./').default.Core;
 
 // Ignite Lavenza...Let's get this going!
-Lavenza.ignite().then(() => {
+Lavenza.ignite(bots).then(() => {
   console.log('Lavenza is now running!'.status);
 }).catch(error => {
   console.error(error);

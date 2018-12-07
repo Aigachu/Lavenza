@@ -73,6 +73,10 @@ export default class Bot {
     // Await clients authentication.
     /** @catch Stop execution. */
     await this.authenticateClients().catch(Lavenza.stop);
+
+    // Await talent initializations for this bot.
+    /** @catch Stop execution. */
+    await this.initializeTalentsForBot().catch(Lavenza.stop);
   }
 
   /**
@@ -361,4 +365,23 @@ export default class Bot {
     // Send a success message.
     Lavenza.success('CLIENTS_INITIALIZED_FOR_BOT', [this.name]);
   }
+
+  /**
+   * Runs each Talent's initialize() function to run any preparations for the given bot.
+   *
+   * @returns {Promise<void>}
+   */
+  async initializeTalentsForBot() {
+
+    // Await the processing of all of this bot's talents.
+    /** @catch Stop execution. */
+    await Promise.all(this.talents.map(async talentKey => {
+
+      // Run this talent's initialize function for this bot.
+      await TalentManager.talents[talentKey].initialize(this).catch(Lavenza.stop);
+
+    })).catch(Lavenza.stop);
+
+  }
+
 }

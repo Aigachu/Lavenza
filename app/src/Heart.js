@@ -95,7 +95,7 @@ let Keys = {
 const Heart = {
 
   // Core Lavenza Class.
-  Lavenza: Core,
+  Core: Core,
 
   // Confidants.
   Akechi: Akechi,

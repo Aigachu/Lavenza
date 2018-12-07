@@ -36,6 +36,8 @@ export default class Talent {
     this.id = path.basename(config.directory); // Here we get the name of the directory and set it as the ID.
     this.config = config;
     this.directory = config.directory;
+    this.databaseRoot = `/talents/${this.id}`;
+    this.databaseBotRoots = {};
 
     // Await the process of loading commands.
     /** @catch Continue execution. */
@@ -44,6 +46,26 @@ export default class Talent {
     // Await the process of loading listeners.
     /** @catch Continue execution. */
     await this.loadListeners().catch(Lavenza.continue);
+
+  }
+
+  /**
+   * Perform any initialization tasks for the Talent, in the context of a given bot.
+   *
+   * These initialization tasks happen after clients are loaded and authenticated for the bot.
+   *
+   * @param {Bot} bot
+   *   The bot to perform initializations for.
+   *
+   * @returns {Promise<void>}
+   */
+  static async initialize(bot) {
+
+    // Create a collection for this bot in the Talents portion of the storage.
+    await Lavenza.Gestalt.createCollection(`/talents/${this.id}/${bot.name}`, `talent.${this.id}.${bot.name}`).catch(Lavenza.stop);
+
+    // Set the root of the bot database for this talent.
+    this.databaseBotRoots[bot.name] = this.databaseRoot + `/${bot.name}`;
 
   }
 

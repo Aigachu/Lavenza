@@ -51,6 +51,8 @@ export default class Akechi {
     if (!fs.existsSync(path)){
       return false;
     }
+
+    return true;
   }
 
   /**
@@ -129,6 +131,8 @@ export default class Akechi {
    *
    * @param path
    *   The source directory to search in.
+   *
+   * @returns {Promise<*>}
    */
   static async getDirectoriesFrom(path) {
 

@@ -112,7 +112,7 @@ export default class CommandInterpreter {
     };
 
     // Return our crafted Order.
-    return new Lavenza.Order(command, args, config, resonance);
+    return new Lavenza.Order(command, args, splitContent.slice(2).join(' '), config, resonance);
 
   }
 

@@ -116,6 +116,24 @@ export default class Gestalt {
 
       })).catch(Lavenza.stop);
     })).catch(Lavenza.stop);
+
+    // Now we will bootstrap each talent's database storage.
+    // Await creation of the Talents collection.
+    /** @catch Stop execution. */
+    await this.createCollection('/talents', 'talents').catch(Lavenza.stop);
+
+    // Await bootstrapping of each talent's data.
+    /** @catch Stop execution. */
+    await Promise.all(Object.keys(TalentManager.talents).map(async talentKey => {
+
+      // Load the talent with the key.
+      let talent = TalentManager.talents[talentKey];
+
+      // Initialize the database collection for this talent if it doesn't already exist.
+      /** @catch Stop execution. */
+      await this.createCollection(`/talents/${talent.id}`, `talent.${talent.id}`).catch(Lavenza.stop);
+
+    })).catch(Lavenza.stop);
   }
 
   /**
@@ -164,7 +182,7 @@ export default class Gestalt {
    *
    * @returns {Promise<void>}
    */
-  static async createCollection(endpoint, tag, payload = {}) {
+  static async createCollection(endpoint, tag = '', payload = {}) {
 
     // Each storage service creates collections in their own way. We await this process.
     /** @catch Stop execution. */
