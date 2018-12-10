@@ -56,8 +56,8 @@ echo "--------------------------------------"
 # Re-install node libraries.
 echo "Re-install node libraries."
 echo "--------------------------------------"
-echo "cd apps/Lavenza-II/app; rm -rf node_modules;"
-ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; rm -rf node_modules;'
+#echo "cd apps/Lavenza-II/app; rm -rf node_modules;"
+#ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; rm -rf node_modules;'
 echo "cd apps/Lavenza-II/app; npm install;"
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; npm install;'
 echo "--------------------------------------"
@@ -76,6 +76,6 @@ echo "[WARNING] - Make sure config is set for all bots!"
 echo "Summoning bots..."
 echo "--------------------------------------"
 echo "cd apps/Lavenza-II/app; forever start summon.js --babel --bot=lavenza;"
-ssh aigachu@aigachu.com 'cd apps/Lavenza-II; forever start summon.js --babel --bot=lavenza;'
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; forever start summon.js --babel --bot=lavenza;'
 echo "--------------------------------------"
 echo "Script is done executing!"
