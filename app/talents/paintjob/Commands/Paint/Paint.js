@@ -314,14 +314,15 @@ class Paint extends Lavenza.Command {
     // We add a delay for some flavor. Don't actually need it.
     resonance.message.channel.send(`_Scanning available colors in this server..._`)
       .then(() => {
-        this.client.startTyping(resonance.message.channel, 2500)
-          .then(() => {
-            if (list_msg === `Here is the list of all colors in this server:\n\n`) {
-              resonance.message.channel.send(`There are no colors in this server! Better start creating some. :)`);
-            } else {
-              resonance.message.channel.send(list_msg);
-            }
-          });
+        resonance.message.channel.startTyping(1);
+        Lavenza.wait(3).then(() => {
+          if (list_msg === `Here is the list of all colors in this server:\n\n`) {
+            resonance.message.channel.send(`There are no colors in this server! Better start creating some. :)`);
+          } else {
+            resonance.message.channel.send(list_msg);
+          }
+          resonance.message.channel.stopTyping();
+        });
       });
 
   }
