@@ -329,9 +329,9 @@ export default class Bot {
 
       // Await authentication of the bot.
       /** @catch Continue execution. */
-      await this.clients[key].authenticate().catch(Lavenza.continue);
+      await this.clients[key].authenticate().catch(Lavenza.stop);
 
-    })).catch(Lavenza.continue);
+    })).catch(Lavenza.stop);
 
     // Send a success message.
     Lavenza.success('CLIENTS_AUTHENTICATED_FOR_BOT', [this.name]);

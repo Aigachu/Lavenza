@@ -167,12 +167,18 @@ export default class DiscordClient extends DiscordJSClient {
    * @returns {Promise<void>}
    */
   async authenticate() {
-    try {
-      // Await the login in of this client.
-      /** @catch Stop execution. */
-      await super.login(this.config.token).catch(Lavenza.stop);
-    } catch(error) {
-      Lavenza.throw('CLIENT_AUTHENTICATION_FAILURE', [this.type, this.bot.name]);
+    // Get the token.
+    let token = process.env[`${this.bot.name.toUpperCase()}_DISCORD_TOKEN`];
+
+    // If the token isn't found, we throw an error.
+    if (token === undefined) {
+      Lavenza.throw('TOKEN_NOT_FOUND_IN_ENV_FOR_BOT', [this.bot.name]);
     }
+
+    // Await the login in of this client.
+    /** @catch Stop execution. */
+    await super.login(token).catch(error => {
+      Lavenza.throw('CLIENT_AUTHENTICATION_FAILURE', [this.type, this.bot.name]);
+    });
   }
 }

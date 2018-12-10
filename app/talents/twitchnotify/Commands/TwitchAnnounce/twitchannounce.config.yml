@@ -1,19 +1,19 @@
 # Reader-Friendly name of the command.
-name: 'Hello Command'
+name: 'Twitch Announce Command'
 
 # Command description. This may be used in the bot and seen by users. Make it good!
-description: 'Command that simply orders the bot to say "Hello!"'
+description: 'Command to set up Twitch announcements in a server or for a user!'
 
 # Path to the main class containing the logic of the command, relative to this directory.
-class: 'Hello.js'
+class: 'TwitchAnnounce'
 
 # Command key. This is what users will use to invoke the command.
-key: 'hello'
+key: 'twitchann'
 
 # Additional "keys" that can be used to invoke the command.
 aliases:
-  - 'hey'
-  - 'hi'
+  - 'ttvann'
+  - 'tann'
 
 # Set whether or not this command is activated.
 # A deactivated command is only accessible if you or your environment are whitelisted.
@@ -29,11 +29,12 @@ aliases:
 # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
 cooldown:
   global: 0
-  user: 5
+  user: 0
 
 # Clients where this command will function.
 # If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.
-clients: '*'
+clients:
+  - discord
 
 # Client specific configurations.
 clients.config:
@@ -60,13 +61,13 @@ clients.config:
       pms: false
 
       # Determines level of operation needed to use this command. A value of 0 means everyone can use it.
-      oplevel: 0
+      oplevel: 2
 
     # Configure the global cooldown of the command.
     # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
     cooldown:
       global: 0
-      user: 5
+      user: 0
 
 #  twitch:
 #    authorization: []

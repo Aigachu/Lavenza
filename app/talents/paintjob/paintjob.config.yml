@@ -1,0 +1,15 @@
+# Read-Friendly Name of the Talent.
+name: 'Paint Job Talent'
+
+# Talent description.
+description: 'Paint yourself in a color!'
+
+# Talent Version.
+version: 1.0.0
+
+# Path to the main class of the Talent, relative to this directory.
+class: 'PaintJob'
+
+# Determine which clients this talent should be enabled in.
+clients:
+  - discord

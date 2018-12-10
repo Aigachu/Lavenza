@@ -139,7 +139,7 @@ class Reminder extends Lavenza.Talent {
 
       // If the receiver is a Discord User, we send it to the user via private messaging..
       case 'user':
-        message = `${creator} asked me to remind you **"${action}"** at this moment!`;
+        message = `${creator} asked me to remind you **"${action}"** right now!`;
         receiver.send(message);
         break;
 
@@ -151,7 +151,7 @@ class Reminder extends Lavenza.Talent {
 
       // If the receiver is a Discord Role, we send it to the channel where the reminder was created.
       case 'role':
-        message = `${creator} asked me to remind ${receiver} **"${action}"** at this moment!`;
+        message = `${creator} asked me to remind ${receiver} **"${action}"** right now!`;
         bot.clients.discord.guilds.find(guild => guild.id === reminder.guild_id).channels.find(channel => channel.id === reminder.channel_id).send(message);
         break;
 
@@ -195,10 +195,7 @@ class Reminder extends Lavenza.Talent {
     let confirmation = `Got it, ${message.author}! I'll remind ${receiver} **${reminder.action}** at the following date and time: **${time}**!`;
 
     // Send the confirmation message.
-    message.channel.send(confirmation)
-      .then((msg) => {
-        msg.delete(30000);
-      });
+    message.channel.send(confirmation);
 
     // Save reminders to database.
     this.save(bot).catch(Lavenza.stop);

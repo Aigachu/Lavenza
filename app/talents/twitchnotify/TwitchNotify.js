@@ -1,3 +1,5 @@
+import DiscordJS from "discord.js";
+
 /**
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
@@ -8,6 +10,7 @@
 // Modules.
   // I have to include it in the old way because this package isn't ES6 ready...GROSS!!!
 const twitch = require('twitch-api-v5');
+twitch.clientID = process.env.TWITCH_CLIENT_ID;
 
 /**
  * Example Talent.
@@ -46,12 +49,12 @@ class TwitchNotify extends Lavenza.Talent {
     this.guilds[bot.name] = await Lavenza.Gestalt.sync({}, this.guildConfigStorages[bot.name]);
 
     // If the configurations were loaded, we'll stop here.
-    if (!_.isEmpty(this.guilds)) {
-      console.log('Maiden Twitch: Loaded guild config from files.');
+    if (!Lavenza.isEmpty(this.guilds[bot.name])) {
+      Lavenza.status('Maiden Twitch: Loaded guild config from files.');
     } else {
       // If the configurations couldn't be loaded, we'll initialize them here and save them to the config path.
-      console.log('Maiden Twitch: Guild config not found. Created default guild config.');
-      bot.client.discord.guilds.every((guild) => {
+      Lavenza.status('Maiden Twitch: Guild config not found. Created default guild config.');
+      bot.clients.discord.guilds.every((guild) => {
         this.guilds[bot.name][guild.id] = {
           ttvann: {
             id: guild.id,
@@ -71,7 +74,7 @@ class TwitchNotify extends Lavenza.Talent {
     // The pinger is basically a function that will run every *minute* to check if a stream must be
     // fired. This is intensive, I know, but it's the best (first) way I thought of doing this.
     setInterval(() => {
-      this.ping(bot);
+      this.ping(bot).catch(Lavenza.continue);
     }, 60000);
 
   }
@@ -79,8 +82,15 @@ class TwitchNotify extends Lavenza.Talent {
   /**
    *
    */
-  static ping(bot) {
+  static async ping(bot) {
+    this.guilds[bot.name] = await Lavenza.Gestalt.get(this.guildConfigStorages[bot.name]);
+
     bot.clients.discord.guilds.every((guild) => {
+
+      if (Lavenza.isEmpty(this.guilds[bot.name])) {
+        return true;
+      }
+
       // TTVAnn
       if (this.guilds[bot.name][guild.id].ttvann.enabled) {
         // If there is no announcement channel set for this guild, we do nothing.
@@ -88,7 +98,7 @@ class TwitchNotify extends Lavenza.Talent {
           return true;
 
         // If there are no streams to announce, we do nothing.
-        if (_.isEmpty(this.guilds[bot.name][guild.id].ttvann.streams))
+        if (Lavenza.isEmpty(this.guilds[bot.name][guild.id].ttvann.streams))
           return true;
 
         // If we pass all the checks, we run ttvann.
@@ -103,12 +113,15 @@ class TwitchNotify extends Lavenza.Talent {
    * @param guild
    */
   static ttvann(guild, bot) {
-    guild.streams.every((stream_user) => {
-      this.getUserStream(stream_user).then((data) => {
+    guild.streams.every((streamUser) => {
+      this.getUserStream(streamUser).then((data) => {
         if (data.stream !== null) {
-          this.ttvannFire(guild, data.stream, stream_user, bot);
+          if (guild.live.includes(streamUser)) {
+            return true;
+          }
+          this.ttvannFire(guild, data.stream, streamUser, bot);
         } else {
-          this.ttvannRemoveStreamLive(guild.id, stream_user, bot);
+          this.ttvannRemoveStreamLive(guild.id, streamUser, bot);
           this.save(bot).catch(Lavenza.stop);
         }
         return true;
@@ -120,91 +133,111 @@ class TwitchNotify extends Lavenza.Talent {
   /**
    *
    * @param guild
-   * @param stream_data
-   * @param stream_user
+   * @param streamData
+   * @param streamUser
    */
-  static ttvannFire(guild, stream_data, stream_user, bot) {
-
-    if (guild.live.indexOf(stream_user) > -1)
-      return;
+  static ttvannFire(guild, streamData, streamUser, bot) {
 
     let announcement_channel = bot.clients.discord.channels.find(channel => channel.id === guild.ann_channel);
+    let name = streamData.channel.display_name;
+    let stream_title = streamData.channel.status;
+    let previewImage = streamData.preview.large;
+    let streamLogo = streamData.channel.logo;
+    let game = streamData.game;
+    let url = streamData.channel.url;
 
-    let name = stream_data.channel.display_name;
-    let game = stream_data.game;
-    let url = stream_data.channel.url;
+    bot.clients.discord.sendEmbed(announcement_channel, {
+      title: `${name} is now live with ${game}!`,
+      description: `${stream_title}`,
+      url: url,
+      color: '0x6441A5',
+      header: {
+        text: 'Twitch Announcements',
+        icon: 'attachment://icon.png'
+      },
+      footer: {
+        text: `Brought to you by Lavenza ;)`,
+        icon: bot.clients.discord.user.avatarURL
+      },
+      attachments: [
+        new DiscordJS.Attachment(`${this.directory}/icon.png`, 'icon.png')
+      ],
+      image: previewImage,
+      thumbnail: streamLogo
 
-    announcement_channel.send(`Psst...**${name}** is streaming **${game}** on Twitch!\n\nCome take a look! :eyes:\n\n${url}`);
-    this.ttvannAddStreamLive(guild.id, stream_user, bot);
+    }).catch(Lavenza.continue);
+
+    // announcement_channel.send(`Psst...**${name}** is streaming **${game}** on Twitch!\n\nCome take a look! :eyes:\n\n${url}`);
+    this.ttvannAddStreamLive(guild.id, streamUser, bot);
     this.save(bot).catch(Lavenza.stop);
   }
 
   /**
    *
-   * @param guild_id
-   * @param stream_user
+   * @param guildId
+   * @param streamUser
    */
-  static ttvannAddStream(guild_id, stream_user, bot) {
-    if (this.guilds[bot.name][guild_id].ttvann.streams.indexOf(stream_user) > -1) {
+  static ttvannAddStream(guildId, streamUser, bot) {
+    if (this.guilds[bot.name][guildId].ttvann.streams.indexOf(streamUser) > -1) {
       return false;
     }
-    this.guilds[bot.name][guild_id].ttvann.streams.push(stream_user);
+    this.guilds[bot.name][guildId].ttvann.streams.push(streamUser);
     this.save(bot).catch(Lavenza.stop);
     return true;
   }
 
   /**
    *
-   * @param guild_id
-   * @param stream_user
+   * @param guildId
+   * @param streamUser
    */
-  static ttvannAddStreamLive(guild_id, stream_user, bot) {
-    if (this.guilds[bot.name][guild_id].ttvann.live.indexOf(stream_user) > -1) {
+  static ttvannAddStreamLive(guildId, streamUser, bot) {
+    if (this.guilds[bot.name][guildId].ttvann.live.indexOf(streamUser) > -1) {
       return false;
     }
-    this.guilds[bot.name][guild_id].ttvann.live.push(stream_user);
+    this.guilds[bot.name][guildId].ttvann.live.push(streamUser);
     this.save(bot).catch(Lavenza.stop);
     return true;
   }
 
   /**
    *
-   * @param guild_id
+   * @param guildId
    * @param channel_id
    */
-  static ttvannSetAnnChannel(guild_id, channel_id, bot) {
-    this.guilds[bot.name][guild_id].ttvann.ann_channel = channel_id;
+  static ttvannSetAnnChannel(guildId, channel_id, bot) {
+    this.guilds[bot.name][guildId].ttvann.ann_channel = channel_id;
     this.save(bot).catch(Lavenza.stop);
   }
 
   /**
    *
-   * @param guild_id
-   * @param stream_user
+   * @param guildId
+   * @param streamUser
    */
-  static ttvannRemoveStream(guild_id, stream_user, bot) {
-    let streams_index = this.guilds[bot.name][guild_id].ttvann.streams.indexOf(stream_user);
-    let live_index = this.guilds[bot.name][guild_id].ttvann.live.indexOf(stream_user);
+  static ttvannRemoveStream(guildId, streamUser, bot) {
+    let streams_index = this.guilds[bot.name][guildId].ttvann.streams.indexOf(streamUser);
+    let live_index = this.guilds[bot.name][guildId].ttvann.live.indexOf(streamUser);
 
     if (streams_index > -1)
-      this.guilds[bot.name][guild_id].ttvann.streams.splice(streams_index, 1);
+      this.guilds[bot.name][guildId].ttvann.streams.splice(streams_index, 1);
 
     if (live_index > -1)
-      this.guilds[bot.name][guild_id].ttvann.live.splice(live_index, 1);
+      this.guilds[bot.name][guildId].ttvann.live.splice(live_index, 1);
 
     this.save(bot).catch(Lavenza.stop);
   }
 
   /**
    *
-   * @param guild_id
-   * @param stream_user
+   * @param guildId
+   * @param streamUser
    */
-  static ttvannRemoveStreamLive(guild_id, stream_user, bot) {
-    let live_index = this.guilds[bot.name][guild_id].ttvann.live.indexOf(stream_user);
+  static ttvannRemoveStreamLive(guildId, streamUser, bot) {
+    let live_index = this.guilds[bot.name][guildId].ttvann.live.indexOf(streamUser);
 
     if (live_index > -1)
-      this.guilds[bot.name][guild_id].ttvann.live.splice(live_index, 1);
+      this.guilds[bot.name][guildId].ttvann.live.splice(live_index, 1);
 
     this.save(bot).catch(Lavenza.stop);
   }

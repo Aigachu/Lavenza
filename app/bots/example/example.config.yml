@@ -35,10 +35,6 @@ clients:
       - '82530619355037696' # Avion
       - '77577477425201152' # Dango
 
-    # Bot Token
-    # Keep this secure and don't share it! Never commit it in a repository!
-    token: '12345'
-
     # Command Prefix override if needed.
     # command_prefix: ';-d'
 

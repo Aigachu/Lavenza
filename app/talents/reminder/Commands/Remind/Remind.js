@@ -84,7 +84,7 @@ class Remind extends Lavenza.Command {
     reminder.timestamp = timestamp;
 
     // If everything's good, let's create the reminder.
-    this.talent.create(resonance.message, reminder);
+    this.talent.create(resonance.message, reminder, resonance.bot);
 
   }
 
@@ -187,7 +187,7 @@ class Remind extends Lavenza.Command {
     }
 
     // The action is whatever is left in the input...
-    data.action = input;
+    data.action = input.replace(' .', '.');
 
     // If the action is empty, we throw an error.
     if (_.isEmpty(data.action)) {
