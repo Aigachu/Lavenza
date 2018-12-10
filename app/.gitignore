@@ -4,3 +4,4 @@ bots/**
 database/**
 !database/.gitkeep
 node_modules
+backup

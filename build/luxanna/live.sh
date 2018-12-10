@@ -32,11 +32,11 @@ echo "cd apps/Lavenza-II/; git remote prune origin;"
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git remote prune origin;'
 echo "--------------------------------------"
 
-# Checkout the live branch.
-echo "Checkout the live branch."
+# Reset.
+echo "Reset codebase."
 echo "--------------------------------------"
-echo "cd apps/Lavenza-II; git checkout live;"
-ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git checkout live;'
+echo "cd apps/Lavenza-II/; git reset --hard;"
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git reset --hard;'
 echo "--------------------------------------"
 
 # Pull latest changes.
@@ -44,6 +44,13 @@ echo "Pull latest changes."
 echo "--------------------------------------"
 echo "cd apps/Lavenza-II; git pull;"
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git pull;'
+echo "--------------------------------------"
+
+# Checkout the live branch.
+echo "Checkout the live branch."
+echo "--------------------------------------"
+echo "cd apps/Lavenza-II; git checkout live;"
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git checkout live;'
 echo "--------------------------------------"
 
 # Re-install node libraries.
@@ -56,7 +63,8 @@ ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; npm install;'
 echo "--------------------------------------"
 
 # Copy config & .env.
-# scp -r ../../app/bots aigachu@aigachu.com:~/apps/Lavenza-II/app
+scp -r ../../app/bots aigachu@aigachu.com:~/apps/Lavenza-II/app
+scp ../../app/.env aigachu@aigachu.com:~/apps/Lavenza-II/app
 
 # Alert for settings.
 # DO NOT track settings for each bot.
@@ -65,9 +73,9 @@ echo "--------------------------------------"
 echo "[WARNING] - Make sure config is set for all bots!"
 
 # Summon the bots.
-#echo "Summoning bots..."
-#echo "--------------------------------------"
-#echo "cd apps/Lavenza-II/app; forever start summon.js --babel --bot=lavenza;"
-#ssh aigachu@aigachu.com 'cd apps/Lavenza-II; forever start summon.js --babel --bot=lavenza;'
-#echo "--------------------------------------"
-#echo "Script is done executing!"
+echo "Summoning bots..."
+echo "--------------------------------------"
+echo "cd apps/Lavenza-II/app; forever start summon.js --babel --bot=lavenza;"
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II; forever start summon.js --babel --bot=lavenza;'
+echo "--------------------------------------"
+echo "Script is done executing!"
