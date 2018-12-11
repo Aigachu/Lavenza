@@ -5,6 +5,9 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+import ClientTypes from "../Client/ClientTypes";
+import DiscordJS from "discord.js";
+
 /**
  * Provides a base class for Commands.
  *
@@ -59,14 +62,95 @@ export default class Command {
    *
    * You can access the bot through the resonance, as well as any of the bot's clients.
    *
-   * @param {Lavenza.Order} order
+   * @param {Order} order
    *   Order sent by the CommandInterpreter, including the command arguments and more information.
-   * @param {Lavenza.Resonance} resonance
+   * @param {Resonance} resonance
    *   Resonance that invoked this command. All information about the client and message are here.
    */
   static async execute(order, resonance) {
     // Default execute function. Does nothing.
     Lavenza.warn('You should probably add an execute function to this command!');
+  }
+
+  /**
+   * Provides help text for the current command.
+   *
+   * You can access the bot through the resonance, as well as any of the bot's clients.
+   *
+   * @param {Order} order
+   *   Order sent by the CommandInterpreter, including the command arguments and more information.
+   * @param {Resonance} resonance
+   *   Resonance that invoked this command. All information about the client and message are here.
+   */
+  static async help(order, resonance) {
+
+    // Get configuration.
+    let config = await this.getActiveConfigForBot(resonance.bot).catch(Lavenza.stop);
+
+    switch (resonance.client.type) {
+      case ClientTypes.Discord:
+        let usageText = `\`${await resonance.bot.getCommandPrefix(resonance).catch(Lavenza.stop)}${config.key}`;
+
+        if (config.input) {
+          usageText += ` {${config.input.name.replace(' ', '_').toLowerCase()}}\`\n`;
+        } else {
+          usageText += `\`\n`;
+        }
+
+        if (config.aliases) {
+          let original = usageText;
+          config.aliases.every(alias => {
+            usageText += original.replace(`${config.key}`, alias);
+            return true;
+          });
+        }
+
+        let fields = [
+          {
+            name: 'Usage',
+            text: usageText
+          }
+        ];
+
+        if (config.options) {
+          let optionsList = '';
+          config.options.every(option => {
+            optionsList += `**${option.name}** \`-${option.key} {${option.expects.replace(' ', '_').toLowerCase()}}\` - ${option.description}\n\n`;
+            return true;
+          });
+          fields.push({
+            name: 'Options',
+            text: optionsList
+          });
+        }
+
+        if (config.flags) {
+          let flagsList = '';
+          config.flags.every(flag => {
+            flagsList += `**${flag.name}** \`-${flag.key}\` - ${flag.description}\n\n`;
+            return true;
+          });
+          fields.push({
+            name: 'Flags',
+            text: flagsList
+          });
+        }
+
+        await resonance.client.sendEmbed(resonance.message.channel, {
+          title: `${config.name}`,
+          description: `${config.description}`,
+          header: {
+            text: 'Lavenza Guide',
+            icon: resonance.client.user.avatarURL
+          },
+          fields: fields,
+          thumbnail: resonance.client.user.avatarURL
+        }).catch(Lavenza.stop);
+        break;
+
+      default:
+        return;
+    }
   }
 
   /**

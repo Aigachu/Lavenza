@@ -93,10 +93,12 @@ export default class DiscordClient extends DiscordJSClient {
    *   Object that should contain the *text* of the footer and the *icon* if applicable.
    * @param {Array<Attachment>} attachments
    *   Array of attachments to attach to the embed.
+   * @param {Boolean} timestamp
+   *   Controls whether or not we want to add a timestamp of the current time.
    *
    * @returns {Promise<void>}
    */
-  async sendEmbed(destination, {title, description, header, url, color, image, thumbnail, fields, footer, attachments} = {}) {
+  async sendEmbed(destination, {title, description, header, url, color, image, thumbnail, fields, footer, attachments, timestamp} = {}) {
 
     // Create the embed instance.
     let embed = new Embed();
@@ -106,7 +108,11 @@ export default class DiscordClient extends DiscordJSClient {
 
     // Set default values.
     embed.setColor(color);
-    embed.setTimestamp(new Date());
+
+    // If timestamp is set to true, set it.
+    if (timestamp) {
+      embed.setTimestamp(new Date());
+    }
 
     // Set Title if any.
     if (title) {

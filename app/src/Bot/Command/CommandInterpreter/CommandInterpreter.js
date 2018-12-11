@@ -8,6 +8,9 @@
 // Modules.
 import minimist from 'minimist';
 
+// Imports.
+import ClientTypes from "../../Client/ClientTypes";
+
 /**
  * Provides an Interpreter for Commands.
  *
@@ -69,8 +72,7 @@ export default class CommandInterpreter {
 
     // Get command prefix.
     // If there is a command prefix override for this client, we will set it. If not, we grab the default.
-    // @TODO - Add Server/Channel overrides for this as well.
-    let cprefix = botConfig.clients[client.type].command_prefix || botConfig.command_prefix;
+    let cprefix = await bot.getCommandPrefix(resonance).catch(Lavenza.stop);
 
     // If the content doesn't start with the command prefix, it's not a command.
     if (!splitContent[0].startsWith(cprefix)) {

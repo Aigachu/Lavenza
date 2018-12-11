@@ -331,6 +331,12 @@ export default class Bot {
       /** @catch Continue execution. */
       await this.clients[key].authenticate().catch(Lavenza.stop);
 
+      // Make sure database collection exists for this client.
+      await Lavenza.Gestalt.createCollection(`/bots/${this.name}/clients/${key}`);
+
+      // Run appropriate bootstrapping depending on the client.
+      await Lavenza.Gestalt.bootstrapClientDatabaseForBot(this, key);
+
     })).catch(Lavenza.stop);
 
     // Send a success message.
@@ -354,7 +360,7 @@ export default class Bot {
 
     // Await the processing and initialization of all clients in the configurations.
     /** @catch Stop execution. */
-    await Promise.all(clientKeys.map(key => {
+    await Promise.all(clientKeys.map(async key => {
 
       // Uses the ClientFactory to build the appropriate factory given the type.
       // The client is then set to the bot.
@@ -381,6 +387,45 @@ export default class Bot {
       await TalentManager.talents[talentKey].initialize(this).catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
+
+  }
+
+  /**
+   * Get the command prefix given a couple of checks.
+   *
+   * @param {*} client
+   *   The client that received the message.
+   * @param {Resonance} resonance
+   *   The Resonance we're taking a look at.
+   *
+   * @returns {Promise<void>}
+   *   Returns the command prefix we need to check for.
+   */
+  async getCommandPrefix(resonance) {
+
+    // Get the configuration.
+    let botConfig = await this.getActiveConfig().catch(Lavenza.stop);
+
+    // Variable to store retrieved cprefix.
+    let cprefix = undefined;
+
+    // Depending on the client type, we'll be checking different types of configurations.
+    switch (resonance.client.type) {
+      case ClientTypes.Discord:
+        let guildConfig = await Lavenza.Gestalt.get(`/bots/${this.name}/clients/discord/guilds`).catch(Lavenza.stop);
+        if (resonance.message.guild) {
+          cprefix = guildConfig[resonance.message.guild.id].cprefix || undefined;
+        }
+        break;
+    }
+
+    // Reset it to undefined if it's empty.
+    if (Lavenza.isEmpty(cprefix)) {
+      cprefix = undefined;
+    }
+
+    // By default, return the following.
+    return cprefix || botConfig.clients[resonance.client.type].command_prefix || botConfig.command_prefix;
 
   }
 

@@ -41,4 +41,11 @@ export default class Order {
     this.command.execute(this, this.resonance);
   }
 
+  /**
+   * Execute this order's help function.
+   */
+  help() {
+    this.command.help(this, this.resonance);
+  }
+
 }

@@ -39,6 +39,12 @@ export default class CommandListener extends Listener {
     /** @catch Stop execution. */
     let authorizer = await CommandAuthorizerFactory.build(order, resonance).catch(Lavenza.stop);
 
+    // If the help option is used, we fire the help function of the command.
+    if (order.args._.includes('help') || 'help' in order.args) {
+      order.help();
+      return;
+    }
+
     // Check if cooldowns are on for this command.
     // If so, we don't do anything with the command.
     /** @catch Stop execution. */

@@ -54,8 +54,8 @@ import Gestalt from './Gestalt/Gestalt';
 import Command from './Bot/Command/Command';
 import Talent from './Talent/Talent';
 import Listener from './Bot/Listener/Listener';
-import Resonance from './Model/Resonance';
-import Order from './Model/Order';
+import Resonance from './Models/Resonance';
+import Order from './Models/Order';
 
 // Configure colors for console.
 // Set console color themes.

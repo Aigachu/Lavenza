@@ -2,7 +2,7 @@
 name: 'Twitch Announce Command'
 
 # Command description. This may be used in the bot and seen by users. Make it good!
-description: 'Command to set up Twitch announcements in a server or for a user!'
+description: 'Command to set up Twitch announcements in a server!'
 
 # Path to the main class containing the logic of the command, relative to this directory.
 class: 'TwitchAnnounce'
@@ -19,11 +19,42 @@ aliases:
 # A deactivated command is only accessible if you or your environment are whitelisted.
 # active: false
 
-# Coming soon...
-#input: []
+# Command Input, Options & Flags.
+#   > Input - Raw text input that normally comes after the command key.
+#   > Flags - Arguments that come after the command. They take no input and must simply be placed afterwards.
+#   > Options - Flags that also take input.
 #
-#options: []
+# Example: ;°ping me -n 2 -d
+# Input: "me", Flag: "-d", Option: "-n" with its value being "2".
 #
+# This is not compulsory, but can be used to extend command versatility.
+# Arguments are parsed regardless of the data entered here. If these values are populated, extra validation will be
+# done upon command invocations to make sure valid options / arguments are provided.
+#input:
+#  name: 'user'
+#
+options:
+  - key: a
+    name: 'Add'
+    expects: 'Channel Name'
+    description: 'Add a twitch channel to the list of channels that should be automatically announced in this server.'
+    oplevel: 1
+  - key: r
+    name: 'Remove'
+    expects: 'Channel Name'
+    description: 'Remove a twitch channel from the list of channels that should be automatically announced in this server.'
+    oplevel: 1
+  - key: c
+    name: 'Channel'
+    expects: 'ChannelTag'
+    description: 'Set the channel in this server where streams should automatically be announced.'
+    oplevel: 1
+
+flags:
+  - key: s
+    name: 'Status'
+    description: 'Check the status of the Twitch Announcements feature. It can be Enabled or Disabled.'
+    oplevel: 1
 
 # Configure the global cooldown of the command.
 # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.

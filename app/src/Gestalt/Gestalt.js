@@ -9,7 +9,7 @@
 import Chronicler from './StorageService/Chronicler/Chronicler';
 import BotManager from '../Bot/BotManager';
 import TalentManager from '../Talent/TalentManager';
-import Talent from "../Talent/Talent";
+import ClientTypes from "../Bot/Client/ClientTypes";
 
 /**
  * Gestalt manages the storage and retrieval of JSON type data.
@@ -47,6 +47,48 @@ export default class Gestalt {
     await storageService.build().catch(Lavenza.stop);
     this.storageService = storageService;
 
+  }
+
+  /**
+   * Prepare database files for a specific client depending on the type.
+   *
+   * @param {Bot} bot
+   *   The bot to bootstrap for. Each bot has a separate database.
+   * @param {string} clientType
+   *   The client type to bootstrap for.
+   *
+   * @TODO - Put all this in factory design.
+   *
+   * @returns {Promise<void>}
+   */
+  static async bootstrapClientDatabaseForBot(bot, clientType) {
+    // Depending on the client type, we create different database files.
+    switch (clientType) {
+      case ClientTypes.Discord:
+        let guilds = await this.sync({}, `/bots/${bot.name}/clients/${clientType}/guilds`);
+
+        let defaultGuildConfig = {
+          cprefix: ''
+        };
+
+        await Promise.all(bot.clients.discord.guilds.map(async guild => {
+          if (guild.id in guilds) {
+            return;
+          }
+          guilds[guild.id] = defaultGuildConfig;
+          await this.update(`/bots/${bot.name}/clients/${clientType}/guilds`, guilds)
+        })).catch(Lavenza.stop);
+
+        break;
+
+      case ClientTypes.Twitch:
+        await this.sync({}, `/bots/${bot.name}/clients/${clientType}/channels`);
+        break;
+
+      case ClientTypes.Slack:
+        await this.sync({}, `/bots/${bot.name}/clients/${clientType}/workspaces`);
+        break;
+    }
   }
 
   /**
@@ -115,23 +157,10 @@ export default class Gestalt {
         await this.sync(command.config, `/bots/${bot.name}/commands/${command.config.key}/config`).catch(Lavenza.stop);
 
       })).catch(Lavenza.stop);
-    })).catch(Lavenza.stop);
 
-    // Now we will bootstrap each talent's database storage.
-    // Await creation of the Talents collection.
-    /** @catch Stop execution. */
-    await this.createCollection('/talents', 'talents').catch(Lavenza.stop);
-
-    // Await bootstrapping of each talent's data.
-    /** @catch Stop execution. */
-    await Promise.all(Object.keys(TalentManager.talents).map(async talentKey => {
-
-      // Load the talent with the key.
-      let talent = TalentManager.talents[talentKey];
-
-      // Initialize the database collection for this talent if it doesn't already exist.
+      // Create a database collection for the clients belonging to a Bot.
       /** @catch Stop execution. */
-      await this.createCollection(`/talents/${talent.id}`, `talent.${talent.id}`).catch(Lavenza.stop);
+      await this.createCollection(`/bots/${bot.name}/clients`).catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
   }

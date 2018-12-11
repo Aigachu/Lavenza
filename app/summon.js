@@ -33,6 +33,7 @@ require('./includes/babelify');
 // Load CLI arguments.
 let argv = require('minimist')(process.argv.slice(2));
 
+// If the bots are added in the arguments, we get them here.e
 let bots = undefined;
 if ('bot' in argv) {
   bots = [argv['bot']];

@@ -125,9 +125,9 @@ export default class Chronicler extends StorageService {
     /** @catch Stop execution. */
     let data = await this.get(endpoint).catch(Lavenza.stop);
 
-    // If no data was found, we can't update anything.
+    // If no data was found, make sure the data is an empty object.
     if (Lavenza.isEmpty(data)) {
-      return false;
+      data = {};
     }
 
     // We use lodash to merge the payload containing the updates, with the original data.
