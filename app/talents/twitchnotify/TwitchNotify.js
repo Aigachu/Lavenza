@@ -54,7 +54,9 @@ class TwitchNotify extends Lavenza.Talent {
     } else {
       // If the configurations couldn't be loaded, we'll initialize them here and save them to the config path.
       Lavenza.status('Maiden Twitch: Guild config not found. Created default guild config.');
-      bot.clients.discord.guilds.every((guild) => {
+
+      await Promise.all(bot.clients.discord.guilds.map(async guild => {
+
         this.guilds[bot.name][guild.id] = {
           ttvann: {
             id: guild.id,
@@ -64,17 +66,18 @@ class TwitchNotify extends Lavenza.Talent {
             live: [],
           }
         };
+
         // Save guild configurations.
-        this.save(bot).catch(Lavenza.stop);
-        return true;
-      });
+        await this.save(bot).catch(Lavenza.stop);
+
+      })).catch(Lavenza.stop);
     }
 
     // Set the pinger.
     // The pinger is basically a function that will run every *minute* to check if a stream must be
     // fired. This is intensive, I know, but it's the best (first) way I thought of doing this.
-    setInterval(() => {
-      this.ping(bot).catch(Lavenza.continue);
+    setInterval(async () => {
+      await this.ping(bot).catch(Lavenza.continue);
     }, 60000);
 
   }
@@ -83,51 +86,57 @@ class TwitchNotify extends Lavenza.Talent {
    *
    */
   static async ping(bot) {
+
     this.guilds[bot.name] = await Lavenza.Gestalt.get(this.guildConfigStorages[bot.name]);
 
-    bot.clients.discord.guilds.every((guild) => {
+    await Promise.all(bot.clients.discord.guilds.map(async guild => {
 
       if (Lavenza.isEmpty(this.guilds[bot.name])) {
-        return true;
+        return;
       }
 
       // TTVAnn
       if (this.guilds[bot.name][guild.id].ttvann.enabled) {
+
         // If there is no announcement channel set for this guild, we do nothing.
-        if (this.guilds[bot.name][guild.id].ttvann.ann_channel === null)
+        if (this.guilds[bot.name][guild.id].ttvann.ann_channel === null) {
           return true;
+        }
 
         // If there are no streams to announce, we do nothing.
-        if (Lavenza.isEmpty(this.guilds[bot.name][guild.id].ttvann.streams))
+        if (Lavenza.isEmpty(this.guilds[bot.name][guild.id].ttvann.streams)) {
           return true;
+        }
 
         // If we pass all the checks, we run ttvann.
-        this.ttvann(this.guilds[bot.name][guild.id].ttvann, bot);
+        await this.ttvann(this.guilds[bot.name][guild.id].ttvann, bot).catch(Lavenza.stop);
+
       }
-      return true;
-    });
+    })).catch(Lavenza.stop);
   }
 
   /**
    *
    * @param guild
    */
-  static ttvann(guild, bot) {
-    guild.streams.every((streamUser) => {
-      this.getUserStream(streamUser).then((data) => {
-        if (data.stream !== null) {
-          if (guild.live.includes(streamUser)) {
-            return true;
-          }
-          this.ttvannFire(guild, data.stream, streamUser, bot);
-        } else {
-          this.ttvannRemoveStreamLive(guild.id, streamUser, bot);
-          this.save(bot).catch(Lavenza.stop);
-        }
-        return true;
-      });
-      return true;
-    });
+  static async ttvann(guild, bot) {
+
+    await Promise.all(guild.streams.map(async streamUser => {
+      let data = await this.getUserStream(streamUser).catch(Lavenza.stop);
+
+      if (data.stream === null) {
+        await this.ttvannRemoveStreamLive(guild.id, streamUser, bot).catch(Lavenza.stop);
+        await this.save(bot).catch(Lavenza.stop);
+        return;
+      }
+
+      if (guild.live.includes(streamUser)) {
+        return;
+      }
+
+      await this.ttvannFire(guild, data.stream, streamUser, bot).catch(Lavenza.stop);
+
+      })).catch(Lavenza.stop);
   }
 
   /**
@@ -136,7 +145,7 @@ class TwitchNotify extends Lavenza.Talent {
    * @param streamData
    * @param streamUser
    */
-  static ttvannFire(guild, streamData, streamUser, bot) {
+  static async ttvannFire(guild, streamData, streamUser, bot) {
 
     let announcement_channel = bot.clients.discord.channels.find(channel => channel.id === guild.ann_channel);
     let name = streamData.channel.display_name;
@@ -167,9 +176,8 @@ class TwitchNotify extends Lavenza.Talent {
 
     }).catch(Lavenza.continue);
 
-    // announcement_channel.send(`Psst...**${name}** is streaming **${game}** on Twitch!\n\nCome take a look! :eyes:\n\n${url}`);
-    this.ttvannAddStreamLive(guild.id, streamUser, bot);
-    this.save(bot).catch(Lavenza.stop);
+    await this.ttvannAddStreamLive(guild.id, streamUser, bot).catch(Lavenza.stop);
+    await this.save(bot).catch(Lavenza.stop);
   }
 
   /**
@@ -177,12 +185,12 @@ class TwitchNotify extends Lavenza.Talent {
    * @param guildId
    * @param streamUser
    */
-  static ttvannAddStream(guildId, streamUser, bot) {
+  static async ttvannAddStream(guildId, streamUser, bot) {
     if (this.guilds[bot.name][guildId].ttvann.streams.indexOf(streamUser) > -1) {
       return false;
     }
     this.guilds[bot.name][guildId].ttvann.streams.push(streamUser);
-    this.save(bot).catch(Lavenza.stop);
+    await this.save(bot).catch(Lavenza.stop);
     return true;
   }
 
@@ -191,12 +199,12 @@ class TwitchNotify extends Lavenza.Talent {
    * @param guildId
    * @param streamUser
    */
-  static ttvannAddStreamLive(guildId, streamUser, bot) {
-    if (this.guilds[bot.name][guildId].ttvann.live.indexOf(streamUser) > -1) {
+  static async ttvannAddStreamLive(guildId, streamUser, bot) {
+    if (this.guilds[bot.name][guildId].ttvann.live.includes(streamUser)) {
       return false;
     }
     this.guilds[bot.name][guildId].ttvann.live.push(streamUser);
-    this.save(bot).catch(Lavenza.stop);
+    await this.save(bot).catch(Lavenza.stop);
     return true;
   }
 
@@ -205,9 +213,9 @@ class TwitchNotify extends Lavenza.Talent {
    * @param guildId
    * @param channel_id
    */
-  static ttvannSetAnnChannel(guildId, channel_id, bot) {
+  static async ttvannSetAnnChannel(guildId, channel_id, bot) {
     this.guilds[bot.name][guildId].ttvann.ann_channel = channel_id;
-    this.save(bot).catch(Lavenza.stop);
+    await this.save(bot).catch(Lavenza.stop);
   }
 
   /**
@@ -215,7 +223,7 @@ class TwitchNotify extends Lavenza.Talent {
    * @param guildId
    * @param streamUser
    */
-  static ttvannRemoveStream(guildId, streamUser, bot) {
+  static async ttvannRemoveStream(guildId, streamUser, bot) {
     let streams_index = this.guilds[bot.name][guildId].ttvann.streams.indexOf(streamUser);
     let live_index = this.guilds[bot.name][guildId].ttvann.live.indexOf(streamUser);
 
@@ -225,7 +233,7 @@ class TwitchNotify extends Lavenza.Talent {
     if (live_index > -1)
       this.guilds[bot.name][guildId].ttvann.live.splice(live_index, 1);
 
-    this.save(bot).catch(Lavenza.stop);
+    await this.save(bot).catch(Lavenza.stop);
   }
 
   /**
@@ -233,13 +241,13 @@ class TwitchNotify extends Lavenza.Talent {
    * @param guildId
    * @param streamUser
    */
-  static ttvannRemoveStreamLive(guildId, streamUser, bot) {
+  static async ttvannRemoveStreamLive(guildId, streamUser, bot) {
     let live_index = this.guilds[bot.name][guildId].ttvann.live.indexOf(streamUser);
 
     if (live_index > -1)
       this.guilds[bot.name][guildId].ttvann.live.splice(live_index, 1);
 
-    this.save(bot).catch(Lavenza.stop);
+    await this.save(bot).catch(Lavenza.stop);
   }
 
   /**
@@ -247,9 +255,9 @@ class TwitchNotify extends Lavenza.Talent {
    * @param feature
    * @param  {Guild} guild Guild to enable the Watchdog in.
    */
-  static enable(feature, guild, bot) {
+  static async enable(feature, guild, bot) {
     this.guilds[bot.name][guild.id][feature].enabled = true;
-    this.save(bot).catch(Lavenza.stop);
+    await this.save(bot).catch(Lavenza.stop);
     return true;
   }
 
@@ -258,9 +266,9 @@ class TwitchNotify extends Lavenza.Talent {
    * @param feature
    * @param  {Guild} guild Guild to disable the Watchdog in.
    */
-  static disable(feature, guild, bot) {
+  static async disable(feature, guild, bot) {
     this.guilds[bot.name][guild.id][feature].enabled = false;
-    this.save(bot).catch(Lavenza.stop);
+    await this.save(bot).catch(Lavenza.stop);
     return false;
   }
 
@@ -269,7 +277,7 @@ class TwitchNotify extends Lavenza.Talent {
    * @param feature
    * @param  {Guild} guild Guild to get the Watchdog status from.
    */
-  static status(feature, guild, bot) {
+  static async status(feature, guild, bot) {
     return this.guilds[bot.name][guild.id][feature].enabled;
   }
 
