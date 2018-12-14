@@ -7,7 +7,7 @@
 
 // Imports.
 import ClientTypes from '../ClientTypes';
-import {Client as DiscordJSClient, RichEmbed as Embed, Attachment} from 'discord.js';
+import DiscordJS, {Client as DiscordJSClient, RichEmbed as Embed, Attachment} from 'discord.js';
 
 /**
  * Provides a class for Discord Clients managed in Lavenza.
@@ -64,6 +64,63 @@ export default class DiscordClient extends DiscordJSClient {
       Lavenza.error('ERROR_OCCURRED', [this.bot.name]);
     });
 
+  }
+
+  /**
+   *
+   * @param destination
+   */
+  async sendError(destination, {text, type, code} = {}) {
+
+    // Initialize some variables.
+    let message = '';
+    let color = '';
+    let image = null;
+
+    // Determine code.
+    switch (code) {
+      case 401:
+        message = 'Unauthorized.';
+        break;
+
+      default:
+        message = 'An error has occured.';
+        break;
+    }
+
+    // Determine color.
+    switch (type) {
+      case 'warning':
+        color = '0xf4d742';
+        image = {
+          attachment: new DiscordJS.Attachment('./assets/warning.png', 'warning.png'),
+          name: 'warning.png'
+        };
+        break;
+
+      default:
+        color = '0xa5201d';
+        image = {
+          attachment: new DiscordJS.Attachment('./assets/error.png', 'error.png'),
+          name: 'error.png'
+        };
+        break;
+    }
+
+    // Send the embed.
+    return await this.sendEmbed(destination, {
+      description: text,
+      header: {
+        text: `${code}: ${message}`,
+        icon: `attachment://${image.name}`
+      },
+      color: color,
+      timestamp: true,
+      attachments: [
+        image.attachment
+      ],
+
+    }).catch(Lavenza.stop);
   }
 
   /**
@@ -163,7 +220,7 @@ export default class DiscordClient extends DiscordJSClient {
     }
 
     // Send the embed.
-    destination.send(embed);
+    return await destination.send(embed).catch(Lavenza.stop);
 
   }
 

@@ -70,9 +70,12 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
     // Check if the user has appropriate operation access rights.
     if (!this.validateOpLevel()) {
 
-      this.resonance.message.reply(', you are not authorized to use this command.').then(async message => {
+      this.resonance.client.sendError(this.resonance.message.channel, {
+        text: 'You are not authorized to use this command.',
+        code: 401
+      }).then(async message => {
         this.resonance.message.delete();
-        await Lavenza.wait(5).catch(Lavenza.stop);
+        await Lavenza.wait(10).catch(Lavenza.stop);
         message.delete().catch(Lavenza.continue);
       });
 

@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #
 # Build instructions for live environment.
 # This scripts runs automatically when code is committed and pushed on the 'live' branch.
@@ -63,8 +64,8 @@ ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; npm install;'
 echo "--------------------------------------"
 
 # Copy config & .env.
-scp -r ../../app/bots aigachu@aigachu.com:~/apps/Lavenza-II/app
-scp ../../app/.env aigachu@aigachu.com:~/apps/Lavenza-II/app
+scp -r ../../../app/bots aigachu@aigachu.com:~/apps/Lavenza-II/app
+scp ../../../app/.env aigachu@aigachu.com:~/apps/Lavenza-II/app
 
 # Alert for settings.
 # DO NOT track settings for each bot.
