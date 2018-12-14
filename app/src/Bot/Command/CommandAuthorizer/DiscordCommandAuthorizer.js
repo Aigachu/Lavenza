@@ -147,7 +147,14 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       return true;
 
     })).catch(error => {
-      this.resonance.message.channel.send(error.message);
+      this.resonance.client.sendError(this.resonance.message.channel, {
+        text: error.message,
+        code: 401
+      }).then(async message => {
+        this.resonance.message.delete();
+        await Lavenza.wait(10).catch(Lavenza.stop);
+        message.delete().catch(Lavenza.continue);
+      });
       return false;
     });
 
