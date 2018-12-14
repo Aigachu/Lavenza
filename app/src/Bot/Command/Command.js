@@ -92,7 +92,9 @@ export default class Command {
         let usageText = `\`${await resonance.bot.getCommandPrefix(resonance).catch(Lavenza.stop)}${config.key}`;
 
         if (config.input) {
-          usageText += ` {${config.input.name.replace(' ', '_').toLowerCase()}}\`\n`;
+          config.input.requests.every(request => {
+            usageText += ` {${request.replace(' ', '_').toLowerCase()}}\`\n`;
+          });
         } else {
           usageText += `\`\n`;
         }

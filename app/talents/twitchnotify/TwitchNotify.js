@@ -48,15 +48,12 @@ class TwitchNotify extends Lavenza.Talent {
 
     this.guilds[bot.name] = await Lavenza.Gestalt.sync({}, this.guildConfigStorages[bot.name]);
 
-    // If the configurations were loaded, we'll stop here.
-    if (!Lavenza.isEmpty(this.guilds[bot.name])) {
-      Lavenza.status('Maiden Twitch: Loaded guild config from files.');
-    } else {
-      // If the configurations couldn't be loaded, we'll initialize them here and save them to the config path.
-      Lavenza.status('Maiden Twitch: Guild config not found. Created default guild config.');
 
-      await Promise.all(bot.clients.discord.guilds.map(async guild => {
+    // If the configurations couldn't be loaded, we'll initialize them here and save them to the config path.
 
+    // Parse all guilds in the bot.
+    await Promise.all(bot.clients.discord.guilds.map(async guild => {
+      if (Lavenza.isEmpty(this.guilds[bot.name][guild.id])) {
         this.guilds[bot.name][guild.id] = {
           ttvann: {
             id: guild.id,
@@ -66,12 +63,13 @@ class TwitchNotify extends Lavenza.Talent {
             live: [],
           }
         };
+      }
 
-        // Save guild configurations.
-        await this.save(bot).catch(Lavenza.stop);
+      // Save guild configurations.
+      await this.save(bot).catch(Lavenza.stop);
 
-      })).catch(Lavenza.stop);
-    }
+    })).catch(Lavenza.stop);
+
 
     // Set the pinger.
     // The pinger is basically a function that will run every *minute* to check if a stream must be
@@ -136,7 +134,7 @@ class TwitchNotify extends Lavenza.Talent {
 
       await this.ttvannFire(guild, data.stream, streamUser, bot).catch(Lavenza.stop);
 
-      })).catch(Lavenza.stop);
+    })).catch(Lavenza.stop);
   }
 
   /**

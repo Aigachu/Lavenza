@@ -68,7 +68,9 @@ export default class Gestalt {
         let guilds = await this.sync({}, `/bots/${bot.name}/clients/${clientType}/guilds`);
 
         let defaultGuildConfig = {
-          cprefix: ''
+          cprefix: '',
+          operators: [],
+          masters: []
         };
 
         await Promise.all(bot.clients.discord.guilds.map(async guild => {

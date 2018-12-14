@@ -31,7 +31,9 @@ aliases:
 # Arguments are parsed regardless of the data entered here. If these values are populated, extra validation will be
 # done upon command invocations to make sure valid options / arguments are provided.
 #input:
-#  name: 'user'
+#  requests:
+#    - 'user'
+#  required: false
 #
 #options:
 #  - key: t

@@ -28,8 +28,11 @@ aliases: []
 # This is not compulsory, but can be used to extend command versatility.
 # Arguments are parsed regardless of the data entered here. If these values are populated, extra validation will be
 # done upon command invocations to make sure valid options / arguments are provided.
-input:
-  name: 'destinator'
+#input:
+#  requests:
+#    - 'Destinator'
+#    - 'Action'
+#  required: false
 
 #options:
 #  - key: t

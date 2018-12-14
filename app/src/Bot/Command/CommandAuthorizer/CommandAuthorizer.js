@@ -5,6 +5,9 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Imports.
+import ClientTypes from "../../Client/ClientTypes";
+
 /**
  * Provides a base class for Command Authorizers.
  *
@@ -44,7 +47,73 @@ export default class CommandAuthorizer {
    * @returns {Promise<boolean>}
    */
   async authorize() {
-    // No defaults yet...
+
+    // Validate that the command isn't on cooldown.
+    // Check if cooldowns are on for this command.
+    // If so, we have to return.
+    let cooldownValidation = await this.validateCooldown().catch(Lavenza.stop);
+    if (!cooldownValidation) {
+      switch (this.resonance.client.type) {
+        case ClientTypes.Discord:
+          this.resonance.message.reply(`That command is on global cooldown. :) Please wait!`).then(async message => {
+
+            // Delete the message containing the command.
+            this.resonance.message.delete();
+
+            // After 5 seconds, delete the reply originally sent.
+            Lavenza.wait(5).then( () => {
+              message.delete().catch(Lavenza.continue);
+            });
+          });
+          break;
+      }
+
+      return false;
+    }
+
+    // If command arguments aren't valid, we hit the message with a reply explaining the error, and then end.
+    let argumentsValidation = await this.validateCommandArguments().catch(Lavenza.stop);
+    if (!argumentsValidation) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Validate command arguments if we need to.
+   *
+   * @returns {Boolean}
+   */
+  async validateCommandArguments() {
+    // First, we perform input validations.
+    if (this.commandConfig.input) {
+      if (this.commandConfig.input.required === true && Lavenza.isEmpty(this.order.args._)) {
+        return false;
+      }
+    }
+
+    // console.log(this.order.args);
+
+    // Next, we perform option validations.
+    if (this.commandConfig.options) {
+      await Promise.all(this.commandConfig.options.map(async option => {
+        // console.log(option);
+      })).catch(error => {
+        return false;
+      });
+    }
+
+    // Next, we perform flag validations.
+    if (this.commandConfig.flags) {
+      await Promise.all(this.commandConfig.flags.map(async flag => {
+        // console.log(flag);
+      })).catch(error => {
+        return false;
+      });
+    }
+
+    // If all checks pass, we can return true.
     return true;
   }
 
@@ -68,32 +137,22 @@ export default class CommandAuthorizer {
    *
    * If it is, we notify the user.
    *
-   * @returns {Promise<boolean>}
+   * @returns {Boolean}
+   *   Returns false if the command is not cooled. True otherwise.
    */
-  async isCooled() {
+   async validateCooldown() {
+
     // Using the cooldown manager, we check if the command is on cooldown first.
     // Cooldowns are individual per user. So if a user uses a command, it's not on cooldown for everyone.
     if (Lavenza.Makoto.check(this.bot.name, 'command', this.commandConfig.key, 0)) {
-      this.resonance.message.reply(`That command is on global cooldown. :) Please wait!`).then(async message => {
-        this.resonance.message.delete();
-        Lavenza.wait(5).then( () => {
-          message.delete().catch(Lavenza.continue);
-        });
-      });
-      return true;
+      return false;
     }
 
     if (Lavenza.Makoto.check(this.bot.name, 'command', this.commandConfig.key, this.resonance.message.author.id)) {
-      this.resonance.message.reply(`That command is on cooldown. :) Please wait!`).then(async message => {
-        this.resonance.message.delete();
-        Lavenza.wait(5).then( () => {
-          message.delete().catch(Lavenza.continue);
-        });
-      });
-      return true;
+      return false;
     }
 
-    return false;
+    return true;
   }
 
 }

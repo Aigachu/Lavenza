@@ -45,14 +45,6 @@ export default class CommandListener extends Listener {
       return;
     }
 
-    // Check if cooldowns are on for this command.
-    // If so, we don't do anything with the command.
-    /** @catch Stop execution. */
-    let cooldownIsActive = await authorizer.isCooled().catch(Lavenza.stop);
-    if (cooldownIsActive) {
-      return;
-    }
-
     // The CommandAuthorizer checks if the command is authorized in the current context.
     // If for any reason it's unauthorized, we don't do anything with the command.
     /** @catch Stop execution. */
