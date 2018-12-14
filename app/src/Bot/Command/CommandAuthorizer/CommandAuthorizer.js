@@ -34,6 +34,7 @@ export default class CommandAuthorizer {
     this.commandClientConfig = this.commandConfig['clients.config'][this.type];
     this.masters = this.order.config.bot.clients[this.type].masters;
     this.operators = this.order.config.bot.clients[this.type].operators;
+    this.gods = this.order.config.bot.clients[this.type].gods;
     this.cooldowns = this.commandClientConfig.cooldown || this.commandConfig.cooldown;
   }
 
@@ -93,27 +94,6 @@ export default class CommandAuthorizer {
       }
     }
 
-    // console.log(this.order.args);
-
-    // Next, we perform option validations.
-    if (this.commandConfig.options) {
-      await Promise.all(this.commandConfig.options.map(async option => {
-        // console.log(option);
-      })).catch(error => {
-        return false;
-      });
-    }
-
-    // Next, we perform flag validations.
-    if (this.commandConfig.flags) {
-      await Promise.all(this.commandConfig.flags.map(async flag => {
-        // console.log(flag);
-      })).catch(error => {
-        return false;
-      });
-    }
-
-    // If all checks pass, we can return true.
     return true;
   }
 

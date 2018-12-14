@@ -74,10 +74,10 @@ export default class Gestalt {
         };
 
         await Promise.all(bot.clients.discord.guilds.map(async guild => {
-          if (guild.id in guilds) {
-            return;
+          if (!guild.id in guilds) {
+            guilds[guild.id] = defaultGuildConfig;
           }
-          guilds[guild.id] = defaultGuildConfig;
+          guilds[guild.id].name = guild.name;
           await this.update(`/bots/${bot.name}/clients/${clientType}/guilds`, guilds)
         })).catch(Lavenza.stop);
 

@@ -57,9 +57,9 @@ export default class Collection {
     // Await the processing of the all the files found.
     await Promise.all(files.map(async file => {
 
-      // We basically create an item with the directory and parse it's data, calling this function recursively.
+      // We basically create an item with the file and parse it's data, calling this function recursively.
       /** @catch Stop execution. */
-      let name = path.basename(file);
+      let name = path.basename(file).replace('.yml', '');
       let item = new Item(file);
       data[name] = await item.values().catch(Lavenza.stop);
 

@@ -24,6 +24,9 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
     this.msg = this.resonance.message;
     this.guild = this.resonance.message.guild;
     this.channel = this.resonance.message.channel;
+    this.clientConfig = await Lavenza.Gestalt.get(`/bots/${this.bot.name}/clients/discord`).catch(Lavenza.stop);
+    this.operatorsToValidate = [...this.operators, ...this.masters, ...this.gods, ...this.clientConfig.guilds[this.guild.id].operators, ...this.clientConfig.guilds[this.guild.id].masters];
+    this.mastersToValidate = [...this.masters, ...this.clientConfig.guilds[this.guild.id].masters, ...this.gods];
   }
 
   /**
@@ -66,6 +69,13 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
 
     // Check if the user has appropriate operation access rights.
     if (!this.validateOpLevel()) {
+
+      this.resonance.message.reply(', you are not authorized to use this command.').then(async message => {
+        this.resonance.message.delete();
+        await Lavenza.wait(5).catch(Lavenza.stop);
+        message.delete().catch(Lavenza.continue);
+      });
+
       Lavenza.warn('oplevel validation failed');
       return false;
     }
@@ -90,6 +100,60 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
     }
 
     // If all those checks pass through, we can authorize the command.
+    return true;
+  }
+
+  /**
+   * Validate command arguments if we need to.
+   *
+   * @returns {Boolean}
+   */
+  async validateCommandArguments() {
+
+    // Run the parent one first.
+    let defaults = await super.validateCommandArguments().catch(Lavenza.stop);
+    if (!defaults) {
+      return false;
+    }
+
+    // If any arguments were given, we'll validate them here.
+    let validations = await Promise.all(Object.keys(this.order.args).map(async arg => {
+
+      if (arg === '_') {
+        return;
+      }
+
+      if (Lavenza.isEmpty(this.commandConfig.options.find(option => option.key === arg)) && Lavenza.isEmpty(this.commandConfig.flags.find(flag => flag.key === arg))) {
+        Lavenza.throw(`\`${arg}\` is not a valid argument for this command.`);
+      }
+
+      let argConfig = this.commandConfig.options.find(option => option.key === arg) || this.commandConfig.flags.find(flag => flag.key === arg);
+
+      if (argConfig.oplevel === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
+        Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
+      }
+
+      if (argConfig.oplevel === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
+        Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
+      }
+
+      if (argConfig.oplevel === 3 && !this.gods.includes(this.authorUser.id)) {
+        Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
+      }
+
+      return true;
+
+    })).catch(error => {
+      this.resonance.message.channel.send(error.message);
+      return false;
+    });
+
+    // Get out if it failed.
+    if (!validations) {
+      return false;
+    }
+
+    // If all checks pass, we can return true.
     return true;
   }
 
@@ -141,11 +205,15 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       return true;
     }
 
-    if (this.commandClientConfig.authorization.oplevel === 1 && (!this.operators.includes(this.authorUser.id) && !this.masters.includes(this.authorUser.id))) {
+    if (this.commandClientConfig.authorization.oplevel === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
       return false;
     }
 
-    if (this.commandClientConfig.authorization.oplevel === 2 && !this.masters.includes(this.authorUser.id)) {
+    if (this.commandClientConfig.authorization.oplevel === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
+      return false;
+    }
+
+    if (this.commandClientConfig.authorization.oplevel === 3 && !this.gods.includes(this.authorUser.id)) {
       return false;
     }
 
