@@ -8,9 +8,6 @@
 // Modules.
 import minimist from 'minimist';
 
-// Imports.
-import ClientTypes from "../../Client/ClientTypes";
-
 /**
  * Provides an Interpreter for Commands.
  *
@@ -24,7 +21,7 @@ export default class CommandInterpreter {
    * @param {Resonance} resonance
    *   The Resonance that will be interpreted.
    *
-   * @returns {*}
+   * @returns {Promise<Order>}
    */
   static async interpret(resonance) {
 
@@ -34,7 +31,7 @@ export default class CommandInterpreter {
 
     // If no command is found, we have nothing to do.
     if (!order) {
-      return false;
+      return undefined;
     }
 
     // Otherwise, craft Order and send it back to the listener.

@@ -6,15 +6,14 @@
  */
 
 /**
- * Example Talent.
+ * Paint Job Talent!
  *
- * This class can do *anything* or *nothing*. It's an entry point for extended development of features.
- *
+ * This talent manages the feature that allows users to add color roles to servers and change their color
+ * seamlessly through chat! Makes life easier for server managers as well that always get asked "can I get the
+ * 0xffffff color?".
  */
 class PaintJob extends Lavenza.Talent {
-  // The possibilities are endless, my lord...
-  // ...That's not a Persona 5 reference...It's me being dumb...
-  // No but seriously, you can do whatever you want here. Commands are linked to their Talents, and they can easily interest with this class.
+
 }
 
 module.exports = PaintJob;

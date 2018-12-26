@@ -28,7 +28,7 @@ export default class TalentManager {
    * Preparation handler for the TalentManager.
    *
    * This function will run all necessary preparations for this manager before it can be used.
-   * @returns {Promise.<void>}
+   * @returns {Promise<void>}
    */
   static async prepare() {
 
@@ -44,7 +44,7 @@ export default class TalentManager {
    * 'Core' talents are available to all bots and as such are loaded by default during the application's Preparation
    * phase. 'Custom' talents that can be developed outside of Lavenza are loaded on demand.
    *
-   * @returns {Promise.<void>}
+   * @returns {Promise<void>}
    */
   static async loadCoreTalents() {
 
@@ -58,9 +58,6 @@ export default class TalentManager {
     // Await the loading of all talents found.
     /** @catch Stop execution. */
     await Promise.all(coreTalentDirectories.map(async directory => {
-
-      // Get the talent name. This is in fact the name of the directory.
-      let name = path.basename(directory);
 
       // Await the loading of the talent into the TalentManager.
       /** @catch Stop execution. */
@@ -78,7 +75,7 @@ export default class TalentManager {
   /**
    * Load a single talent into the TalentManager.
    *
-   * With the given directory path, we parse the 'TALENTNAME.info.yml' file load the Talent class.
+   * With the given directory path, we parse the 'TALENT_NAME.info.yml' file load the Talent class.
    *
    * @param {string} directory
    *   A string detailing the path to the Talent's directory.

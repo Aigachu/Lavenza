@@ -19,7 +19,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    * @returns {Promise<void>}
    */
   async build() {
-    this.botUser = this.resonance.client.user;
+    // this.botUser = this.resonance.client.user;
     this.authorUser = this.resonance.message.author;
     this.msg = this.resonance.message;
     this.guild = this.resonance.message.guild;
@@ -74,8 +74,8 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
         text: 'You are not authorized to use this command.',
         code: 401
       }).then(async message => {
+        await Lavenza.wait(30).catch(Lavenza.stop);
         this.resonance.message.delete();
-        await Lavenza.wait(10).catch(Lavenza.stop);
         message.delete().catch(Lavenza.continue);
       });
 
@@ -119,6 +119,16 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       return false;
     }
 
+    // We'll merge the options and flags together for easier comparisons.
+    let configOptions = this.commandConfig.options || [];
+    let configFlags = this.commandConfig.flags || [];
+    let configArgs = [...configOptions, ...configFlags];
+
+    // If args is empty, we don't have any validations to do.
+    if (Lavenza.isEmpty(configArgs)) {
+      return true;
+    }
+
     // If any arguments were given, we'll validate them here.
     let validations = await Promise.all(Object.keys(this.order.args).map(async arg => {
 
@@ -126,21 +136,22 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
         return;
       }
 
-      if (Lavenza.isEmpty(this.commandConfig.options.find(option => option.key === arg)) && Lavenza.isEmpty(this.commandConfig.flags.find(flag => flag.key === arg))) {
+      // Attempt to find the argument in the configurations.
+      let argConfig = configArgs.find(configArg => configArg.key === arg);
+
+      if (Lavenza.isEmpty(argConfig)) {
         Lavenza.throw(`\`${arg}\` is not a valid argument for this command.`);
       }
 
-      let argConfig = this.commandConfig.options.find(option => option.key === arg) || this.commandConfig.flags.find(flag => flag.key === arg);
-
-      if (argConfig.oplevel === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
+      if (argConfig['oplevel'] === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
         Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
       }
 
-      if (argConfig.oplevel === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
+      if (argConfig['oplevel'] === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
         Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
       }
 
-      if (argConfig.oplevel === 3 && !this.gods.includes(this.authorUser.id)) {
+      if (argConfig['oplevel'] === 3 && !this.gods.includes(this.authorUser.id)) {
         Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
       }
 
@@ -151,8 +162,8 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
         text: error.message,
         code: 401
       }).then(async message => {
+        await Lavenza.wait(30).catch(Lavenza.stop);
         this.resonance.message.delete();
-        await Lavenza.wait(10).catch(Lavenza.stop);
         message.delete().catch(Lavenza.continue);
       });
       return false;
@@ -183,9 +194,9 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
     }
 
     if (!this.commandConfig.active) {
-      return this.commandClientConfig.authorization.whitelist.guilds.includes(this.guild.id)
-        || this.commandClientConfig.authorization.whitelist.channels.includes(this.channel.id)
-        || this.commandClientConfig.authorization.whitelist.users.includes(this.authorUser.id)
+      return this.commandClientConfig.authorization['whitelist'].guilds.includes(this.guild.id)
+        || this.commandClientConfig.authorization['whitelist'].channels.includes(this.channel.id)
+        || this.commandClientConfig.authorization['whitelist'].users.includes(this.authorUser.id)
     }
   }
 
@@ -196,11 +207,11 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    *   TRUE if this authorization passes, FALSE otherwise.
    */
   validateUser() {
-    if (Lavenza.isEmpty(this.commandClientConfig.authorization.blacklist.users)) {
+    if (Lavenza.isEmpty(this.commandClientConfig.authorization['blacklist'].users)) {
       return true;
     }
 
-    return this.commandClientConfig.authorization.blacklist.users.includes(this.authorUser.id);
+    return this.commandClientConfig.authorization['blacklist'].users.includes(this.authorUser.id);
   }
 
   /**
@@ -211,24 +222,20 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    */
   validateOpLevel() {
 
-    if (this.commandClientConfig.authorization.oplevel === 0) {
+    if (this.commandClientConfig.authorization['oplevel'] === 0) {
       return true;
     }
 
-    if (this.commandClientConfig.authorization.oplevel === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
+    if (this.commandClientConfig.authorization['oplevel'] === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
       return false;
     }
 
-    if (this.commandClientConfig.authorization.oplevel === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
+    if (this.commandClientConfig.authorization['oplevel'] === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
       return false;
     }
 
-    if (this.commandClientConfig.authorization.oplevel === 3 && !this.gods.includes(this.authorUser.id)) {
-      return false;
-    }
+    return !(this.commandClientConfig.authorization['oplevel'] === 3 && !this.gods.includes(this.authorUser.id));
 
-
-    return true;
   }
 
   /**
@@ -238,7 +245,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    *   TRUE if this authorization passes, FALSE otherwise.
    */
   validatePMCommand() {
-    return !(this.msg.channel.type === "dm" && !this.commandClientConfig.authorization.pms);
+    return !(this.msg.channel.type === "dm" && !this.commandClientConfig.authorization['pms']);
   }
 
   /**
@@ -252,11 +259,11 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       return true;
     }
 
-    if (Lavenza.isEmpty(this.commandClientConfig.authorization.blacklist.guilds)) {
+    if (Lavenza.isEmpty(this.commandClientConfig.authorization['blacklist'].guilds)) {
       return true;
     }
 
-    return this.commandClientConfig.authorization.blacklist.guilds.includes(this.guild.id);
+    return this.commandClientConfig.authorization['blacklist'].guilds.includes(this.guild.id);
   }
 
   /**
@@ -266,11 +273,11 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    *   TRUE if this authorization passes, FALSE otherwise.
    */
   validateChannel() {
-    if (Lavenza.isEmpty(this.commandClientConfig.authorization.blacklist.channels)) {
+    if (Lavenza.isEmpty(this.commandClientConfig.authorization['blacklist'].channels)) {
       return true;
     }
 
-    return this.commandClientConfig.authorization.blacklist.channels.includes(this.channel.id);
+    return this.commandClientConfig.authorization['blacklist'].channels.includes(this.channel.id);
   }
 
 }

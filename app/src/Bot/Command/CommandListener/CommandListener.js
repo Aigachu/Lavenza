@@ -40,7 +40,7 @@ export default class CommandListener extends Listener {
     let authorizer = await CommandAuthorizerFactory.build(order, resonance).catch(Lavenza.stop);
 
     // If the help option is used, we fire the help function of the command.
-    if (order.args._.includes('help') || 'help' in order.args) {
+    if (order.args['_'].includes('help') || 'help' in order.args) {
       order.help();
       return;
     }

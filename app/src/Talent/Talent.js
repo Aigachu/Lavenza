@@ -36,7 +36,7 @@ export default class Talent {
     this.id = path.basename(config.directory); // Here we get the name of the directory and set it as the ID.
     this.config = config;
     this.directory = config.directory;
-    this.databaseBotRoots = {};
+    this.databases = {};
 
     // Await the process of loading commands.
     /** @catch Continue execution. */
@@ -60,8 +60,11 @@ export default class Talent {
    */
   static async initialize(bot) {
 
-    // Set the root of the bot database for this talent.
-    this.databaseBotRoots[bot.name] = `/bots/${bot.name}/talents/${this.id}`;
+    // Set the path to the talent's global database.
+    this.databases.global = `/talents/${this.id}`;
+
+    // Set the path of the bot's database for this talent.
+    this.databases[bot.name] = `/bots/${bot.name}/talents/${this.id}`;
 
   }
 
@@ -117,7 +120,7 @@ export default class Talent {
       let name = path.basename(directory);
 
       // Get the config file for the command.
-      // Each command should have a file with the format 'COMMANDNAME.config.yml'.
+      // Each command should have a file with the format 'COMMAND_NAME.config.yml'.
       /** @catch Continue execution. */
       let configFilePath = directory + '/' + name.toLowerCase() + '.config.yml';
       let config = await Lavenza.Akechi.readYamlFile(configFilePath).catch(Lavenza.continue);
@@ -147,7 +150,7 @@ export default class Talent {
       this.commands[config.key] = command;
 
       // Set command aliases.
-      config.aliases.forEach(alias => {
+      config['aliases'].forEach(alias => {
         this.commandAliases[alias] = command.config.key;
       });
 

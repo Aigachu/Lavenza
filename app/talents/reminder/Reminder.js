@@ -9,12 +9,13 @@
 import moment from 'moment';
 
 /**
- * Example Talent.
+ * Reminder Talent.
  *
- * @TODO - WARNING - LEGACY CODE AHEAD.
+ * Hey take a look at this shit Aiga: https://www.npmjs.com/package/parse-reminder
  *
- * This class can do *anything* or *nothing*. It's an entry point for extended development of features.
+ * So you coded all that parsing from scratch, but here's a beautiful package that does EVERYTHING FOR YOU.
  *
+ * @TODO - A shitload of refactoring and cleaning for this whole functionality with the above package. Things are about to work MUCH better with that.
  */
 class Reminder extends Lavenza.Talent {
 
@@ -43,7 +44,7 @@ class Reminder extends Lavenza.Talent {
     this.reminderStorages = this.reminderStorages || {};
 
     // Path to the database file.
-    this.reminderStorages[bot.name] = this.databaseBotRoots[bot.name] + `/reminders`;
+    this.reminderStorages[bot.name] = this.databases[bot.name] + `/reminders`;
 
     // Build Configurations
     this.reminders[bot.name] = await Lavenza.Gestalt.sync({}, this.reminderStorages[bot.name]);

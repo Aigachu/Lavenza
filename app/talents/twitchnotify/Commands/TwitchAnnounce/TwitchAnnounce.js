@@ -6,11 +6,9 @@
  */
 
 /**
- * Hello command.
+ * Twitch Announce command
  *
- * Literally just replies with 'Hello!'.
- *
- * A great testing command.
+ * Customize the Twitch Announcements in a Discord server.
  */
 class TwitchAnnounce extends Lavenza.Command {
 
@@ -21,21 +19,21 @@ class TwitchAnnounce extends Lavenza.Command {
 
     // If the "a" option is used, add a stream to the list of announcements in the server.
     if ('a' in order.args) {
-      this.talent.ttvannAddStream(resonance.message.guild.id, order.args.a, resonance.bot);
+      await this.talent.ttvannAddStream(resonance.message.guild.id, order.args.a, resonance.bot).catch(Lavenza.stop);
       resonance.message.channel.send(`Added **${order.args.a}** to the list of Twitch Announcements in this server!`);
       return;
     }
 
     // If the "r" option is used, remove a stream to the list of announcements in the server.
     if ("r" in order.args) {
-      this.talent.ttvannRemoveStream(resonance.message.guild.id, order.args.r, resonance.bot);
+      await this.talent.ttvannRemoveStream(resonance.message.guild.id, order.args.r, resonance.bot).catch(Lavenza.stop);
       resonance.message.channel.send(`Removed **${order.args.r}** from the list of Twitch Announcements in this server!`);
       return;
     }
 
     // If the "s" option is used, check the status of the watchdog in this guild.
     if ("s" in order.args) {
-      let status = this.talent.status('ttvann', resonance.message.guild, resonance.bot) ? `Enabled` : `Disabled`;
+      let status = await this.talent.status(resonance.message.guild, resonance.bot).catch(Lavenza.stop) ? `Enabled` : `Disabled`;
       resonance.message.channel.send(`Twitch Announcements status: **${status}**.`);
       return;
     }
@@ -49,20 +47,19 @@ class TwitchAnnounce extends Lavenza.Command {
       if (order.args.c === "#here")
         order.args.c = resonance.message.channel.id;
 
-      this.talent.ttvannSetAnnChannel(resonance.message.guild.id, order.args.c, resonance.bot);
+      await this.talent.ttvannSetAnnChannel(resonance.message.guild.id, order.args.c, resonance.bot).catch(Lavenza.stop);
       resonance.message.channel.send(`Set the announcement channel to <#${order.args.c}> for this server!`);
       return;
     }
 
     // Toggle the watchdog status.
-    let toggle = this.talent.status('ttvann', resonance.message.guild, resonance.bot) ? this.talent.disable('ttvann', resonance.message.guild, resonance.bot) : this.talent.enable('ttvann', resonance.message.guild, resonance.bot);
+    let toggle = await this.talent.status(resonance.message.guild, resonance.bot).catch(Lavenza.stop) ? this.talent.disable(resonance.message.guild, resonance.bot).catch(Lavenza.stop) : this.talent.enable(resonance.message.guild, resonance.bot).catch(Lavenza.stop);
 
     // Get the new status.
     let status = toggle ? `Enabled` : `Disabled`;
 
     resonance.message.channel.send(`Twitch Announcements is now **${status}**.`);
 
-    return;
   }
 
 }

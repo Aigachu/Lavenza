@@ -57,6 +57,9 @@ import Listener from './Bot/Listener/Listener';
 import Resonance from './Models/Resonance';
 import Order from './Models/Order';
 
+// Enums.
+import ClientTypes from './Bot/Client/ClientTypes';
+
 // Configure colors for console.
 // Set console color themes.
 /** @see https://www.npmjs.com/package/colors */
@@ -92,7 +95,7 @@ let Keys = {
 
 // Define the Heart of the module.
 // This is the object that is later set as a global.
-const Heart = {
+export const Heart = {
 
   // Core Lavenza Class.
   Core: Core,
@@ -114,6 +117,9 @@ const Heart = {
   Listener: Listener,
   Resonance: Resonance,
   Order: Order,
+
+  // Enums.
+  ClientTypes: ClientTypes,
 
   // Function shortcuts for Confidants.
   log: Morgana.log,
@@ -147,6 +153,3 @@ const Heart = {
 
 // Set Lavenza in the global scope for ease of access in other files.
 global['Lavenza'] = Heart;
-
-// Exports.
-export default Heart;

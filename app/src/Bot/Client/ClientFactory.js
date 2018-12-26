@@ -29,10 +29,10 @@ export default class ClientFactory {
    * @param {Bot} bot
    *   Bot that this client will be linked to.
    *
-   * @returns {{}}
+   * @returns {*}
    *   Client that was instantiated.
    */
-  static build(type, config, bot) {
+  static async build(type, config, bot) {
 
     // Initialize the object.
     let client = {};

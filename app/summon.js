@@ -41,7 +41,7 @@ if ('bot' in argv) {
 
 // Load Lavenza module.
 /** @see ./src/Heart.js */
-const Lavenza = require('./').default.Core;
+const Lavenza = require('./').Heart.Core;
 
 // Ignite Lavenza...Let's get this going!
 Lavenza.ignite(bots).then(() => {

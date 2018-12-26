@@ -5,11 +5,16 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Imports.
+import {GuildMember as GuildMember} from 'discord.js';
+
 // Custom Modules.
 const ntc = require('./ntc');
 
 /**
  * Paint command.
+ *
+ * Manages everything related to creating and managing color roles in a server.
  */
 class Paint extends Lavenza.Command {
 
@@ -17,7 +22,8 @@ class Paint extends Lavenza.Command {
    * @inheritDoc
    */
   static async execute(order, resonance) {
-    // @todo - Check if the bot is at the top of the role list and has the proper permissions.
+
+    // @TODO - Check if the bot is at the top of the role list and has the proper permissions.
 
     // If the "c" option is used, a color role will be created.
     if ("c" in order.args) {
@@ -48,9 +54,14 @@ class Paint extends Lavenza.Command {
 
   /**
    * Create a color with the given input.
-   * @param  {String} input Input given for the color to create.
-   * @param  {Object} resonance  Command data retrieved through parsing.
-   * @return {Boolean}      True upon success. False upon failure.
+   *
+   * @param  {String} input
+   *   Input given for the color to create.
+   * @param  {Object} resonance
+   *   Command data retrieved through parsing.
+   *
+   * @return {Boolean}
+   *   True upon success. False upon failure.
    */
   static createColor(input, resonance) {
 
@@ -98,9 +109,14 @@ class Paint extends Lavenza.Command {
 
   /**
    * Set Color to a member.
-   * @param    {String} input    Input from the user issuing the command.
-   * @param    {Object} resonance    Data obtained from parsing the command.
-   * @return    {Boolean}                True upon success. False upon failure.
+   *
+   * @param {String} input
+   *   Input from the user issuing the command.
+   * @param {Object} resonance
+   *   Data obtained from parsing the command.
+   *
+   * @return {Boolean}
+   *   True upon success. False upon failure.
    */
   static setColor(input, resonance) {
 
@@ -162,9 +178,13 @@ class Paint extends Lavenza.Command {
 
   /**
    * Remove color from a member.
-   * Color doesn't need to be specified because users can only have 1 color at once.
-   * @param  {Object}               resonance    Data from the parsed command.
-   * @param  {GuildMember} member  Guild member to clean color from.
+   *
+   * Color doesn't need to be specified because users can only have 1 color at a time.
+   *
+   * @param {Object} resonance
+   *   Data from the parsed command.
+   * @param {GuildMember} member
+   *   Guild member to clean color from.
    */
   static removeColorFromMember(resonance, member) {
 
@@ -241,7 +261,7 @@ class Paint extends Lavenza.Command {
    * Attempt to find a color in the current guild.
    * @param  {Object} colorData    Object containing color hex and color name.
    * @param  {Object} resonance            Command data obtained from parsing.
-   * @return {Role|Boolean}            Return the role object if found, else return FALSE.
+   * @return {Role|Boolean|*}            Return the role object if found, else return FALSE.
    */
   static findColorInCurrentGuild(colorData, resonance) {
 
@@ -264,22 +284,26 @@ class Paint extends Lavenza.Command {
 
   /**
    * Get color assigned to a member in the current guild.
-   * @param  {GuildMember} member    Member discord object.
-   * @return {Role/Boolean}                Role Discord Object of the color found.
+   *
+   * @param {GuildMember} member
+   *   Member discord object.
+   *
+   * @return {Role|*}
+   *   Role Discord Object of the color found.
    */
   static getMemberColorInCurrentGuild(member) {
 
     // Variable to store the color role. The False by default.
-    let color = false;
+    let color = undefined;
 
     // Loop into all roles of the given member and attempt to find a color role.
     // Color roles all have the '.color' suffix.
+    // noinspection JSUnresolvedVariable
     member.roles.every((role) => {
       if (role.name.includes('.color')) {
         color = role;
         return false; // This ends execution of the .every() function.
       }
-
       return true;
     });
 
@@ -290,8 +314,9 @@ class Paint extends Lavenza.Command {
 
   /**
    * List all color roles in the given guild.
-   * @param  {Object} resonance Data from the parsed command.
-   * @return {[type]}      [description]
+   *
+   * @param  {Object} resonance
+   *   Data from the parsed command.
    */
   static listColorRolesInGuild(resonance) {
 
@@ -329,7 +354,9 @@ class Paint extends Lavenza.Command {
 
   /**
    * Delete all color roles for a given guild.
-   * @param  {Object} resonance Data from the parsed command.
+   *
+   * @param {Object} resonance
+   *   Data from the parsed command.
    */
   static deleteAllColorRoles(resonance) {
 
@@ -351,8 +378,12 @@ class Paint extends Lavenza.Command {
 
   /**
    * Returns whether or not the given string is a Hex value.
-   * @param  {String}  string Supposed Hex Value.
-   * @return {Boolean}        True if it's a valid Hex Value. False if it's not.
+   *
+   * @param {String} string
+   *   Supposed Hex Value.
+   *
+   * @return {Boolean}
+   *   True if it's a valid Hex Value. False if it's not.
    */
   static isHexColor(string) {
     return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(string);

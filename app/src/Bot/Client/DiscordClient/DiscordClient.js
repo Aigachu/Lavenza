@@ -46,7 +46,7 @@ export default class DiscordClient extends DiscordJSClient {
       Lavenza.success('DISCORD_CLIENT_CONNECT', [this.bot.name]);
 
       // Set game text.
-      this.user.setActivity(this.config.activity).catch(console.error);
+      this.user.setActivity(this.config['activity']).catch(console.error);
     });
 
     // Event: When the discord client receives a message.
@@ -66,9 +66,26 @@ export default class DiscordClient extends DiscordJSClient {
 
   }
 
+  async typeFor(seconds, channel) {
+    await channel.stopTyping();
+    await channel.startTyping(1);
+    await Lavenza.wait(seconds).catch(Lavenza.stop);
+    await channel.stopTyping();
+  }
+
   /**
+   * Send a cute error message to a destination.
    *
-   * @param destination
+   * @param {*} destination
+   *   Destination, normally a channel or a user.
+   * @param {string} text
+   *   Message of the error.
+   * @param {string} type
+   *   Type of error. Can be warning, status or error.
+   * @param {int} code
+   *   Error code.
+   *
+   * @returns {Promise<void>}
    */
   async sendError(destination, {text, type, code} = {}) {
 

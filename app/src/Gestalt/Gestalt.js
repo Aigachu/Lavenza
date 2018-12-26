@@ -62,31 +62,39 @@ export default class Gestalt {
    * @returns {Promise<void>}
    */
   static async bootstrapClientDatabaseForBot(bot, clientType) {
+
     // Depending on the client type, we create different database files.
     switch (clientType) {
+
+      // For Discord Clients...
       case ClientTypes.Discord:
+
+        // We start by syncing the guild configuration.
         let guilds = await this.sync({}, `/bots/${bot.name}/clients/${clientType}/guilds`);
 
+        // This is the default guild configuration for Discord.
         let defaultGuildConfig = {
           cprefix: '',
           operators: [],
           masters: []
         };
 
-        await Promise.all(bot.clients.discord.guilds.map(async guild => {
+        // For all guilds, we initialize this default configuration.
+        await Promise.all(bot.getClient(ClientTypes.Discord).guilds.map(async guild => {
           if (!guild.id in guilds) {
             guilds[guild.id] = defaultGuildConfig;
           }
           guilds[guild.id].name = guild.name;
           await this.update(`/bots/${bot.name}/clients/${clientType}/guilds`, guilds)
         })).catch(Lavenza.stop);
+       break;
 
-        break;
-
+      // For Twitch Clients...
       case ClientTypes.Twitch:
         await this.sync({}, `/bots/${bot.name}/clients/${clientType}/channels`);
         break;
 
+      // For Slack Clients...
       case ClientTypes.Slack:
         await this.sync({}, `/bots/${bot.name}/clients/${clientType}/workspaces`);
         break;
@@ -165,6 +173,23 @@ export default class Gestalt {
       await this.createCollection(`/bots/${bot.name}/clients`).catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
+
+    // Await creation of the Bots collection.
+    /** @catch Stop execution. */
+    await this.createCollection('/talents', 'bots').catch(Lavenza.stop);
+
+    // Await bootstrapping of each bot's data.
+    /** @catch Stop execution. */
+    await Promise.all(Object.keys(TalentManager.talents).map(async talentKey => {
+
+      // Get the actual talent.
+      let talent = TalentManager.talents[talentKey];
+
+      // Initialize the database collection for this bot if it doesn't already exist.
+      /** @catch Stop execution. */
+      await this.createCollection(`/talents/${talent.id}`).catch(Lavenza.stop);
+
+    })).catch(Lavenza.stop);
   }
 
   /**
@@ -218,7 +243,6 @@ export default class Gestalt {
     // Each storage service creates collections in their own way. We await this process.
     /** @catch Stop execution. */
     await this.storageService.createCollection(endpoint, payload).catch(Lavenza.stop);
-    // this.collections[tag] = endpoint;
 
   }
 

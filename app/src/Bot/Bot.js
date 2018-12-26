@@ -9,6 +9,7 @@
 import ClientFactory from './Client/ClientFactory';
 import TalentManager from '../Talent/TalentManager';
 import CommandListener from './Command/CommandListener/CommandListener';
+import PromptFactory from './Prompt/PromptFactory';
 import ClientTypes from "./Client/ClientTypes";
 
 /**
@@ -41,6 +42,7 @@ export default class Bot {
     this.commands = {};
     this.commandAliases = {};
     this.listeners = [];
+    this.prompts = [];
   }
 
   /**
@@ -55,6 +57,19 @@ export default class Bot {
     /** @catch Stop execution. */
     return await Lavenza.Gestalt.get(`/bots/${this.name}/config`).catch(Lavenza.stop);
 
+  }
+
+  /**
+   * Retrieve a specific client from a Bot.
+   *
+   * @param {string} clientType
+   *   The type of client to return from the bot.
+   *
+   * @returns {Promise<void>}
+   *   The requested client.
+   */
+  getClient(clientType) {
+    return this.clients[clientType];
   }
 
   /**
@@ -241,6 +256,7 @@ export default class Bot {
 
         // Send a warning message to the console.
         Lavenza.warn('ERROR_LOADING_TALENT', [talentKey]);
+        Lavenza.warn(error.message);
       });
     })).catch(Lavenza.stop);
   }
@@ -278,12 +294,41 @@ export default class Bot {
     // Construct a 'Resonance'.
     let resonance = new Lavenza.Resonance(content, message, this, client);
 
-    // Fire all of the bot's listeners.
-    this.listeners.every(async listener => {
-      listener.listen(resonance).catch(Lavenza.stop);
-      return true;
-    });
+    // Fire all of the bot's prompts.
+    await Promise.all(this.prompts.map(async prompt => {
 
+      // Fire the listen function.
+      await prompt.listen(resonance).catch(Lavenza.stop);
+
+    })).catch(Lavenza.stop);
+
+    // Fire all of the bot's listeners.
+    await Promise.all(this.listeners.map(async listener => {
+
+      // Fire the listen function.
+      await listener.listen(resonance).catch(Lavenza.stop);
+
+    })).catch(Lavenza.stop);
+
+  }
+
+  async prompt(request, resonance, lifespan, onResponse) {
+
+    // Create the new prompt using the factory.
+    let prompt = await PromptFactory.build(request, resonance, onResponse, this);
+
+    // Set the prompt to the bot.
+    this.prompts.push(prompt);
+
+    // Await resolution of the prompt.
+    // If we go past the lifespan, the prompt will throw an error. This error must be caught and handled accordingly.
+    /** @catch Throw the error for specific case handling. */
+    await prompt.await(lifespan).catch(Lavenza.throw);
+
+  }
+
+  async removePrompt(prompt) {
+    this.prompts = Lavenza.removeFromArray(this.prompts, prompt);
   }
 
   /**
@@ -364,7 +409,7 @@ export default class Bot {
 
       // Uses the ClientFactory to build the appropriate factory given the type.
       // The client is then set to the bot.
-      this.clients[key] = ClientFactory.build(key, activeConfig.clients[key], this);
+      this.clients[key] = await ClientFactory.build(key, activeConfig.clients[key], this).catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
 

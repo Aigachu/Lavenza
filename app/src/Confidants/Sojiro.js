@@ -21,6 +21,36 @@ import _ from 'underscore';
  */
 export default class Sojiro {
 
+  static isConfirmation(text) {
+
+    // Clean punctuation.
+    text = text.replace('?', '');
+    text = text.replace('!', '');
+    text = text.replace('.', '');
+    text = text.replace(',', '');
+
+    let confirmationWords = [
+      'yes',
+      'affirmative',
+      'y',
+      'yus',
+      'sure',
+      'okay',
+      'ok',
+      'alright'
+    ];
+
+    let splitText = text.split(' ');
+
+    for (let word of splitText) {
+      if (confirmationWords.includes(word.toLowerCase())) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   /**
    * Utility function to return a random element from a given array.
    *

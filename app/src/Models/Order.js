@@ -21,6 +21,8 @@ export default class Order {
    *   The command that must be executed with this order.
    * @param {Array} args
    *   The arguments sent with the order.
+   * @param {string} rawContent
+   *   Raw content obtained from the resonance.
    * @param {Object} config
    *   The configuration of the bot & command fetched from the database, for the bot that called this.
    * @param {Resonance} resonance
