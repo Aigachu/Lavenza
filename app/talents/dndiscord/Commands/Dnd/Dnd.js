@@ -28,10 +28,10 @@ class Dnd extends Lavenza.Command {
     }
 
     // If the 'newgame' argument is used, we fire the New Game handler.
-    // if ('newgame' in order.args) {
-    //   await NewGame.handle(order, resonance, this).catch(Lavenza.stop);
-    //   return;
-    // }
+    if ('newgame' in order.args) {
+      await NewGame.handle(order, resonance, this).catch(Lavenza.stop);
+      return;
+    }
 
     // await resonance.bot.getClient(Lavenza.ClientTypes.Discord).sendEmbed(resonance.message.channel, {
     //   description: `\`\`\`${JSON.stringify(order.args, null, '\t')}\`\`\``

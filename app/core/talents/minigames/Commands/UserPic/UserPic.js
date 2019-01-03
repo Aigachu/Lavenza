@@ -6,11 +6,9 @@
  */
 
 /**
- * Hello command.
+ * UserPic command.
  *
- * Literally just replies with 'Hello!'.
- *
- * A great testing command.
+ * Used to send a bigger version of a user's avatar to a discord channel.
  */
 class UserPic extends Lavenza.Command {
 
@@ -22,15 +20,13 @@ class UserPic extends Lavenza.Command {
     // Trim the given tag from the command.
     order.rawContent = order.rawContent.trim().replace('<@', '').replace('!', '').replace('>', '');
 
-    console.log(order.rawContent);
-
     // Find the member in the current guild.
     let member = resonance.message.guild.members.find(member => member.id === order.rawContent);
 
     // If a member isn't found, the input may be wrong.
     if (member === null) {
       resonance.message.channel.send(`Hmm...Did you make a mistake? I couldn't get a pic with the input you provided... :(`);
-      return false;
+      return;
     }
 
     // Send the user's avatar to the channel.

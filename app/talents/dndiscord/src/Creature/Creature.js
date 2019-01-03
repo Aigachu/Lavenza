@@ -8,7 +8,6 @@
 // Imports.
 import Entity from '../Entity';
 
-
 /**
  * Provides a base class for Creatures.
  */

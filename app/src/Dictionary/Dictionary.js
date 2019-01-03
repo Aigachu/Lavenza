@@ -58,6 +58,7 @@ export default {
   BOT_MANAGER_DEPLOYED: '<BotManager>: Deployment complete!',
   COMMANDS_SET_FOR_BOT: 'Commands successfully inherited from all talents for {@1}!',
   LISTENERS_SET_FOR_BOT: 'Listeners successfully set & inherited from all talents for {@1}!',
+  TOKEN_NOT_FOUND_IN_ENV_FOR_BOT: 'No token was found for @1 in the environment variables! Make sure you have an existing .env file in the /app directory. You can see .env.example for details.',
 
   // === Talents ===
   TALENT_MANAGER_PREP: '<TalentManager>: Launching preparations...',

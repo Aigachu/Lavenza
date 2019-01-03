@@ -26,7 +26,7 @@ export default class PlayerManager extends EntityManager {
     this.repositoryId = 'players';
 
     // Each entity will be instantiated in the code using a class. This class should be defined and referenced here.
-    this.entityClass = './Player';
+    this.entityClass = require('./Player')['default'];
 
   }
 

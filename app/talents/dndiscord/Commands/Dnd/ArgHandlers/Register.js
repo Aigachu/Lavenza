@@ -40,10 +40,17 @@ export default class Register {
   static async registration(order, resonance, command) {
 
     // If a player already exists for this user, we should tell them this.
+    // Get the player identity of the Discord user that sent the resonance.
+    let playerData = await command.talent.getPlayerData(resonance.message.author.id).catch(Lavenza.stop);
 
+    // If player data already exists, we exit the process here.
+    if (!Lavenza.isEmpty(playerData)) {
+      await resonance.message.reply(`Hey, you already have an account! You don't need to register again.`).catch(Lavenza.stop);
+      return;
+    }
 
     // We'll progressively build the player's data.
-    let playerData = {};
+    playerData = {};
 
     // Set the Player's ID. It will be the same as their Discord User ID.
     playerData.id = resonance.message.author.id;
@@ -55,7 +62,7 @@ export default class Register {
     await resonance.client.typeFor(2, resonance.message.channel);
 
     // A little welcome message.
-    resonance.message.reply(`Welcome to **Dungeons & Discord**!`).catch(Lavenza.stop);
+    await resonance.message.reply(`Welcome to **Dungeons & Discord**!`).catch(Lavenza.stop);
 
     // Type for 3 seconds.
     await resonance.client.typeFor(3, resonance.message.channel);
@@ -71,11 +78,11 @@ export default class Register {
       if (Lavenza.Sojiro.isConfirmation(responseResonance.content)) {
 
         // Save the green tea for later.
-        resonance.message.reply(`Awesome! I'll get started on that right away. In the meantime...`);
+        await resonance.message.reply(`Awesome! I'll get started on that right away. In the meantime...`).catch(Lavenza.stop);
         playerData.greenTea = true;
 
       } else {
-        resonance.message.reply(`Oh! That's completely fine. Moving on...`);
+        await resonance.message.reply(`Oh! That's completely fine. Moving on...`).catch(Lavenza.stop);
       }
 
     }).catch(error => {
@@ -108,7 +115,7 @@ export default class Register {
     // If the player asked for tea in the beginning, hand it to them!
     if (playerData.greenTea) {
       await resonance.client.typeFor(5, resonance.message.channel);
-      resonance.message.reply(`wait! I almost forgot...Here's your tea! - :tea:`);
+      resonance.message.reply(`wait! I almost forgot...Here's your tea! - :tea:`).catch(Lavenza.stop);
     }
   }
 }

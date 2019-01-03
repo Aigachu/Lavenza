@@ -81,7 +81,7 @@ export default class Gestalt {
 
         // For all guilds, we initialize this default configuration.
         await Promise.all(bot.getClient(ClientTypes.Discord).guilds.map(async guild => {
-          if (!guild.id in guilds) {
+          if (!(guild.id in guilds)) {
             guilds[guild.id] = defaultGuildConfig;
           }
           guilds[guild.id].name = guild.name;

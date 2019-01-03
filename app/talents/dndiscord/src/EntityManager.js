@@ -23,7 +23,7 @@ export default class EntityManager {
     this.repositoryId = null;
 
     // Each entity will be instantiated in the code using a class. This class should be defined and referenced here.
-    this.entityClass = './Entity';
+    this.entityClass = require('./Entity')['default'];
 
     // This is an abstract method. It should never be called.
     Lavenza.throw('This is the base build function of the EntityManager class. This should not have been called.');
@@ -81,11 +81,8 @@ export default class EntityManager {
       return undefined;
     }
 
-    // Load the entity class.
-    let entityClass = require(this.entityClass);
-
     // Create a new instance of the entity with the data and return it.
-    return new entityClass(id, `${this.repositoryPath}/${id}`);
+    return new this.entityClass(id, `${this.repositoryPath}/${id}`);
   }
 
   /**

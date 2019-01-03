@@ -23,19 +23,18 @@ export default class NewGame {
    */
   static async handle(order, resonance, command) {
 
-    // Get the identity of the Discord user that sent the Resonance.
-    let character = await command.talent.getCharacter(resonance.message.author.id).catch(Lavenza.stop);
+    // Get the player identity of the Discord user that sent the resonance.
+    let player = await command.talent.getPlayerData(resonance.message.author.id).catch(Lavenza.stop);
 
-    // If the character already exists, we should send a message and exit.
-    if (!Lavenza.isEmpty(character)) {
-      console.log(await character.getData());
-      resonance.message.reply('you seem to already have a character. You have to clear your save data to create a new one! You can accomplish this with the `--restart` argument.');
+    // If player data doesn't exists, we exit the process here.
+    if (Lavenza.isEmpty(player)) {
+      await resonance.message.reply(`Hmm, it doesn't seem like you have an account. You may want to create one with the \`--register\` option! If this is an error, make sure to contact Aiga directly. :)`).catch(Lavenza.stop);
+      return;
     }
 
-    // If not, we can get on with the creation process.
-    // await resonance.bot.addPrompt(resonance, () => {
-    //
-    // }).catch(Lavenza.stop);
+    // Now we enter the character creation process.
+
+    console.log(player);
 
   }
 }

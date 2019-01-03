@@ -26,7 +26,7 @@ export default class CreatureManager extends EntityManager {
     this.repositoryId = 'creatures';
 
     // Each entity will be instantiated in the code using a class. This class should be defined and referenced here.
-    this.entityClass = './Creature';
+    this.entityClass = require('./Creature')['default'];
 
   }
 

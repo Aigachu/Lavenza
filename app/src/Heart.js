@@ -16,18 +16,9 @@
 // See the file for more deets.
 import './Extensions';
 
-// Register module alias paths.
-// This allows our code to resolve paths to modules that reside in specific folders, instead of solely node_modules.
-// Better organization overall.
-import 'module-alias/register';
-
 // Load Environment Variables from .env file at the root of the project.
 import DotEnv from 'dotenv';
 DotEnv.load();
-
-// Modules.
-import arp from 'app-root-path';
-import colors from 'colors';
 
 // Lavenza's core.
 // This class is the main handler of the application.
@@ -45,12 +36,12 @@ import Sojiro from './Confidants/Sojiro';
 import Makoto from "./Confidants/Makoto";
 
 // Services.
-// Services are main components of Lavenza.
+// Services are similar to Confidants, but are much more intricate.
 import Gestalt from './Gestalt/Gestalt';
 
 // Classes & Models.
 // These are classes that are extended or used across the application. We import them here once.
-// They are linked in the global for easy access.
+// They are linked in the global variable for easy access.
 import Command from './Bot/Command/Command';
 import Talent from './Talent/Talent';
 import Listener from './Bot/Listener/Listener';
@@ -63,6 +54,7 @@ import ClientTypes from './Bot/Client/ClientTypes';
 // Configure colors for console.
 // Set console color themes.
 /** @see https://www.npmjs.com/package/colors */
+import colors from 'colors';
 colors.setTheme({
   silly: 'rainbow',
   input: 'grey',
@@ -78,6 +70,7 @@ colors.setTheme({
 });
 
 // Utility.
+import arp from 'app-root-path';
 let RootPath = arp.path;
 let Keys = {
   // Core functionality folders name.
