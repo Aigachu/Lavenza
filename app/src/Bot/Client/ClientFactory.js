@@ -39,17 +39,25 @@ export default class ClientFactory {
 
     // Depending on the requested type, we build the appropriate client.
     switch (type) {
-      case ClientTypes.Discord:
+
+      // Create a DiscordClient if the type is Discord.
+      case ClientTypes.Discord: {
         client = new DiscordClient(config, bot);
         break;
+      }
 
-      // case ClientTypes.Twitch:
-      //   client = new TwitchClient(config);
+      // // Create a TwitchClient if the type is Discord.
+      // case ClientTypes.Twitch: {
+      //   client = new TwitchClient(config, bot);
       //   break;
+      // }
+      //
+      // // Create a SlackClient if the type is Discord.
+      // case ClientTypes.Slack: {
+      //   client = new SlackClient(config, bot);
+      //   break;
+      // }
 
-      // case ClientTypes.Slack:
-      //   client = new SlackClient(config);
-      //   break;
     }
 
     return client;

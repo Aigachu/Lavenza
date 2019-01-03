@@ -27,6 +27,7 @@ export default class Igor {
   static pocket(error) {
     // Do nothing. This quietly ignores the error.
     // Not really advised...Though I had couple of use cases for it. Still, not recommended!
+    // console.log('Error pocketed: ' + error.message);
   }
 
   /**
@@ -74,7 +75,7 @@ export default class Igor {
    *
    * This allows you to throw custom error messages and still manage the strings in the Dictionary.
    *
-   * @param {Error} error
+   * @param {Error|String} error
    *   The error caught.
    * @param {Array} placeholder_values
    *   If an array of strings is set here, it will be used to replace any

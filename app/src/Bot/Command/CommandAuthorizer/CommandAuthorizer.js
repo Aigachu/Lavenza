@@ -35,7 +35,7 @@ export default class CommandAuthorizer {
     this.masters = this.order.config.bot.clients[this.type].masters;
     this.operators = this.order.config.bot.clients[this.type].operators;
     this.gods = this.order.config.bot.clients[this.type].gods;
-    this.cooldowns = this.commandClientConfig.cooldown || this.commandConfig.cooldown;
+    this.cooldowns = this.commandClientConfig['cooldown'] || this.commandConfig['cooldown'];
   }
 
   /**
@@ -43,9 +43,10 @@ export default class CommandAuthorizer {
    *
    * This is a default implementation of the method. Authorizers should be created per client, and each client
    * authorizes commands in their own way through their respective Authorizers. They will however each call this
-   * default authorize function that should be used by all.
+   * default authorize function first.
    *
    * @returns {Promise<boolean>}
+   *   Returns true if the order is authorized. False otherwise.
    */
   async authorize() {
 
@@ -84,9 +85,16 @@ export default class CommandAuthorizer {
   /**
    * Validate command arguments if we need to.
    *
+   * This simply checks if the command has input. When it comes to options or flags in commands, specific checks
+   * must be performed per client authorizer, since each client has a different way to manage authority.
+   *
+   * This default method should always be called by the overridden implementations in the child classes.
+   *
    * @returns {Boolean}
+   *   Returns true if the arguments are valid. False otherwise.
    */
   async validateCommandArguments() {
+
     // First, we perform input validations.
     if (this.commandConfig.input) {
       if (this.commandConfig.input.required === true && Lavenza.isEmpty(this.order.args._)) {
@@ -98,17 +106,17 @@ export default class CommandAuthorizer {
   }
 
   /**
-   * Puts the command on cooldown.
+   * Puts the command on cooldown using Makoto.
    */
   cool() {
     // Cools the command globally after usage.
     if (this.cooldowns.global !== 0) {
-      Lavenza.Makoto.set(this.bot.name, 'command', this.commandConfig.key, 0, this.cooldowns.global * 1000);
+      Lavenza.Makoto.set(this.bot.id, 'command', this.commandConfig.key, 0, this.cooldowns.global * 1000);
     }
 
     // Cools the command after usage for the user.
     if (this.cooldowns.user !== 0) {
-      Lavenza.Makoto.set(this.bot.name, 'command', this.commandConfig.key, this.resonance.message.author.id, this.cooldowns.user * 1000);
+      Lavenza.Makoto.set(this.bot.id, 'command', this.commandConfig.key, this.resonance.message.author.id, this.cooldowns.user * 1000);
     }
   }
 
@@ -124,11 +132,11 @@ export default class CommandAuthorizer {
 
     // Using the cooldown manager, we check if the command is on cooldown first.
     // Cooldowns are individual per user. So if a user uses a command, it's not on cooldown for everyone.
-    if (Lavenza.Makoto.check(this.bot.name, 'command', this.commandConfig.key, 0)) {
+    if (Lavenza.Makoto.check(this.bot.id, 'command', this.commandConfig.key, 0)) {
       return false;
     }
 
-    if (Lavenza.Makoto.check(this.bot.name, 'command', this.commandConfig.key, this.resonance.message.author.id)) {
+    if (Lavenza.Makoto.check(this.bot.id, 'command', this.commandConfig.key, this.resonance.message.author.id)) {
       return false;
     }
 

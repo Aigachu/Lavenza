@@ -12,8 +12,8 @@
  * seamlessly through chat! Makes life easier for server managers as well that always get asked "can I get the
  * 0xffffff color?".
  */
-class PaintJob extends Lavenza.Talent {
+export default class PaintJob extends Lavenza.Talent {
+
+  // Currently nothing to do in here. :P
 
 }
-
-module.exports = PaintJob;

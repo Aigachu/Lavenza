@@ -10,12 +10,13 @@ import PlayerManager from './src/Player/PlayerManager';
 import CreatureManager from './src/Creature/CreatureManager';
 
 /**
- * Example Talent.
+ * DNDiscord - The ultimate imaginary Discord adventure!
  *
- * This class can do *anything* or *nothing*. It's an entry point for extended development of features.
+ * This class is the core part of the game and where all preparation and other
+ * things take place!
  *
  */
-class DnDiscord extends Lavenza.Talent {
+export default class DnDiscord extends Lavenza.Talent {
 
   /**
    * @inheritDoc
@@ -51,10 +52,20 @@ class DnDiscord extends Lavenza.Talent {
 
   }
 
+  /**
+   *
+   * @param id
+   * @returns {Promise<*>}
+   */
   static async getPlayerData(id) {
     return await PlayerManager.get(id).catch(Lavenza.stop);
   }
 
+  /**
+   *
+   * @param data
+   * @returns {Promise<void>}
+   */
   static async registerPlayer(data) {
     await PlayerManager.register(data).catch(Lavenza.stop);
   }
@@ -72,5 +83,3 @@ class DnDiscord extends Lavenza.Talent {
 
   }
 }
-
-module.exports = DnDiscord;

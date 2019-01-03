@@ -18,7 +18,7 @@ twitch.clientID = process.env.TWITCH_CLIENT_ID;
  *
  * This Talent manages anything related to Twitch notifications. All notification data is saved in the database.
  */
-class TwitchNotify extends Lavenza.Talent {
+export default class TwitchNotify extends Lavenza.Talent {
 
   /**
    * @inheritDoc
@@ -45,18 +45,18 @@ class TwitchNotify extends Lavenza.Talent {
     await super.initialize(bot).catch(Lavenza.stop);
 
     // Build Configurations and store them in the database.
-    this.guildConfigStorages[bot.name] = this.databases[bot.name] + `/guilds`;
-    this.guilds[bot.name] = await Lavenza.Gestalt.sync({}, this.guildConfigStorages[bot.name]);
+    this.guildConfigStorages[bot.id] = this.databases[bot.id] + `/guilds`;
+    this.guilds[bot.id] = await Lavenza.Gestalt.sync({}, this.guildConfigStorages[bot.id]);
 
     // Await the processing of all Discord guilds available in the bot's Discord client.
     /** @catch Stop execution. */
     await Promise.all(bot.getClient(ClientTypes.Discord).guilds.map(async guild => {
 
       // If the guild definition is not already created in the database, we initialize it here.
-      if (Lavenza.isEmpty(this.guilds[bot.name][guild.id])) {
+      if (Lavenza.isEmpty(this.guilds[bot.id][guild.id])) {
 
         // These are the default configurations. Twitch Announcements are disabled by default in a guild.
-        this.guilds[bot.name][guild.id] = {
+        this.guilds[bot.id][guild.id] = {
           ttvann: {
             id: guild.id,
             enabled: false,
@@ -93,34 +93,34 @@ class TwitchNotify extends Lavenza.Talent {
   static async ping(bot) {
 
     // Get the current active configuration.
-    this.guilds[bot.name] = await Lavenza.Gestalt.get(this.guildConfigStorages[bot.name]);
+    this.guilds[bot.id] = await Lavenza.Gestalt.get(this.guildConfigStorages[bot.id]);
 
     // We'll perform checks for every guild this bot is part of.
     /** @catch Stop execution. */
     await Promise.all(bot.getClient(ClientTypes.Discord).guilds.map(async guild => {
 
       // If for whatever reason, the guild being processed has no configuration, we return.
-      if (Lavenza.isEmpty(this.guilds[bot.name])) {
+      if (Lavenza.isEmpty(this.guilds[bot.id])) {
         return;
       }
 
       // If announcements are disabled in the current guild, we return.
-      if (!this.guilds[bot.name][guild.id].ttvann.enabled) {
+      if (!this.guilds[bot.id][guild.id].ttvann.enabled) {
         return;
       }
 
       // If there is no announcement channel set for this guild, we return.
-      if (this.guilds[bot.name][guild.id].ttvann.ann_channel === null) {
+      if (this.guilds[bot.id][guild.id].ttvann.ann_channel === null) {
         return;
       }
 
       // If there are no streams to announce, we do nothing.
-      if (Lavenza.isEmpty(this.guilds[bot.name][guild.id].ttvann.streams)) {
+      if (Lavenza.isEmpty(this.guilds[bot.id][guild.id].ttvann.streams)) {
         return;
       }
 
       // If we pass all the checks, we run the actual checks with the main function.
-      await this.ttvann(this.guilds[bot.name][guild.id].ttvann, bot).catch(Lavenza.stop);
+      await this.ttvann(this.guilds[bot.id][guild.id].ttvann, bot).catch(Lavenza.stop);
 
 
     })).catch(Lavenza.stop);
@@ -231,12 +231,12 @@ class TwitchNotify extends Lavenza.Talent {
   static async ttvannAddStream(guildId, streamUser, bot) {
 
     // If the stream is already in the configuration, we shouldn't do anything.
-    if (this.guilds[bot.name][guildId].ttvann.streams.includes(streamUser)) {
+    if (this.guilds[bot.id][guildId].ttvann.streams.includes(streamUser)) {
       Lavenza.throw('Stream already set for announcements in this guild.');
     }
 
     // If not, we simply add it to the array and save the configuration.
-    this.guilds[bot.name][guildId].ttvann.streams.push(streamUser);
+    this.guilds[bot.id][guildId].ttvann.streams.push(streamUser);
     await this.save(bot).catch(Lavenza.stop);
   }
 
@@ -257,12 +257,12 @@ class TwitchNotify extends Lavenza.Talent {
   static async ttvannAddStreamLive(guildId, streamUser, bot) {
 
     // If the stream is already in the live list, we shouldn't do anything.
-    if (this.guilds[bot.name][guildId].ttvann.live.includes(streamUser)) {
+    if (this.guilds[bot.id][guildId].ttvann.live.includes(streamUser)) {
       return;
     }
 
     // If not, we simply add it to the array and save the configuration.
-    this.guilds[bot.name][guildId].ttvann.live.push(streamUser);
+    this.guilds[bot.id][guildId].ttvann.live.push(streamUser);
     await this.save(bot).catch(Lavenza.stop);
   }
 
@@ -281,7 +281,7 @@ class TwitchNotify extends Lavenza.Talent {
   static async ttvannSetAnnChannel(guildId, channelId, bot) {
 
     // We simply add this channel to the configuration
-    this.guilds[bot.name][guildId].ttvann.ann_channel = channelId;
+    this.guilds[bot.id][guildId].ttvann.ann_channel = channelId;
     await this.save(bot).catch(Lavenza.stop);
 
   }
@@ -301,16 +301,16 @@ class TwitchNotify extends Lavenza.Talent {
   static async ttvannRemoveStream(guildId, streamUser, bot) {
 
     // We check the indexes of the stream user channel name in both the streams & live configurations.
-    let streamIndex = this.guilds[bot.name][guildId].ttvann.streams.indexOf(streamUser);
-    let liveIndex = this.guilds[bot.name][guildId].ttvann.live.indexOf(streamUser);
+    let streamIndex = this.guilds[bot.id][guildId].ttvann.streams.indexOf(streamUser);
+    let liveIndex = this.guilds[bot.id][guildId].ttvann.live.indexOf(streamUser);
 
     // If they exist, we remove them.
     if (streamIndex > -1) {
-      this.guilds[bot.name][guildId].ttvann.streams.splice(streamIndex, 1);
+      this.guilds[bot.id][guildId].ttvann.streams.splice(streamIndex, 1);
     }
 
     if (liveIndex > -1) {
-      this.guilds[bot.name][guildId].ttvann.live.splice(liveIndex, 1);
+      this.guilds[bot.id][guildId].ttvann.live.splice(liveIndex, 1);
     }
 
     // Finally, we save configurations.
@@ -332,11 +332,11 @@ class TwitchNotify extends Lavenza.Talent {
   static async ttvannRemoveStreamLive(guildId, streamUser, bot) {
 
     // We check the indexes of the stream user channel name in live channel configurations.
-    let liveIndex = this.guilds[bot.name][guildId].ttvann.live.indexOf(streamUser);
+    let liveIndex = this.guilds[bot.id][guildId].ttvann.live.indexOf(streamUser);
 
     // If it exists, we remove it.
     if (liveIndex > -1) {
-      this.guilds[bot.name][guildId].ttvann.live.splice(liveIndex, 1);
+      this.guilds[bot.id][guildId].ttvann.live.splice(liveIndex, 1);
     }
 
     // Finally, we save configurations.
@@ -356,8 +356,8 @@ class TwitchNotify extends Lavenza.Talent {
    * @returns {Promise<void>}
    */
   static async enable(guild, bot) {
-    this.guilds[bot.name][guild['id']].ttvann.enabled = true;
-    console.log(this.guilds[bot.name][guild['id']]);
+    this.guilds[bot.id][guild['id']].ttvann.enabled = true;
+    console.log(this.guilds[bot.id][guild['id']]);
     await this.save(bot).catch(Lavenza.stop);
   }
 
@@ -374,7 +374,7 @@ class TwitchNotify extends Lavenza.Talent {
    * @returns {Promise<void>}
    */
   static async disable(guild, bot) {
-    this.guilds[bot.name][guild['id']].ttvann.enabled = false;
+    this.guilds[bot.id][guild['id']].ttvann.enabled = false;
     await this.save(bot).catch(Lavenza.stop);
   }
 
@@ -389,14 +389,14 @@ class TwitchNotify extends Lavenza.Talent {
    * @returns {Promise<boolean>}
    */
   static async status(guildConfig, bot) {
-    return this.guilds[bot.name][guildConfig.id].ttvann.enabled;
+    return this.guilds[bot.id][guildConfig.id].ttvann.enabled;
   }
 
   /**
    * Save configurations to the database using Gestalt.
    */
   static async save(bot) {
-    await Lavenza.Gestalt.post(this.guildConfigStorages[bot.name], this.guilds[bot.name]).catch(Lavenza.stop);
+    await Lavenza.Gestalt.post(this.guildConfigStorages[bot.id], this.guilds[bot.id]).catch(Lavenza.stop);
   }
 
   /**
@@ -462,5 +462,3 @@ class TwitchNotify extends Lavenza.Talent {
     });
   }
 }
-
-module.exports = TwitchNotify;

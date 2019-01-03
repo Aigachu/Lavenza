@@ -23,6 +23,7 @@ export default class Makoto {
 
   /**
    * Set a cooldown for a given command, scope and duration.
+   * @param bot
    * @param {String}          type     Type of cooldown.
    * @param {String}          key      Key of the cooldown being set. i.e. For a command, we'll set the command key.
    * @param {String/Number}   scope    Who does this cooldown restrict? i.e. For a user, it's their ID.
@@ -60,6 +61,7 @@ export default class Makoto {
 
   /**
    * Unset a cooldown for a given command, user and scope.
+   * @param bot
    * @param {String}          type     Type of cooldown.
    * @param {String}          key      Key of the cooldown being set. i.e. For a command, we'll set the command key.
    * @param {String/Number}  scope    Who does this cooldown restrict? i.e. For a user, it's their ID.
@@ -73,6 +75,7 @@ export default class Makoto {
 
   /**
    * Check if a cooldown exists with the given parameters.
+   * @param bot
    * @param {String}          type     Type of cooldown.
    * @param {String}          key      Key of the cooldown being set. i.e. For a command, we'll set the command key.
    * @param {String/Number}  scope    Who does this cooldown restrict? i.e. For a user, it's their ID.
@@ -98,7 +101,7 @@ export default class Makoto {
     }
 
     // Returns whether or not the cooldown exists.
-    return (this.cooldowns[bot][type][key].indexOf(scope) > -1);
+    return this.cooldowns[bot][type][key].indexOf(scope) > -1;
 
   }
 }

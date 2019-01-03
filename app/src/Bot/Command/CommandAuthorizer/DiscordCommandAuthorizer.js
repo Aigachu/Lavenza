@@ -19,14 +19,19 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    * @returns {Promise<void>}
    */
   async build() {
-    // this.botUser = this.resonance.client.user;
     this.authorUser = this.resonance.message.author;
     this.msg = this.resonance.message;
     this.guild = this.resonance.message.guild;
     this.channel = this.resonance.message.channel;
-    this.clientConfig = await Lavenza.Gestalt.get(`/bots/${this.bot.name}/clients/discord`).catch(Lavenza.stop);
-    this.operatorsToValidate = [...this.operators, ...this.masters, ...this.gods, ...this.clientConfig.guilds[this.guild.id].operators, ...this.clientConfig.guilds[this.guild.id].masters];
-    this.mastersToValidate = [...this.masters, ...this.clientConfig.guilds[this.guild.id].masters, ...this.gods];
+    this.clientConfig = await Lavenza.Gestalt.get(`/bots/${this.bot.id}/clients/discord`).catch(Lavenza.stop);
+    this.operatorsToValidate = [...this.operators, ...this.masters, ...this.gods];
+    this.mastersToValidate = [...this.masters, ...this.gods];
+
+    // If there's a guild assigned to the resonance, we can add guild defined operators & masters.
+    if (!Lavenza.isEmpty(this.guild)) {
+      this.operatorsToValidate = [...this.operatorsToValidate, ...this.clientConfig.guilds[this.guild.id].operators, ...this.clientConfig.guilds[this.guild.id].masters];
+      this.mastersToValidate = [...this.mastersToValidate, ...this.clientConfig.guilds[this.guild.id].masters];
+    }
   }
 
   /**
@@ -38,21 +43,21 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    */
   async authorize() {
 
-    // First, we run through the default authorization function.
+    // First, we run through the default authorization function from the parent class.
     let defaultAuth = await super.authorize().catch(Lavenza.stop);
     if (!defaultAuth) {
       return false;
     }
 
-    // If the configuration is empty, we have no checks to make.
-    if (Lavenza.isEmpty(this.commandClientConfig)) {
-      Lavenza.warn('No configuration was found for this command...Is this normal?...');
-      return true;
-    }
-
     // We deny commands invoked by any other bot. Let's not mess shit up.
     if (this.resonance.message.author.bot === true) {
       return false;
+    }
+
+    // At this point, if the configuration is empty, we have no checks to make, so we let it pass.
+    if (Lavenza.isEmpty(this.commandClientConfig)) {
+      Lavenza.warn('No configuration was found for this command...Is this normal?...');
+      return true;
     }
 
     // Check if the command is activated.
@@ -70,13 +75,17 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
     // Check if the user has appropriate operation access rights.
     if (!this.validateOpLevel()) {
 
+      // We send a fancy error message for this one.
       this.resonance.client.sendError(this.resonance.message.channel, {
         text: 'You are not authorized to use this command.',
         code: 401
       }).then(async message => {
+
+        // Delete the message after 30 seconds to avoid clogging chat.
         await Lavenza.wait(30).catch(Lavenza.stop);
         this.resonance.message.delete();
         message.delete().catch(Lavenza.continue);
+
       });
 
       Lavenza.warn('oplevel validation failed');
@@ -84,7 +93,6 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
     }
 
     // Check if this command is allowed to be used in DMs.
-    // No, don't worry. It will only really apply if the command is called in a DM.
     if (!this.validatePMCommand()) {
       Lavenza.warn('pm channel validation failed');
       return false;
@@ -110,6 +118,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    * Validate command arguments if we need to.
    *
    * @returns {Boolean}
+   *   Returns true if the arguments are valid. False otherwise.
    */
   async validateCommandArguments() {
 
@@ -143,14 +152,17 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
         Lavenza.throw(`\`${arg}\` is not a valid argument for this command.`);
       }
 
+      // Validate level 1. Operators.
       if (argConfig['oplevel'] === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
         Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
       }
 
+      // Validate level 2. Masters.
       if (argConfig['oplevel'] === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
         Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
       }
 
+      // Validate level 3. Gods.
       if (argConfig['oplevel'] === 3 && !this.gods.includes(this.authorUser.id)) {
         Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
       }
@@ -158,15 +170,22 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       return true;
 
     })).catch(error => {
+
+      // Send a fancy error message if that command is not usable.
       this.resonance.client.sendError(this.resonance.message.channel, {
         text: error.message,
         code: 401
       }).then(async message => {
+
+        // Delete error message after 30 seconds to avoid clogging channels.
         await Lavenza.wait(30).catch(Lavenza.stop);
         this.resonance.message.delete();
         message.delete().catch(Lavenza.continue);
+
       });
+
       return false;
+
     });
 
     // Get out if it failed.

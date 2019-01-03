@@ -26,16 +26,21 @@ clients:
   discord:
 
     # Gods
-    # Each bot needs a set of people it will listen to above everyone else.
-    # Here we have the IDs of the people that should have all access rights.
+    # Only grant god access to people you trust.
+    # They say you can only trust yourself...
+    # And sometimes, you can't even trust yourself!...
     gods:
       - '77517077325287424' # Aigachu
-    # Masters are a level below gods.
+
+    # Masters
+    # Each bot needs a set of people it will listen to above everyone else.
+    # Here we have the IDs of the people that should have all access rights.
     masters:
       - '82530619355037696' # Avion
-    # Operators are a level below masters.
-    operators:
       - '77577477425201152' # Dango
+
+    # Operators are a level below masters.
+    operators: []
 
     # Command Prefix override if needed.
     # command_prefix: ';-d'

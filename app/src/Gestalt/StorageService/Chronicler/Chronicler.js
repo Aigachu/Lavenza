@@ -55,7 +55,7 @@ export default class Chronicler extends StorageService {
   /**
    * Create collection using the Chronicler.
    *
-   * @TODO - Handle Objects as well to created nested collections.
+   * @TODO - Handle creation of a payload with existing data. Handle Objects as well to created nested collections.
    *
    * @inheritDoc
    */
@@ -115,7 +115,7 @@ export default class Chronicler extends StorageService {
   /**
    * Update the file at the path.
    *
-   * @TODO - Handle Collections as well, as in Folders.
+   * @TODO - Handle Collections as well.
    *
    * @inheritDoc
    */

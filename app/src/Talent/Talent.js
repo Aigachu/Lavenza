@@ -15,7 +15,7 @@ import path from "path";
  *
  * Think of talents as..."Plugins" from Wordpress, or "Modules" from Drupal, or "Packages" from Laravel.
  *
- * The idea here is that bot features are coded in their own folders. The power here comes from the flexibility we have
+ * The idea here is that bot features are coded in their own folders and contexts. The power here comes from the flexibility we have
  * since talents can be granted to multiple bots, and talents can be tracked in separate repositories if needed. Also,
  * they can easily be toggled on and off. Decoupling the features from the bots seemed like a good move.
  */
@@ -63,8 +63,8 @@ export default class Talent {
     // Set the path to the talent's global database.
     this.databases.global = `/talents/${this.id}`;
 
-    // Set the path of the bot's database for this talent.
-    this.databases[bot.name] = `/bots/${bot.name}/talents/${this.id}`;
+    // Set the path talent's bot specific database.
+    this.databases[bot.id] = `/bots/${bot.id}/talents/${this.id}`;
 
   }
 
@@ -82,7 +82,7 @@ export default class Talent {
 
     // Await Gestalt's API call to get the configuration from the storage.
     /** @catch Stop execution. */
-    return await Lavenza.Gestalt.get(`/bots/${bot.name}/talents/${this.id}/config`).catch(Lavenza.stop);
+    return await Lavenza.Gestalt.get(`/bots/${bot.id}/talents/${this.id}/config`).catch(Lavenza.stop);
 
   }
 
@@ -103,7 +103,7 @@ export default class Talent {
     // Determine the path to this Talent's commands.
     // Each command has its own directory. We'll get the list here.
     /** @catch Pocket error. */
-    let commandDirectoriesPath = this.directory + '/Commands';
+    let commandDirectoriesPath = this.directory + '/hooks/Commands';
     let commandDirectories = await Lavenza.Akechi.getDirectoriesFrom(commandDirectoriesPath).catch(Lavenza.pocket);
 
     // We'll throw an error for this function if the 'Commands' directory doesn't exist or is empty.
@@ -135,7 +135,7 @@ export default class Talent {
 
       // If the configuration exists, we can process by loading the class of the Command.
       // If the class doesn't exist (this could be caused by the configuration being wrong), we stop.
-      let command = require(directory + '/' + config.class);
+      let command = require(directory + '/' + config.class)['default'];
       if (Lavenza.isEmpty(command)) {
         Lavenza.warn('COMMAND_CLASS_MISSING', [name, this.id]);
         return;
@@ -174,7 +174,7 @@ export default class Talent {
 
     // The 'Listeners' folder will simply have a collection of Class files. We'll get the list here.
     /** @catch Pocket error. */
-    let listenerClassesPath = this.directory + '/Listeners';
+    let listenerClassesPath = this.directory + '/hooks/Listeners';
     let listenerClasses = await Lavenza.Akechi.getFilesFrom(listenerClassesPath).catch(Lavenza.pocket);
 
     // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.
@@ -188,7 +188,7 @@ export default class Talent {
     await Promise.all(listenerClasses.map(async listenerClass => {
 
       // We will simply require the file here.
-      let listener = require(listenerClass);
+      let listener = require(listenerClass)['default'];
 
       // Run listener build tasks.
       // We only do this to assign the talent to the listener. That way, the listener can access the Talent.
@@ -197,7 +197,7 @@ export default class Talent {
 
       // If the require fails or the result is empty, we stop.
       if (Lavenza.isEmpty(listener)) {
-        Lavenza.warn('LISTENER_CLASS_MISSING', [name, this.id]);
+        Lavenza.warn('LISTENER_CLASS_MISSING', [this.id]);
         return;
       }
 
@@ -207,5 +207,3 @@ export default class Talent {
   }
 
 }
-
-module.exports = Talent;

@@ -15,50 +15,120 @@ import EventEmitter from 'events';
  */
 export default class Prompt {
 
-  constructor(request, resonance, onResponse, bot) {
+  /**
+   * Prompt constructor.
+   *
+   * @param {String} request
+   *   Message that will be sent describing the requested information.
+   * @param {*} line
+   *   The communication line for this prompt. Basically, where we want the interaction to happen.
+   * @param {Lavenza.Resonance|Resonance} resonance
+   *   The Resonance tied to this prompt.
+   * @param {*} onResponse
+   *   The callback function that runs once a response has been heard.
+   * @param {Bot} bot
+   *   The Bot this prompt is being created for.
+   */
+  constructor(request, line, resonance, onResponse, bot) {
     this.request = request;
+    this.line = line;
     this.resonance = resonance;
     this.onResponse = onResponse;
     this.bot = bot;
     this.ee = new EventEmitter();
   }
 
+  /**
+   * Prompts have their own listen functions.
+   *
+   * Checks the condition with a received resonance, and resolves the Prompt
+   * if conditions are matched.
+   *
+   * @param {Lavenza.Resonance|Resonance} resonance
+   *   The resonance that was heard by the Prompt.
+   *
+   * @returns {Promise<void>}
+   */
   async listen(resonance) {
+
+    // We check the condition defined in this prompt. If it passes, we resolve it.
     if (this.condition(resonance)) {
-      this.ee.emit('prompt-response', this);
+
+      // Emit the event that will alert the Prompt that it should be resolved.
+      this.ee.emit('prompt-response');
+
+      // Fire the callback.
       this.onResponse(resonance, this).catch(Lavenza.stop);
+
+      // Disable this prompt since it's resolved.
       this.disable().catch(Lavenza.stop);
     }
   }
 
+  /**
+   * Await the resolution of the prompt.
+   *
+   * If the prompt doesn't get resolved by the user within the lifespan, it will
+   * cancel itself. Otherwise, after resolution, we clear the awaiting status.
+   *
+   * @param {int} seconds
+   *   Amount of time to wait for an answer, in seconds.
+   *
+   * @returns {Promise<any>}
+   *   Resolution of the prompt, or an error.
+   */
   await(seconds) {
+
+    // We manage the Promise here.
     return new Promise((resolve, reject) => {
+
       // Set the bomb. We'll destroy the prompt if it takes too long to execute.
       let timer = setTimeout(async () => {
+
         // Check if the prompt still exists after the time has elapsed.
         if (this.bot.prompts.includes(this)) {
           // If the lifespan depletes, we remove the prompt.
           await this.disable().catch(Lavenza.stop);
           reject('Prompt failed to complete in time.');
         }
+
       }, seconds * 1000);
 
       // If we get a response, we clear the bomb and return early.
-      this.ee.on('prompt-response', (prompt) => {
+      this.ee.on('prompt-response', () => {
         clearTimeout(timer);
         resolve();
       });
+
     });
+
   }
 
-  condition() {
-    Lavenza.throw('This method should not have been called. A Prompt acts differently depending on the client it is created for. Please create a Prompt that applies to the client you are in when calling this.');
-  }
-
+  /**
+   * Disable this prompt.
+   *
+   * @returns {Promise<void>}
+   */
   async disable() {
     await this.bot.removePrompt(this);
   }
 
+  /**
+   * Method defining the conditions for this prompt to be resolved.
+   *
+   * This is an abstract method.
+   */
+  condition() {
+    Lavenza.throw('This method should not have been called. A Prompt acts differently depending on the client it is created for. Please create a Prompt that applies to the client you are in when calling this.');
+  }
+
+  /**
+   * Trigger the prompt message. Read this one as the verb.
+   *
+   * This is an abstract method.
+   *
+   * @returns {Promise<void>}
+   */
   async prompt() {
     Lavenza.throw('This method should not have been called. A Prompt acts differently depending on the client it is created for. Please create a Prompt that applies to the client you are in when calling this.');
   }

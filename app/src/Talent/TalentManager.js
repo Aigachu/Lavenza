@@ -75,7 +75,7 @@ export default class TalentManager {
   /**
    * Load a single talent into the TalentManager.
    *
-   * With the given directory path, we parse the 'TALENT_NAME.info.yml' file load the Talent class.
+   * With the given directory path, we parse the 'TALENT_NAME.info.yml' file and load the Talent class.
    *
    * @param {string} directory
    *   A string detailing the path to the Talent's directory.
@@ -108,7 +108,7 @@ export default class TalentManager {
     config.directory = directory;
 
     // Require the class.
-    let talent = require(directory + '/' + config.class);
+    let talent = require(directory + '/' + config.class)['default'];
 
     // If the talent could not be loading somehow, we end here.
     if (Lavenza.isEmpty(talent)) {

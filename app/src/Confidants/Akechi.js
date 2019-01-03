@@ -48,11 +48,8 @@ export default class Akechi {
       return false;
     }
 
-    if (!fs.existsSync(path)){
-      return false;
-    }
+    return fs.existsSync(path);
 
-    return true;
   }
 
   /**

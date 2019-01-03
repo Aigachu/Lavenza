@@ -43,7 +43,7 @@ export default class DiscordClient extends DiscordJSClient {
 
     // Event: When the client connects to Discord and is ready.
     this.on('ready', () => {
-      Lavenza.success('DISCORD_CLIENT_CONNECT', [this.bot.name]);
+      Lavenza.success('DISCORD_CLIENT_CONNECT', [this.bot.id]);
 
       // Set game text.
       this.user.setActivity(this.config['activity']).catch(console.error);
@@ -56,17 +56,27 @@ export default class DiscordClient extends DiscordJSClient {
 
     // Event: When the clients disconnects from Discord.
     this.on('disconnected', () => {
-      Lavenza.status('DISCORD_CLIENT_DISCONNECT', [this.bot.name]);
+      Lavenza.status('DISCORD_CLIENT_DISCONNECT', [this.bot.id]);
     });
 
     // Event: When the clients disconnects from Discord.
     this.on('error', () => {
-      Lavenza.error('ERROR_OCCURRED', [this.bot.name]);
+      Lavenza.error('ERROR_OCCURRED', [this.bot.id]);
     });
 
   }
 
-  async typeFor(seconds, channel) {
+  /**
+   * A little utility function to order the bot to type for a set amount of seconds in a given channel.
+   *
+   * @param {int} seconds
+   *   Amount of seconds to type for.
+   * @param {*} channel
+   *   The Discord channel to type in.
+   *
+   * @returns {Promise<void>}
+   */
+  static async typeFor(seconds, channel) {
     await channel.stopTyping();
     await channel.startTyping(1);
     await Lavenza.wait(seconds).catch(Lavenza.stop);
@@ -248,17 +258,17 @@ export default class DiscordClient extends DiscordJSClient {
    */
   async authenticate() {
     // Get the token.
-    let token = process.env[`${this.bot.name.toUpperCase()}_DISCORD_TOKEN`];
+    let token = process.env[`${this.bot.id.toUpperCase()}_DISCORD_TOKEN`];
 
     // If the token isn't found, we throw an error.
     if (token === undefined) {
-      Lavenza.throw('TOKEN_NOT_FOUND_IN_ENV_FOR_BOT', [this.bot.name]);
+      Lavenza.throw('TOKEN_NOT_FOUND_IN_ENV_FOR_BOT', [this.bot.id]);
     }
 
     // Await the login in of this client.
     /** @catch Stop execution. */
     await super.login(token).catch(error => {
-      Lavenza.throw('CLIENT_AUTHENTICATION_FAILURE', [this.type, this.bot.name]);
+      Lavenza.throw('CLIENT_AUTHENTICATION_FAILURE', [this.type, this.bot.id]);
     });
   }
 }

@@ -37,14 +37,14 @@ export default class Order {
   }
 
   /**
-   * Execute this order's command.
+   * Execute this order's command's execute method.
    */
   execute() {
     this.command.execute(this, this.resonance);
   }
 
   /**
-   * Execute this order's help function.
+   * Execute this order's command's help method.
    */
   help() {
     this.command.help(this, this.resonance);

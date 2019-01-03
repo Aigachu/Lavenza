@@ -8,9 +8,9 @@
 /**
  * Provides a base abstract class for Storage Services.
  *
- * Storage Services are mediums to store useful data. Gestalt will use these storage services.
+ * Storage Services are mediums to store application data. Gestalt will use these storage services.
  *
- * Storage services must implement easy methods for reaching needed content.
+ * Storage services must implement REST methods for manipulation of data.
  */
 export default class StorageService {
 
@@ -73,6 +73,8 @@ export default class StorageService {
   /**
    * Create a collection in the database.
    *
+   * This is an abstract method.
+   *
    * We need to keep in mind that we're using mostly JSON storage in this context.
    * This makes use of Collections & Items.
    *
@@ -84,24 +86,28 @@ export default class StorageService {
    * @returns {Promise<void>}
    */
   static async createCollection(endpoint, payload) {
-    Lavenza.throw(`You must implement a getCollection() method in the ${this.constructor} class.`);
+    Lavenza.throw(`Tried to run abstract method createCollection(${endpoint}, ${payload}). You must implement a getCollection() method in the ${this.constructor} class.`);
   }
 
   /**
    * Process a GET request.
    *
+   * This is an abstract method.
+   *
    * @param {String} endpoint
    *   Path to get data from.
    *
-   * @returns {Promise<*>}
+   * @returns {Promise<Object>}
    *   Data retrieved, if it succeeded.
    */
   static async get(endpoint) {
-    Lavenza.throw(`You must implement a get() method in the ${this.constructor} class.`);
+    Lavenza.throw(`Tried to run abstract method get(${endpoint}). You must implement a get() method in the ${this.constructor} class.`);
   }
 
   /**
    * Process a POST request.
+   *
+   * This is an abstract method.
    *
    * @param {String} endpoint
    *   Path to push data to.
@@ -112,11 +118,13 @@ export default class StorageService {
    *   Data pushed, if applicable.
    */
   static async post(endpoint, payload) {
-    Lavenza.throw(`You must implement a post() method in the ${this.constructor} class.`);
+    Lavenza.throw(`Tried to run abstract method post(${endpoint}, ${payload}). You must implement a post() method in the ${this.constructor} class.`);
   }
 
   /**
    * Process a UPDATE request.
+   *
+   * This is an abstract method.
    *
    * @param {String} endpoint
    *   Path to push data to.
@@ -127,11 +135,13 @@ export default class StorageService {
    *   Data update, if applicable.
    */
   static async update(endpoint, payload) {
-    Lavenza.throw(`You must implement a update() method in the ${this.constructor} class.`);
+    Lavenza.throw(`Tried to run abstract method update(${endpoint}, ${payload}). You must implement a update() method in the ${this.constructor} class.`);
   }
 
   /**
    * Process a DELETE request.
+   *
+   * This is an abstract method.
    *
    * @param {String} endpoint
    *   Path to delete data at.
@@ -139,7 +149,7 @@ export default class StorageService {
    * @returns {Promise<void>}
    */
   static async delete(endpoint) {
-    Lavenza.throw(`You must implement a update() method in the ${this.constructor} class.`);
+    Lavenza.throw(`Tried to run abstract method delete(${endpoint}). You must implement a update() method in the ${this.constructor} class.`);
   }
 
 }

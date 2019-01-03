@@ -33,8 +33,12 @@ export default class CommandAuthorizerFactory {
 
     //  Depending on the client type, build the appropriate CommandAuthorizer.
     switch (resonance.client.type) {
-      case ClientTypes.Discord:
+
+      // For Discord, we create a specific authorizer.
+      case ClientTypes.Discord: {
         authorizer = new DiscordCommandAuthorizer(order, resonance);
+        break;
+      }
 
       // case ClientTypes.Twitch:
       //   client = new TwitchClient(config);

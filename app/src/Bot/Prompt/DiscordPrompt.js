@@ -13,15 +13,31 @@ import Prompt from './Prompt';
  */
 export default class DiscordPrompt extends Prompt {
 
-  constructor(request, resonance, onResponse, bot) {
-    super(request, resonance, onResponse, bot);
+  /**
+   * @inheritDoc
+   */
+  constructor(request, line, resonance, onResponse, bot) {
+    super(request, line, resonance, onResponse, bot);
   }
 
+  /**
+   * @inheritDoc
+   */
   condition(resonance) {
-    return resonance.message.author.id === this.resonance.message.author.id;
+
+    // In Discord, we wait for the next message that comes from the author, in the configured 'line'.
+    return resonance.message.channel.id === this.line.id && resonance.message.author.id === this.resonance.message.author.id;
+
   }
 
+  /**
+   * @inheritDoc
+   */
   async prompt() {
-    this.resonance.message.channel.send(this.request);
+
+    // In discord, the line is always a channel. We send the request message there.
+    this.line.send(this.request);
+
   }
+
 }

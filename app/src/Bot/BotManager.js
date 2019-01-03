@@ -14,8 +14,9 @@ import Bot from './Bot';
 /**
  * Provides a Manager for Bots.
  *
- * This class manages the registering and instantiation of bots. Bots are configured in the 'bots' folder at the root
- * of the application.
+ * This class manages the registering and instantiation of bots.
+ *
+ * Bots are configured in the 'bots' folder at the root of the application.
  *
  */
 export default class BotManager {

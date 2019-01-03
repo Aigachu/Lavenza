@@ -6,7 +6,6 @@
  */
 
 import ClientTypes from "../Client/ClientTypes";
-import DiscordJS from "discord.js";
 
 /**
  * Provides a base class for Commands.
@@ -52,11 +51,13 @@ export default class Command {
    *   Returns the configuration fetched from the database.
    */
   static async getActiveConfigForBot(bot) {
-    return await Lavenza.Gestalt.get(`/bots/${bot.name}/commands/${this.config.key}/config`).catch(Lavenza.stop);
+    return await Lavenza.Gestalt.get(`/bots/${bot.id}/commands/${this.config.key}/config`).catch(Lavenza.stop);
   }
 
   /**
    * Executes command functionality.
+   *
+   * This is an abstract method.
    *
    * Everything needed to go wild with a command is in the two variables provided here.
    *
@@ -68,8 +69,12 @@ export default class Command {
    *   Resonance that invoked this command. All information about the client and message are here.
    */
   static async execute(order, resonance) {
-    // Default execute function. Does nothing.
-    Lavenza.warn('You should probably add an execute function to this command!');
+
+    // Default execute function. Does nothing right now.
+    Lavenza.warn(`You should probably add an execute function to this command!`);
+    console.log(order);
+    console.log(resonance);
+
   }
 
   /**
@@ -87,10 +92,16 @@ export default class Command {
     // Get configuration.
     let config = await this.getActiveConfigForBot(resonance.bot).catch(Lavenza.stop);
 
+    // Depending on the type of client, we want the help function to act differently.
     switch (resonance.client.type) {
-      case ClientTypes.Discord:
+
+      // If we're in Discord, we want to send a formatted rich embed.
+      case ClientTypes.Discord: {
+
+        // Start building the usage text by getting the command prefix.
         let usageText = `\`${await resonance.bot.getCommandPrefix(resonance).catch(Lavenza.stop)}${config.key}`;
 
+        // If there is input defined for this command, we will add them to the help text.
         if (config.input) {
           config.input.requests.every(request => {
             usageText += ` {${request.replace(' ', '_').toLowerCase()}}\`\n`;
@@ -99,14 +110,16 @@ export default class Command {
           usageText += `\`\n`;
         }
 
-        if (config.aliases) {
+        // If there are aliases defined for this command, add all usage examples to the help text.
+        if (config['aliases']) {
           let original = usageText;
-          config.aliases.every(alias => {
+          config['aliases'].every(alias => {
             usageText += original.replace(`${config.key}`, alias);
             return true;
           });
         }
 
+        // Set the usage section.
         let fields = [
           {
             name: 'Usage',
@@ -114,10 +127,11 @@ export default class Command {
           }
         ];
 
+        // If there are options defined for this command, we add a section for options.
         if (config.options) {
           let optionsList = '';
           config.options.every(option => {
-            optionsList += `**${option.name}** \`-${option.key} {${option.expects.replace(' ', '_').toLowerCase()}}\` - ${option.description}\n\n`;
+            optionsList += `**${option.name}** \`-${option.key} {${option['expects'].replace(' ', '_').toLowerCase()}}\` - ${option.description}\n\n`;
             return true;
           });
           fields.push({
@@ -126,6 +140,7 @@ export default class Command {
           });
         }
 
+        // If there are flags defi-...You get the idea.
         if (config.flags) {
           let flagsList = '';
           config.flags.every(flag => {
@@ -138,6 +153,7 @@ export default class Command {
           });
         }
 
+        // Finally, send the embed.
         await resonance.client.sendEmbed(resonance.message.channel, {
           title: `${config.name}`,
           description: `${config.description}`,
@@ -149,10 +165,12 @@ export default class Command {
           thumbnail: resonance.client.user.avatarURL
         }).catch(Lavenza.stop);
         break;
+      }
 
       default:
         return;
     }
+
   }
 
   /**
@@ -168,11 +186,11 @@ export default class Command {
    */
   static allowedInClient(clientType) {
     let allowedForTalent =
-      (this.talent.config.clients !== {} && this.talent.config.clients !== '*' && (this.talent.config.clients.includes(clientType) || this.talent.config.clients === clientType))
-    || (this.talent.config.clients === {} || this.talent.config.clients === '*');
+      this.talent['config'].clients !== {} && this.talent['config'].clients !== '*' && (this.talent['config'].clients.includes(clientType) || this.talent['config'].clients === clientType)
+    || (this.talent['config'].clients === {} || this.talent['config'].clients === '*');
 
     let allowedForCommand =
-      (this.config.clients !== {} && this.config.clients !== '*' && (this.config.clients.includes(clientType) || this.config.clients === clientType))
+      this.config.clients !== {} && this.config.clients !== '*' && (this.config.clients.includes(clientType) || this.config.clients === clientType)
     || (this.config.clients === {} || this.config.clients === '*');
 
     return allowedForTalent && allowedForCommand;

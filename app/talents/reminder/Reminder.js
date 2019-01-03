@@ -17,7 +17,7 @@ import moment from 'moment';
  *
  * @TODO - A shitload of refactoring and cleaning for this whole functionality with the above package. Things are about to work MUCH better with that.
  */
-class Reminder extends Lavenza.Talent {
+export default class Reminder extends Lavenza.Talent {
 
   /**
    * @inheritDoc
@@ -44,15 +44,15 @@ class Reminder extends Lavenza.Talent {
     this.reminderStorages = this.reminderStorages || {};
 
     // Path to the database file.
-    this.reminderStorages[bot.name] = this.databases[bot.name] + `/reminders`;
+    this.reminderStorages[bot.id] = this.databases[bot.id] + `/reminders`;
 
     // Build Configurations
-    this.reminders[bot.name] = await Lavenza.Gestalt.sync({}, this.reminderStorages[bot.name]);
+    this.reminders[bot.id] = await Lavenza.Gestalt.sync({}, this.reminderStorages[bot.id]);
 
     // If they were successfully loaded, send a message to the console.
     // If they aren't loaded, it's fine. A new database will be initialized.
-    if (!Lavenza.isEmpty(this.reminders[bot.name])) {
-      Lavenza.status('<Reminder>: Loaded reminders from database for @1.', [bot.name]);
+    if (!Lavenza.isEmpty(this.reminders[bot.id])) {
+      Lavenza.status('<Reminder>: Loaded reminders from database for @1.', [bot.id]);
     }
 
     // Set the pinger.
@@ -76,17 +76,17 @@ class Reminder extends Lavenza.Talent {
     // Loops through all reminders and checks if they need to be sent.
     // @TODO - This isn't really efficient. Explore a way to make this NOT have to loop through
     // ALL reminders.
-    for (let key in this.reminders[bot.name]) {
+    for (let key in this.reminders[bot.id]) {
 
       // Skip loop if the property is from the Javascript Object prototype.
-      if (!this.reminders[bot.name].hasOwnProperty(key)) continue;
+      if (!this.reminders[bot.id].hasOwnProperty(key)) continue;
 
       // The 'this.reminders' object contains many 'reminder_arrays'.
       // Reminder Arrays are created when a user creates a reminder.
       // The 'key' associating each reminder array is the ID of the person that created the reminders.
       // This is how reminders are stored.
       // Here, we get the current reminder array.
-      let reminder_array = this.reminders[bot.name][key];
+      let reminder_array = this.reminders[bot.id][key];
 
       // Loop through every 'reminder' object in the reminder_array.
       reminder_array.every((reminder) => {
@@ -94,14 +94,14 @@ class Reminder extends Lavenza.Talent {
         // If the reminder's timestamp is in the past, we send the reminder, then remove it from the array.
         if (reminder.timestamp < now) {
           this.sendReminder(reminder, bot);
-          this.reminders[bot.name][key].splice(reminder_array.indexOf(reminder), 1);
+          this.reminders[bot.id][key].splice(reminder_array.indexOf(reminder), 1);
         }
         return true;
 
       });
 
       // If the Reminder Array is empty, we'll remove it from the 'this.reminders' object to avoid pollution.
-      if (Lavenza.isEmpty(this.reminders[bot.name][key])) {
+      if (Lavenza.isEmpty(this.reminders[bot.id][key])) {
         this.clear(key, bot);
       }
 
@@ -171,12 +171,12 @@ class Reminder extends Lavenza.Talent {
     // Error checks have been done through the command already. :)
 
     // Check if user has a reminder array set. If not, we set it now.
-    if (Lavenza.isEmpty(this.reminders[bot.name][reminder.creator_id])) {
-      this.reminders[bot.name][reminder.creator_id] = [];
+    if (Lavenza.isEmpty(this.reminders[bot.id][reminder.creator_id])) {
+      this.reminders[bot.id][reminder.creator_id] = [];
     }
 
     // Set the reminder.
-    this.reminders[bot.name][reminder.creator_id].push(reminder);
+    this.reminders[bot.id][reminder.creator_id].push(reminder);
 
     // Get the receiver
     let receiver = this.getReceiver(reminder, bot);
@@ -207,7 +207,7 @@ class Reminder extends Lavenza.Talent {
    * Save reminders to the database.
    */
   static async save(bot) {
-    await Lavenza.Gestalt.post(this.reminderStorages[bot.name], this.reminders[bot.name]).catch(Lavenza.stop);
+    await Lavenza.Gestalt.post(this.reminderStorages[bot.id], this.reminders[bot.id]).catch(Lavenza.stop);
   }
 
   /**
@@ -264,7 +264,7 @@ class Reminder extends Lavenza.Talent {
   static sendList(message, user, bot) {
 
     // If the user doesn't have any reminders stored, let me know.
-    if (Lavenza.isEmpty(this.reminders[bot.name][user.id])) {
+    if (Lavenza.isEmpty(this.reminders[bot.id][user.id])) {
       message.reply(`you don't seem to have any reminders in my database. :o`)
         .then((msg) => {
           msg.delete(30000)
@@ -280,7 +280,7 @@ class Reminder extends Lavenza.Talent {
     let list = `Here is the list of your reminders:\n\n`;
 
     // For every reminder found, add some markup.
-    this.reminders[bot.name][user.id].every((reminder) => {
+    this.reminders[bot.id][user.id].every((reminder) => {
       list += `Action: **"${reminder.action}"**`;
       list += `\n`;
       list += `Time: **${moment(parseInt(reminder.timestamp)).format("MMMM Do YYYY, h:mm:ss a")}**`;
@@ -302,9 +302,7 @@ class Reminder extends Lavenza.Talent {
    * @param  {String} user_id Discord ID of the user.
    */
   static clear(user_id, bot) {
-    delete this.reminders[bot.name][user_id];
+    delete this.reminders[bot.id][user_id];
     this.save(bot).catch(Lavenza.stop);
   }
 }
-
-module.exports = Reminder;

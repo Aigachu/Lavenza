@@ -21,7 +21,7 @@ import ClientTypes from "../Bot/Client/ClientTypes";
  * This class serves as the accessor for the main StorageService that Lavenza will be using. A Storage Service is
  * essentially the service that will access the database of the application, wherever it is stored. It is the job
  * of the StorageService to determine what type of data storage it will access, and the responsibility of it to
- * implement the necessary methods for Lavenza to work. It will only demand function of the REST protocol: GET
+ * implement the necessary methods for Lavenza to work. It will adopt the structure of a REST protocol: GET
  * POST, UPDATE & DELETE.
  *
  * We want to keep things simple and store JSON type data. In the future, we may explore SQL storage and the like.
@@ -32,10 +32,6 @@ export default class Gestalt {
    * Gestalt is a static singleton. This function will handle the preparations.
    */
   static async prepare() {
-
-    // Set a variable to manage collections effectively.
-    // When a collection is created, a tag is associated with it. This allows easy retrieval of a collection later.
-    // this.collections = {};
 
     // The default storage service is the Chronicler.
     /** @see ./StorageService/Chronicler/Chronicler */
@@ -67,10 +63,10 @@ export default class Gestalt {
     switch (clientType) {
 
       // For Discord Clients...
-      case ClientTypes.Discord:
+      case ClientTypes.Discord: {
 
         // We start by syncing the guild configuration.
-        let guilds = await this.sync({}, `/bots/${bot.name}/clients/${clientType}/guilds`);
+        let guilds = await this.sync({}, `/bots/${bot.id}/clients/${clientType}/guilds`);
 
         // This is the default guild configuration for Discord.
         let defaultGuildConfig = {
@@ -85,26 +81,36 @@ export default class Gestalt {
             guilds[guild.id] = defaultGuildConfig;
           }
           guilds[guild.id].name = guild.name;
-          await this.update(`/bots/${bot.name}/clients/${clientType}/guilds`, guilds)
+          await this.update(`/bots/${bot.id}/clients/${clientType}/guilds`, guilds)
         })).catch(Lavenza.stop);
-       break;
+        break;
+
+      }
 
       // For Twitch Clients...
-      case ClientTypes.Twitch:
-        await this.sync({}, `/bots/${bot.name}/clients/${clientType}/channels`);
+      case ClientTypes.Twitch: {
+
+        // await this.sync({}, `/bots/${bot.id}/clients/${clientType}/channels`);
         break;
 
+      }
+
       // For Slack Clients...
-      case ClientTypes.Slack:
-        await this.sync({}, `/bots/${bot.name}/clients/${clientType}/workspaces`);
+      case ClientTypes.Slack: {
+
+        // await this.sync({}, `/bots/${bot.id}/clients/${clientType}/workspaces`);
         break;
+
+      }
+
     }
+
   }
 
   /**
    * Bootstrap the database.
    *
-   * Functions that run here do any syncing and preparation with the database before the application runs.
+   * This creates all database collections needed for the application to function properly.
    *
    * @returns {Promise<void>}
    */
@@ -112,7 +118,7 @@ export default class Gestalt {
 
     // Await creation of the Bots collection.
     /** @catch Stop execution. */
-    await this.createCollection('/bots', 'bots').catch(Lavenza.stop);
+    await this.createCollection('/bots').catch(Lavenza.stop);
 
     // Await bootstrapping of each bot's data.
     /** @catch Stop execution. */
@@ -120,15 +126,15 @@ export default class Gestalt {
 
       // Initialize the database collection for this bot if it doesn't already exist.
       /** @catch Stop execution. */
-      await this.createCollection(`/bots/${bot.name}`, `bot.${bot.name}`).catch(Lavenza.stop);
+      await this.createCollection(`/bots/${bot.id}`).catch(Lavenza.stop);
 
       // Await the synchronization of data between the Bot's default configuration and the database configuration.
       /** @catch Stop execution. */
-      bot.config = await this.sync(bot.config, `/bots/${bot.name}/config`).catch(Lavenza.stop);
+      bot.config = await this.sync(bot.config, `/bots/${bot.id}/config`).catch(Lavenza.stop);
 
       // Create a database collection for the talents granted to a bot.
       /** @catch Stop execution. */
-      await this.createCollection(`/bots/${bot.name}/talents`, `bot.${bot.name}.talents`).catch(Lavenza.stop);
+      await this.createCollection(`/bots/${bot.id}/talents`).catch(Lavenza.stop);
 
       // Await the bootstrapping of each talent's data.
       /** @catch Stop execution. */
@@ -139,17 +145,17 @@ export default class Gestalt {
 
         // Create a database collection for the talents granted to a Bot.
         /** @catch Stop execution. */
-        await this.createCollection(`/bots/${bot.name}/talents/${talent.id}`, `bot.${bot.name}.talents.${talent.id}`).catch(Lavenza.stop);
+        await this.createCollection(`/bots/${bot.id}/talents/${talent.id}`).catch(Lavenza.stop);
 
         // Await the synchronization of data between the Talent's default configuration and the database configuration.
         /** @catch Stop execution. */
-        await this.sync(talent.config, `/bots/${bot.name}/talents/${talent.id}/config`).catch(Lavenza.stop);
+        await this.sync(talent.config, `/bots/${bot.id}/talents/${talent.id}/config`).catch(Lavenza.stop);
 
       })).catch(Lavenza.stop);
 
       // Create a database collection for Commands belonging to a Bot.
       /** @catch Stop execution. */
-      await this.createCollection(`/bots/${bot.name}/commands`, `bot.${bot.name}.commands`).catch(Lavenza.stop);
+      await this.createCollection(`/bots/${bot.id}/commands`).catch(Lavenza.stop);
 
       // Await the bootstrapping of Commands data.
       /** @catch Stop execution. */
@@ -160,23 +166,23 @@ export default class Gestalt {
 
         // Create a database collection for commands belonging to a Bot.
         /** @catch Stop execution. */
-        await this.createCollection(`/bots/${bot.name}/commands/${command.config.key}`, `bot.${bot.name}.commands.${command.config.key}`).catch(Lavenza.stop);
+        await this.createCollection(`/bots/${bot.id}/commands/${command.config.key}`).catch(Lavenza.stop);
 
         // Await the synchronization of data between the Command's default configuration and the database configuration.
         /** @catch Stop execution. */
-        await this.sync(command.config, `/bots/${bot.name}/commands/${command.config.key}/config`).catch(Lavenza.stop);
+        await this.sync(command.config, `/bots/${bot.id}/commands/${command.config.key}/config`).catch(Lavenza.stop);
 
       })).catch(Lavenza.stop);
 
       // Create a database collection for the clients belonging to a Bot.
       /** @catch Stop execution. */
-      await this.createCollection(`/bots/${bot.name}/clients`).catch(Lavenza.stop);
+      await this.createCollection(`/bots/${bot.id}/clients`).catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
 
     // Await creation of the Bots collection.
     /** @catch Stop execution. */
-    await this.createCollection('/talents', 'bots').catch(Lavenza.stop);
+    await this.createCollection('/talents').catch(Lavenza.stop);
 
     // Await bootstrapping of each bot's data.
     /** @catch Stop execution. */
@@ -230,15 +236,12 @@ export default class Gestalt {
    *
    * @param {String} endpoint
    *   Location where to create the collection.
-   * @param {String} tag
-   *   Each collection needs to be provided a tag. This makes them a lot easier to retrieve in the code if needed.
-   *   @TODO - Deprecate this. LOL.
    * @param {Object} payload
    *   The data of the Collection to create.
    *
    * @returns {Promise<void>}
    */
-  static async createCollection(endpoint, tag = '', payload = {}) {
+  static async createCollection(endpoint, payload = {}) {
 
     // Each storage service creates collections in their own way. We await this process.
     /** @catch Stop execution. */

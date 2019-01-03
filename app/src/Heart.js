@@ -114,7 +114,7 @@ export const Heart = {
   // Enums.
   ClientTypes: ClientTypes,
 
-  // Function shortcuts for Confidants.
+  // Function shortcuts from Confidants.
   log: Morgana.log,
   success: Morgana.success,
   error: Morgana.error,
@@ -145,4 +145,4 @@ export const Heart = {
 };
 
 // Set Lavenza in the global scope for ease of access in other files.
-global['Lavenza'] = Heart;
+global["Lavenza"] = Heart;

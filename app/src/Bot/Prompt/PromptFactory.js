@@ -6,9 +6,7 @@
  */
 
 // Imports.
-import Prompt from './Prompt';
 import DiscordPrompt from './DiscordPrompt';
-
 import ClientTypes from "../Client/ClientTypes";
 
 /**
@@ -17,24 +15,32 @@ import ClientTypes from "../Client/ClientTypes";
 export default class PromptFactory {
 
 
-  static async build(request, resonance, onResponse, bot) {
+  static async build(request, line, resonance, onResponse, bot) {
 
     // Initialize the object.
     let prompt = {};
 
     // Depending on the requested type, we build the appropriate client.
     switch (resonance.client.type) {
-      case ClientTypes.Discord:
-        prompt = new DiscordPrompt(request, resonance, onResponse, bot);
+
+      // For Discord clients, we build a Discord Prompt.
+      case ClientTypes.Discord: {
+        prompt = new DiscordPrompt(request, line, resonance, onResponse, bot);
         break;
+      }
 
-      // case ClientTypes.Twitch:
-      //   client = new TwitchClient(config);
+      // // For Twitch clients, we build a Twitch Prompt.
+      // case ClientTypes.Twitch: {
+      //     prompt = new TwitchPrompt(request, line, resonance, onResponse, bot);
       //   break;
+      // }
+      //
+      // // For Slack clients, we build a Slack Prompt.
+      // case ClientTypes.Slack: {
+      //   prompt = new SlackPrompt(request, line, resonance, onResponse, bot);
+      //   break;
+      // }
 
-      // case ClientTypes.Slack:
-      //   client = new SlackClient(config);
-      //   break;
     }
 
     // Whatever the prompt, fire the request.

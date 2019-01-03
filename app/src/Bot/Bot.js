@@ -26,13 +26,13 @@ export default class Bot {
   /**
    * Bot constructor.
    *
-   * @param {string} name
-   *   Name of the bot. This is the name of the folder, not a reader-friendly name.
+   * @param {string} id
+   *   id of the bot. This is the name of the folder, not a reader-friendly name.
    * @param {Object} config
    *   Configuration loaded from the bot's 'NAME.config.yml' file.
    */
-  constructor(name, config) {
-    this.name = name;
+  constructor(id, config) {
+    this.id = id;
     this.config = config;
     this.directory = config.directory;
 
@@ -55,7 +55,7 @@ export default class Bot {
 
     // We use Gestalt to make a call to the database storage service and return the data.
     /** @catch Stop execution. */
-    return await Lavenza.Gestalt.get(`/bots/${this.name}/config`).catch(Lavenza.stop);
+    return await Lavenza.Gestalt.get(`/bots/${this.id}/config`).catch(Lavenza.stop);
 
   }
 
@@ -138,7 +138,7 @@ export default class Bot {
 
     // Check if there are custom talents defined.
     if (Lavenza.isEmpty(this.config.talents)) {
-      Lavenza.warn('NO_TALENT_CONFIG_FOUND_FOR_BOT', [this.name]);
+      Lavenza.warn('NO_TALENT_CONFIG_FOUND_FOR_BOT', [this.id]);
       return;
     }
 
@@ -152,7 +152,7 @@ export default class Bot {
     this.talents = [...this.talents, ...this.config.talents];
 
     // Shoot a success message.
-    Lavenza.success('TALENTS_LOADED_FOR_BOT', [this.name]);
+    Lavenza.success('TALENTS_LOADED_FOR_BOT', [this.id]);
 
   }
 
@@ -194,7 +194,7 @@ export default class Bot {
     })).catch(Lavenza.stop);
 
     // Send a success message.
-    Lavenza.success('COMMANDS_SET_FOR_BOT', [this.name]);
+    Lavenza.success('COMMANDS_SET_FOR_BOT', [this.id]);
   }
 
   /**
@@ -222,7 +222,7 @@ export default class Bot {
     })).catch(Lavenza.stop);
 
     // Send a success message.
-    Lavenza.success('LISTENERS_SET_FOR_BOT', [this.name]);
+    Lavenza.success('LISTENERS_SET_FOR_BOT', [this.id]);
   }
 
   /**
@@ -302,7 +302,7 @@ export default class Bot {
     // Construct a 'Resonance'.
     let resonance = new Lavenza.Resonance(content, message, this, client);
 
-    // Fire all of the bot's prompts.
+    // Fire all of the bot's prompts, if any.
     await Promise.all(this.prompts.map(async prompt => {
 
       // Fire the listen function.
@@ -320,21 +320,48 @@ export default class Bot {
 
   }
 
-  async prompt(request, resonance, lifespan, onResponse) {
+  /**
+   * Set up a prompt to a specified user.
+   *
+   * Prompts are interactive ways to query information from a user in a seamless conversational way.
+   *
+   * @param {String} request
+   *   Message that will be sent describing the requested information.
+   * @param {*} line
+   *   The communication line for this prompt. Basically, where we want the interaction to happen.
+   * @param {Lavenza.Resonance|Resonance} resonance
+   *   The Resonance tied to this prompt.
+   * @param {int} lifespan
+   *   The lifespan of this Prompt. If we wait long enough, we should cancel it.
+   * @param {*} onResponse
+   *   The callback function that runs once a response has been heard.
+   *
+   * @returns {Promise<void>}
+   */
+  async prompt(request, line, resonance, lifespan, onResponse) {
 
     // Create the new prompt using the factory.
-    let prompt = await PromptFactory.build(request, resonance, onResponse, this);
+    let prompt = await PromptFactory.build(request, line, resonance, onResponse, this);
 
     // Set the prompt to the bot.
     this.prompts.push(prompt);
 
     // Await resolution of the prompt.
     // If we go past the lifespan, the prompt will throw an error. This error must be caught and handled accordingly.
+    // Basically, when implementing this method elsewhere, catch the error and do whatever you want with it.
     /** @catch Throw the error for specific case handling. */
     await prompt.await(lifespan).catch(Lavenza.throw);
 
   }
 
+  /**
+   * Remove a prompt from the current bot.
+   *
+   * @param {Prompt} prompt
+   *   The prompt to remove from this bot.
+   *
+   * @returns {Promise<void>}
+   */
   async removePrompt(prompt) {
     this.prompts = Lavenza.removeFromArray(this.prompts, prompt);
   }
@@ -357,8 +384,10 @@ export default class Bot {
     // Depending on the Client Type, decipher the message accordingly.
     switch (client.type) {
 
-      case ClientTypes.Discord:
+      // In the case of Discord, we get the 'content' property of the message object.
+      case ClientTypes.Discord: {
         return message.content;
+      }
 
       // case ClientTypes.Twitch:
       //   return message;
@@ -374,6 +403,8 @@ export default class Bot {
    * @returns {Promise.<void>}
    */
   async authenticateClients() {
+
+    // Get all keys from the client configuration, that should match the names defined in ClientTypes.
     let clientKeys = Object.keys(this.clients);
 
     // Await the authentication of the clients linked to the bot.
@@ -385,7 +416,7 @@ export default class Bot {
       await this.clients[key].authenticate().catch(Lavenza.stop);
 
       // Make sure database collection exists for this client.
-      await Lavenza.Gestalt.createCollection(`/bots/${this.name}/clients/${key}`);
+      await Lavenza.Gestalt.createCollection(`/bots/${this.id}/clients/${key}`);
 
       // Run appropriate bootstrapping depending on the client.
       await Lavenza.Gestalt.bootstrapClientDatabaseForBot(this, key);
@@ -393,7 +424,8 @@ export default class Bot {
     })).catch(Lavenza.stop);
 
     // Send a success message.
-    Lavenza.success('CLIENTS_AUTHENTICATED_FOR_BOT', [this.name]);
+    Lavenza.success('CLIENTS_AUTHENTICATED_FOR_BOT', [this.id]);
+
   }
 
   /**
@@ -422,7 +454,7 @@ export default class Bot {
     })).catch(Lavenza.stop);
 
     // Send a success message.
-    Lavenza.success('CLIENTS_INITIALIZED_FOR_BOT', [this.name]);
+    Lavenza.success('CLIENTS_INITIALIZED_FOR_BOT', [this.id]);
   }
 
   /**
@@ -444,14 +476,12 @@ export default class Bot {
   }
 
   /**
-   * Get the command prefix given a couple of checks.
+   * Get the command prefix, after a couple of checks.
    *
-   * @param {*} client
-   *   The client that received the message.
    * @param {Resonance} resonance
    *   The Resonance we're taking a look at.
    *
-   * @returns {Promise<void>}
+   * @returns {Promise<*>}
    *   Returns the command prefix we need to check for.
    */
   async getCommandPrefix(resonance) {
@@ -464,12 +494,18 @@ export default class Bot {
 
     // Depending on the client type, we'll be checking different types of configurations.
     switch (resonance.client.type) {
-      case ClientTypes.Discord:
-        let guildConfig = await Lavenza.Gestalt.get(`/bots/${this.name}/clients/discord/guilds`).catch(Lavenza.stop);
+
+      // In the case of a Discord client, we check to see if there's a custom prefix set for the resonance's guild.
+      case ClientTypes.Discord: {
+
+        let guildConfig = await Lavenza.Gestalt.get(`/bots/${this.id}/clients/discord/guilds`).catch(Lavenza.stop);
         if (resonance.message.guild) {
           cprefix = guildConfig[resonance.message.guild.id].cprefix || undefined;
         }
         break;
+
+      }
+
     }
 
     // Reset it to undefined if it's empty.
@@ -478,7 +514,7 @@ export default class Bot {
     }
 
     // By default, return the following.
-    return cprefix || botConfig.clients[resonance.client.type].command_prefix || botConfig.command_prefix;
+    return cprefix || botConfig.clients[resonance.client.type]['command_prefix'] || botConfig['command_prefix'];
 
   }
 
