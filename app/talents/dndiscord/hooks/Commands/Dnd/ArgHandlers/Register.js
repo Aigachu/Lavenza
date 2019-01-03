@@ -56,7 +56,7 @@ export default class Register {
     if (resonance.message.channel.type !== "dm") {
 
       // Make her type for a bit.
-      await DiscordClient.typeFor(2, conversationChannel);
+      await resonance.client.typeFor(2, conversationChannel);
 
       // Tell the user we'll take this to the DMs.
       await resonance.message.reply(`Ooh, you wanna register for DNDiscord? Alright! I'll dm you in a second!`).catch(Lavenza.stop);
@@ -81,20 +81,20 @@ export default class Register {
     playerData.creationDate = Date.now();
 
     // Let's add some flavor to it. Make her type for a bit.
-    await DiscordClient.typeFor(2, conversationChannel);
+    await resonance.client.typeFor(2, conversationChannel);
 
     // A little welcome message.
     await resonance.message.author.send(`Welcome to **Dungeons & Discord**!`).catch(Lavenza.stop);
 
     // Type for 3 seconds.
-    await DiscordClient.typeFor(3, conversationChannel);
+    await resonance.client.typeFor(3, conversationChannel);
 
     // Ask the player if they want green tea.
     /** @catch Throw the error to stop execution. */
     await resonance.bot.prompt(`First thing's first, to break the ice, would you like some green tea?`, conversationChannel, resonance, 10, async (responseResonance, prompt) => {
 
       // Type for 2 seconds.
-      await DiscordClient.typeFor(2, conversationChannel);
+      await resonance.client.typeFor(2, conversationChannel);
 
       // Check if the user confirms.
       if (Lavenza.Sojiro.isConfirmation(responseResonance.content)) {
@@ -115,7 +115,7 @@ export default class Register {
     });
 
     // Type for 4 seconds.
-    await DiscordClient.typeFor(4, conversationChannel);
+    await resonance.client.typeFor(4, conversationChannel);
 
     // Ask the player more questions...
     // await resonance.bot.addPrompt(`First of all, would you like some green tea? (Y/n)`, resonance, 10, async (responseResonance, prompt) => {
@@ -129,15 +129,15 @@ export default class Register {
     await core.registerPlayer(playerData).catch(Lavenza.stop);
 
     // More conclusions.
-    await DiscordClient.typeFor(4, conversationChannel);
+    await resonance.client.typeFor(4, conversationChannel);
     conversationChannel.send(`I went ahead and created your player in my database. You should be set. Your next step will be to create a character! Use \`;° dnd --newgame\` to get started with that.`);
-    await DiscordClient.typeFor(4, conversationChannel);
+    await resonance.client.typeFor(4, conversationChannel);
     conversationChannel.send(`Remember to let your imagination run wild! And have fun. :)`);
 
     // If the player asked for tea in the beginning, hand it to them!
     if (playerData.greenTea) {
       await Lavenza.wait(10).catch(Lavenza.stop);
-      await DiscordClient.typeFor(2, conversationChannel);
+      await resonance.client.typeFor(2, conversationChannel);
       conversationChannel.send(`Wait! I almost forgot...Here's your tea! - :tea:`).catch(Lavenza.stop);
     }
   }

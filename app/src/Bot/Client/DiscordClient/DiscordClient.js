@@ -69,14 +69,16 @@ export default class DiscordClient extends DiscordJSClient {
   /**
    * A little utility function to order the bot to type for a set amount of seconds in a given channel.
    *
+   * @TODO - Do something about that dumb 'method can be static' message.
+   *
    * @param {int} seconds
    *   Amount of seconds to type for.
    * @param {*} channel
    *   The Discord channel to type in.
-   *
+   *   
    * @returns {Promise<void>}
    */
-  static async typeFor(seconds, channel) {
+  async typeFor(seconds, channel) {
     await channel.stopTyping();
     await channel.startTyping(1);
     await Lavenza.wait(seconds).catch(Lavenza.stop);

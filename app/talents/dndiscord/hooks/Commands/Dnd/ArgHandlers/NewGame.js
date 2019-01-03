@@ -38,7 +38,7 @@ export default class NewGame {
     if (resonance.message.channel.type !== "dm") {
 
       // Make her type for a bit.
-      await DiscordClient.typeFor(2, resonance.message.channel);
+      await resonance.client.typeFor(2, resonance.message.channel);
 
       // Tell the user we'll take this to the DMs.
       await resonance.message.reply(`Ah you want to create a character? Awesome! I'll dm you in just a second. ;)`).catch(Lavenza.stop);
