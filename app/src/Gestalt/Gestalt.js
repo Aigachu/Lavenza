@@ -67,6 +67,7 @@ export default class Gestalt {
 
         // We start by syncing the guild configuration.
         let guilds = await this.sync({}, `/bots/${bot.id}/clients/${clientType}/guilds`);
+        await Lavenza.wait(1); // @TODO - Fix this shit.
 
         // This is the default guild configuration for Discord.
         let defaultGuildConfig = {
@@ -80,8 +81,8 @@ export default class Gestalt {
           if (!(guild.id in guilds)) {
             guilds[guild.id] = defaultGuildConfig;
           }
-          guilds[guild.id].name = guild.name;
-          await this.update(`/bots/${bot.id}/clients/${clientType}/guilds`, guilds)
+          // guilds[guild.id].name = `${guild.name}`;
+          await this.update(`/bots/${bot.id}/clients/${clientType}/guilds`, guilds).catch(Lavenza.stop)
         })).catch(Lavenza.stop);
         break;
 
