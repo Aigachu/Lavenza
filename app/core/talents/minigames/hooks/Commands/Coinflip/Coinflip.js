@@ -10,7 +10,7 @@
  *
  * Flip a coin!
  */
-class Coinflip extends Lavenza.Command {
+export default class Coinflip extends Lavenza.Command {
 
   /**
    * @inheritDoc

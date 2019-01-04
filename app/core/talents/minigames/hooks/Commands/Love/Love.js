@@ -10,7 +10,7 @@
  *
  * Test your love for something...Or someone... ;)
  */
-class Love extends Lavenza.Command {
+export default class Love extends Lavenza.Command {
 
   /**
    * @inheritDoc

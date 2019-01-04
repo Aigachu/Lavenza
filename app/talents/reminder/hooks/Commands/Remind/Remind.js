@@ -16,7 +16,7 @@ import _ from 'underscore';
  *
  * What a command hahaha...How did I make this?
  */
-class Remind extends Lavenza.Command {
+export default class Remind extends Lavenza.Command {
 
   /**
    * @inheritDoc
@@ -502,5 +502,3 @@ class Remind extends Lavenza.Command {
   }
 
 }
-
-module.exports = Remind;

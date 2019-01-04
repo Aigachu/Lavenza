@@ -76,5 +76,3 @@ export default class Gestalt extends Lavenza.Command {
   }
 
 }
-
-module.exports = Gestalt;

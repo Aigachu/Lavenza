@@ -24,5 +24,3 @@ export default class Config extends Lavenza.Command {
   }
 
 }
-
-module.exports = Config;

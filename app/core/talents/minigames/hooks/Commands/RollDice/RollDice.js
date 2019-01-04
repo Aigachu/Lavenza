@@ -10,7 +10,7 @@
  *
  * Roll dice to test your luck! Play the lottery if you roll 10000/10000.
  */
-class RollDice extends Lavenza.Command {
+export default class RollDice extends Lavenza.Command {
 
   /**
    * @inheritDoc
