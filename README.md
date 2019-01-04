@@ -83,6 +83,26 @@ If your bot responds, we're on the right track!
 
 Report any issues to me. I'll always prioritize issues pertaining to the setup of the application.
 
+## The Framework
+
+### The 'Lavenza' Global
+
+***Documentation soon...I promise...***
+
+#### Confidants
+
+***Documentation soon...I promise...***
+
+### Gestalt
+
+#### The Database Structure
+
+***Documentation soon...I promise...***
+
+#### Future of Gestalt
+
+***Documentation soon...I promise...***
+
 ## Talents
 
 Lavenza II is designed as a plugin-based system centered around what we call **Talents**.
@@ -103,17 +123,16 @@ The beauty of Talents is that they are **abstract by nature**. They leave the po
 
 #### Commands
 
+###### Authority & OpLevel
+###### 
+
 #### Listeners
 
-***More coming soon...***
-
-## Gestalt
-
-***More coming soon...***
+***Documentation soon...I promise...***
 
 ## Building & Deployment
 
-***More coming soon...***
+***Documentation soon...I promise...***
 
 ----
 
