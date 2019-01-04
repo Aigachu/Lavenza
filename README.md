@@ -20,9 +20,9 @@ Before starting the guide, make sure you have all the above requirements. :)
 
 ### Installing Dependencies
 
-There are many different ways to use Lavenza, but the one thing to try out first would be to get a Bot up and running.
+There are many different ways to use Lavenza, but first you should try to get a bot up and running!
 
-First thing's first, we'll use **npm** to fetch our dependencies. In your command-line, travel to the root of this repository and do the following:
+To start off, we'll use **npm** to fetch our dependencies. In your command-line, travel to the root of this repository and do the following:
 
 ```
 cd app;
@@ -37,7 +37,7 @@ Start by copying the `/app/bots/example` folder into a new folder with the name 
 
 i.e. `/app/bots/lavenza`
 
-You can also do this via the command line with the following commands, from the root of the repository. Substitute "mybot" with the name of your bot in lowercase.
+You can also do this via the command line with the following commands, from the root of the repository. Substitute `mybot` with the name of your bot in lowercase.
 
 ```
 cd app/bots;
@@ -52,16 +52,20 @@ This is where you will configure your bot. Carefully read through the file and a
 
 - Set the name to whatever you want!
 - Make the command prefix **unique**! Don't use the common '!' or '$' or even '%'. Go for something like '°°' or '.~'.
-- Keep the default pingpong talent for now until you test. You can enable more talents later.
+- Keep the default pingpong talent for now until you test your bot for the first time. You can enable more talents later.
 - For Discord Configurations, set your own Discord ID as one of the Gods. You can replace the ID that's already there. You can also set some of your friends as operators and masters. (Only if you can trust them...)
 
 ### Setting up client credentials
 
-For each client (or application I should say) your want your bot to have access to, you need to configure the needed credentials. This is all done in an untracked file called `.env` found in the `/app` folder.
+For each client your want your bot to have access to, you need to configure the needed credentials. This is all done in an untracked file called `.env` found in the `/app` folder.
 
-Create a new empty file called `.env` in the `/app` folder, then open your new file and take a read in there.
+Copy the `/app/.env.example` file into a new file called `.env` in the `/app` folder, then open your new file and take a read in there.
 
-For each section, follow the detailed instructions in the file. **Without proper configuration of this step, your bot will not work.**
+For each section, follow the detailed instructions in the file.
+
+Make sure your `.env` file is properly located at `/app/.env`.
+
+**Without proper configuration of this step, your bot will not work.**
 
 ### Running the application
 
@@ -73,7 +77,9 @@ node summon --babel
 
 This will run the application and connect your bot to any clients you configured.
 
-You can go ahead and use your command prefix to test the `ping` command! If your bot responds, we're on the right track!
+You can go ahead and use your command prefix to test the `ping` command! i.e. `;.ping`!
+
+If your bot responds, we're on the right track!
 
 Report any issues to me. I'll always prioritize issues pertaining to the setup of the application.
 
