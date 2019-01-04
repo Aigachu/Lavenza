@@ -34,23 +34,40 @@ export default class NewGame {
 
     // @TODO - Check if the player already has 3 characters assigned.
 
+
+    // Define variable to store the conversation channel.
+    let conversationChannel = resonance.message.channel;
+
     // Now we want to check if the request was done in DMs. If not, we tell the player that we'll DM them shortly.
     if (resonance.message.channel.type !== "dm") {
 
       // Make her type for a bit.
-      await resonance.client.typeFor(2, resonance.message.channel);
+      await resonance.client.typeFor(2, conversationChannel);
 
       // Tell the user we'll take this to the DMs.
       await resonance.message.reply(`Ah you want to create a character? Awesome! I'll dm you in just a second. ;)`).catch(Lavenza.stop);
 
       // Wait 5 seconds.
       await Lavenza.wait(5).catch(Lavenza.stop);
+
+      // Create a DMChannel between the bot and the user (to make sure it exists).
+      await resonance.message.author.createDM().catch(Lavenza.stop);
+
+      // Set the conversation channel.
+      conversationChannel = resonance.message.author.dmChannel;
     }
 
     // Now we enter the character creation process.
-    await resonance.message.author.send(`Hello!`).catch(Lavenza.stop);
+    await conversationChannel.send(`Uhhh! This command actually isn't ready yet...(Aiga come on...Hurry up!) :sweat_smile:`).catch(Lavenza.stop);
 
-    console.log(player);
+    // Make her type for a bit.
+    await resonance.client.typeFor(2, conversationChannel);
+
+    await conversationChannel.send(`Ummm...In the meantime here's your player data? I guess?`).catch(Lavenza.stop);
+
+    await resonance.bot.getClient(Lavenza.ClientTypes.Discord).sendEmbed(conversationChannel, {
+      description: `\`\`\`${JSON.stringify(await player.data().catch(Lavenza.stop), null, '\t')}\`\`\``
+    }).catch(Lavenza.stop);
 
   }
 }

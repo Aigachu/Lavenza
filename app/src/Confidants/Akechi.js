@@ -153,10 +153,10 @@ export default class Akechi {
 
     // Return directories if the flag is set.
     if (dirs === true) {
-      return files.filter(this.isDirectory);
+      return files.filter(path => this.isDirectory(path) === true);
     }
 
-    return files;
+    return files.filter(path => this.isDirectory(path) === false);
   }
 
   /**

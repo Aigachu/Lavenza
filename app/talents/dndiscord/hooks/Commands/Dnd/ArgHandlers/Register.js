@@ -91,7 +91,7 @@ export default class Register {
 
     // Ask the player if they want green tea.
     /** @catch Throw the error to stop execution. */
-    await resonance.bot.prompt(`First thing's first, to break the ice, would you like some green tea?`, conversationChannel, resonance, 10, async (responseResonance, prompt) => {
+    await resonance.bot.prompt(`First thing's first, to break the ice, would you like some green tea?`, conversationChannel, resonance, 30, async (responseResonance, prompt) => {
 
       // Type for 2 seconds.
       await resonance.client.typeFor(2, conversationChannel);

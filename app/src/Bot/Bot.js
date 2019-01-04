@@ -324,7 +324,10 @@ export default class Bot {
    * @param {Lavenza.Resonance|Resonance} resonance
    *   The Resonance tied to this prompt.
    * @param {int} lifespan
-   *   The lifespan of this Prompt. If we wait long enough, we should cancel it.
+   *   The lifespan of this Prompt.
+   *   If the bot doesn't receive an answer in time, we cancel the prompt.
+   *   10 seconds is the average time a white boy waits for a reply from a girl he's flirting with after sending her a
+   *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO!
    * @param {*} onResponse
    *   The callback function that runs once a response has been heard.
    *
