@@ -234,17 +234,9 @@ export default class Bot {
    */
   async validateCustomTalents() {
 
-    // Get active configuration.
-    let config = await this.getActiveConfig().catch(Lavenza.stop);
-
-    // If this configuration is empty, we simply use the default configuration.
-    if (Lavenza.isEmpty(config)) {
-      config = this.config;
-    }
-
     // Await the processing of all talents in the bot's config object.
     /** @catch Stop execution. */
-    await Promise.all(config.talents.map(async (talentKey) => {
+    await Promise.all(this.config.talents.map(async (talentKey) => {
 
       // First, we'll check if this talent already exists in the Manager.
       // This happens if another bot already loaded it.
