@@ -9,7 +9,7 @@ future clients will be supported (and even communication between clients through
 
 - [Node.js - Latest LTS Version](https://nodejs.org/en/download/)
 - [npm](https://www.npmjs.com/get-npm)
-- A good IDE.
+- A good IDE. I recommend Sublime Text 3, or WebStorm if you can get it.
 - A decent command-line utility application (Most of the steps in the ReadMe will use command line tools)
 - A brain
 - A sense of humour
