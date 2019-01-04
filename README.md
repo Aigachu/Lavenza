@@ -5,7 +5,13 @@ Lavenza II is a large development project aiming to create powerful, multi-platf
 The main focus right now is Discord development, but all code will be written with the idea in mind that
 future clients will be supported (and even communication between clients through a single command).
 
-## Getting Started
+## Quickstart Guide
+
+There are many different ways to use Lavenza, but the one thing to try out first would be to get a Bot up and running.
+
+You can start by copying the `/app/bots/example` folder into a new folder with the name of your bot in lowercase.
+
+i.e. `/app/bots/lavenza`
 
 ***More coming soon...***
 

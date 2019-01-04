@@ -81,7 +81,7 @@ export default class Gestalt {
           if (!(guild.id in guilds)) {
             guilds[guild.id] = defaultGuildConfig;
           }
-          // guilds[guild.id].name = `${guild.name}`;
+          guilds[guild.id].name = `${guild.name}`;
           await this.update(`/bots/${bot.id}/clients/${clientType}/guilds`, guilds).catch(Lavenza.stop)
         })).catch(Lavenza.stop);
         break;
