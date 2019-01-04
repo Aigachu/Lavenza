@@ -5,9 +5,26 @@ Lavenza II is a large development project aiming to create powerful, multi-platf
 The main focus right now is Discord development, but all code will be written with the idea in mind that
 future clients will be supported (and even communication between clients through a single command).
 
+## Requirements
+
+- [Node.js - Latest LTS Version](https://nodejs.org/en/download/)
+- [npm](https://www.npmjs.com/get-npm)
+- A decent command-line utility application (Most of the steps in the ReadMe will use command line tools)
+- A brain
+- A sense of humour
+
 ## Quickstart Guide
 
 There are many different ways to use Lavenza, but the one thing to try out first would be to get a Bot up and running.
+
+First thing's first, we'll use **npm** to fetch our dependencies. In your command-line, travel to the root of this repository and do the following:
+
+```
+cd app;
+npm install;
+```
+
+This should take a few moments to install the project's dependencies.
 
 You can start by copying the `/app/bots/example` folder into a new folder with the name of your bot in lowercase.
 
