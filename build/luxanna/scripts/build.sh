@@ -45,11 +45,11 @@ echo "cd apps/Lavenza-II; git pull;"
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git pull;'
 echo "--------------------------------------"
 
-# On Luxanna, checkout the live branch.
-echo "Checkout the live branch."
+# On Luxanna, checkout the master branch.
+echo "Checkout the master branch."
 echo "--------------------------------------"
-echo "cd apps/Lavenza-II; git checkout live;"
-ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git checkout live;'
+echo "cd apps/Lavenza-II; git checkout master;"
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git checkout master;'
 echo "--------------------------------------"
 
 # On Luxanna, re-install node libraries.
