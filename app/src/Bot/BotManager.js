@@ -66,7 +66,7 @@ export default class BotManager {
     await this.prepareBots().catch(Lavenza.stop);
 
     // Some more flavor.
-    Lavenza.status("Bot Manager preparations complete!");
+    Lavenza.success("Bot Manager preparations complete!");
 
   }
 

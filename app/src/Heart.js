@@ -12,10 +12,6 @@
  * to import a lot of classes across the code.
  */
 
-// Include extensions to Javascript.
-// See the file for more deets.
-import './Extensions';
-
 // Load Environment Variables from .env file at the root of the project.
 import DotEnv from 'dotenv';
 DotEnv.load();
@@ -88,7 +84,14 @@ let Keys = {
 // Import & Configure i18n.
 import i18n from 'i18n';
 i18n.configure({
-  locales:['en', 'fr'],
+  locales: [
+    'en',
+    'fr'
+  ],
+  fallbacks: {
+    'fr': 'en'
+  },
+  defaultLocale: 'en',
   directory: RootPath + '/i18n'
 });
 

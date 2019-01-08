@@ -81,7 +81,7 @@ export default class Igor {
    * @param {string} locale
    *   Locale determining the language to send the error in.
    */
-  static throw(error, replacers, locale = 'en') {
+  static throw(error, replacers, locale = process.env.CONSOLE_LOCALE) {
 
     // If the error is an instance of the error class, simply throw it.
     if (error instanceof Error) {

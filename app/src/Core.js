@@ -32,7 +32,7 @@ export default class Core {
    */
   static get version() {
 
-    return "0.6.0";
+    return "0.8.0";
 
   }
 
@@ -58,7 +58,10 @@ export default class Core {
     this.bots = typeof bots === "string" ? [bots] : bots;
 
     // Some flavor text for the console.
-    Lavenza.status("Initializing Lavenza (v{{version}})...", {version: this.version});
+    Lavenza.warn("Initializing Lavenza (v{{version}})...", {version: this.version});
+
+    // Separation.
+    Lavenza.warn("-----------------------------------------------------------");
 
     /*
      * Fire necessary preparations.
@@ -122,8 +125,8 @@ export default class Core {
     // Some more flavor.
     Lavenza.success("Preparations complete. Moving on to execution...");
 
-    // Separation
-    Lavenza.status("-----------------------------------------------------------");
+    // Separation.
+    Lavenza.warn("-----------------------------------------------------------");
 
   }
 
@@ -143,6 +146,9 @@ export default class Core {
     // Deploy bots from the BotBunker.
     /** @catch Stop execution. */
     await BotManager.deploy().catch(Lavenza.stop);
+
+    // Separation.
+    Lavenza.warn("-----------------------------------------------------------");
 
   }
 

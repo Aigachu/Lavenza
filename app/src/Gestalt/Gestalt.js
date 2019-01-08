@@ -44,7 +44,7 @@ export default class Gestalt {
     this.storageService = storageService;
 
     // Some flavor text.
-    Lavenza.status("Gestalt preparations complete!");
+    Lavenza.success("Gestalt preparations complete!");
 
   }
 
@@ -202,7 +202,7 @@ export default class Gestalt {
     })).catch(Lavenza.stop);
 
     // Some more flavor.
-    Lavenza.status("Gestalt database bootstrapped.");
+    Lavenza.success("Gestalt database successfully bootstrapped!");
   }
 
   /**

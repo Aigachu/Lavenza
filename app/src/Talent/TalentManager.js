@@ -37,7 +37,7 @@ export default class TalentManager {
     await this.loadCoreTalents().catch(Lavenza.stop);
 
     // Some flavor text.
-    Lavenza.status("Talent Manager preparations complete!");
+    Lavenza.success("Talent Manager preparations complete!");
 
   }
 

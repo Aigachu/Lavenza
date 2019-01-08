@@ -24,11 +24,11 @@ if ('bot' in argv) {
 
 // Load Lavenza module's core.
 /** @see ./src/Heart.js */
-const Lavenza = require('./').Heart.Core;
+const Lavenza = require('./').Heart;
 
 // Ignite Lavenza...Let's get this going!
-Lavenza.ignite(bot).then(() => {
-  console.log('Lavenza is now running!'.status);
+Lavenza.Core.ignite(bot).then(() => {
+  Lavenza.warn('Lavenza is now running!');
 }).catch(error => {
-  console.error(error);
+  Lavenza.error(error);
 });

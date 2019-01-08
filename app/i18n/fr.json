@@ -1,0 +1,16 @@
+{
+	"Initializing Lavenza (v{{version}})...": "Initialisation de Lavenza (v {{version}})...",
+	"-----------------------------------------------------------": "-----------------------------------------------------------",
+	"Commencing Lavenza's preparatory tasks!": "On commence les tâches préparatoires de Lavenza!",
+	"Gestalt preparations complete!": "Les préparatifs sont terminés pour Gestalt!",
+	"Talent Manager preparations complete!": "Les préparatifs sont terminés pour le TalentManager!",
+	"The {{bot}} bot has successfully been registered!": "Le robot {{bot}} a été enregistré avec succès!",
+	"Bot Manager preparations complete!": "Les préparatifs sont terminés pour le BotManager!",
+	"Gestalt database successfully bootstrapped!": "La base de données Gestalt a démarré avec succès!",
+	"Preparations complete. Moving on to execution...": "Les préparatifs sont terminés. Passons à l'exécution ...",
+	"Commencing Lavenza's execution phase!": "Début de la phase d'exécution de Lavenza!",
+	"Discord client successfully connected for {{bot}}!": "Le client Discord s'est connecté avec succès pour {{bot}}!\n",
+	"All configured bots have been successfully deployed!": "Tous les robots configurés ont été déployés avec succès!",
+	"No listeners were found for the {{talent}} talent. This might not be normal!": "Aucun auditeur trouvé pour le talent {{talent}}. Cela pourrait ne pas être normal!",
+	"Lavenza is now running!": "Lavenza est maintenant en cours d'exécution!"
+}

@@ -31,7 +31,7 @@ export default class Morgana {
    * @param {string} locale
    *   Set the locale to determine the language.
    */
-  static log(message, replacers, type, locale = 'en') {
+  static log(message, replacers, type, locale = process.env.CONSOLE_LOCALE) {
 
     // Fetch translations of output.
     let output = Lavenza.__(message, replacers, locale);
@@ -71,7 +71,7 @@ export default class Morgana {
    * Shortcut function to send a success message.
    * @inheritDoc
    */
-  static success(message, replacers, locale = 'en') {
+  static success(message, replacers, locale = process.env.CONSOLE_LOCALE) {
 
     // If the message is not set, we'll fetch the default success message.
     message = message || 'SUCCESS';
@@ -83,7 +83,7 @@ export default class Morgana {
    * Shortcut function to set a status message.
    * @inheritDoc
    */
-  static status(message, replacers, locale = 'en') {
+  static status(message, replacers, locale = process.env.CONSOLE_LOCALE) {
     this.log(message, replacers, 'status', locale);
   }
 
@@ -91,7 +91,7 @@ export default class Morgana {
    * Shortcut function to set a warning message.
    * @inheritDoc
    */
-  static warn(message, replacers, locale = 'en') {
+  static warn(message, replacers, locale = process.env.CONSOLE_LOCALE) {
     this.log(message, replacers, 'warning', locale);
   }
 
@@ -99,7 +99,7 @@ export default class Morgana {
    * Shortcut function to set a error message.
    * @inheritDoc
    */
-  static error(message, replacers, locale = 'en') {
+  static error(message, replacers, locale = process.env.CONSOLE_LOCALE) {
 
     // If the message is not set, we'll fetch the default error message.
     message = message || 'ERROR';
