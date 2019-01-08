@@ -88,7 +88,7 @@ export default class CommandInterpreter {
 
     // If the command doesn't exist, we'll stop here.
     if (!command) {
-      Lavenza.warn('No command found');
+      Lavenza.warn('No command found in message...');
       return false;
     }
 

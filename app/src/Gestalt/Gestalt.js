@@ -43,6 +43,9 @@ export default class Gestalt {
     await storageService.build().catch(Lavenza.stop);
     this.storageService = storageService;
 
+    // Some flavor text.
+    Lavenza.status("Gestalt preparations complete!");
+
   }
 
   /**
@@ -197,6 +200,9 @@ export default class Gestalt {
       await this.createCollection(`/talents/${talent.id}`).catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
+
+    // Some more flavor.
+    Lavenza.status("Gestalt database bootstrapped.");
   }
 
   /**

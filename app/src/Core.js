@@ -58,7 +58,7 @@ export default class Core {
     this.bots = typeof bots === "string" ? [bots] : bots;
 
     // Some flavor text for the console.
-    Lavenza.status("INITIALIZING", [this.version]);
+    Lavenza.status("Initializing Lavenza (v{{version}})...", {version: this.version});
 
     /*
      * Fire necessary preparations.
@@ -86,10 +86,7 @@ export default class Core {
   static async prepare() {
 
     // Some flavor.
-    Lavenza.status("PREPARATION_PHASE");
-
-    // Some more flavor.
-    Lavenza.status("GESTALT_PREP");
+    Lavenza.status("Commencing Lavenza's preparatory tasks!");
 
     /*
      * Run preparation handler for the Gestalt service.
@@ -98,31 +95,13 @@ export default class Core {
     /** @catch Stop execution. */
     await Gestalt.prepare().catch(Lavenza.stop);
 
-    // Some more flavor.
-    Lavenza.status("GESTALT_READY");
-
-    // Some more flavor.
-    Lavenza.status("TALENT_MANAGER_PREP");
-
     // Run preparation functions for the Talent Manager.
     /** @catch Stop execution. */
     await TalentManager.prepare().catch(Lavenza.stop);
 
-    // Some more flavor.
-    Lavenza.status("TALENT_MANAGER_READY");
-
-    // Some more flavor.
-    Lavenza.status("BOT_MANAGER_PREP");
-
     // Run preparation functions for the Bot Manager.
     /** @catch Stop execution. */
     await BotManager.prepare().catch(Lavenza.stop);
-
-    // Some more flavor.
-    Lavenza.status("BOT_MANAGER_READY");
-
-    // Some more flavor.
-    Lavenza.status("GESTALT_BOOTSTRAP");
 
     /*
      * Run bootstrap handler for Gestalt.
@@ -130,9 +109,6 @@ export default class Core {
      */
     /** @catch Stop execution. */
     await Gestalt.bootstrap().catch(Lavenza.stop);
-
-    // Some more flavor.
-    Lavenza.status("GESTALT_READY");
 
     /*
      * Await Makoto's Preparation.
@@ -144,7 +120,10 @@ export default class Core {
     Lavenza.Makoto.build().catch(Lavenza.stop);
 
     // Some more flavor.
-    Lavenza.status("PREPARATION_PHASE_COMPLETE");
+    Lavenza.success("Preparations complete. Moving on to execution...");
+
+    // Separation
+    Lavenza.status("-----------------------------------------------------------");
 
   }
 
@@ -159,20 +138,11 @@ export default class Core {
   static async run() {
 
     // Some more flavor.
-    Lavenza.status("EXECUTION_PHASE");
-
-    // Some more flavor.
-    Lavenza.status("BOT_MANAGER_DEPLOY");
+    Lavenza.status("Commencing Lavenza's execution phase!");
 
     // Deploy bots from the BotBunker.
     /** @catch Stop execution. */
     await BotManager.deploy().catch(Lavenza.stop);
-
-    // Some more flavor.
-    Lavenza.status("BOT_MANAGER_DEPLOYED");
-
-    // Some more flavor.
-    Lavenza.status("EXECUTION_PHASE_COMPLETED");
 
   }
 

@@ -109,7 +109,7 @@ export default class Talent {
     // We'll throw an error for this function if the 'Commands' directory doesn't exist or is empty.
     // This error should be caught and handled above.
     if (Lavenza.isEmpty(commandDirectories)) {
-      Lavenza.throw('NO_COMMANDS_FOUND_FOR_TALENT', [this.id]);
+      Lavenza.throw('No commands were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
     }
 
     // We'll now act on each command directory found.
@@ -129,7 +129,7 @@ export default class Talent {
       // We can't load the command without configurations.
       // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
       if (Lavenza.isEmpty(config)) {
-        Lavenza.warn('COMMAND_CONFIG_FILE_NOT_FOUND', [name, this.id]);
+        Lavenza.warn('Configuration file could not be loaded for the {{command}} command in the {{talent}} talent.', {command: name, talent: this.id});
         return;
       }
 
@@ -137,7 +137,7 @@ export default class Talent {
       // If the class doesn't exist (this could be caused by the configuration being wrong), we stop.
       let command = require(directory + '/' + config.class)['default'];
       if (Lavenza.isEmpty(command)) {
-        Lavenza.warn('COMMAND_CLASS_MISSING', [name, this.id]);
+        Lavenza.warn('Class could not be loaded for the {{command}} command in the {{talent}} talent.', {command: name, talent: this.id});
         return;
       }
 
@@ -180,7 +180,7 @@ export default class Talent {
     // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.
     // This error should be caught and handled above.
     if (Lavenza.isEmpty(listenerClasses)) {
-      Lavenza.throw('NO_LISTENERS_FOUND_FOR_TALENT', [this.id]);
+      Lavenza.throw('No listeners were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
     }
 
     // Await the loading of all listener classes.
@@ -197,12 +197,13 @@ export default class Talent {
 
       // If the require fails or the result is empty, we stop.
       if (Lavenza.isEmpty(listener)) {
-        Lavenza.warn('LISTENER_CLASS_MISSING', [this.id]);
+        Lavenza.warn('A Listener class could not be loaded in the {{talent}} talent.', {talent: this.id});
         return;
       }
 
       // If everything goes smoothly, we register the listener to the Talent.
       this.listeners.push(listener);
+
     })).catch(Lavenza.stop);
   }
 

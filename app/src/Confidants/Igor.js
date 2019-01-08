@@ -71,21 +71,27 @@ export default class Igor {
   }
 
   /**
-   * Throws an error with a custom message formatted with Futaba's interpreter.
-   *
-   * This allows you to throw custom error messages and still manage the strings in the Dictionary.
+   * Throws an error with a custom message.
    *
    * @param {Error|String} error
    *   The error caught.
-   * @param {Array} placeholder_values
+   * @param {Array} replacers
    *   If an array of strings is set here, it will be used to replace any
-   *   placeholders in the text provided above. Futaba has more information on
-   *   this, so peek at her code for more info!
+   *   placeholders in the text provided above.
+   * @param {string} locale
+   *   Locale determining the language to send the error in.
    */
-  static throw(error, placeholder_values = []) {
+  static throw(error, replacers, locale = 'en') {
 
-    // Build output with Futaba.
-    let output = Lavenza.Futaba.interpret(error, placeholder_values);
+    // If the error is an instance of the error class, simply throw it.
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    // If not, get translation of the custom error message and throw it.
+    let output = Lavenza.__(error, replacers, locale);
+
+    // Throw error with output.
     throw new Error(output);
 
   }

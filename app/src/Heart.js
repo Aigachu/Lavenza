@@ -29,7 +29,6 @@ import Core from './Core';
 // Re-usable functionality is managed in what I'm calling Confidants for this project. Shoutouts to Persona 5!
 // Each confidant has a specific use. See each of their files for more deets.
 import Akechi from './Confidants/Akechi';
-import Futaba from'./Confidants/Futaba';
 import Igor from './Confidants/Igor';
 import Morgana from './Confidants/Morgana';
 import Sojiro from './Confidants/Sojiro';
@@ -86,6 +85,13 @@ let Keys = {
   TALENTS_FOLDER_NAME: 'talents',
 };
 
+// Import & Configure i18n.
+import i18n from 'i18n';
+i18n.configure({
+  locales:['en', 'fr'],
+  directory: RootPath + '/i18n'
+});
+
 // Define the Heart of the module.
 // This is the object that is later set as a global.
 export const Heart = {
@@ -93,9 +99,16 @@ export const Heart = {
   // Core Lavenza Class.
   Core: Core,
 
+  // i18n.
+  __: (phrase, replacers, locale) => {
+    return i18n.__({phrase: phrase, locale: locale}, replacers);
+  },
+  __n: (singular, plural, count, locale) => {
+    return i18n.__n({singular: singular, plural: plural, locale: locale}, count);
+  },
+
   // Confidants.
   Akechi: Akechi,
-  Futaba: Futaba,
   Igor: Igor,
   Morgana: Morgana,
   Sojiro: Sojiro,

@@ -138,7 +138,7 @@ export default class Bot {
 
     // Check if there are custom talents defined.
     if (Lavenza.isEmpty(this.config.talents)) {
-      Lavenza.warn('NO_TALENT_CONFIG_FOUND_FOR_BOT', [this.id]);
+      Lavenza.warn('Talents configuration missing for {{bot}}. Only core talents will be loaded.', {bot: this.id});
       return;
     }
 
@@ -150,9 +150,6 @@ export default class Bot {
     // After validations are complete, we merge the core talents defined for the bot, with the custom ones.
     // This completes the list of talents assigned to the bot.
     this.talents = [...this.talents, ...this.config.talents];
-
-    // Shoot a success message.
-    Lavenza.success('TALENTS_LOADED_FOR_BOT', [this.id]);
 
   }
 
@@ -192,9 +189,6 @@ export default class Bot {
       this.commandAliases = Object.assign({}, this.commandAliases, TalentManager.talents[talent].commandAliases);
 
     })).catch(Lavenza.stop);
-
-    // Send a success message.
-    Lavenza.success('COMMANDS_SET_FOR_BOT', [this.id]);
   }
 
   /**
@@ -220,9 +214,6 @@ export default class Bot {
       this.listeners = [...this.listeners, ...TalentManager.talents[talentKey].listeners]
 
     })).catch(Lavenza.stop);
-
-    // Send a success message.
-    Lavenza.success('LISTENERS_SET_FOR_BOT', [this.id]);
   }
 
   /**
@@ -255,7 +246,7 @@ export default class Bot {
         this.config.talents = Lavenza.removeFromArray(this.config.talents, talentKey);
 
         // Send a warning message to the console.
-        Lavenza.warn('ERROR_LOADING_TALENT', [talentKey]);
+        Lavenza.warn('Error occurred while loading the {{talent}} talent...', {talent: talentKey});
         Lavenza.warn(error.message);
       });
     })).catch(Lavenza.stop);
@@ -418,9 +409,6 @@ export default class Bot {
 
     })).catch(Lavenza.stop);
 
-    // Send a success message.
-    Lavenza.success('CLIENTS_AUTHENTICATED_FOR_BOT', [this.id]);
-
   }
 
   /**
@@ -448,8 +436,6 @@ export default class Bot {
 
     })).catch(Lavenza.stop);
 
-    // Send a success message.
-    Lavenza.success('CLIENTS_INITIALIZED_FOR_BOT', [this.id]);
   }
 
   /**

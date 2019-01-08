@@ -36,6 +36,9 @@ export default class TalentManager {
     /** @catch Stop execution. */
     await this.loadCoreTalents().catch(Lavenza.stop);
 
+    // Some flavor text.
+    Lavenza.status("Talent Manager preparations complete!");
+
   }
 
   /**
@@ -85,7 +88,7 @@ export default class TalentManager {
     // If this directory doesn't exist, we end right off the bat.
     if (!fs.existsSync(directory)) {
       let name = path.basename(directory);
-      Lavenza.throw('TALENT_DOES_NOT_EXIST', [name]);
+      Lavenza.throw("Attempted to load {{talent}} talent, but it does not exist. Please verify talent configurations and make sure the name in configuration matches the name of the talent's folder.", {talent: name});
     }
 
     // Get the talent name. This is in fact the name of the directory.
@@ -101,7 +104,7 @@ export default class TalentManager {
     // If the info is empty, we gotta stop here. They are mandatory.
     // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
     if (Lavenza.isEmpty(config)) {
-      Lavenza.throw('TALENT_INFO_FILE_NOT_FOUND', [name]);
+      Lavenza.throw('Info file could not be located for the {{talent}} talent.', {talent: name});
     }
 
     // Set the directory to the info. It's useful information to have in the Talent itself!
@@ -110,9 +113,9 @@ export default class TalentManager {
     // Require the class.
     let talent = require(directory + '/' + config.class)['default'];
 
-    // If the talent could not be loading somehow, we end here.
+    // If the talent could not be loaded somehow, we end here.
     if (Lavenza.isEmpty(talent)) {
-      Lavenza.throw('TALENT_COULD_NOT_BE_LOADED', [name]);
+      Lavenza.throw("An error occurred when requiring the {{talent}} talent's class. Verify the Talent's info file.", {talent: name});
     }
 
     // Await building of the talent.
@@ -123,7 +126,5 @@ export default class TalentManager {
     // Register the talent to the Manager.
     this.talents[name] = talent;
 
-    // Add a little success message for this particular talent.
-    Lavenza.success('TALENT_LOADED', [name]);
   }
 }

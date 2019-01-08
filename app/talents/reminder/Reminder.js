@@ -52,7 +52,7 @@ export default class Reminder extends Lavenza.Talent {
     // If they were successfully loaded, send a message to the console.
     // If they aren't loaded, it's fine. A new database will be initialized.
     if (!Lavenza.isEmpty(this.reminders[bot.id])) {
-      Lavenza.status('<Reminder>: Loaded reminders from database for @1.', [bot.id]);
+      Lavenza.status("<Reminder>: Loaded reminders from database for {{bot}}.", {bot: bot.id});
     }
 
     // Set the pinger.

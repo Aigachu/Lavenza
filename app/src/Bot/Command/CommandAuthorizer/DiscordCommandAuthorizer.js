@@ -149,22 +149,22 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       let argConfig = configArgs.find(configArg => configArg.key === arg);
 
       if (Lavenza.isEmpty(argConfig)) {
-        Lavenza.throw(`\`${arg}\` is not a valid argument for this command.`);
+        Lavenza.throw(`{{arg}} is not a valid argument for this command.`, {arg: arg});
       }
 
       // Validate level 1. Operators.
       if (argConfig['oplevel'] === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
-        Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
+        Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       // Validate level 2. Masters.
       if (argConfig['oplevel'] === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
-        Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
+        Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       // Validate level 3. Gods.
       if (argConfig['oplevel'] === 3 && !this.gods.includes(this.authorUser.id)) {
-        Lavenza.throw(`You do not have the necessary permissions to use the ${argConfig.key} argument. Sorry. :( You may want to talk to Aiga about getting permission!`);
+        Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       return true;

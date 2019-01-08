@@ -43,7 +43,7 @@ export default class DiscordClient extends DiscordJSClient {
 
     // Event: When the client connects to Discord and is ready.
     this.on('ready', () => {
-      Lavenza.success('DISCORD_CLIENT_CONNECT', [this.bot.id]);
+      Lavenza.success('Discord client successfully connected for {{bot}}!', {bot: this.bot.id});
 
       // Set game text.
       this.user.setActivity(this.config['activity']).catch(console.error);
@@ -56,12 +56,12 @@ export default class DiscordClient extends DiscordJSClient {
 
     // Event: When the clients disconnects from Discord.
     this.on('disconnected', () => {
-      Lavenza.status('DISCORD_CLIENT_DISCONNECT', [this.bot.id]);
+      Lavenza.status('Discord client for {{bot}} has disconnected.', {bot: this.bot.id});
     });
 
     // Event: When the clients disconnects from Discord.
     this.on('error', () => {
-      Lavenza.error('ERROR_OCCURRED', [this.bot.id]);
+      Lavenza.error("Error has occurred for {{bot}}'s client...", {bot: this.bot.id});
     });
 
   }
@@ -264,13 +264,13 @@ export default class DiscordClient extends DiscordJSClient {
 
     // If the token isn't found, we throw an error.
     if (token === undefined) {
-      Lavenza.throw('TOKEN_NOT_FOUND_IN_ENV_FOR_BOT', [this.bot.id]);
+      Lavenza.throw('Discord application token is missing for {{bot}}. Make sure the token is set in the /app/.env file at the root of the project. See /app/.env.example for more details.', {bot: this.bot.id});
     }
 
     // Await the login in of this client.
     /** @catch Stop execution. */
     await super.login(token).catch(error => {
-      Lavenza.throw('CLIENT_AUTHENTICATION_FAILURE', [this.type, this.bot.id]);
+      Lavenza.throw('Failed to authenticate Discord client for {{bot}}.', {bot: this.bot.id});
     });
   }
 }

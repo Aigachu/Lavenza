@@ -37,9 +37,14 @@ export default class BotManager {
    * @returns {Promise.<void>}
    */
   static async deploy() {
+
     // Await deployment of all bots loaded in the manager.
     /** @catch Stop execution. */
     await this.deployBots().catch(Lavenza.stop);
+
+    // Some more flavor.
+    Lavenza.success("All configured bots have been successfully deployed!");
+
   }
 
   /**
@@ -59,6 +64,9 @@ export default class BotManager {
     // Await preparation handlers of all bots loaded in the manager.
     /** @catch Stop execution. */
     await this.prepareBots().catch(Lavenza.stop);
+
+    // Some more flavor.
+    Lavenza.status("Bot Manager preparations complete!");
 
   }
 
@@ -127,7 +135,7 @@ export default class BotManager {
         // We check if a bot directory exists for this bot. If not, we have to throw an error.
         if (!Lavenza.Akechi.directoryExists(Lavenza.Paths.BOTS + '/' + bot)) {
           console.log(Lavenza.Paths.BOTS + '/' + bot);
-          Lavenza.throw(`No bot directory found for ${bot}.`);
+          Lavenza.throw(`No directory found for {{bot}}. Verify that a folder exists for this bot at /app/bots.`, {bot: bot});
         }
 
         // If the directory exist, we can set it up for processing later.
@@ -143,7 +151,7 @@ export default class BotManager {
 
       // If for some reason, bot directories could not be loaded, we stop the app.
       if (botDirectories === undefined) {
-        Lavenza.throw('NO_BOT_CONFIG_FOLDER_FOUND');
+        Lavenza.throw("Other than the 'example' folder, no bot folders seem to exist at /app/bots. The whole point of this app is to run bots, so create one!");
       }
     }
 
@@ -167,7 +175,7 @@ export default class BotManager {
       // If the configuration is empty, stop here.
       // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
       if (Lavenza.isEmpty(config)) {
-        Lavenza.warn('BOT_CONFIG_FILE_NOT_FOUND', [name]);
+        Lavenza.warn('Configuration file could not be loaded for following bot: {{bot}}', {bot: name});
         return;
       }
 
@@ -176,7 +184,7 @@ export default class BotManager {
 
       // If the 'active' flag of the config is set and is not 'true', we don't activate this bot.
       if (config.active !== undefined && config.active === false) {
-        Lavenza.warn('BOT_INACTIVE', [name]);
+        Lavenza.warn('The {{bot}} bot has been set to inactive. It will not be registered.', {bot: name});
         return;
       }
 
@@ -184,13 +192,13 @@ export default class BotManager {
       this.bots.push(new Bot(name, config));
 
       // Print a success message.
-      Lavenza.success('BOT_REGISTERED', [name]);
+      Lavenza.success('The {{bot}} bot has successfully been registered!', {bot: name});
 
     })).catch(Lavenza.stop);
 
     // Array does not exist, is not an array, or is empty.
     if (Lavenza.isEmpty(this.bots)) {
-      Lavenza.throw('NO_BOTS_LOADED');
+      Lavenza.throw("No bots were registered after the preparation phase. As a result, there is nothing to run.");
     }
   }
 
