@@ -40,7 +40,7 @@ import Gestalt from './Gestalt/Gestalt';
 import Command from './Bot/Command/Command';
 import Talent from './Talent/Talent';
 import Listener from './Bot/Listener/Listener';
-import Resonance from './Models/Resonance';
+import Resonance from './Resonance/Resonance';
 import Order from './Models/Order';
 
 // Enums.
@@ -91,7 +91,7 @@ i18n.configure({
   fallbacks: {
     'fr': 'en'
   },
-  defaultLocale: 'en',
+  defaultLocale: process.env.DEFAULT_LOCALE,
   directory: RootPath + '/i18n'
 });
 
@@ -103,11 +103,14 @@ export const Heart = {
   Core: Core,
 
   // i18n.
-  __: (phrase, replacers, locale) => {
-    return i18n.__({phrase: phrase, locale: locale}, replacers);
-  },
-  __n: (singular, plural, count, locale) => {
-    return i18n.__n({singular: singular, plural: plural, locale: locale}, count);
+  // Wraps a '__' function to use i18n's __mf function for Message Format.
+  __: (...parameters) => {
+
+    // Get our parameters using Sojiro's help.
+    let params = Sojiro.parseI18NParams(parameters);
+
+    return i18n.__mf({phrase: params.phrase, locale: params.locale}, params.replacers);
+
   },
 
   // Confidants.
@@ -131,7 +134,6 @@ export const Heart = {
   ClientTypes: ClientTypes,
 
   // Function shortcuts from Confidants.
-  log: Morgana.log,
   success: Morgana.success,
   error: Morgana.error,
   warn: Morgana.warn,

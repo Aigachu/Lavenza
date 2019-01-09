@@ -7,6 +7,7 @@
 
 // Modules.
 import _ from 'underscore';
+import i18n from "i18n";
 
 /**
  * Provides a class that handles input/output to the console & errors.
@@ -21,6 +22,97 @@ import _ from 'underscore';
  */
 export default class Sojiro {
 
+  /**
+   * Parse parameters passed to a function that takes an i18n format.
+   *
+   * Functions that involve sending text to places usually take on similar formats and must parse their parameters
+   * in a specific way. These functions should be flexible enough to allow for many different ways to use them.
+   *
+   * @param {Array} parameters
+   *   Parameters to parse from the i18n __ call. Parameters can be passed to __ in different ways.
+   *   The idea is that whatever is passed her needs to properly be sent to the __ function in the i18n module. You can
+   *   either send only text, send texts with replacements, send text with replacements and a specific locale or send
+   *   text without replacements but with a specific locale.
+   *
+   *   Let's be real, I just want to avoid passing 'undefined' as a parameter, and I also want to avoid having to
+   *   deconstruct my parameters into objects every time I translate a string.
+   *
+   *   Examples below.
+   *   i.e. __({phrase: "Hello {{name}}", locale: "en"}, {name: 'Kyle'}
+   *   i.e. __("Hello {{name}}", {name: 'Kyle'}, 'en')
+   *   i.e. __("Hello", 'en')
+   *   i.e. __("Hello")
+   *
+   * @return {*}
+   *   Object containing all information necessary to translate a string.
+   */
+  static parseI18NParams(parameters) {
+
+    // If for some reason we receive parameters that are already parsed, simply return them.
+    // @TODO - Not sure how to feel about this one. We'll most likely refactor this in the future.
+    if (parameters['parsed']) {
+      return parameters;
+    }
+
+    // Declare our variable to be returned.
+    let parsed = {
+      phrase: undefined,
+      locale: undefined,
+      replacers: undefined,
+      parsed: true,
+    };
+
+    // If no parameters are passed, we can't really do much.
+    if (parameters === undefined) {
+      return undefined;
+    }
+
+    // If it's called with an object as the parameter.
+    // i.e. __({phrase: "Hello {{name}}", locale: "en"}, {name: 'Kyle'}
+    if (typeof parameters[0] === 'object') {
+
+      // Parse parameters.
+      parsed.phrase = parameters[0].phrase;
+      parsed.locale = parameters[0].locale;
+      parsed.replacers = parameters[1] || undefined;
+
+      return parsed;
+    }
+
+    // If it's called with a string as the parameter.
+    // i.e. __("Hello {{name}}", {name: 'Kyle'}, 'en')
+    // i.e. __("Hello", 'en')
+    if (typeof parameters[0] === 'string') {
+
+      // Parse parameters.
+      parsed.phrase = parameters[0];
+
+      // If a second parameter is set.
+      if (parameters[1] !== undefined) {
+        if (typeof parameters[1] === 'string') {
+          parsed.locale = parameters[1];
+        } else {
+          parsed.replacers = parameters[1];
+          parsed.locale = parameters[2];
+        }
+      }
+
+      return parsed;
+    }
+
+    // Technically we shouldn't reach here.
+    return undefined;
+  }
+
+  /**
+   * Checks if the given text is considered an approval or confirmation.
+   *
+   * @param {string} text
+   *   The given text to check.
+   *
+   * @returns {boolean}
+   *   Returns TRUE if it's considered an approval. Returns FALSE otherwise.
+   */
   static isConfirmation(text) {
 
     // Clean punctuation.

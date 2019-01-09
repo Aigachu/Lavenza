@@ -7,6 +7,7 @@
 
 // Imports.
 import ClientFactory from './Client/ClientFactory';
+import ResonanceFactory from '../Resonance/ResonanceFactory'
 import TalentManager from '../Talent/TalentManager';
 import CommandListener from './Command/CommandListener/CommandListener';
 import PromptFactory from './Prompt/PromptFactory';
@@ -283,7 +284,7 @@ export default class Bot {
     let content = await this.constructor.decipher(message, client);
 
     // Construct a 'Resonance'.
-    let resonance = new Lavenza.Resonance(content, message, this, client);
+    let resonance = await ResonanceFactory.build(content, message, this, client);
 
     // Fire all of the bot's prompts, if any.
     await Promise.all(this.prompts.map(async prompt => {

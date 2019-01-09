@@ -5,6 +5,9 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Imports.
+import _ from 'underscore';
+
 /**
  * Provides a class that handles input/output to the console & errors.
  *
@@ -23,15 +26,15 @@ export default class Morgana {
    * @param {string} message
    *   The text to send to the console, or in some/most cases the ID of the
    *   string to send. If an ID is sent, text will be fetched from Dictionaries.
-   * @param {Array} replacers
-   *   If an array of strings is set here, it will be used to replace any
+   * @param {Object} replacers
+   *   If an object of strings is set here, it will be used to replace any
    *   placeholders in the text provided above.
    * @param {string} type
    *   Type of console log to print.
    * @param {string} locale
    *   Set the locale to determine the language.
    */
-  static log(message, replacers, type, locale = process.env.CONSOLE_LOCALE) {
+  static log(message, replacers, type, locale = process.env.DEFAULT_LOCALE) {
 
     // Fetch translations of output.
     let output = Lavenza.__(message, replacers, locale);
@@ -71,11 +74,11 @@ export default class Morgana {
    * Shortcut function to send a success message.
    * @inheritDoc
    */
-  static success(message, replacers, locale = process.env.CONSOLE_LOCALE) {
+  static success(message, replacers) {
 
     // If the message is not set, we'll fetch the default success message.
     message = message || 'SUCCESS';
-    this.log(message, replacers,'success', locale);
+    this.log(message, replacers,'success');
 
   }
 
@@ -83,27 +86,31 @@ export default class Morgana {
    * Shortcut function to set a status message.
    * @inheritDoc
    */
-  static status(message, replacers, locale = process.env.CONSOLE_LOCALE) {
-    this.log(message, replacers, 'status', locale);
+  static status(message, replacers) {
+
+    this.log(message, replacers, 'status');
+
   }
 
   /**
    * Shortcut function to set a warning message.
    * @inheritDoc
    */
-  static warn(message, replacers, locale = process.env.CONSOLE_LOCALE) {
-    this.log(message, replacers, 'warning', locale);
+  static warn(message, replacers) {
+
+    this.log(message, replacers, 'warning');
+
   }
 
   /**
    * Shortcut function to set a error message.
    * @inheritDoc
    */
-  static error(message, replacers, locale = process.env.CONSOLE_LOCALE) {
+  static error(message, replacers) {
 
     // If the message is not set, we'll fetch the default error message.
     message = message || 'ERROR';
-    this.log(message, replacers, 'error', locale);
+    this.log(message, replacers, 'error');
 
   }
 

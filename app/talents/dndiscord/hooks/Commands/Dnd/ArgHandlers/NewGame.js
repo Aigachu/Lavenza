@@ -34,7 +34,6 @@ export default class NewGame {
 
     // @TODO - Check if the player already has 3 characters assigned.
 
-
     // Define variable to store the conversation channel.
     let conversationChannel = resonance.message.channel;
 

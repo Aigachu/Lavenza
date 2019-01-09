@@ -17,7 +17,7 @@ import ClientTypes from "../../Client/ClientTypes";
 export default class CommandAuthorizerFactory {
 
   /**
-   * Since this factory is a static class, we'll have a build function to make preparations.
+   * Build the appropriate authorizer given the client.
    *
    * @param {Order} order
    *   The Order determined by the Interpreter.
