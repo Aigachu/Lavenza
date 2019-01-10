@@ -27,7 +27,7 @@ export default class CommandInterpreter {
 
     // Attempt to get a command from the content.
     /** @catch Stop execution. */
-    let order = await this.getCommand(resonance.content, resonance.bot, resonance.client, resonance).catch(Lavenza.stop);
+    let order = await this.getCommand(resonance).catch(Lavenza.stop);
 
     // If no command is found, we have nothing to do.
     if (!order) {
@@ -45,19 +45,18 @@ export default class CommandInterpreter {
    *
    * The checks and analysis will determine if a command exists in the resonance.
    *
-   * @param {string} content
-   *   Raw content obtained from the resonance.
-   * @param {Bot} bot
-   *   Bot that heard the message.
-   * @param {*} client
-   *   Client that sent the message.
    * @param {Resonance} resonance
    *   The resonance received from the listener.
    *
    * @returns {*}
    *   Returns data about a command if there is a command. Returns false otherwise.
    */
-  static async getCommand(content, bot, client, resonance) {
+  static async getCommand(resonance) {
+
+    // Initialize some variables.
+    let content = resonance.content;
+    let bot = resonance.bot;
+    let client = resonance.client;
 
     // Split content with spaces.
     // i.e. If the input is '! ping hello', then we get ['!', 'ping', 'hello'].

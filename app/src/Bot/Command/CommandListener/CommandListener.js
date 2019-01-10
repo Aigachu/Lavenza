@@ -19,6 +19,7 @@ import CommandAuthorizerFactory from "../CommandAuthorizer/CommandAuthorizerFact
  */
 export default class CommandListener extends Listener {
 
+
   /**
    * @inheritDoc
    */
@@ -27,21 +28,21 @@ export default class CommandListener extends Listener {
     // Use the CommandInterpreter to find out if there's a command in the resonance.
     // If there's a command, the interpreter will return an order.
     /** @catch Stop execution. */
-    let order = await CommandInterpreter.interpret(resonance).catch(Lavenza.stop);
+    resonance.order = await CommandInterpreter.interpret(resonance).catch(Lavenza.stop);
 
     // If there is no order, we do nothing after all.
-    if (!order) {
+    if (!resonance.order) {
       return;
     }
 
     // Now that we know a command has been found, we need to pass it through the right Authorizer.
     // We use a factory to build an appropriate authorizer.
     /** @catch Stop execution. */
-    let authorizer = await CommandAuthorizerFactory.build(order, resonance).catch(Lavenza.stop);
+    let authorizer = await CommandAuthorizerFactory.build(resonance).catch(Lavenza.stop);
 
-    // If the help option is used, we fire the help function of the command.
-    if (order.args['_'].includes('help') || 'help' in order.args) {
-      order.help();
+    // If the help option is used, we fire the help function of the command and return.
+    if (resonance.order.args['_'].includes('help') || 'help' in resonance.order.args) {
+      resonance.executeHelp();
       return;
     }
 
@@ -54,7 +55,7 @@ export default class CommandListener extends Listener {
     }
 
     // If an order was found, execute it.
-    order.execute();
+    resonance.executeCommand();
 
     // And at the same time we set the cooldown for the command.
     authorizer.cool();

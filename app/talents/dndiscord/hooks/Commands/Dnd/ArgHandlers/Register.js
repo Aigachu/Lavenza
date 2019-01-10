@@ -13,31 +13,27 @@ export default class Register {
   /**
    * Handle command 'register' option.
    *
-   * @param {Order} order
-   *   Order detailing the command.
    * @param {Resonance} resonance
    *   Resonance that issued the command.
    * @param {*} command
    *   Command that this argument handler is being used for.
    *
    */
-  static async handle(order, resonance, command) {
-    await this.registration(order, resonance, command).catch(Lavenza.continue);
+  static async handle(resonance, command) {
+    await this.registration(resonance, command).catch(Lavenza.continue);
   }
 
 
   /**
    * Handle command 'register' option.
    *
-   * @param {Order} order
-   *   Order detailing the command.
    * @param {Resonance} resonance
    *   Resonance that issued the command.
    * @param {*} core
    *   Core DNDiscord Talent.
    *
    */
-  static async registration(order, resonance, core) {
+  static async registration(resonance, core) {
 
     // If a player already exists for this user, we should tell them this.
     // Get the player identity of the Discord user that sent the resonance.

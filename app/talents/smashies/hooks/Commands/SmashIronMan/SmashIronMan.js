@@ -16,7 +16,7 @@ export default class SmashIronMan extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static async execute(order, resonance) {
+  static async execute(resonance) {
     // Get all SSB4 character directories from the maiden's assets folder.
     let smash4_character_directories = fs.readdirSync(this.talent.directory + '/assets/portraits/smash4');
 
@@ -30,9 +30,9 @@ export default class SmashIronMan extends Lavenza.Command {
     let count = roster_size;
 
     // Get the input if any.
-    if (!Lavenza.isEmpty(order.args._)) {
+    if (!Lavenza.isEmpty(resonance.order.args._)) {
       // The count is assumed to be the first input given.
-      count = order.args._[0];
+      count = resonance.order.args._[0];
     }
 
     // If the input is not a number, we'll send them running.

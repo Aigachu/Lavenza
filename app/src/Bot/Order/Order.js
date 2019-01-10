@@ -17,7 +17,7 @@ export default class Order {
   /**
    * Order constructor.
    *
-   * @param {Command|Lavenza.Command} command
+   * @param {*} command
    *   The command that must be executed with this order.
    * @param {Array} args
    *   The arguments sent with the order.
@@ -33,21 +33,6 @@ export default class Order {
     this.args = args;
     this.rawContent = rawContent;
     this.config = config;
-    this.resonance = resonance;
-  }
-
-  /**
-   * Execute this order's command's execute method.
-   */
-  execute() {
-    this.command.execute(this, this.resonance);
-  }
-
-  /**
-   * Execute this order's command's help method.
-   */
-  help() {
-    this.command.help(this, this.resonance);
   }
 
 }

@@ -40,8 +40,8 @@ import Gestalt from './Gestalt/Gestalt';
 import Command from './Bot/Command/Command';
 import Talent from './Talent/Talent';
 import Listener from './Bot/Listener/Listener';
-import Resonance from './Resonance/Resonance';
-import Order from './Models/Order';
+import Resonance from './Bot/Resonance/Resonance';
+import Order from './Bot/Order/Order';
 
 // Enums.
 import ClientTypes from './Bot/Client/ClientTypes';

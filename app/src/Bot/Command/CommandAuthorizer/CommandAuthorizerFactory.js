@@ -19,14 +19,12 @@ export default class CommandAuthorizerFactory {
   /**
    * Build the appropriate authorizer given the client.
    *
-   * @param {Order} order
-   *   The Order determined by the Interpreter.
    * @param {Resonance} resonance
-   *   The Resonance returned from the Listener.
+   *   The Resonance returned from the Listener, containing the command.
    *
    * @returns {Promise<CommandAuthorizer>}
    */
-  static async build(order, resonance) {
+  static async build(resonance) {
 
     // Initialize the variable.
     let authorizer = null;
@@ -36,7 +34,7 @@ export default class CommandAuthorizerFactory {
 
       // For Discord, we create a specific authorizer.
       case ClientTypes.Discord: {
-        authorizer = new DiscordCommandAuthorizer(order, resonance);
+        authorizer = new DiscordCommandAuthorizer(resonance);
         break;
       }
 

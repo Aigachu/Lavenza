@@ -13,15 +13,13 @@ export default class NewGame {
   /**
    * Handle command 'newgame' option.
    *
-   * @param {Order} order
-   *   Order detailing the command.
    * @param {Resonance} resonance
    *   Resonance that issued the command.
    * @param {*} core
    *   Core DNDiscord Talent.
    *
    */
-  static async handle(order, resonance, core) {
+  static async handle(resonance, core) {
 
     // Get the player identity of the Discord user that sent the resonance.
     let player = await core.getPlayerData(resonance.message.author.id).catch(Lavenza.stop);

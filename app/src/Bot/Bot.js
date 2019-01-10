@@ -7,7 +7,7 @@
 
 // Imports.
 import ClientFactory from './Client/ClientFactory';
-import ResonanceFactory from '../Resonance/ResonanceFactory'
+import ResonanceFactory from './Resonance/ResonanceFactory'
 import TalentManager from '../Talent/TalentManager';
 import CommandListener from './Command/CommandListener/CommandListener';
 import PromptFactory from './Prompt/PromptFactory';

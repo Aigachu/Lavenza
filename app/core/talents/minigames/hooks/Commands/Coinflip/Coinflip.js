@@ -15,7 +15,7 @@ export default class Coinflip extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static async execute(order, resonance) {
+  static async execute(resonance) {
 
     // Get the value of the flip. Returns either 0 or 1.
     let flip = Math.floor(Math.random() * 2);
@@ -23,7 +23,7 @@ export default class Coinflip extends Lavenza.Command {
     // The flip result is determined by the returned value.
     // 0 is Tails.
     // 1 is Heads.
-    let result = ((flip === 0) ? 'Tails' : 'Heads');
+    let result = flip === 0 ? 'Tails' : 'Heads';
 
     // This command will have different types of flips. It will be selected by random.
     // Each 'flip type' will take different amounts of time and print different messages.

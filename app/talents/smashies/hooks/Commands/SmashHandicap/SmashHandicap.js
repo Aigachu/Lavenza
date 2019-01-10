@@ -13,7 +13,7 @@ export default class SmashHandicap extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static async execute(order, resonance) {
+  static async execute(resonance) {
     // Array to store handicaps.
     let handicaps = [];
 

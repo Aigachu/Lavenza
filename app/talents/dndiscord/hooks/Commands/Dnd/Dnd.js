@@ -21,17 +21,17 @@ export default class Dnd extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static async execute(order, resonance) {
+  static async execute(resonance) {
 
     // If the 'register' argument is used, we fire the New Game handler.
-    if ('register' in order.args) {
-      await Register.handle(order, resonance, this.talent).catch(Lavenza.stop);
+    if ('register' in resonance.order.args) {
+      await Register.handle(resonance, this.talent).catch(Lavenza.stop);
       return;
     }
 
     // If the 'newgame' argument is used, we fire the New Game handler.
-    if ('newgame' in order.args) {
-      await NewGame.handle(order, resonance, this.talent).catch(Lavenza.stop);
+    if ('newgame' in resonance.order.args) {
+      await NewGame.handle(resonance, this.talent).catch(Lavenza.stop);
       return;
     }
 

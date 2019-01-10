@@ -37,19 +37,19 @@ export default class Gestalt extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static async execute(order, resonance) {
+  static async execute(resonance) {
 
-    if (!_.contains(this.protocols, order.args._[0])) {
+    if (!_.contains(this.protocols, resonance.order.args._[0])) {
       resonance.message.reply('You need to use one of the API protocols.');
       return;
     }
 
-    let protocol = order.args._[0];
-    let endpoint = order.args._[1];
-    let payload = jsonic(order.args._.slice(2).join(' ')) || {};
+    let protocol = resonance.order.args._[0];
+    let endpoint = resonance.order.args._[1];
+    let payload = jsonic(resonance.order.args._.slice(2).join(' ')) || {};
 
     switch (protocol) {
-      case 'get':
+      case 'get': {
         let getResult = await Lavenza.Gestalt.get(endpoint).catch(Lavenza.stop);
 
         if (Lavenza.isEmpty(getResult)) {
@@ -60,8 +60,9 @@ export default class Gestalt extends Lavenza.Command {
         let getResultToString = JSON.stringify(getResult, null, '\t');
         resonance.message.reply('```\n' + getResultToString + '\n```');
         break;
+      }
 
-      case 'update':
+      case 'update': {
         let updateResult = await Lavenza.Gestalt.update(endpoint, payload).catch(Lavenza.continue);
 
         if (Lavenza.isEmpty(updateResult)) {
@@ -72,6 +73,7 @@ export default class Gestalt extends Lavenza.Command {
         let updateResultToString = JSON.stringify(updateResult, null, '\t');
         resonance.message.reply('```\n' + updateResultToString + '\n```');
         break;
+      }
     }
   }
 

@@ -24,7 +24,7 @@ export default class SmashMain extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static async execute(order, resonance) {
+  static async execute(resonance) {
 
     // Path to the Smash 4 Portraits Directory.
     let smash4PortraitsDirectory = this.talent.directory + '/assets/portraits/ultimate';

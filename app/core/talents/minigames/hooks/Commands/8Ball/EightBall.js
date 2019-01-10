@@ -13,11 +13,11 @@ export default class EightBall extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static async execute(order, resonance) {
+  static async execute(resonance) {
 
     // If some input was actually given, we can process the command.
     // @TODO - Check if the input is actually a question.
-    if (Lavenza.isEmpty(order.rawContent)) {
+    if (Lavenza.isEmpty(resonance.order.rawContent)) {
       // If no input is given, then no question was actually asked.
       resonance.message.reply("8ball says: \"_Now now, ask me something. Don't be shy!_\"");
       return;

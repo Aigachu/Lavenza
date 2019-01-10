@@ -9,7 +9,7 @@
 import DiscordResonance from 'DiscordResonance';
 // import TwitchResonance from 'TwitchResonance';
 // import SlackResonance from 'SlackResonance';
-import ClientTypes from '../Bot/Client/ClientTypes';
+import ClientTypes from '../Client/ClientTypes';
 
 
 /**

@@ -21,32 +21,32 @@ export default class Paint extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static async execute(order, resonance) {
+  static async execute(resonance) {
 
     // @TODO - Check if the bot is at the top of the role list and has the proper permissions.
 
     // If the "c" option is used, a color role will be created.
-    if ("c" in order.args) {
-      this.createColor(order.args.c, resonance);
+    if ("c" in resonance.order.args) {
+      this.createColor(resonance.order.args.c, resonance);
     }
 
     // If the "s" option is used, a color role will be set to the invoker.
-    if ("s" in order.args) {
-      this.setColor(order.args.s, resonance);
+    if ("s" in resonance.order.args) {
+      this.setColor(resonance.order.args.s, resonance);
     }
 
     // If the "r" option is used, a color role will be removed from the invoker.
-    if ("r" in order.args) {
+    if ("r" in resonance.order.args) {
       this.removeColorFromMember(resonance, resonance.message.member);
     }
 
     // If the "l" option is used, list all color roles in the server.
-    if ("l" in order.args) {
+    if ("l" in resonance.order.args) {
       this.listColorRolesInGuild(resonance);
     }
 
     // If the "x" option is used, delete all color roles in the server.
-    if ("x" in order.args) {
+    if ("x" in resonance.order.args) {
       this.deleteAllColorRoles(resonance);
     }
 

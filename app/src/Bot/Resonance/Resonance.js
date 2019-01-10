@@ -9,7 +9,13 @@
  * Provides a model that regroups information about a message received from a client.
  *
  * I love the name. But yes, this is a model to house a collection of useful information about a message a bot
- * receives. It will be used at the bot level, once a message is heard.
+ * receives.
+ *
+ * If a message contains a command, it will be stored here after being deciphered. Everything happens here, and all
+ * relevant data can be found here.
+ *
+ * To manage different types of clients, this class also acts as a parent class to child classes that are more
+ * client specific. This being said, child classes make good use of functions and properties in this class.
  */
 export default class Resonance {
 
@@ -31,23 +37,46 @@ export default class Resonance {
     this.message = message;
     this.bot = bot;
     this.client = client;
+    this.order = undefined;
     this.origin = this.resolveOrigin();
+  }
+
+  /**
+   * Execute command coming from this resonance.
+   *
+   * The command is attached to the order linked to this resonance, if any.
+   *
+   * And order is only built and attached to the resonance if it's found through the CommandInterpreter.
+   */
+  executeCommand() {
+    this.order.command.execute(this);
+  }
+
+  /**
+   * Execute help request for a command, coming from this resonance.
+   *
+   * The command is attached to the order linked to this resonance, if any.
+   *
+   * And order is only built and attached to the resonance if it's found through the CommandInterpreter.
+   */
+  executeHelp() {
+    this.order.command.help(this);
   }
 
   /**
    * Reply to the current resonance.
    *
-   * This will send a formatted reply to the Resonance, replying directly to the message that was sent.
+   * This will send a formatted reply to the Resonance, replying directly to the message that was heard.
    *
-   * We make this function flexible, similar to how i18n.__() works. It will multiple definitions for function
+   * We make this function flexible, similar to how i18n.__() works. It will allow multiple definitions for function
    * calls and act depending on what types of parameters are given.
    *
    * @param {Array} parameters
    *   Parameters to parse from the call.
    *
    * @returns {Promise<*>}
-   *   In certain cases we'll receive a Promise containing the message that was sent in the reply, allowing us to
-   *   act upon it.
+   *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
+   *   act upon it if needed.
    */
   async reply(...parameters) {
 
@@ -61,7 +90,10 @@ export default class Resonance {
    *
    * This will send a formatted message to it's destination.
    *
-   * We make this function flexible, similar to how i18n.__() works. It will multiple definitions for function
+   * This function acts as a shortcut to sending messages back to a resonance. It
+   * will handle translation of the text as well.
+   *
+   * We make this function flexible, similar to how i18n.__() works. It will allow multiple definitions for function
    * calls and act depending on what types of parameters are given.
    *
    * @param {*} destination
@@ -70,8 +102,8 @@ export default class Resonance {
    *   Parameters to parse from the call.
    *
    * @returns {Promise<*>}
-   *   In certain cases we'll receive a Promise containing the message that was sent in the reply, allowing us to
-   *   act upon it.
+   *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
+   *   act upon it if needed.
    */
   async send(destination, ...parameters) {
 
@@ -80,14 +112,14 @@ export default class Resonance {
 
     // If a locale is not set in the parameters, we need to determine what it is using the Resonance.
     if (params.locale === undefined) {
-      let params = await this.i18n(params).catch(Lavenza.stop);
+      params = await this.i18n(params).catch(Lavenza.stop);
     }
 
     // Now, using the information from the parameters, we fetch necessary translations.
     let content = Lavenza.__(params);
 
     // And finally we can send the message to the destination.
-    return this.doSend(destination, content);
+    return await this.doSend(destination, content).catch(Lavenza.stop);
 
   }
 
@@ -108,7 +140,7 @@ export default class Resonance {
   }
 
   /**
-   * Process parameters through i18n translation specificities for this Resonance.
+   * Process parameters through i18n translation specifications for this Resonance.
    *
    * This is an abstract method. Each Resonance must manage translations for its cases depending on its client.
    *

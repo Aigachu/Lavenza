@@ -15,12 +15,12 @@ export default class RollDice extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static async execute(order, resonance) {
+  static async execute(resonance) {
 
     // Array to hold all of the rolls.
     let result = "";
 
-    let dice_faces = order.args._[0] || 6;
+    let dice_faces = resonance.order.args._[0] || 6;
 
     // Roll the dice
     let roll = (Math.floor(Math.random() * dice_faces) + 1);

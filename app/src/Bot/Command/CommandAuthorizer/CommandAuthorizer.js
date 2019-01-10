@@ -20,14 +20,12 @@ export default class CommandAuthorizer {
    *
    * Constructor actions are here.
    *
-   * @param {Order} order
-   *   The order that was received from the resonance.
    * @param {Resonance} resonance
    *   The resonance that contained the order.
    */
-  constructor(order, resonance) {
-    this.order = order;
+  constructor(resonance) {
     this.resonance = resonance;
+    this.order = resonance.order;
     this.bot = this.resonance.bot;
     this.type = resonance.client.type;
     this.commandConfig = this.order.config.command;
@@ -60,7 +58,7 @@ export default class CommandAuthorizer {
           this.resonance.message.reply(`That command is on global cooldown. :) Please wait!`).then(async message => {
 
             // Delete the message containing the command.
-            this.resonance.message.delete();
+            this.resonance.message.delete().catch(Lavenza.continue);
 
             // After 5 seconds, delete the reply originally sent.
             Lavenza.wait(5).then( () => {

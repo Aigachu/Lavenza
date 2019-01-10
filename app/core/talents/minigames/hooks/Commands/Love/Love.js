@@ -15,13 +15,13 @@ export default class Love extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static async execute(order, resonance) {
+  static async execute(resonance) {
 
     // Variable to hold the message.
     let message = '';
 
     // Processes the command only if there's input.
-    if (Lavenza.isEmpty(order.rawContent)) {
+    if (Lavenza.isEmpty(resonance.order.rawContent)) {
       // Store the message to be returned.
       resonance.message.reply(`${resonance.message.author}, you have 100% for ZeRo & M2K's AS5es if you don't specify an object or person!`);
       return;
@@ -29,7 +29,7 @@ export default class Love extends Lavenza.Command {
 
     // Get the thing the caller is getting love percentage for.
     // Lol Aiga naming your variable 'thing' really? xD
-    let thing = order.rawContent;
+    let thing = resonance.order.rawContent;
 
     // Calculate the percent.
     // It's completely random.

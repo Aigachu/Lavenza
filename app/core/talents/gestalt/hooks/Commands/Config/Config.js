@@ -17,9 +17,9 @@ export default class Config extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static execute(order, resonance) {
-    console.log(order.args);
-    resonance.message.reply('```\n' + order.args.toString() + '\n```');
+  static execute(resonance) {
+    console.log(resonance.order.args);
+    resonance.message.reply('```\n' + resonance.order.args.toString() + '\n```');
     resonance.message.reply('Config command!');
   }
 

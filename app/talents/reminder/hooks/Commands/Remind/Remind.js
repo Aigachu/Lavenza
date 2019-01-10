@@ -21,10 +21,10 @@ export default class Remind extends Lavenza.Command {
   /**
    * @inheritDoc
    */
-  static async execute(order, resonance) {
+  static async execute(resonance) {
 
     // Parse the input and find out what to do.
-    let parsed_data = this.parse(resonance.message, order.rawContent);
+    let parsed_data = this.parse(resonance.message, resonance.order.rawContent);
 
     // The parse function returns null if an error occurs.
     if (parsed_data === null) {

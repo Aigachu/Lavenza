@@ -1,0 +1,14 @@
+# Read-Friendly Name of the Talent.
+name: 'Example Talent'
+
+# Talent description.
+description: 'Example talent that provides 1 listener and 1 command.'
+
+# Talent Version.
+version: 1.0.0
+
+# Path to the main class of the Talent, relative to this directory.
+class: 'Example.js'
+
+# Determine which clients this talent should be enabled in.
+clients: '*'
