@@ -62,6 +62,10 @@ export default class Gestalt {
    */
   static async bootstrapClientDatabaseForBot(bot, clientType) {
 
+    // Initialize i18n database collection for this client if it doesn't already exist.
+    /** @catch Stop execution. */
+    await this.createCollection(`/i18n/${bot.id}/clients/${clientType}`).catch(Lavenza.stop);
+
     // Depending on the client type, we create different database files.
     switch (clientType) {
 
@@ -120,6 +124,11 @@ export default class Gestalt {
    */
   static async bootstrap() {
 
+    // Await creation of i18n collection.
+    // All data pertaining to translations will be saved here.
+    /** @catch Stop execution. */
+    await this.createCollection('/i18n').catch(Lavenza.stop);
+
     // Await creation of the Bots collection.
     /** @catch Stop execution. */
     await this.createCollection('/bots').catch(Lavenza.stop);
@@ -131,6 +140,14 @@ export default class Gestalt {
       // Initialize the database collection for this bot if it doesn't already exist.
       /** @catch Stop execution. */
       await this.createCollection(`/bots/${bot.id}`).catch(Lavenza.stop);
+
+      // Initialize i18n database collection for this bot if it doesn't already exist.
+      /** @catch Stop execution. */
+      await this.createCollection(`/i18n/${bot.id}`).catch(Lavenza.stop);
+
+      // Initialize i18n database collection for this bot's clients configurations if it doesn't already exist.
+      /** @catch Stop execution. */
+      await this.createCollection(`/i18n/${bot.id}/clients`).catch(Lavenza.stop);
 
       // Await the synchronization of data between the Bot's default configuration and the database configuration.
       /** @catch Stop execution. */

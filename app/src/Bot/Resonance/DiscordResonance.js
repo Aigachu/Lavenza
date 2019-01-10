@@ -24,9 +24,9 @@ export default class DiscordResonance extends Resonance {
   /**
    * Resolve language to translate content to.
    *
-   * In Discord, there are two ways to configure the language:
+   * In Discord, there are three ways to configure the language:
    *  - Guild (Server) Locale - Setting a language per guild.
-   *  - @TODO - Channel Locale - Setting a language per channel.
+   *  - Channel Locale - Setting a language per channel.
    *  - User - Setting a language per user.
    *
    * Here, we want to query Gestalt to check if configurations are set for this resonance's environment.

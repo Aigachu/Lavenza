@@ -92,7 +92,7 @@ i18n.configure({
     'fr': 'en'
   },
   defaultLocale: process.env.DEFAULT_LOCALE,
-  directory: RootPath + '/i18n'
+  directory: RootPath + '/lang'
 });
 
 // Define the Heart of the module.
