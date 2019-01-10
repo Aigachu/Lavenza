@@ -47,6 +47,7 @@ export default class DiscordResonance extends Resonance {
 
     // First, we check if configurations exist for this user.
     let i18nUserConfig = await Lavenza.Gestalt.get(`/i18n/${this.bot.id}/clients/discord/users`).catch(Lavenza.stop);
+    console.log(i18nUserConfig);
 
     // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
     if (i18nUserConfig[this.author.id] && i18nUserConfig[this.author.id].locale && i18nUserConfig[this.author.id].locale !== 'default') {

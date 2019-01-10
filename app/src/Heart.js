@@ -112,6 +112,8 @@ export const Heart = {
     // If the locale is undefined, we simply use the default one.
     params.locale = params.locale ? params.locale : process.env.DEFAULT_LOCALE;
 
+    console.log(params);
+
     return i18n.__({phrase: params.phrase, locale: params.locale}, params.replacers);
 
   },

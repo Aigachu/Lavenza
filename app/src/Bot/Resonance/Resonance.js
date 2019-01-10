@@ -119,7 +119,7 @@ export default class Resonance {
     }
 
     // Now, using the information from the parameters, we fetch necessary translations.
-    let content = Lavenza.__(params, 'PARSED');
+    let content = Lavenza.__({phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED');
 
     // And finally we can send the message to the destination.
     return await this.doSend(destination, content).catch(Lavenza.stop);
