@@ -81,7 +81,6 @@ export default class Talent {
   static async getActiveConfigForBot(bot) {
 
     // Await Gestalt's API call to get the configuration from the storage.
-    /** @catch Stop execution. */
     return await Lavenza.Gestalt.get(`/bots/${bot.id}/talents/${this.id}/config`).catch(Lavenza.stop);
 
   }
@@ -143,7 +142,6 @@ export default class Talent {
 
       // Now let's successfully register the command to the Talent.
       // Commands have build tasks too and are also singletons. We'll run them here.
-      /** @catch Stop execution. */
       await command.build(config, this).catch(Lavenza.stop);
 
       // Set the command to this Talent.
@@ -192,7 +190,6 @@ export default class Talent {
 
       // Run listener build tasks.
       // We only do this to assign the talent to the listener. That way, the listener can access the Talent.
-      /** @catch Stop execution. */
       await listener.build(this).catch(Lavenza.stop);
 
       // If the require fails or the result is empty, we stop.

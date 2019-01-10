@@ -50,7 +50,7 @@ export default class Sojiro {
 
     // If for some reason we receive parameters that are already parsed, simply return them.
     // @TODO - Not sure how to feel about this one. We'll most likely refactor this in the future.
-    if (parameters['parsed']) {
+    if ('PARSED' in parameters) {
       return parameters;
     }
 
@@ -59,7 +59,6 @@ export default class Sojiro {
       phrase: undefined,
       locale: undefined,
       replacers: undefined,
-      parsed: true,
     };
 
     // If no parameters are passed, we can't really do much.

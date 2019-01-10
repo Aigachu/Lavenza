@@ -6,7 +6,7 @@
  */
 
 // Imports.
-import Resonance from 'Resonance';
+import Resonance from './Resonance';
 
 /**
  * Provides specific Resonance properties for messages coming from Discord.
@@ -18,7 +18,15 @@ export default class DiscordResonance extends Resonance {
    * @inheritDoc
    */
   constructor(content, message, bot, client) {
+
+    // Run parent constructor.
     super(content, message, bot, client);
+
+    // For Discord, we'll set some useful information to the class.
+    this.author = message.author;
+    this.guild = message.guild;
+    this.channel = message.channel;
+
   }
 
   /**
@@ -36,6 +44,36 @@ export default class DiscordResonance extends Resonance {
    * @inheritDoc
    */
   async i18n(params) {
+
+    // First, we check if configurations exist for this user.
+    let i18nUserConfig = await Lavenza.Gestalt.get(`/i18n/${this.bot.id}/clients/discord/users`).catch(Lavenza.stop);
+
+    // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
+    if (i18nUserConfig[this.author.id] && i18nUserConfig[this.author.id].locale && i18nUserConfig[this.author.id].locale !== 'default') {
+      params.locale = i18nUserConfig[this.author.id].locale;
+      return params;
+    }
+
+    // Second, we check if configurations exist for this channel.
+    let i18nChannelConfig = await Lavenza.Gestalt.get(`/i18n/${this.bot.id}/clients/discord/channels`).catch(Lavenza.stop);
+
+    // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
+    if (i18nChannelConfig[this.author.id] && i18nChannelConfig[this.author.id].locale && i18nChannelConfig[this.author.id].locale !== 'default') {
+      params.locale = i18nChannelConfig[this.channel.id].locale;
+      return params;
+    }
+
+    // First, we check if configurations exist for this guild.
+    let i18nGuildConfig = await Lavenza.Gestalt.get(`/i18n/${this.bot.id}/clients/discord/guilds`).catch(Lavenza.stop);
+
+    // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
+    if (i18nGuildConfig[this.author.id] && i18nGuildConfig[this.author.id].locale && i18nGuildConfig[this.author.id].locale !== 'default') {
+      params.locale = i18nGuildConfig[this.guild.id].locale;
+      return params;
+    }
+
+    // Return the parameters.
+    return params;
 
   }
 

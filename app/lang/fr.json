@@ -12,5 +12,6 @@
 	"Discord client successfully connected for {{bot}}!": "Le client Discord s'est connecté avec succès pour {{bot}}!\n",
 	"All configured bots have been successfully deployed!": "Tous les robots configurés ont été déployés avec succès!",
 	"No listeners were found for the {{talent}} talent. This might not be normal!": "Aucun auditeur trouvé pour le talent {{talent}}. Cela pourrait ne pas être normal!",
-	"Lavenza is now running!": "Lavenza est maintenant en cours d'exécution!"
+	"Lavenza is now running!": "Lavenza est maintenant en cours d'exécution!",
+	"Pong! Here is your ID: {{id}}": "Pong! Voici votre code: {{id}}"
 }

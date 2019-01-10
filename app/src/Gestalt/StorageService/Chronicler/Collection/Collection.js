@@ -38,16 +38,13 @@ export default class Collection {
     let data = {};
 
     // Get all files & directories from directory.
-    /** @catch Stop execution. */
     let directories = await Lavenza.Akechi.getDirectoriesFrom(this.path).catch(Lavenza.stop);
     let files = await Lavenza.Akechi.getFilesFrom(this.path).catch(Lavenza.stop);
 
     // Await the processing of all the directories found.
-    /** @catch Stop execution. */
     await Promise.all(directories.map(async directory => {
 
       // We basically create a collection with the directory and parse it's data, calling this function recursively.
-      /** @catch Stop execution. */
       let name = path.basename(directory);
       let collection = new this.constructor(directory);
       data[name] = await collection.values().catch(Lavenza.stop);
@@ -58,7 +55,6 @@ export default class Collection {
     await Promise.all(files.map(async file => {
 
       // We basically create an item with the file and parse it's data, calling this function recursively.
-      /** @catch Stop execution. */
       let name = path.basename(file).replace('.yml', '');
       let item = new Item(file);
       data[name] = await item.values().catch(Lavenza.stop);

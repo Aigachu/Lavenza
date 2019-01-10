@@ -39,7 +39,6 @@ export default class BotManager {
   static async deploy() {
 
     // Await deployment of all bots loaded in the manager.
-    /** @catch Stop execution. */
     await this.deployBots().catch(Lavenza.stop);
 
     // Some more flavor.
@@ -58,11 +57,9 @@ export default class BotManager {
 
     // Await registration all bots from the application files.
     // Upon error in registration, stop the application.
-    /** @catch Stop execution. */
     await this.registerBots().catch(Lavenza.stop);
 
     // Await preparation handlers of all bots loaded in the manager.
-    /** @catch Stop execution. */
     await this.prepareBots().catch(Lavenza.stop);
 
     // Some more flavor.
@@ -78,11 +75,9 @@ export default class BotManager {
   static async deployBots() {
 
     // Await deployment handlers for all bots.
-    /** @catch Stop execution. */
     await Promise.all(this.bots.map(async bot => {
 
       // Await deployment handlers for a single bot.
-      /** @catch Stop execution. */
       await bot.deploy().catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
@@ -97,11 +92,9 @@ export default class BotManager {
   static async prepareBots() {
 
     // Await preparation handlers for all bots.
-    /** @catch Stop execution. */
     await Promise.all(this.bots.map(async bot => {
 
       // Await preparation handler for a single bot.
-      /** @catch Stop execution. */
       await bot.prepare().catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
@@ -146,7 +139,6 @@ export default class BotManager {
     } else {
 
       // Fetch all bot directories from the 'bots' folder at the root of the application.
-      /** @catch Stop execution. */
       botDirectories = await Lavenza.Akechi.getDirectoriesFrom(Lavenza.Paths.BOTS).catch(Lavenza.pocket);
 
       // If for some reason, bot directories could not be loaded, we stop the app.
@@ -156,7 +148,6 @@ export default class BotManager {
     }
 
     // Loop through all directories found in the /bots folder.
-    /** @catch Stop execution. */
     await Promise.all(botDirectories.map(async directory => {
 
       // Get the bot name. This is in fact the name of the directory.

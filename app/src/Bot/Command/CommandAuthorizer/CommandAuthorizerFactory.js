@@ -53,7 +53,6 @@ export default class CommandAuthorizerFactory {
     }
 
     // Build the authorizer. Then we're good to go. We can send it back to the listener.
-    /** @catch Stop execution. */
     await authorizer.build().catch(Lavenza.stop);
     return authorizer;
   }

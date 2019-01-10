@@ -67,14 +67,12 @@ export default class Core {
      * Fire necessary preparations.
      * The application can end here if we hit an error in the prep function.
      */
-    /** @catch Stop execution. */
     await this.prepare().catch(Lavenza.stop);
 
     /*
      * If preparations go through without problems, go for run tasks.
      * Run tasks should be done only after all prep is complete.
      */
-    /** @catch Stop execution. */
     await this.run().catch(Lavenza.stop);
 
   }
@@ -95,22 +93,18 @@ export default class Core {
      * Run preparation handler for the Gestalt service.
      * We need to set all database management before we generate bots.
      */
-    /** @catch Stop execution. */
     await Gestalt.prepare().catch(Lavenza.stop);
 
     // Run preparation functions for the Talent Manager.
-    /** @catch Stop execution. */
     await TalentManager.prepare().catch(Lavenza.stop);
 
     // Run preparation functions for the Bot Manager.
-    /** @catch Stop execution. */
     await BotManager.prepare().catch(Lavenza.stop);
 
     /*
      * Run bootstrap handler for Gestalt.
      * This is the process that creates and syncs the database.
      */
-    /** @catch Stop execution. */
     await Gestalt.bootstrap().catch(Lavenza.stop);
 
     /*
@@ -119,7 +113,6 @@ export default class Core {
      * No announcements needed for this. She can prepare quietly.
      * @TODO - Manage this elsewhere.
      */
-    /** @catch Stop execution. */
     Lavenza.Makoto.build().catch(Lavenza.stop);
 
     // Some more flavor.
@@ -144,7 +137,6 @@ export default class Core {
     Lavenza.status("Commencing Lavenza's execution phase!");
 
     // Deploy bots from the BotBunker.
-    /** @catch Stop execution. */
     await BotManager.deploy().catch(Lavenza.stop);
 
     // Separation.

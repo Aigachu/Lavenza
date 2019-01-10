@@ -30,5 +30,5 @@ const Lavenza = require('./').Heart;
 Lavenza.Core.ignite(bot).then(() => {
   Lavenza.warn('Lavenza is now running!');
 }).catch(error => {
-  Lavenza.error(error);
+  throw error;
 });

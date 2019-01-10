@@ -268,7 +268,6 @@ export default class DiscordClient extends DiscordJSClient {
     }
 
     // Await the login in of this client.
-    /** @catch Stop execution. */
     await super.login(token).catch(error => {
       Lavenza.throw('Failed to authenticate Discord client for {{bot}}.', {bot: this.bot.id});
     });

@@ -71,7 +71,7 @@ export default class Resonance {
    * We make this function flexible, similar to how i18n.__() works. It will allow multiple definitions for function
    * calls and act depending on what types of parameters are given.
    *
-   * @param {Array} parameters
+   * @param {*} parameters
    *   Parameters to parse from the call.
    *
    * @returns {Promise<*>}
@@ -80,8 +80,11 @@ export default class Resonance {
    */
   async reply(...parameters) {
 
+    // Parse the parameters obtained.
+    let params = Lavenza.Sojiro.parseI18NParams(parameters);
+
     // Basically call the send method, but we already know the destination.
-    await this.send(this.origin, parameters).catch(Lavenza.stop);
+    await this.send(this.origin, {phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED').catch(Lavenza.stop);
 
   }
 
@@ -98,7 +101,7 @@ export default class Resonance {
    *
    * @param {*} destination
    *   Destination to send this message to.
-   * @param {Array} parameters
+   * @param {*} parameters
    *   Parameters to parse from the call.
    *
    * @returns {Promise<*>}
@@ -116,7 +119,7 @@ export default class Resonance {
     }
 
     // Now, using the information from the parameters, we fetch necessary translations.
-    let content = Lavenza.__(params);
+    let content = Lavenza.__(params, 'PARSED');
 
     // And finally we can send the message to the destination.
     return await this.doSend(destination, content).catch(Lavenza.stop);

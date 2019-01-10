@@ -6,7 +6,7 @@
  */
 
 // Imports.
-import DiscordResonance from 'DiscordResonance';
+import DiscordResonance from './DiscordResonance';
 // import TwitchResonance from 'TwitchResonance';
 // import SlackResonance from 'SlackResonance';
 import ClientTypes from '../Client/ClientTypes';

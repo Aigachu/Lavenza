@@ -36,7 +36,8 @@ export default class Ping extends Lavenza.Command {
    * @inheritDoc
    */
   static execute(resonance) {
-    resonance.reply('Pong! Here is your ID: {{id}}', {id: resonance.message.author.id}, 'en');
+    console.log(resonance.message.author.id);
+    resonance.reply('Pong! Here is your ID: {{id}}', {id: resonance.message.author.id}, 'fr');
   }
 
 }

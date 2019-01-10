@@ -33,7 +33,6 @@ export default class TalentManager {
   static async prepare() {
 
     // Await the loading of core talents.
-    /** @catch Stop execution. */
     await this.loadCoreTalents().catch(Lavenza.stop);
 
     // Some flavor text.
@@ -55,15 +54,12 @@ export default class TalentManager {
     this.talents = {};
 
     // We fetch the list of all core talents here.
-    /** @catch Stop execution. */
     let coreTalentDirectories = await Lavenza.Akechi.getDirectoriesFrom(Lavenza.Paths.TALENTS.CORE).catch(Lavenza.stop);
 
     // Await the loading of all talents found.
-    /** @catch Stop execution. */
     await Promise.all(coreTalentDirectories.map(async directory => {
 
       // Await the loading of the talent into the TalentManager.
-      /** @catch Stop execution. */
       await this.loadTalent(directory).catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
@@ -120,7 +116,6 @@ export default class TalentManager {
 
     // Await building of the talent.
     // Talents have build tasks too and are also singletons. We'll run them here.
-    /** @catch Stop execution. */
     await talent.build(config).catch(Lavenza.stop);
 
     // Register the talent to the Manager.

@@ -103,13 +103,16 @@ export const Heart = {
   Core: Core,
 
   // i18n.
-  // Wraps a '__' function to use i18n's __mf function for Message Format.
+  // Wraps a '__' function to use i18n's __ function.
   __: (...parameters) => {
 
     // Get our parameters using Sojiro's help.
     let params = Sojiro.parseI18NParams(parameters);
 
-    return i18n.__mf({phrase: params.phrase, locale: params.locale}, params.replacers);
+    // If the locale is undefined, we simply use the default one.
+    params.locale = params.locale ? params.locale : process.env.DEFAULT_LOCALE;
+
+    return i18n.__({phrase: params.phrase, locale: params.locale}, params.replacers);
 
   },
 
@@ -134,6 +137,7 @@ export const Heart = {
   ClientTypes: ClientTypes,
 
   // Function shortcuts from Confidants.
+  log: Morgana.log,
   success: Morgana.success,
   error: Morgana.error,
   warn: Morgana.warn,

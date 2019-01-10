@@ -39,7 +39,6 @@ export default class Gestalt {
     let storageService = Chronicler;
 
     // Await the build process of the storage service and assign it to Gestalt.
-    /** @catch Stop execution. */
     await storageService.build().catch(Lavenza.stop);
     this.storageService = storageService;
 
@@ -63,7 +62,6 @@ export default class Gestalt {
   static async bootstrapClientDatabaseForBot(bot, clientType) {
 
     // Initialize i18n database collection for this client if it doesn't already exist.
-    /** @catch Stop execution. */
     await this.createCollection(`/i18n/${bot.id}/clients/${clientType}`).catch(Lavenza.stop);
 
     // Depending on the client type, we create different database files.
@@ -71,6 +69,12 @@ export default class Gestalt {
 
       // For Discord Clients...
       case ClientTypes.Discord: {
+
+        // Initialize i18n contexts, creating them if they don't exist.
+        // Translations are manageable through all of these contexts.
+        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/guilds`).catch(Lavenza.stop);
+        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/channels`).catch(Lavenza.stop);
+        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/users`).catch(Lavenza.stop);
 
         // We start by syncing the guild configuration.
         let guilds = await this.sync({}, `/bots/${bot.id}/clients/${clientType}/guilds`);
@@ -126,94 +130,75 @@ export default class Gestalt {
 
     // Await creation of i18n collection.
     // All data pertaining to translations will be saved here.
-    /** @catch Stop execution. */
     await this.createCollection('/i18n').catch(Lavenza.stop);
 
     // Await creation of the Bots collection.
-    /** @catch Stop execution. */
     await this.createCollection('/bots').catch(Lavenza.stop);
 
     // Await bootstrapping of each bot's data.
-    /** @catch Stop execution. */
     await Promise.all(BotManager.bots.map(async bot => {
 
       // Initialize the database collection for this bot if it doesn't already exist.
-      /** @catch Stop execution. */
       await this.createCollection(`/bots/${bot.id}`).catch(Lavenza.stop);
 
       // Initialize i18n database collection for this bot if it doesn't already exist.
-      /** @catch Stop execution. */
       await this.createCollection(`/i18n/${bot.id}`).catch(Lavenza.stop);
 
       // Initialize i18n database collection for this bot's clients configurations if it doesn't already exist.
-      /** @catch Stop execution. */
       await this.createCollection(`/i18n/${bot.id}/clients`).catch(Lavenza.stop);
 
       // Await the synchronization of data between the Bot's default configuration and the database configuration.
-      /** @catch Stop execution. */
       bot.config = await this.sync(bot.config, `/bots/${bot.id}/config`).catch(Lavenza.stop);
 
       // Create a database collection for the talents granted to a bot.
-      /** @catch Stop execution. */
       await this.createCollection(`/bots/${bot.id}/talents`).catch(Lavenza.stop);
 
       // Await the bootstrapping of each talent's data.
-      /** @catch Stop execution. */
       await Promise.all(bot.talents.map(async talentKey => {
 
         // Load Talent from the TalentManager.
         let talent = TalentManager.talents[talentKey];
 
         // Create a database collection for the talents granted to a Bot.
-        /** @catch Stop execution. */
         await this.createCollection(`/bots/${bot.id}/talents/${talent.id}`).catch(Lavenza.stop);
 
         // Await the synchronization of data between the Talent's default configuration and the database configuration.
-        /** @catch Stop execution. */
         await this.sync(talent.config, `/bots/${bot.id}/talents/${talent.id}/config`).catch(Lavenza.stop);
 
       })).catch(Lavenza.stop);
 
       // Create a database collection for Commands belonging to a Bot.
-      /** @catch Stop execution. */
       await this.createCollection(`/bots/${bot.id}/commands`).catch(Lavenza.stop);
 
       // Await the bootstrapping of Commands data.
-      /** @catch Stop execution. */
       await Promise.all(Object.keys(bot.commands).map(async commandKey => {
 
         // Load Command from the Bot.
         let command = bot.commands[commandKey];
 
         // Create a database collection for commands belonging to a Bot.
-        /** @catch Stop execution. */
         await this.createCollection(`/bots/${bot.id}/commands/${command.config.key}`).catch(Lavenza.stop);
 
         // Await the synchronization of data between the Command's default configuration and the database configuration.
-        /** @catch Stop execution. */
         await this.sync(command.config, `/bots/${bot.id}/commands/${command.config.key}/config`).catch(Lavenza.stop);
 
       })).catch(Lavenza.stop);
 
       // Create a database collection for the clients belonging to a Bot.
-      /** @catch Stop execution. */
       await this.createCollection(`/bots/${bot.id}/clients`).catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
 
     // Await creation of the Bots collection.
-    /** @catch Stop execution. */
     await this.createCollection('/talents').catch(Lavenza.stop);
 
     // Await bootstrapping of each bot's data.
-    /** @catch Stop execution. */
     await Promise.all(Object.keys(TalentManager.talents).map(async talentKey => {
 
       // Get the actual talent.
       let talent = TalentManager.talents[talentKey];
 
       // Initialize the database collection for this bot if it doesn't already exist.
-      /** @catch Stop execution. */
       await this.createCollection(`/talents/${talent.id}`).catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
@@ -236,7 +221,6 @@ export default class Gestalt {
   static async sync(config, source) {
 
     // Await initial fetch of data that may already exist.
-    /** @catch Stop execution. */
     let dbConfig = await Lavenza.Gestalt.get(source).catch(Lavenza.stop);
 
     // If the configuration already exists, we'll want to sync the provided configuration with the source.
@@ -246,7 +230,6 @@ export default class Gestalt {
     }
 
     // Await creation of database entry for the configuration, since it doesn't exist.
-    /** @catch Stop execution. */
     await this.post(source, config).catch(Lavenza.stop);
     return config;
 
@@ -268,7 +251,6 @@ export default class Gestalt {
   static async createCollection(endpoint, payload = {}) {
 
     // Each storage service creates collections in their own way. We await this process.
-    /** @catch Stop execution. */
     await this.storageService.createCollection(endpoint, payload).catch(Lavenza.stop);
 
   }
@@ -296,7 +278,6 @@ export default class Gestalt {
   static async request({protocol = '', endpoint, payload = {}} = {}) {
 
     // Await the request function call of the storage service.
-    /** @catch Stop execution. */
     return await this.storageService.request({
       protocol: protocol,
       endpoint: endpoint,
@@ -317,7 +298,6 @@ export default class Gestalt {
   static async get(endpoint) {
 
     // Await GET request of the Storage Service.
-    /** @catch Stop execution. */
     return await this.request({protocol: 'get', endpoint: endpoint}).catch(Lavenza.stop);
 
   }
@@ -336,7 +316,6 @@ export default class Gestalt {
   static async post(endpoint, payload) {
 
     // Await POST request of the Storage Service.
-    /** @catch Stop execution. */
     return await this.request({protocol: 'post', endpoint: endpoint, payload: payload}).catch(Lavenza.stop);
 
   }
@@ -355,7 +334,6 @@ export default class Gestalt {
   static async update(endpoint, payload) {
 
     // Await UPDATE request of the Storage Service.
-    /** @catch Stop execution. */
     return await this.request({protocol: 'update', endpoint: endpoint, payload: payload}).catch(Lavenza.stop);
 
   }
@@ -371,7 +349,6 @@ export default class Gestalt {
   static async delete(endpoint) {
 
     // Await DELETE request of the Storage Service.
-    /** @catch Stop execution. */
     return await this.request({protocol: 'delete', endpoint: endpoint}).catch(Lavenza.stop);
 
   }

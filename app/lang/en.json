@@ -12,5 +12,13 @@
 	"Discord client successfully connected for {{bot}}!": "Discord client successfully connected for {{bot}}!",
 	"All configured bots have been successfully deployed!": "All configured bots have been successfully deployed!",
 	"No listeners were found for the {{talent}} talent. This might not be normal!": "No listeners were found for the {{talent}} talent. This might not be normal!",
-	"Lavenza is now running!": "Lavenza is now running!"
+	"Lavenza is now running!": "Lavenza is now running!",
+	"<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/bots/mikuchu/talents/i18n/config": "<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/bots/mikuchu/talents/i18n/config",
+	"<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/bots/mikuchu/commands/locale/config": "<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/bots/mikuchu/commands/locale/config",
+	"<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/i18n/mikuchu/clients/discord/guilds": "<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/i18n/mikuchu/clients/discord/guilds",
+	"<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/i18n/mikuchu/clients/discord/channels": "<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/i18n/mikuchu/clients/discord/channels",
+	"<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/i18n/mikuchu/clients/discord/users": "<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/i18n/mikuchu/clients/discord/users",
+	"Cannot send an empty message": "Cannot send an empty message",
+	"Found non-callable @@iterator": "Found non-callable @@iterator",
+	"Pong! Here is your ID: {{id}}": "Pong! Here is your ID: {{id}}"
 }

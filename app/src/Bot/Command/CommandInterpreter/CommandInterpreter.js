@@ -26,7 +26,6 @@ export default class CommandInterpreter {
   static async interpret(resonance) {
 
     // Attempt to get a command from the content.
-    /** @catch Stop execution. */
     let order = await this.getCommand(resonance).catch(Lavenza.stop);
 
     // If no command is found, we have nothing to do.
@@ -63,7 +62,6 @@ export default class CommandInterpreter {
     let splitContent = content.split(' ');
 
     // Get the active bot configuration from the database.
-    /** @catch Stop execution. */
     let botConfig = await bot.getActiveConfig().catch(Lavenza.stop);
 
     // Get command prefix.

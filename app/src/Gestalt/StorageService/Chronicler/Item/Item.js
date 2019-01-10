@@ -29,7 +29,6 @@ export default class Item {
   async values() {
 
     // We expect a yml. We just reach the path.
-    /** @catch Stop execution. */
     return await Lavenza.Akechi.readYamlFile(this.path).catch(Lavenza.stop);
 
   }

@@ -55,7 +55,6 @@ export default class Bot {
   async getActiveConfig() {
 
     // We use Gestalt to make a call to the database storage service and return the data.
-    /** @catch Stop execution. */
     return await Lavenza.Gestalt.get(`/bots/${this.id}/config`).catch(Lavenza.stop);
 
   }
@@ -83,15 +82,12 @@ export default class Bot {
   async deploy() {
 
     // Await client initialization.
-    /** @catch Stop execution. */
     await this.initializeClients().catch(Lavenza.stop);
 
     // Await clients authentication.
-    /** @catch Stop execution. */
     await this.authenticateClients().catch(Lavenza.stop);
 
     // Await talent initializations for this bot.
-    /** @catch Stop execution. */
     await this.initializeTalentsForBot().catch(Lavenza.stop);
   }
 
@@ -105,15 +101,12 @@ export default class Bot {
   async prepare() {
 
     // Await talent grants.
-    /** @catch Stop execution. */
     await this.grantTalents().catch(Lavenza.stop);
 
     // Await command inheritance.
-    /** @catch Stop execution. */
     await this.setCommands().catch(Lavenza.stop);
 
     // Await listener initialization & inheritance.
-    /** @catch Stop execution. */
     await this.setListeners().catch(Lavenza.stop);
 
   }
@@ -145,7 +138,6 @@ export default class Bot {
 
     // Await validation of custom talents configured.
     // This basically checks if the talents entered are valid. Invalid ones are removed from the array.
-    /** @catch Stop execution. */
     await this.validateCustomTalents().catch(Lavenza.stop);
 
     // After validations are complete, we merge the core talents defined for the bot, with the custom ones.
@@ -182,7 +174,6 @@ export default class Bot {
   async setCommands() {
 
     // Await the processing of all talents loaded in the bot.
-    /** @catch Stop execution. */
     await Promise.all(this.talents.map(async talent => {
 
       // Merge the bot's commands with the Talent's commands.
@@ -208,7 +199,6 @@ export default class Bot {
     this.listeners.push(CommandListener);
 
     // Await the processing of all talents loaded in the bot.
-    /** @catch Stop execution. */
     await Promise.all(this.talents.map(async talentKey => {
 
       // Merge the bot's listeners with the Talent's listeners.
@@ -227,7 +217,6 @@ export default class Bot {
   async validateCustomTalents() {
 
     // Await the processing of all talents in the bot's config object.
-    /** @catch Stop execution. */
     await Promise.all(this.config.talents.map(async (talentKey) => {
 
       // First, we'll check if this talent already exists in the Manager.
@@ -428,7 +417,6 @@ export default class Bot {
     let activeConfig = await this.getActiveConfig().catch(Lavenza.stop);
 
     // Await the processing and initialization of all clients in the configurations.
-    /** @catch Stop execution. */
     await Promise.all(clientKeys.map(async key => {
 
       // Uses the ClientFactory to build the appropriate factory given the type.
@@ -447,7 +435,6 @@ export default class Bot {
   async initializeTalentsForBot() {
 
     // Await the processing of all of this bot's talents.
-    /** @catch Stop execution. */
     await Promise.all(this.talents.map(async talentKey => {
 
       // Run this talent's initialize function for this bot.

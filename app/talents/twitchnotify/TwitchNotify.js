@@ -26,7 +26,6 @@ export default class TwitchNotify extends Lavenza.Talent {
   static async build(config) {
 
     // Run default builders.
-    /** @catch Stop execution. */
     await super.build(config).catch(Lavenza.stop);
 
     // Initialize variables if needed.
@@ -41,7 +40,6 @@ export default class TwitchNotify extends Lavenza.Talent {
   static async initialize(bot) {
 
     // Run default initializer to create database collections.
-    /** @catch Stop execution. */
     await super.initialize(bot).catch(Lavenza.stop);
 
     // Build Configurations and store them in the database.
@@ -49,7 +47,6 @@ export default class TwitchNotify extends Lavenza.Talent {
     this.guilds[bot.id] = await Lavenza.Gestalt.sync({}, this.guildConfigStorages[bot.id]);
 
     // Await the processing of all Discord guilds available in the bot's Discord client.
-    /** @catch Stop execution. */
     await Promise.all(bot.getClient(ClientTypes.Discord).guilds.map(async guild => {
 
       // If the guild definition is not already created in the database, we initialize it here.
@@ -68,7 +65,6 @@ export default class TwitchNotify extends Lavenza.Talent {
       }
 
       // Save guild configurations.
-      /** @catch Stop execution. */
       await this.save(bot).catch(Lavenza.stop);
 
     })).catch(Lavenza.stop);
@@ -96,7 +92,6 @@ export default class TwitchNotify extends Lavenza.Talent {
     this.guilds[bot.id] = await Lavenza.Gestalt.get(this.guildConfigStorages[bot.id]);
 
     // We'll perform checks for every guild this bot is part of.
-    /** @catch Stop execution. */
     await Promise.all(bot.getClient(ClientTypes.Discord).guilds.map(async guild => {
 
       // If for whatever reason, the guild being processed has no configuration, we return.
@@ -140,7 +135,6 @@ export default class TwitchNotify extends Lavenza.Talent {
   static async ttvann(guildConfig, bot) {
 
     // For every configured stream in the configuration, we'll perform API calls to check if the stream is live.
-    /** @catch Stop execution. */
     await Promise.all(guildConfig.streams.map(async twitchUser => {
 
       // Initialize and obtain data from Twitch.

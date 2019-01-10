@@ -25,7 +25,6 @@ export default class Reminder extends Lavenza.Talent {
   static async build(config) {
 
     // Run default builders.
-    /** @catch Stop execution. */
     await super.build(config).catch(Lavenza.stop);
 
   }
@@ -36,7 +35,6 @@ export default class Reminder extends Lavenza.Talent {
   static async initialize(bot) {
 
     // Run default initializer to create database collections.
-    /** @catch Stop execution. */
     await super.initialize(bot).catch(Lavenza.stop);
 
     // Initialize a couple of variables.

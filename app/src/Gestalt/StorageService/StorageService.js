@@ -38,28 +38,37 @@ export default class StorageService {
     switch(protocol) {
 
       // GET Protocol.
-      case 'get':
+      case 'get': {
+
         // Await GET request of the Storage Service.
-        /** @catch Stop execution. */
         return await this.get(endpoint).catch(Lavenza.stop);
 
+      }
+
       // POST Protocol.
-      case 'post':
+      case 'post': {
+
         // Await POST request of the Storage Service.
-        /** @catch Stop execution. */
         return await this.post(endpoint, payload).catch(Lavenza.stop);
 
+      }
+
       // UPDATE Protocol.
-      case 'update':
+      case 'update': {
+
         // Await UPDATE request of the Storage Service.
-        /** @catch Stop execution. */
         return await this.update(endpoint, payload).catch(Lavenza.stop);
 
+      }
+
+
       // DELETE Protocol.
-      case 'delete':
+      case 'delete': {
+
         // Await DELETE request of the Storage Service.
-        /** @catch Stop execution. */
         return await this.delete(endpoint).catch(Lavenza.stop);
+
+      }
     }
   }
 
