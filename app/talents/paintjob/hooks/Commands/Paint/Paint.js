@@ -25,29 +25,32 @@ export default class Paint extends Lavenza.Command {
 
     // @TODO - Check if the bot is at the top of the role list and has the proper permissions.
 
+    console.log(resonance.order);
+
     // If the "c" option is used, a color role will be created.
     if ("c" in resonance.order.args) {
-      this.createColor(resonance.order.args.c, resonance);
+      console.log(resonance.order.args.c);
+      await this.createColor(resonance.order.args.c, resonance);
     }
 
     // If the "s" option is used, a color role will be set to the invoker.
     if ("s" in resonance.order.args) {
-      this.setColor(resonance.order.args.s, resonance);
+      await this.setColor(resonance.order.args.s, resonance);
     }
 
     // If the "r" option is used, a color role will be removed from the invoker.
     if ("r" in resonance.order.args) {
-      this.removeColorFromMember(resonance, resonance.message.member);
+      await this.removeColorFromMember(resonance, resonance.message.member);
     }
 
     // If the "l" option is used, list all color roles in the server.
     if ("l" in resonance.order.args) {
-      this.listColorRolesInGuild(resonance);
+      await this.listColorRolesInGuild(resonance);
     }
 
     // If the "x" option is used, delete all color roles in the server.
     if ("x" in resonance.order.args) {
-      this.deleteAllColorRoles(resonance);
+      await this.deleteAllColorRoles(resonance);
     }
 
   }
@@ -63,10 +66,10 @@ export default class Paint extends Lavenza.Command {
    * @return {Boolean}
    *   True upon success. False upon failure.
    */
-  static createColor(input, resonance) {
+  static async createColor(input, resonance) {
 
     // Get the Color data.
-    let color = this.getColorData(input, resonance);
+    let color = await this.getColorData(input, resonance);
 
     // If the color data wasn't properly fetched.
     if (!color) {
@@ -74,25 +77,25 @@ export default class Paint extends Lavenza.Command {
     }
 
     // Get the color role in the current guild if it exists already.
-    let foundColor = this.findColorInCurrentGuild(color, resonance);
+    let foundColor = await this.findColorInCurrentGuild(color, resonance);
 
     // Check if the color already exists.
     if (foundColor !== false) {
-      resonance.message.channel.send(`Seems like that color already exists! - <@&` + foundColor.id + `>`);
+      await resonance.message.channel.send(`Seems like that color already exists! - <@&` + foundColor.id + `>`);
       return false;
     }
 
     // Create the color role with the proper values.
-    resonance.message.guild.createRole({
+    await resonance.message.guild.createRole({
       name: color.name,
       color: input,
       mentionable: true,
       permissions: resonance.message.guild.defaultRole.permissions,
     })
-      .then((role) => {
-        role.setPosition(resonance.message.guild.roles.array().length - 2)
-          .then(() => {
-            resonance.message.channel.send(`I've successfully created a new color in this server: ` + role);
+      .then(async (role) => {
+        await role.setPosition(resonance.message.guild.roles.array().length - 2)
+          .then(async () => {
+            await resonance.message.channel.send(`I've successfully created a new color in this server: ` + role);
           })
           .catch((error) => {
             resonance.message.channel.send(`An error may have occurred with the creation of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't deal well with roles that are above mine. :( You're going to have to move me to the top of your server role list!`);
@@ -118,10 +121,10 @@ export default class Paint extends Lavenza.Command {
    * @return {Boolean}
    *   True upon success. False upon failure.
    */
-  static setColor(input, resonance) {
+  static async setColor(input, resonance) {
 
     // Get the color data.
-    let color = this.getColorData(input, resonance);
+    let color = await this.getColorData(input, resonance);
 
     // If a color wasn't obtained, we do nothing.
     if (!color) {
@@ -129,48 +132,37 @@ export default class Paint extends Lavenza.Command {
     }
 
     // Get the color role that will be set.
-    let colorRoleToSet = this.findColorInCurrentGuild(color, resonance);
+    let colorRoleToSet = await this.findColorInCurrentGuild(color, resonance);
 
     // Check if the color exists.
     // If it doesn't, we can't set it. We'll tell the user that they must create it.
     if (colorRoleToSet === false) {
-      resonance.message.reply(`Seems like that color doesn't exist! You have to create it first. :O`)
-        .then((reply) => {
-          // Do nothing with reply.
-        }).catch(console.error);
+      await resonance.message.reply(`Seems like that color doesn't exist! You have to create it first. :O`);
       return false;
     }
 
     // Check if the member currently has a color.
-    let memberCurrentColorRole = this.getMemberColorInCurrentGuild(resonance.message.member);
+    let memberCurrentColorRole = await this.getMemberColorInCurrentGuild(resonance.message.member);
 
     // If someone tries to set the same color more than once...
     if (memberCurrentColorRole !== false && memberCurrentColorRole.id === colorRoleToSet.id) {
-      resonance.message.reply(`hey, you already have that color! I can't paint you with the same color twice. xD`)
-        .then((reply) => {
-          // Do nothing with reply.
-        }).catch(console.error);
+      await resonance.message.reply(`hey, you already have that color! I can't paint you with the same color twice. xD`);
       return false;
     }
 
     // Remove color if the member has one already.
     if (memberCurrentColorRole !== false) {
       // Remove color if one is set.
-      this.removeColorFromMember(resonance, resonance.message.member);
+      await this.removeColorFromMember(resonance, resonance.message.member);
     }
 
     // Add the color to the member.
-    resonance.message.member.addRole(colorRoleToSet)
-      .then(() => {
-        resonance.message.reply(`all done! You look great in ${colorRoleToSet.name.replace('.color', '')}! ;) :sparkles:`)
-          .then((reply) => {
-            // Do nothing with reply.
-          }).catch(console.error);
-      })
-      .catch((error) => {
-        resonance.message.author.send(`An error may have occurred with the setting of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't set roles that are above mine. :( You're going to have to move me to the top of your server role list!`);
-        console.error(error);
-      });
+    await resonance.message.member.addRole(colorRoleToSet).then(async () => {
+      await resonance.message.reply(`all done! You look great in ${colorRoleToSet.name.replace('.color', '')}! ;) :sparkles:`).catch((error) => {
+          resonance.message.author.send(`An error may have occurred with the setting of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't set roles that are above mine. :( You're going to have to move me to the top of your server role list!`);
+          console.error(error);
+        });
+    });
 
     return true;
 
@@ -186,10 +178,10 @@ export default class Paint extends Lavenza.Command {
    * @param {GuildMember} member
    *   Guild member to clean color from.
    */
-  static removeColorFromMember(resonance, member) {
+  static async removeColorFromMember(resonance, member) {
 
     // Fetch color role from the member.
-    let memberCurrentColorRole = this.getMemberColorInCurrentGuild(member);
+    let memberCurrentColorRole = await this.getMemberColorInCurrentGuild(member);
 
     // If there's no color to remove, then we can just return. Nothing to do.
     if (memberCurrentColorRole === false) {
@@ -199,14 +191,12 @@ export default class Paint extends Lavenza.Command {
     // Remove the role and send confirmation message.
     // Error message if something went wrong.
     // If an error happens, the bot may not have permissions to tamper with the member's roles.
-    member.removeRole(memberCurrentColorRole)
-      .then(() => {
-        resonance.message.channel.send(`You're all cleaned up! :sparkles:`);
-      })
-      .catch((error) => {
-        resonance.message.author.send(`An error may have occurred with the removing of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't set roles to users that have a role above mine. :( You're going to have to move me to the top of your server role list!`);
-        console.error(error);
-      });
+    await member.removeRole(memberCurrentColorRole).then(async () => {
+      await resonance.message.channel.send(`You're all cleaned up! :sparkles:`);
+    }).catch(error => {
+      resonance.message.author.send(`An error may have occurred with the removing of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't set roles to users that have a role above mine. :( You're going to have to move me to the top of your server role list!`);
+      console.error(error);
+    });
 
   }
 
@@ -216,18 +206,18 @@ export default class Paint extends Lavenza.Command {
    * @param  {Object} resonance  Data obtained from parsing the command.
    * @return {Object}       An object containing the HEX value of the color and the name of the color.
    */
-  static getColorData(input, resonance) {
+  static async getColorData(input, resonance) {
 
     // Try to get a color by name first if the input is a name.
     // If it's found, we'll return the values and mark it as existing.
-    let color = resonance.message.guild.roles.find(role => role.name === input + '.color');
+    let color = await resonance.message.guild.roles.find(role => role.name === input + '.color');
     if (color !== null) {
       return {hex: color.hexColor, name: color.name, exists: true};
     }
 
     // Try to get a color by role name if they enter the complete role name.
     // If it's found, we'll return the values and mark it as existing.
-    color = resonance.message.guild.roles.find(role => role.name === input);
+    color = await resonance.message.guild.roles.find(role => role.name === input);
     if (color !== null) {
       return {hex: color.hexColor, name: input, exists: true};
     }
@@ -243,10 +233,7 @@ export default class Paint extends Lavenza.Command {
 
     // Check if the hex color is valid.
     if (!this.isHexColor(colorHex)) {
-      resonance.message.reply(`That seems to be an invalid HEX value or color name!`)
-        .then((reply) => {
-          // Do nothing with reply.
-        }).catch(console.error);
+      await resonance.message.reply(`That seems to be an invalid HEX value or color name!`);
       return false;
     }
 
@@ -263,16 +250,16 @@ export default class Paint extends Lavenza.Command {
    * @param  {Object} resonance            Command data obtained from parsing.
    * @return {Role|Boolean|*}            Return the role object if found, else return FALSE.
    */
-  static findColorInCurrentGuild(colorData, resonance) {
+  static async findColorInCurrentGuild(colorData, resonance) {
 
     // Try to find the color through Hex Value.
-    let color = resonance.message.guild.roles.find(role => role.hexColor === colorData.hex);
+    let color = await resonance.message.guild.roles.find(role => role.hexColor === colorData.hex);
     if (color !== null) {
       return color;
     }
 
     // Try to find the color through name.
-    color = resonance.message.guild.roles.find(role => role.name === colorData.name);
+    color = await resonance.message.guild.roles.find(role => role.name === colorData.name);
     if (color !== null) {
       return color;
     }
@@ -285,27 +272,24 @@ export default class Paint extends Lavenza.Command {
   /**
    * Get color assigned to a member in the current guild.
    *
-   * @param {GuildMember} member
+   * @param {*} member
    *   Member discord object.
    *
    * @return {Role|*}
    *   Role Discord Object of the color found.
    */
-  static getMemberColorInCurrentGuild(member) {
+  static async getMemberColorInCurrentGuild(member) {
 
     // Variable to store the color role. The False by default.
     let color = undefined;
 
     // Loop into all roles of the given member and attempt to find a color role.
     // Color roles all have the '.color' suffix.
-    // noinspection JSUnresolvedVariable
-    member.roles.every((role) => {
+    await Promise.all(member.roles.map(role => {
       if (role.name.includes('.color')) {
         color = role;
-        return false; // This ends execution of the .every() function.
       }
-      return true;
-    });
+    }));
 
     // Return whatever is in the color variable at this point.
     // Will be false if none were found.
@@ -318,37 +302,30 @@ export default class Paint extends Lavenza.Command {
    * @param  {Object} resonance
    *   Data from the parsed command.
    */
-  static listColorRolesInGuild(resonance) {
+  static async listColorRolesInGuild(resonance) {
 
     // Variable that will store the message to be sent, listing all color roles in the guild.
     let list_msg = `Here is the list of all colors in this server:\n\n`;
 
     // Loop in the guild's roles and check for all color roles.
-    resonance.message.guild.roles.every((role) => {
-
+    await Promise.all(resonance.message.guild.roles.map(async role => {
       // If a color role is found, we'll append it to the list.
       if (role.name.includes('.color')) {
         list_msg += `  - ${role.name.replace('.color', '')} \`${role.hexColor}\`\n`;
       }
-
-      return true;
-
-    });
+    }));
 
     // Send the text to the channel.
     // We add a delay for some flavor. Don't actually need it.
-    resonance.message.channel.send(`_Scanning available colors in this server..._`)
-      .then(() => {
-        resonance.message.channel.startTyping(1);
-        Lavenza.wait(3).then(() => {
-          if (list_msg === `Here is the list of all colors in this server:\n\n`) {
-            resonance.message.channel.send(`There are no colors in this server! Better start creating some. :)`);
-          } else {
-            resonance.message.channel.send(list_msg);
-          }
-          resonance.message.channel.stopTyping();
-        });
-      });
+    await resonance.message.channel.send(`_Scanning available colors in this server..._`);
+    await resonance.client.typeFor(1, resonance.channel);
+    await Lavenza.wait(3);
+    if (list_msg === `Here is the list of all colors in this server:\n\n`) {
+      await resonance.message.channel.send(`There are no colors in this server! Better start creating some. :)`);
+    } else {
+      await resonance.message.channel.send(list_msg);
+    }
+    resonance.message.channel.stopTyping();
 
   }
 
@@ -358,22 +335,17 @@ export default class Paint extends Lavenza.Command {
    * @param {Object} resonance
    *   Data from the parsed command.
    */
-  static deleteAllColorRoles(resonance) {
+  static async deleteAllColorRoles(resonance) {
 
     // Loops into the roles of the guild and deletes all color roles.
-    resonance.message.guild.roles.every((role) => {
+    await Promise.all(resonance.message.guild.roles.map(async role => {
       if (role.name.includes('.color')) {
-        role.delete()
-          .then(r => console.log(`Deleted color role ${r}`))
-          .catch(console.error);
+        await role.delete().catch(Lavenza.pocket);
       }
-      return true;
-    });
+    }));
 
-    resonance.message.reply(`I have cleared all color roles from the server. :)`)
-      .then((reply) => {
-        // Do nothing with reply.
-      }).catch(console.error);
+    await resonance.message.reply(`I have cleared all color roles from the server. :)`);
+
   }
 
   /**
