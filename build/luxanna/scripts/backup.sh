@@ -9,5 +9,8 @@
 #
 
 # Make a backup folder.
+mkdir "../../../app/backup"
+mkdir "../../../app/backup/$@"
 mkdir "../../../app/backup/$@"
 scp -r aigachu@aigachu.com:~/apps/Lavenza-II/app/database "../../../app/backup/$@"
+scp -r aigachu@aigachu.com:~/apps/Lavenza-II/app/lang "../../../app/backup/$@"

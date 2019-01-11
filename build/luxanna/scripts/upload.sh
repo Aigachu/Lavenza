@@ -9,5 +9,5 @@
 # Delete current database.
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; rm -rf database; mkdir database; touch database/.gitkeep'
 
-# Copy config & .env.
+# Copy database from local setup to Luxanna.
 scp -r ../../../app/database aigachu@aigachu.com:~/apps/Lavenza-II/app
