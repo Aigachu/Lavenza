@@ -23,7 +23,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
     this.msg = this.resonance.message;
     this.guild = this.resonance.message.guild;
     this.channel = this.resonance.message.channel;
-    this.clientConfig = await Lavenza.Gestalt.get(`/bots/${this.bot.id}/clients/discord`).catch(Lavenza.stop);
+    this.clientConfig = await Lavenza.Gestalt.get(`/bots/${this.bot.id}/clients/discord`);
     this.operatorsToValidate = [...this.operators, ...this.masters, ...this.gods];
     this.mastersToValidate = [...this.masters, ...this.gods];
 
@@ -44,7 +44,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
   async authorize() {
 
     // First, we run through the default authorization function from the parent class.
-    let defaultAuth = await super.authorize().catch(Lavenza.stop);
+    let defaultAuth = await super.authorize();
     if (!defaultAuth) {
       return false;
     }
@@ -82,7 +82,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       }).then(async message => {
 
         // Delete the message after 30 seconds to avoid clogging chat.
-        await Lavenza.wait(30).catch(Lavenza.stop);
+        await Lavenza.wait(30);
         this.resonance.message.delete();
         message.delete().catch(Lavenza.continue);
 
@@ -123,7 +123,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
   async validateCommandArguments() {
 
     // Run the parent one first.
-    let defaults = await super.validateCommandArguments().catch(Lavenza.stop);
+    let defaults = await super.validateCommandArguments();
     if (!defaults) {
       return false;
     }
@@ -180,7 +180,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       }).then(async message => {
 
         // Delete error message after 30 seconds to avoid clogging channels.
-        await Lavenza.wait(30).catch(Lavenza.stop);
+        await Lavenza.wait(30);
         this.resonance.message.delete();
         message.delete().catch(Lavenza.continue);
 

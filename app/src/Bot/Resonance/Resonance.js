@@ -115,14 +115,19 @@ export default class Resonance {
 
     // If a locale is not set in the parameters, we need to determine what it is using the Resonance.
     if (params.locale === undefined) {
-      params = await this.i18n(params).catch(Lavenza.stop);
+      params = await this.i18n(params);
+    }
+
+    // If a locale is STILL not defined after the above code, we set it to the default one set to the bot.
+    if (params.locale === undefined) {
+      params = await this.i18n(params);
     }
 
     // Now, using the information from the parameters, we fetch necessary translations.
-    let content = await Lavenza.__({phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED').catch(Lavenza.stop);
+    let content = await Lavenza.__({phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED');
 
     // And finally we can send the message to the destination.
-    return await this.doSend(destination, content).catch(Lavenza.stop);
+    return await this.doSend(destination, content);
 
   }
 

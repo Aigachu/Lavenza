@@ -26,7 +26,7 @@ export default class TwitchNotify extends Lavenza.Talent {
   static async build(config) {
 
     // Run default builders.
-    await super.build(config).catch(Lavenza.stop);
+    await super.build(config);
 
     // Initialize variables if needed.
     this.guilds = {};
@@ -40,7 +40,7 @@ export default class TwitchNotify extends Lavenza.Talent {
   static async initialize(bot) {
 
     // Run default initializer to create database collections.
-    await super.initialize(bot).catch(Lavenza.stop);
+    await super.initialize(bot);
 
     // Build Configurations and store them in the database.
     this.guildConfigStorages[bot.id] = this.databases[bot.id] + `/guilds`;
@@ -65,9 +65,9 @@ export default class TwitchNotify extends Lavenza.Talent {
       }
 
       // Save guild configurations.
-      await this.save(bot).catch(Lavenza.stop);
+      await this.save(bot);
 
-    })).catch(Lavenza.stop);
+    }));
 
 
     // Set the pinger.
@@ -115,10 +115,10 @@ export default class TwitchNotify extends Lavenza.Talent {
       }
 
       // If we pass all the checks, we run the actual checks with the main function.
-      await this.ttvann(this.guilds[bot.id][guild.id].ttvann, bot).catch(Lavenza.stop);
+      await this.ttvann(this.guilds[bot.id][guild.id].ttvann, bot);
 
 
-    })).catch(Lavenza.stop);
+    }));
   }
 
   /**
@@ -139,13 +139,13 @@ export default class TwitchNotify extends Lavenza.Talent {
 
       // Initialize and obtain data from Twitch.
       let data;
-      data = await this.getUserStream(twitchUser).catch(Lavenza.stop);
+      data = await this.getUserStream(twitchUser);
 
       // If the data is null, this means the stream is definitely not live.
       // We fire the function to assure removal the stream from the list of live channels and save the configuration.
       if (data.stream === null) {
-        await this.ttvannRemoveStreamLive(guildConfig.id, twitchUser, bot).catch(Lavenza.stop);
-        await this.save(bot).catch(Lavenza.stop);
+        await this.ttvannRemoveStreamLive(guildConfig.id, twitchUser, bot);
+        await this.save(bot);
         return;
       }
 
@@ -156,9 +156,9 @@ export default class TwitchNotify extends Lavenza.Talent {
       }
 
       // If we reach here, then it's assumed that we should announce the stream. We hit the fire function.
-      await this.ttvannFire(guildConfig, data.stream, twitchUser, bot).catch(Lavenza.stop);
+      await this.ttvannFire(guildConfig, data.stream, twitchUser, bot);
 
-    })).catch(Lavenza.stop);
+    }));
   }
 
   /**
@@ -206,8 +206,8 @@ export default class TwitchNotify extends Lavenza.Talent {
 
     // We mark this stream as live in the configuration so it doesn't get announced 1000 times.
     // Then, we save the configuration to the database.
-    await this.ttvannAddStreamLive(guildConfig.id, streamUser, bot).catch(Lavenza.stop);
-    await this.save(bot).catch(Lavenza.stop);
+    await this.ttvannAddStreamLive(guildConfig.id, streamUser, bot);
+    await this.save(bot);
   }
 
   /**
@@ -231,7 +231,7 @@ export default class TwitchNotify extends Lavenza.Talent {
 
     // If not, we simply add it to the array and save the configuration.
     this.guilds[bot.id][guildId].ttvann.streams.push(streamUser);
-    await this.save(bot).catch(Lavenza.stop);
+    await this.save(bot);
   }
 
   /**
@@ -257,7 +257,7 @@ export default class TwitchNotify extends Lavenza.Talent {
 
     // If not, we simply add it to the array and save the configuration.
     this.guilds[bot.id][guildId].ttvann.live.push(streamUser);
-    await this.save(bot).catch(Lavenza.stop);
+    await this.save(bot);
   }
 
   /**
@@ -276,7 +276,7 @@ export default class TwitchNotify extends Lavenza.Talent {
 
     // We simply add this channel to the configuration
     this.guilds[bot.id][guildId].ttvann.ann_channel = channelId;
-    await this.save(bot).catch(Lavenza.stop);
+    await this.save(bot);
 
   }
 
@@ -308,7 +308,7 @@ export default class TwitchNotify extends Lavenza.Talent {
     }
 
     // Finally, we save configurations.
-    await this.save(bot).catch(Lavenza.stop);
+    await this.save(bot);
   }
 
   /**
@@ -334,7 +334,7 @@ export default class TwitchNotify extends Lavenza.Talent {
     }
 
     // Finally, we save configurations.
-    await this.save(bot).catch(Lavenza.stop);
+    await this.save(bot);
   }
 
   /**
@@ -352,7 +352,7 @@ export default class TwitchNotify extends Lavenza.Talent {
   static async enable(guild, bot) {
     this.guilds[bot.id][guild['id']].ttvann.enabled = true;
     console.log(this.guilds[bot.id][guild['id']]);
-    await this.save(bot).catch(Lavenza.stop);
+    await this.save(bot);
   }
 
   /**
@@ -369,7 +369,7 @@ export default class TwitchNotify extends Lavenza.Talent {
    */
   static async disable(guild, bot) {
     this.guilds[bot.id][guild['id']].ttvann.enabled = false;
-    await this.save(bot).catch(Lavenza.stop);
+    await this.save(bot);
   }
 
   /**
@@ -390,7 +390,7 @@ export default class TwitchNotify extends Lavenza.Talent {
    * Save configurations to the database using Gestalt.
    */
   static async save(bot) {
-    await Lavenza.Gestalt.post(this.guildConfigStorages[bot.id], this.guilds[bot.id]).catch(Lavenza.stop);
+    await Lavenza.Gestalt.post(this.guildConfigStorages[bot.id], this.guilds[bot.id]);
   }
 
   /**

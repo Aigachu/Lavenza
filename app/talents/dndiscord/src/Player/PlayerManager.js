@@ -38,9 +38,9 @@ export default class PlayerManager extends EntityManager {
    * @returns {Promise<void>}
    */
   static async register(data) {
-    Lavenza.Gestalt.createCollection(this.repositoryPath + '/' + data.id).catch(Lavenza.stop);
-    Lavenza.Gestalt.post(this.repositoryPath + '/' + data.id + '/profile', data).catch(Lavenza.stop);
-    Lavenza.Gestalt.createCollection(this.repositoryPath + '/' + data.id + '/characters').catch(Lavenza.stop);
+    Lavenza.Gestalt.createCollection(this.repositoryPath + '/' + data.id);
+    Lavenza.Gestalt.post(this.repositoryPath + '/' + data.id + '/profile', data);
+    Lavenza.Gestalt.createCollection(this.repositoryPath + '/' + data.id + '/characters');
   }
 
 }

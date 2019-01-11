@@ -48,7 +48,7 @@ export default class Chronicler extends StorageService {
       protocol: protocol,
       endpoint: endpoint,
       payload: payload,
-    }).catch(Lavenza.stop);
+    });
   }
 
   /**
@@ -65,7 +65,7 @@ export default class Chronicler extends StorageService {
     let directoryPath = this.root + endpoint;
 
     // Await creation of a directory at the path.
-    await Lavenza.Akechi.createDirectory(directoryPath).catch(Lavenza.stop);
+    await Lavenza.Akechi.createDirectory(directoryPath);
 
   }
 
@@ -79,13 +79,13 @@ export default class Chronicler extends StorageService {
     // First we check if the requested path is a file. If it is, we await the returning of its values.
     if (Lavenza.Akechi.fileExists(endpoint + '.yml')) {
       let item = new Item(endpoint + '.yml');
-      return await item.values().catch(Lavenza.stop);
+      return await item.values();
     }
 
     // If it's not a file, then we'll check if it's a directory. If so, await return of its values.
     if (Lavenza.Akechi.isDirectory(endpoint)) {
       let collection = new Collection(endpoint);
-      return await collection.values().catch(Lavenza.stop);
+      return await collection.values();
     }
 
     // If nothing was found, return an empty object.
@@ -103,7 +103,7 @@ export default class Chronicler extends StorageService {
   static async post(endpoint, payload) {
 
     // We simply create a YAML file. We await this process.
-    await Lavenza.Akechi.writeYamlFile(endpoint, payload).catch(Lavenza.stop);
+    await Lavenza.Akechi.writeYamlFile(endpoint, payload);
 
   }
 
@@ -117,7 +117,7 @@ export default class Chronicler extends StorageService {
   static async update(endpoint, payload) {
 
     // First, we use Chronicler's get method to get the data.
-    let data = await this.get(endpoint).catch(Lavenza.stop);
+    let data = await this.get(endpoint);
 
     // If no data was found, make sure the data is an empty object.
     if (Lavenza.isEmpty(data)) {
@@ -128,11 +128,11 @@ export default class Chronicler extends StorageService {
     let updatedData = lodash.merge(data, payload);
 
     // Finally, we post the new merged data back to the same endpoint.
-    await this.post(endpoint, updatedData).catch(Lavenza.stop);
+    await this.post(endpoint, updatedData);
 
     // We return the newly merged data.
     // We do another request here. The idea is we want to make sure the data in the file is right.
     // Might change this in the future since the update request actually does 3 requests...But eh.
-    return await this.get(endpoint).catch(Lavenza.stop);
+    return await this.get(endpoint);
   }
 }

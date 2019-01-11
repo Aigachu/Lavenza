@@ -27,7 +27,7 @@ export default class Character extends Creature {
   }
 
   static async get(id) {
-    return await super.get(CreatureTypes.Character, id).catch(Lavenza.stop);
+    return await super.get(CreatureTypes.Character, id);
   }
 
   /**

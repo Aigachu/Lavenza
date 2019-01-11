@@ -298,7 +298,7 @@ export default class Gestalt {
   static async get(endpoint) {
 
     // Await GET request of the Storage Service.
-    return await this.request({protocol: 'get', endpoint: endpoint}).catch(Lavenza.stop);
+    return await this.request({protocol: 'get', endpoint: endpoint});
 
   }
 
@@ -316,7 +316,7 @@ export default class Gestalt {
   static async post(endpoint, payload) {
 
     // Await POST request of the Storage Service.
-    return await this.request({protocol: 'post', endpoint: endpoint, payload: payload}).catch(Lavenza.stop);
+    return await this.request({protocol: 'post', endpoint: endpoint, payload: payload});
 
   }
 
@@ -334,7 +334,7 @@ export default class Gestalt {
   static async update(endpoint, payload) {
 
     // Await UPDATE request of the Storage Service.
-    return await this.request({protocol: 'update', endpoint: endpoint, payload: payload}).catch(Lavenza.stop);
+    return await this.request({protocol: 'update', endpoint: endpoint, payload: payload});
 
   }
 
@@ -349,7 +349,7 @@ export default class Gestalt {
   static async delete(endpoint) {
 
     // Await DELETE request of the Storage Service.
-    return await this.request({protocol: 'delete', endpoint: endpoint}).catch(Lavenza.stop);
+    return await this.request({protocol: 'delete', endpoint: endpoint});
 
   }
 

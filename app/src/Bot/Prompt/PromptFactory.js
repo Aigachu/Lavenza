@@ -44,7 +44,7 @@ export default class PromptFactory {
     }
 
     // Whatever the prompt, fire the request.
-    await prompt.prompt().catch(Lavenza.stop);
+    await prompt.prompt();
 
     return prompt;
   }

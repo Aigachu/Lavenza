@@ -23,7 +23,7 @@ export default class Gestalt extends Lavenza.Command {
    */
   static async build(config, talent) {
 
-    await super.build(config, talent).catch(Lavenza.stop);
+    await super.build(config, talent);
 
     this.protocols = [
       'get',
@@ -50,7 +50,7 @@ export default class Gestalt extends Lavenza.Command {
 
     switch (protocol) {
       case 'get': {
-        let getResult = await Lavenza.Gestalt.get(endpoint).catch(Lavenza.stop);
+        let getResult = await Lavenza.Gestalt.get(endpoint);
 
         if (Lavenza.isEmpty(getResult)) {
           resonance.message.reply('No data found for that path, sadly. :(');

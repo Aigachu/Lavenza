@@ -22,11 +22,11 @@ export default class NewGame {
   static async handle(resonance, core) {
 
     // Get the player identity of the Discord user that sent the resonance.
-    let player = await core.getPlayerData(resonance.message.author.id).catch(Lavenza.stop);
+    let player = await core.getPlayerData(resonance.message.author.id);
 
     // If player data doesn't exists, we exit the process here.
     if (Lavenza.isEmpty(player)) {
-      await resonance.message.reply(`Hmm, it doesn't seem like you have an account. You may want to create one with the \`--register\` option! If this is an error, make sure to contact Aiga directly. :)`).catch(Lavenza.stop);
+      await resonance.message.reply(`Hmm, it doesn't seem like you have an account. You may want to create one with the \`--register\` option! If this is an error, make sure to contact Aiga directly. :)`);
       return;
     }
 
@@ -42,29 +42,29 @@ export default class NewGame {
       await resonance.client.typeFor(2, conversationChannel);
 
       // Tell the user we'll take this to the DMs.
-      await resonance.message.reply(`Ah you want to create a character? Awesome! I'll dm you in just a second. ;)`).catch(Lavenza.stop);
+      await resonance.message.reply(`Ah you want to create a character? Awesome! I'll dm you in just a second. ;)`);
 
       // Wait 5 seconds.
-      await Lavenza.wait(5).catch(Lavenza.stop);
+      await Lavenza.wait(5);
 
       // Create a DMChannel between the bot and the user (to make sure it exists).
-      await resonance.message.author.createDM().catch(Lavenza.stop);
+      await resonance.message.author.createDM();
 
       // Set the conversation channel.
       conversationChannel = resonance.message.author.dmChannel;
     }
 
     // Now we enter the character creation process.
-    await conversationChannel.send(`Uhhh! This command actually isn't ready yet...(Aiga come on...Hurry up!) :sweat_smile:`).catch(Lavenza.stop);
+    await conversationChannel.send(`Uhhh! This command actually isn't ready yet...(Aiga come on...Hurry up!) :sweat_smile:`);
 
     // Make her type for a bit.
     await resonance.client.typeFor(2, conversationChannel);
 
-    await conversationChannel.send(`Ummm...In the meantime here's your player data? I guess?`).catch(Lavenza.stop);
+    await conversationChannel.send(`Ummm...In the meantime here's your player data? I guess?`);
 
     await resonance.bot.getClient(Lavenza.ClientTypes.Discord).sendEmbed(conversationChannel, {
-      description: `\`\`\`${JSON.stringify(await player.data().catch(Lavenza.stop), null, '\t')}\`\`\``
-    }).catch(Lavenza.stop);
+      description: `\`\`\`${JSON.stringify(await player.data(), null, '\t')}\`\`\``
+    });
 
   }
 }

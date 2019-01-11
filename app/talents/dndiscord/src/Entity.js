@@ -29,7 +29,7 @@ export default class Entity {
    * @returns {Promise<Object>}
    */
   async data() {
-    return await Lavenza.Gestalt.get(`${this.dataPath}`).catch(Lavenza.stop);
+    return await Lavenza.Gestalt.get(`${this.dataPath}`);
   }
 
   /**
@@ -41,6 +41,6 @@ export default class Entity {
    * @returns {Promise<void>}
    */
   async update(data) {
-    await Lavenza.Gestalt.post(`${this.dataPath}`, data).catch(Lavenza.stop);
+    await Lavenza.Gestalt.post(`${this.dataPath}`, data);
   }
 }

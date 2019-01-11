@@ -37,11 +37,11 @@ export default class Register {
 
     // If a player already exists for this user, we should tell them this.
     // Get the player identity of the Discord user that sent the resonance.
-    let playerData = await core.getPlayerData(resonance.message.author.id).catch(Lavenza.stop);
+    let playerData = await core.getPlayerData(resonance.message.author.id);
 
     // If player data already exists, we exit the process here.
     if (!Lavenza.isEmpty(playerData)) {
-      await resonance.message.reply(`Hey, you already have an account! You don't need to register again.`).catch(Lavenza.stop);
+      await resonance.message.reply(`Hey, you already have an account! You don't need to register again.`);
       return;
     }
 
@@ -55,10 +55,10 @@ export default class Register {
       await resonance.client.typeFor(2, conversationChannel);
 
       // Tell the user we'll take this to the DMs.
-      await resonance.message.reply(`Ooh, you wanna register for DNDiscord? Alright! I'll dm you in a second!`).catch(Lavenza.stop);
+      await resonance.message.reply(`Ooh, you wanna register for DNDiscord? Alright! I'll dm you in a second!`);
 
       // Wait 5 seconds.
-      await Lavenza.wait(5).catch(Lavenza.stop);
+      await Lavenza.wait(5);
 
       // Create a DMChannel between the bot and the user (to make sure it exists).
       await resonance.message.author.createDM().catch(Lavenza.stop);

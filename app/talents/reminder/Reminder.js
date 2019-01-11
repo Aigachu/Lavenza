@@ -25,7 +25,7 @@ export default class Reminder extends Lavenza.Talent {
   static async build(config) {
 
     // Run default builders.
-    await super.build(config).catch(Lavenza.stop);
+    await super.build(config);
 
   }
 
@@ -35,7 +35,7 @@ export default class Reminder extends Lavenza.Talent {
   static async initialize(bot) {
 
     // Run default initializer to create database collections.
-    await super.initialize(bot).catch(Lavenza.stop);
+    await super.initialize(bot);
 
     // Initialize a couple of variables.
     this.reminders = this.reminders || {};
@@ -57,7 +57,7 @@ export default class Reminder extends Lavenza.Talent {
     // The pinger is basically a function that will run every *second* to check if a reminder must be
     // fired. This is intensive, I know, but it's the best (first) way I thought of doing this.
     setInterval(() => {
-      this.ping(bot).catch(Lavenza.stop);
+      this.ping(bot);
     }, 1000);
 
   }
@@ -104,7 +104,7 @@ export default class Reminder extends Lavenza.Talent {
       }
 
       // Save reminders to the database.
-      await this.save(bot).catch(Lavenza.stop);
+      await this.save(bot);
 
     }
 
@@ -197,7 +197,7 @@ export default class Reminder extends Lavenza.Talent {
     message.channel.send(confirmation);
 
     // Save reminders to database.
-    this.save(bot).catch(Lavenza.stop);
+    this.save(bot);
 
   }
 
@@ -205,7 +205,7 @@ export default class Reminder extends Lavenza.Talent {
    * Save reminders to the database.
    */
   static async save(bot) {
-    await Lavenza.Gestalt.post(this.reminderStorages[bot.id], this.reminders[bot.id]).catch(Lavenza.stop);
+    await Lavenza.Gestalt.post(this.reminderStorages[bot.id], this.reminders[bot.id]);
   }
 
   /**
@@ -301,6 +301,6 @@ export default class Reminder extends Lavenza.Talent {
    */
   static clear(user_id, bot) {
     delete this.reminders[bot.id][user_id];
-    this.save(bot).catch(Lavenza.stop);
+    this.save(bot);
   }
 }

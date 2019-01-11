@@ -58,10 +58,10 @@ export default class Prompt {
       this.ee.emit('prompt-response');
 
       // Fire the callback.
-      this.onResponse(resonance, this).catch(Lavenza.stop);
+      this.onResponse(resonance, this);
 
       // Disable this prompt since it's resolved.
-      this.disable().catch(Lavenza.stop);
+      this.disable();
     }
   }
 
@@ -88,7 +88,7 @@ export default class Prompt {
         // Check if the prompt still exists after the time has elapsed.
         if (this.bot.prompts.includes(this)) {
           // If the lifespan depletes, we remove the prompt.
-          await this.disable().catch(Lavenza.stop);
+          await this.disable();
           reject('Prompt failed to complete in time.');
         }
 

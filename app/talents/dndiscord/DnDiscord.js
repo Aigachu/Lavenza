@@ -25,11 +25,11 @@ export default class DnDiscord extends Lavenza.Talent {
 
     // Run default builders.
     /** @catch Stop execution. */
-    await super.build(config).catch(Lavenza.stop);
+    await super.build(config);
 
     // Run builders for our Managers.
-    await PlayerManager.build().catch(Lavenza.stop);
-    await CreatureManager.build().catch(Lavenza.stop);
+    await PlayerManager.build();
+    await CreatureManager.build();
 
   }
 
@@ -40,15 +40,15 @@ export default class DnDiscord extends Lavenza.Talent {
 
     // Run default initializer to create database collections.
     /** @catch Stop execution. */
-    await super.initialize(bot).catch(Lavenza.stop);
+    await super.initialize(bot);
 
     // Run database bootstraps.
     /** @catch Stop execution. */
-    await this.bootstrap().catch(Lavenza.stop);
+    await this.bootstrap();
 
     // Run initialization handlers for child classes.
-    await PlayerManager.initialize(this).catch(Lavenza.stop);
-    await CreatureManager.initialize(this).catch(Lavenza.stop);
+    await PlayerManager.initialize(this);
+    await CreatureManager.initialize(this);
 
   }
 
@@ -58,7 +58,7 @@ export default class DnDiscord extends Lavenza.Talent {
    * @returns {Promise<*>}
    */
   static async getPlayerData(id) {
-    return await PlayerManager.get(id).catch(Lavenza.stop);
+    return await PlayerManager.get(id);
   }
 
   /**
@@ -67,7 +67,7 @@ export default class DnDiscord extends Lavenza.Talent {
    * @returns {Promise<void>}
    */
   static async registerPlayer(data) {
-    await PlayerManager.register(data).catch(Lavenza.stop);
+    await PlayerManager.register(data);
   }
 
   /**
@@ -78,8 +78,8 @@ export default class DnDiscord extends Lavenza.Talent {
   static async bootstrap() {
 
     // Run initialization handlers for child classes.
-    await PlayerManager.bootstrap(this).catch(Lavenza.stop);
-    await CreatureManager.bootstrap(this).catch(Lavenza.stop);
+    await PlayerManager.bootstrap(this);
+    await CreatureManager.bootstrap(this);
 
   }
 }

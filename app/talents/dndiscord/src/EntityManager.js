@@ -38,7 +38,7 @@ export default class EntityManager {
    * @returns {Promise<Object>}
    */
   static async data(id) {
-    return await Lavenza.Gestalt.get(`/${this.repositoryPath}/${id}`).catch(Lavenza.stop);
+    return await Lavenza.Gestalt.get(`/${this.repositoryPath}/${id}`);
   }
 
   /**
@@ -55,7 +55,7 @@ export default class EntityManager {
     }
 
     // Load save data from the database.
-    let entity = await this.load(id).catch(Lavenza.stop);
+    let entity = await this.load(id);
 
     // If the character save data is empty, we simply return undefined.
     if (Lavenza.isEmpty(entity)) {
@@ -74,7 +74,7 @@ export default class EntityManager {
   static async load(id) {
 
     // Load the data from the database.w
-    let data = await Lavenza.Gestalt.get(`${this.repositoryPath}/${id}`).catch(Lavenza.stop);
+    let data = await Lavenza.Gestalt.get(`${this.repositoryPath}/${id}`);
 
     // If the data is null, we'll return nothing.
     if (Lavenza.isEmpty(data)) {
@@ -116,7 +116,7 @@ export default class EntityManager {
 
     // Create repository if it doesn't already exist.
     /** @catch Stop execution. */
-    await Lavenza.Gestalt.createCollection(this.repositoryPath).catch(Lavenza.stop);
+    await Lavenza.Gestalt.createCollection(this.repositoryPath);
 
   }
 }

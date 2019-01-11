@@ -29,7 +29,7 @@ export default class Item {
   async values() {
 
     // We expect a yml. We just reach the path.
-    return await Lavenza.Akechi.readYamlFile(this.path).catch(Lavenza.stop);
+    return await Lavenza.Akechi.readYamlFile(this.path);
 
   }
 }

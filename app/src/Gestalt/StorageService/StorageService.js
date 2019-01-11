@@ -41,7 +41,7 @@ export default class StorageService {
       case 'get': {
 
         // Await GET request of the Storage Service.
-        return await this.get(endpoint).catch(Lavenza.stop);
+        return await this.get(endpoint);
 
       }
 
@@ -49,7 +49,7 @@ export default class StorageService {
       case 'post': {
 
         // Await POST request of the Storage Service.
-        return await this.post(endpoint, payload).catch(Lavenza.stop);
+        return await this.post(endpoint, payload);
 
       }
 
@@ -57,7 +57,7 @@ export default class StorageService {
       case 'update': {
 
         // Await UPDATE request of the Storage Service.
-        return await this.update(endpoint, payload).catch(Lavenza.stop);
+        return await this.update(endpoint, payload);
 
       }
 
@@ -66,7 +66,7 @@ export default class StorageService {
       case 'delete': {
 
         // Await DELETE request of the Storage Service.
-        return await this.delete(endpoint).catch(Lavenza.stop);
+        return await this.delete(endpoint);
 
       }
     }

@@ -27,7 +27,7 @@ export default class Monster extends Creature {
   }
 
   static async get(id) {
-    return await super.get(CreatureTypes.Monster, id).catch(Lavenza.stop);
+    return await super.get(CreatureTypes.Monster, id);
   }
 
   /**
@@ -39,7 +39,7 @@ export default class Monster extends Creature {
   static async initialize(talent) {
 
     // Run Creature class initialize function.
-    await super.initialize(talent).catch(Lavenza.stop);
+    await super.initialize(talent);
 
     // Overwrite the repository for this class to set it to the proper one.
     this.repository = this.repository + '/' + CreatureTypes.Monster + 's';
