@@ -226,7 +226,7 @@ export default class TwitchNotify extends Lavenza.Talent {
 
     // If the stream is already in the configuration, we shouldn't do anything.
     if (this.guilds[bot.id][guildId].ttvann.streams.includes(streamUser)) {
-      Lavenza.throw('Stream already set for announcements in this guild.');
+      await Lavenza.throw('Stream already set for announcements in this guild.');
     }
 
     // If not, we simply add it to the array and save the configuration.

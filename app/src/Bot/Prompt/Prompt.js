@@ -52,7 +52,7 @@ export default class Prompt {
   async listen(resonance) {
 
     // We check the condition defined in this prompt. If it passes, we resolve it.
-    if (this.condition(resonance)) {
+    if (await this.condition(resonance)) {
 
       // Emit the event that will alert the Prompt that it should be resolved.
       this.ee.emit('prompt-response');
@@ -118,8 +118,8 @@ export default class Prompt {
    *
    * This is an abstract method.
    */
-  condition() {
-    Lavenza.throw('This method should not have been called. A Prompt acts differently depending on the client it is created for. Please create a Prompt that applies to the client you are in when calling this.');
+  async condition() {
+    await Lavenza.throw('This method should not have been called. A Prompt acts differently depending on the client it is created for. Please create a Prompt that applies to the client you are in when calling this.');
   }
 
   /**
@@ -130,6 +130,6 @@ export default class Prompt {
    * @returns {Promise<void>}
    */
   async prompt() {
-    Lavenza.throw('This method should not have been called. A Prompt acts differently depending on the client it is created for. Please create a Prompt that applies to the client you are in when calling this.');
+    await Lavenza.throw('This method should not have been called. A Prompt acts differently depending on the client it is created for. Please create a Prompt that applies to the client you are in when calling this.');
   }
 }

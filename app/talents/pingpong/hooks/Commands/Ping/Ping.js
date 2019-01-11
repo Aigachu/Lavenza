@@ -25,7 +25,7 @@ export default class Ping extends Lavenza.Command {
   static async build(config, talent) {
 
     // The build function must always run the parent's build function! Don't remove this line.
-    await super.build(config, talent).catch(Lavenza.stop);
+    await super.build(config, talent);
 
     // Example of setting a property to use across the command.
     this.pingMessage = 'Pong!'
@@ -36,7 +36,6 @@ export default class Ping extends Lavenza.Command {
    * @inheritDoc
    */
   static execute(resonance) {
-    console.log(resonance.message.author.id);
     resonance.reply('Pong! Here is your ID: {{id}}', {id: resonance.message.author.id});
   }
 

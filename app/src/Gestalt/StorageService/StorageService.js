@@ -76,7 +76,7 @@ export default class StorageService {
    * Every storage service is a static singleton. This function will handle the preparations.
    */
   static async build() {
-    Lavenza.throw(`Tried to run abstract method build(). You must implement a build() method in the {{class}} class.`, {class: this.constructor});
+    await Lavenza.throw(`Tried to run abstract method build(). You must implement a build() method in the {{class}} class.`, {class: this.constructor});
   }
 
   /**
@@ -97,7 +97,7 @@ export default class StorageService {
   static async createCollection(endpoint, payload) {
     console.log(endpoint);
     console.log(payload);
-    Lavenza.throw(`Tried to run abstract method createCollection(). You must implement a createCollection() method in the {{class}} class.`, {class: this.constructor});
+    await Lavenza.throw(`Tried to run abstract method createCollection(). You must implement a createCollection() method in the {{class}} class.`, {class: this.constructor});
   }
 
   /**
@@ -113,7 +113,7 @@ export default class StorageService {
    */
   static async get(endpoint) {
     console.log(endpoint);
-    Lavenza.throw(`Tried to run abstract method get(). You must implement a get() method in the {{class}} class.`, {class: this.constructor});
+    await Lavenza.throw(`Tried to run abstract method get(). You must implement a get() method in the {{class}} class.`, {class: this.constructor});
   }
 
   /**
@@ -132,7 +132,7 @@ export default class StorageService {
   static async post(endpoint, payload) {
     console.log(endpoint);
     console.log(payload);
-    Lavenza.throw(`Tried to run abstract method post(). You must implement a post() method in the {{class}} class.`, {class: this.constructor});
+    await Lavenza.throw(`Tried to run abstract method post(). You must implement a post() method in the {{class}} class.`, {class: this.constructor});
   }
 
   /**
@@ -151,7 +151,7 @@ export default class StorageService {
   static async update(endpoint, payload) {
     console.log(endpoint);
     console.log(payload);
-    Lavenza.throw(`Tried to run abstract method update(). You must implement a update() method in the {{class}} class.`, {class: this.constructor});
+    await Lavenza.throw(`Tried to run abstract method update(). You must implement a update() method in the {{class}} class.`, {class: this.constructor});
   }
 
   /**
@@ -166,7 +166,7 @@ export default class StorageService {
    */
   static async delete(endpoint) {
     console.log(endpoint);
-    Lavenza.throw(`Tried to run abstract method delete(). You must implement a delete() method in the {{class}} class.`, {class: this.constructor});
+    await Lavenza.throw(`Tried to run abstract method delete(). You must implement a delete() method in the {{class}} class.`, {class: this.constructor});
   }
 
 }

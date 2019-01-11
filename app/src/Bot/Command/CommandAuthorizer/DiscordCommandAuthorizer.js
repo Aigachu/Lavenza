@@ -56,19 +56,19 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
 
     // At this point, if the configuration is empty, we have no checks to make, so we let it pass.
     if (Lavenza.isEmpty(this.commandClientConfig)) {
-      Lavenza.warn('No configuration was found for this command...Is this normal?...');
+      await Lavenza.warn('No configuration was found for this command...Is this normal?...');
       return true;
     }
 
     // Check if the command is activated.
     if (!this.validateActivation()) {
-      Lavenza.warn('activation validation failed');
+      await Lavenza.warn('activation validation failed');
       return false;
     }
 
     // Check if user is allowed to use this command.
     if (!this.validateUser()) {
-      Lavenza.warn('user validation failed');
+      await Lavenza.warn('user validation failed');
       return false;
     }
 
@@ -88,25 +88,25 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
 
       });
 
-      Lavenza.warn('oplevel validation failed');
+      await Lavenza.warn('oplevel validation failed');
       return false;
     }
 
     // Check if this command is allowed to be used in DMs.
     if (!this.validatePMCommand()) {
-      Lavenza.warn('pm channel validation failed');
+      await Lavenza.warn('pm channel validation failed');
       return false;
     }
 
     // Validate that the command is allowed to be used in this Guild (Server).
     if (!this.validateGuild()) {
-      Lavenza.warn('guild validation failed');
+      await Lavenza.warn('guild validation failed');
       return false;
     }
 
     // Validate that the command is allowed to be used in this Channel.
     if (!this.validateChannel()) {
-      Lavenza.warn('channel validation failed');
+      await Lavenza.warn('channel validation failed');
       return false;
     }
 
@@ -149,27 +149,29 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       let argConfig = configArgs.find(configArg => configArg.key === arg);
 
       if (Lavenza.isEmpty(argConfig)) {
-        Lavenza.throw(`{{arg}} is not a valid argument for this command.`, {arg: arg});
+        await Lavenza.throw(`{{arg}} is not a valid argument for this command.`, {arg: arg});
       }
 
       // Validate level 1. Operators.
       if (argConfig['oplevel'] === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
-        Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
+        await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       // Validate level 2. Masters.
       if (argConfig['oplevel'] === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
-        Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
+        await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       // Validate level 3. Gods.
       if (argConfig['oplevel'] === 3 && !this.gods.includes(this.authorUser.id)) {
-        Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
+        await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       return true;
 
     })).catch(error => {
+
+      console.error(error);
 
       // Send a fancy error message if that command is not usable.
       this.resonance.client.sendError(this.resonance.message.channel, {

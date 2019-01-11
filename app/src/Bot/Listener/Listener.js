@@ -42,6 +42,6 @@ export default class Listener {
    *   The Resonance to listen to.
    */
   static async listen(resonance) {
-    Lavenza.log(`(${resonance.bot.id}) - Message heard from {${resonance.client.type}} client: "${resonance.content}"`);
+    await Lavenza.log(`(${resonance.bot.id}) - Message heard from {${resonance.client.type}} client: "${resonance.content}"`);
   }
 }

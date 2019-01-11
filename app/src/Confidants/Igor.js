@@ -24,7 +24,7 @@ export default class Igor {
    * @param {Error} error
    *   The error caught.
    */
-  static pocket(error) {
+  static async pocket(error) {
     // Do nothing. This quietly ignores the error.
     // Not really advised...Though I had couple of use cases for it. Still, not recommended!
     // console.log('Error pocketed: ' + error.message);
@@ -41,10 +41,10 @@ export default class Igor {
    * @returns {boolean}
    *   Returns true for cases where it's used in functions that need a return value. @TODO - YOU MIGHT BE ABLE TO REMOVE THE RETURN. TEST IT.
    */
-  static continue(error) {
+  static async continue(error) {
 
     // Sends a warning to the console.
-    Lavenza.Morgana.warn(error.message);
+    await Lavenza.Morgana.warn(error.message);
     return true;
 
   }
@@ -57,10 +57,10 @@ export default class Igor {
    * @param {Error} error
    *   The error caught.
    */
-  static stop(error) {
+  static async stop(error) {
 
     // Output the error with Morgana's color formatting.
-    Lavenza.Morgana.error(error.message);
+    await Lavenza.Morgana.error(error.message);
 
     // Regular outputting of the error.
     console.error(error);
@@ -81,17 +81,17 @@ export default class Igor {
    * @param {string} locale
    *   Locale determining the language to send the error in.
    */
-  static throw(error, replacers, locale = process.env.CONSOLE_LOCALE) {
+  static async throw(error, replacers, locale = process.env.CONSOLE_LOCALE) {
 
     // If the error is an instance of the error class, simply throw it.
     if (error instanceof Error) {
       throw error;
     }
 
-    // If not, get translation of the custom error message and throw it.
-    let output = Lavenza.__(error, replacers, locale);
+    // Get the output's translation.
+    let output = await Lavenza.__(error, replacers, locale);
 
-    // Throw error with output.
+    // Throw the error with the built output.
     throw new Error(output);
 
   }

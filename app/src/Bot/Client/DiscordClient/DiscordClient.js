@@ -42,8 +42,8 @@ export default class DiscordClient extends DiscordJSClient {
     this.config = config;
 
     // Event: When the client connects to Discord and is ready.
-    this.on('ready', () => {
-      Lavenza.success('Discord client successfully connected for {{bot}}!', {bot: this.bot.id});
+    this.on('ready', async () => {
+      await Lavenza.success('Discord client successfully connected for {{bot}}!', {bot: this.bot.id});
 
       // Set game text.
       this.user.setActivity(this.config['activity']).catch(console.error);
@@ -51,7 +51,7 @@ export default class DiscordClient extends DiscordJSClient {
 
     // Event: When the discord client receives a message.
     this.on('message', (message) => {
-      this.bot.listen(message, this).catch(Lavenza.stop);
+      this.bot.listen(message, this);
     });
 
     // Event: When the clients disconnects from Discord.
@@ -60,8 +60,8 @@ export default class DiscordClient extends DiscordJSClient {
     });
 
     // Event: When the clients disconnects from Discord.
-    this.on('error', () => {
-      Lavenza.error("Error has occurred for {{bot}}'s client...", {bot: this.bot.id});
+    this.on('error', async () => {
+      await Lavenza.error("Error has occurred for {{bot}}'s client...", {bot: this.bot.id});
     });
 
   }
@@ -81,7 +81,7 @@ export default class DiscordClient extends DiscordJSClient {
   async typeFor(seconds, channel) {
     await channel.stopTyping();
     await channel.startTyping(1);
-    await Lavenza.wait(seconds).catch(Lavenza.stop);
+    await Lavenza.wait(seconds);
     await channel.stopTyping();
   }
 
@@ -149,7 +149,7 @@ export default class DiscordClient extends DiscordJSClient {
         image.attachment
       ],
 
-    }).catch(Lavenza.stop);
+    });
   }
 
   /**
@@ -249,7 +249,7 @@ export default class DiscordClient extends DiscordJSClient {
     }
 
     // Send the embed.
-    return await destination.send(embed).catch(Lavenza.stop);
+    return await destination.send(embed);
 
   }
 
@@ -264,12 +264,12 @@ export default class DiscordClient extends DiscordJSClient {
 
     // If the token isn't found, we throw an error.
     if (token === undefined) {
-      Lavenza.throw('Discord application token is missing for {{bot}}. Make sure the token is set in the /app/.env file at the root of the project. See /app/.env.example for more details.', {bot: this.bot.id});
+      await Lavenza.throw('Discord application token is missing for {{bot}}. Make sure the token is set in the /app/.env file at the root of the project. See /app/.env.example for more details.', {bot: this.bot.id});
     }
 
     // Await the login in of this client.
-    await super.login(token).catch(error => {
-      Lavenza.throw('Failed to authenticate Discord client for {{bot}}.', {bot: this.bot.id});
+    await super.login(token).catch(async error => {
+      await Lavenza.throw('Failed to authenticate Discord client for {{bot}}.', {bot: this.bot.id});
     });
   }
 }

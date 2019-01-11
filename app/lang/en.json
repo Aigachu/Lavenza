@@ -20,5 +20,10 @@
 	"<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/i18n/mikuchu/clients/discord/users": "<Chronicler>: GET request returned an empty object: /Users/kserebour/src/Personal/Lavenza-II/app/database/i18n/mikuchu/clients/discord/users",
 	"Cannot send an empty message": "Cannot send an empty message",
 	"Found non-callable @@iterator": "Found non-callable @@iterator",
-	"Pong! Here is your ID: {{id}}": "Pong! Here is your ID: {{id}}"
+	"Pong! Here is your ID: {{id}}": "Pong! Here is your ID: {{id}}",
+	"translation is not defined": "translation is not defined",
+	"{{arg}} is not a valid argument for this command.": "{{arg}} is not a valid argument for this command.",
+	"Cannot read property 'map' of undefined": "Cannot read property 'map' of undefined",
+	"No listeners were found for the gestalt talent. This might not be normal!": "No listeners were found for the gestalt talent. This might not be normal!",
+	"I've modified your locale settings! From now on, I will answer you in this language when I can. You can change this setting at any time.": "I've modified your locale settings! From now on, I will answer you in this language when I can. You can change this setting at any time."
 }

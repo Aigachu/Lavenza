@@ -26,7 +26,7 @@ export default class EntityManager {
     this.entityClass = require('./Entity')['default'];
 
     // This is an abstract method. It should never be called.
-    Lavenza.throw('This is the base build function of the EntityManager class. This should not have been called.');
+    await Lavenza.throw('This is the base build function of the EntityManager class. This should not have been called.');
   }
 
   /**

@@ -81,7 +81,7 @@ export default class Talent {
   static async getActiveConfigForBot(bot) {
 
     // Await Gestalt's API call to get the configuration from the storage.
-    return await Lavenza.Gestalt.get(`/bots/${bot.id}/talents/${this.id}/config`).catch(Lavenza.stop);
+    return await Lavenza.Gestalt.get(`/bots/${bot.id}/talents/${this.id}/config`);
 
   }
 
@@ -108,7 +108,7 @@ export default class Talent {
     // We'll throw an error for this function if the 'Commands' directory doesn't exist or is empty.
     // This error should be caught and handled above.
     if (Lavenza.isEmpty(commandDirectories)) {
-      Lavenza.throw('No commands were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
+      await Lavenza.throw('No commands were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
     }
 
     // We'll now act on each command directory found.
@@ -128,7 +128,7 @@ export default class Talent {
       // We can't load the command without configurations.
       // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
       if (Lavenza.isEmpty(config)) {
-        Lavenza.warn('Configuration file could not be loaded for the {{command}} command in the {{talent}} talent.', {command: name, talent: this.id});
+        await Lavenza.warn('Configuration file could not be loaded for the {{command}} command in the {{talent}} talent.', {command: name, talent: this.id});
         return;
       }
 
@@ -136,13 +136,13 @@ export default class Talent {
       // If the class doesn't exist (this could be caused by the configuration being wrong), we stop.
       let command = require(directory + '/' + config.class)['default'];
       if (Lavenza.isEmpty(command)) {
-        Lavenza.warn('Class could not be loaded for the {{command}} command in the {{talent}} talent.', {command: name, talent: this.id});
+        await Lavenza.warn('Class could not be loaded for the {{command}} command in the {{talent}} talent.', {command: name, talent: this.id});
         return;
       }
 
       // Now let's successfully register the command to the Talent.
       // Commands have build tasks too and are also singletons. We'll run them here.
-      await command.build(config, this).catch(Lavenza.stop);
+      await command.build(config, this);
 
       // Set the command to this Talent.
       this.commands[config.key] = command;
@@ -152,7 +152,7 @@ export default class Talent {
         this.commandAliases[alias] = command.config.key;
       });
 
-    })).catch(Lavenza.stop);
+    }));
   }
 
   /**
@@ -178,7 +178,7 @@ export default class Talent {
     // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.
     // This error should be caught and handled above.
     if (Lavenza.isEmpty(listenerClasses)) {
-      Lavenza.throw('No listeners were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
+      await Lavenza.throw('No listeners were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
     }
 
     // Await the loading of all listener classes.
@@ -190,18 +190,18 @@ export default class Talent {
 
       // Run listener build tasks.
       // We only do this to assign the talent to the listener. That way, the listener can access the Talent.
-      await listener.build(this).catch(Lavenza.stop);
+      await listener.build(this);
 
       // If the require fails or the result is empty, we stop.
       if (Lavenza.isEmpty(listener)) {
-        Lavenza.warn('A Listener class could not be loaded in the {{talent}} talent.', {talent: this.id});
+        await Lavenza.warn('A Listener class could not be loaded in the {{talent}} talent.', {talent: this.id});
         return;
       }
 
       // If everything goes smoothly, we register the listener to the Talent.
       this.listeners.push(listener);
 
-    })).catch(Lavenza.stop);
+    }));
   }
 
 }

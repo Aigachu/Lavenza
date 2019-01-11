@@ -76,7 +76,7 @@ export default class Akechi {
    *   Path to the file to read.
    */
   static async readFile(path) {
-    return await fsrfp(path).catch(Lavenza.stop);
+    return await fsrfp(path);
   }
 
   /**
@@ -91,7 +91,7 @@ export default class Akechi {
   static async readYamlFile(file) {
 
     // Read the file data.
-    let fileData = await this.readFile(file).catch(Lavenza.stop);
+    let fileData = await this.readFile(file);
 
     // Get document, or throw exception on error
     return yaml.safeLoad(fileData);

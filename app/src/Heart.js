@@ -81,18 +81,28 @@ let Keys = {
   TALENTS_FOLDER_NAME: 'talents',
 };
 
+// Import the filesystem.
+import fs from 'fs';
+
 // Import & Configure i18n.
 import i18n from 'i18n';
 i18n.configure({
-  locales: [
-    'en',
-    'fr'
-  ],
-  fallbacks: {
-    'fr': 'en'
-  },
   defaultLocale: process.env.DEFAULT_LOCALE,
-  directory: RootPath + '/lang'
+  directory: RootPath + '/lang',
+  autoReload: true
+});
+
+// Imports the Google Cloud client library
+// Your service account key must be set locally and on the production environment.
+// @see https://cloud.google.com/docs/authentication/getting-started
+import {Translate} from '@google-cloud/translate';
+
+// Your Google Cloud Platform project ID
+const projectId = 'lavenza-ii';
+
+// Instantiates a client
+const translate = new Translate({
+  projectId: projectId,
 });
 
 // Define the Heart of the module.
@@ -104,7 +114,7 @@ export const Heart = {
 
   // i18n.
   // Wraps a '__' function to use i18n's __ function.
-  __: (...parameters) => {
+  __: async (...parameters) => {
 
     // Get our parameters using Sojiro's help.
     let params = Sojiro.parseI18NParams(parameters);
@@ -112,9 +122,27 @@ export const Heart = {
     // If the locale is undefined, we simply use the default one.
     params.locale = params.locale ? params.locale : process.env.DEFAULT_LOCALE;
 
-    console.log(params);
+    // Get the translations from i18n.
+    let englishTranslation = i18n.__({phrase: params.phrase, locale: 'en'}, params.replacers);
+    let translation = i18n.__({phrase: params.phrase, locale: params.locale}, params.replacers);
 
-    return i18n.__({phrase: params.phrase, locale: params.locale}, params.replacers);
+    // If the text is untranslated, we'll fallback to google translate.
+    if (params.locale !== 'en' && englishTranslation === translation) {
+      [translation] = await translate.translate(translation, params.locale);
+
+      // Now the genius part...
+      // We'll save Google's translation to our translation file, so we can re-use it later.
+      // This will avoid us constantly translating the same string over and over.
+      // We'll save it right into our i18n instance.
+      let storage = require(`${RootPath}/lang/${params.locale}.json`);
+      storage[params.phrase] = translation;
+
+      fs.writeFile(`${RootPath}/lang/${params.locale}.json`, JSON.stringify(storage, null, 2), function (err) {
+        if (err) return console.log(err);
+      });
+    }
+
+    return translation;
 
   },
 

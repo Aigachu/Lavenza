@@ -26,7 +26,7 @@ export default class CommandInterpreter {
   static async interpret(resonance) {
 
     // Attempt to get a command from the content.
-    let order = await this.getCommand(resonance).catch(Lavenza.stop);
+    let order = await this.getCommand(resonance);
 
     // If no command is found, we have nothing to do.
     if (!order) {
@@ -62,11 +62,11 @@ export default class CommandInterpreter {
     let splitContent = content.split(' ');
 
     // Get the active bot configuration from the database.
-    let botConfig = await bot.getActiveConfig().catch(Lavenza.stop);
+    let botConfig = await bot.getActiveConfig();
 
     // Get command prefix.
     // If there is a command prefix override for this client, we will set it. If not, we grab the default.
-    let cprefix = await bot.getCommandPrefix(resonance).catch(Lavenza.stop);
+    let cprefix = await bot.getCommandPrefix(resonance);
 
     // If the content doesn't start with the command prefix, it's not a command.
     if (!splitContent[0].startsWith(cprefix)) {
@@ -85,14 +85,14 @@ export default class CommandInterpreter {
 
     // If the command doesn't exist, we'll stop here.
     if (!command) {
-      Lavenza.warn('No command found in message...');
+      await Lavenza.warn('No command found in message...');
       return false;
     }
 
     // Now we do one final check to see if this command is allowed to be used in this client.
     // We check the command configuration for this.
     if (!command.allowedInClient(client.type)) {
-      Lavenza.warn('Command found, but not allowed in client. Returning.');
+      await Lavenza.warn('Command found, but not allowed in client. Returning.');
       return false;
     }
 
@@ -101,7 +101,7 @@ export default class CommandInterpreter {
 
     // Get the command configuration and build the configuration object for this order.
     // We want to send the bot config and the command config back with the Order.
-    let commandConfig = await command.getActiveConfigForBot(bot).catch(Lavenza.stop);
+    let commandConfig = await command.getActiveConfigForBot(bot);
     let config = {
       bot: botConfig,
       command: commandConfig

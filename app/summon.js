@@ -27,8 +27,6 @@ if ('bot' in argv) {
 const Lavenza = require('./').Heart;
 
 // Ignite Lavenza...Let's get this going!
-Lavenza.Core.ignite(bot).then(() => {
-  Lavenza.warn('Lavenza is now running!');
-}).catch(error => {
-  throw error;
+Lavenza.Core.ignite(bot).then(async () => {
+  await Lavenza.warn('Lavenza is now running!');
 });

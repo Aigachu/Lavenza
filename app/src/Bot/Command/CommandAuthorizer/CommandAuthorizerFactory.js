@@ -49,7 +49,7 @@ export default class CommandAuthorizerFactory {
 
     // This really shouldn't happen...But yeah...
     if (Lavenza.isEmpty(authorizer)) {
-      Lavenza.throw('Command authorizer could not be built. This should not happen. Fix your shitty code, Aiga!');
+      await Lavenza.throw('Command authorizer could not be built. This should not happen. Fix your shitty code, Aiga!');
     }
 
     // Build the authorizer. Then we're good to go. We can send it back to the listener.

@@ -39,11 +39,11 @@ export default class Gestalt {
     let storageService = Chronicler;
 
     // Await the build process of the storage service and assign it to Gestalt.
-    await storageService.build().catch(Lavenza.stop);
+    await storageService.build();
     this.storageService = storageService;
 
     // Some flavor text.
-    Lavenza.success("Gestalt preparations complete!");
+    await Lavenza.success("Gestalt preparations complete!");
 
   }
 
@@ -62,7 +62,7 @@ export default class Gestalt {
   static async bootstrapClientDatabaseForBot(bot, clientType) {
 
     // Initialize i18n database collection for this client if it doesn't already exist.
-    await this.createCollection(`/i18n/${bot.id}/clients/${clientType}`).catch(Lavenza.stop);
+    await this.createCollection(`/i18n/${bot.id}/clients/${clientType}`);
 
     // Depending on the client type, we create different database files.
     switch (clientType) {
@@ -72,9 +72,9 @@ export default class Gestalt {
 
         // Initialize i18n contexts, creating them if they don't exist.
         // Translations are manageable through all of these contexts.
-        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/guilds`).catch(Lavenza.stop);
-        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/channels`).catch(Lavenza.stop);
-        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/users`).catch(Lavenza.stop);
+        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/guilds`);
+        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/channels`);
+        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/users`);
 
         // We start by syncing the guild configuration.
         let guilds = await this.sync({}, `/bots/${bot.id}/clients/${clientType}/guilds`);
@@ -93,8 +93,8 @@ export default class Gestalt {
             guilds[guild.id] = defaultGuildConfig;
           }
           guilds[guild.id].name = `${guild.name}`;
-          await this.update(`/bots/${bot.id}/clients/${clientType}/guilds`, guilds).catch(Lavenza.stop)
-        })).catch(Lavenza.stop);
+          await this.update(`/bots/${bot.id}/clients/${clientType}/guilds`, guilds)
+        }));
         break;
 
       }
@@ -130,28 +130,28 @@ export default class Gestalt {
 
     // Await creation of i18n collection.
     // All data pertaining to translations will be saved here.
-    await this.createCollection('/i18n').catch(Lavenza.stop);
+    await this.createCollection('/i18n');
 
     // Await creation of the Bots collection.
-    await this.createCollection('/bots').catch(Lavenza.stop);
+    await this.createCollection('/bots');
 
     // Await bootstrapping of each bot's data.
     await Promise.all(BotManager.bots.map(async bot => {
 
       // Initialize the database collection for this bot if it doesn't already exist.
-      await this.createCollection(`/bots/${bot.id}`).catch(Lavenza.stop);
+      await this.createCollection(`/bots/${bot.id}`);
 
       // Initialize i18n database collection for this bot if it doesn't already exist.
-      await this.createCollection(`/i18n/${bot.id}`).catch(Lavenza.stop);
+      await this.createCollection(`/i18n/${bot.id}`);
 
       // Initialize i18n database collection for this bot's clients configurations if it doesn't already exist.
-      await this.createCollection(`/i18n/${bot.id}/clients`).catch(Lavenza.stop);
+      await this.createCollection(`/i18n/${bot.id}/clients`);
 
       // Await the synchronization of data between the Bot's default configuration and the database configuration.
-      bot.config = await this.sync(bot.config, `/bots/${bot.id}/config`).catch(Lavenza.stop);
+      bot.config = await this.sync(bot.config, `/bots/${bot.id}/config`);
 
       // Create a database collection for the talents granted to a bot.
-      await this.createCollection(`/bots/${bot.id}/talents`).catch(Lavenza.stop);
+      await this.createCollection(`/bots/${bot.id}/talents`);
 
       // Await the bootstrapping of each talent's data.
       await Promise.all(bot.talents.map(async talentKey => {
@@ -160,15 +160,15 @@ export default class Gestalt {
         let talent = TalentManager.talents[talentKey];
 
         // Create a database collection for the talents granted to a Bot.
-        await this.createCollection(`/bots/${bot.id}/talents/${talent.id}`).catch(Lavenza.stop);
+        await this.createCollection(`/bots/${bot.id}/talents/${talent.id}`);
 
         // Await the synchronization of data between the Talent's default configuration and the database configuration.
-        await this.sync(talent.config, `/bots/${bot.id}/talents/${talent.id}/config`).catch(Lavenza.stop);
+        await this.sync(talent.config, `/bots/${bot.id}/talents/${talent.id}/config`);
 
-      })).catch(Lavenza.stop);
+      }));
 
       // Create a database collection for Commands belonging to a Bot.
-      await this.createCollection(`/bots/${bot.id}/commands`).catch(Lavenza.stop);
+      await this.createCollection(`/bots/${bot.id}/commands`);
 
       // Await the bootstrapping of Commands data.
       await Promise.all(Object.keys(bot.commands).map(async commandKey => {
@@ -177,20 +177,20 @@ export default class Gestalt {
         let command = bot.commands[commandKey];
 
         // Create a database collection for commands belonging to a Bot.
-        await this.createCollection(`/bots/${bot.id}/commands/${command.config.key}`).catch(Lavenza.stop);
+        await this.createCollection(`/bots/${bot.id}/commands/${command.config.key}`);
 
         // Await the synchronization of data between the Command's default configuration and the database configuration.
-        await this.sync(command.config, `/bots/${bot.id}/commands/${command.config.key}/config`).catch(Lavenza.stop);
+        await this.sync(command.config, `/bots/${bot.id}/commands/${command.config.key}/config`);
 
-      })).catch(Lavenza.stop);
+      }));
 
       // Create a database collection for the clients belonging to a Bot.
-      await this.createCollection(`/bots/${bot.id}/clients`).catch(Lavenza.stop);
+      await this.createCollection(`/bots/${bot.id}/clients`);
 
-    })).catch(Lavenza.stop);
+    }));
 
     // Await creation of the Bots collection.
-    await this.createCollection('/talents').catch(Lavenza.stop);
+    await this.createCollection('/talents');
 
     // Await bootstrapping of each bot's data.
     await Promise.all(Object.keys(TalentManager.talents).map(async talentKey => {
@@ -199,12 +199,12 @@ export default class Gestalt {
       let talent = TalentManager.talents[talentKey];
 
       // Initialize the database collection for this bot if it doesn't already exist.
-      await this.createCollection(`/talents/${talent.id}`).catch(Lavenza.stop);
+      await this.createCollection(`/talents/${talent.id}`);
 
-    })).catch(Lavenza.stop);
+    }));
 
     // Some more flavor.
-    Lavenza.success("Gestalt database successfully bootstrapped!");
+    await Lavenza.success("Gestalt database successfully bootstrapped!");
   }
 
   /**
@@ -221,7 +221,7 @@ export default class Gestalt {
   static async sync(config, source) {
 
     // Await initial fetch of data that may already exist.
-    let dbConfig = await Lavenza.Gestalt.get(source).catch(Lavenza.stop);
+    let dbConfig = await Lavenza.Gestalt.get(source);
 
     // If the configuration already exists, we'll want to sync the provided configuration with the source.
     // We merge both together. This MIGHT NOT be necessary? But it works for now.
@@ -230,7 +230,7 @@ export default class Gestalt {
     }
 
     // Await creation of database entry for the configuration, since it doesn't exist.
-    await this.post(source, config).catch(Lavenza.stop);
+    await this.post(source, config);
     return config;
 
   }
@@ -251,7 +251,7 @@ export default class Gestalt {
   static async createCollection(endpoint, payload = {}) {
 
     // Each storage service creates collections in their own way. We await this process.
-    await this.storageService.createCollection(endpoint, payload).catch(Lavenza.stop);
+    await this.storageService.createCollection(endpoint, payload);
 
   }
 
@@ -282,7 +282,7 @@ export default class Gestalt {
       protocol: protocol,
       endpoint: endpoint,
       payload: payload
-    }).catch(Lavenza.stop);
+    });
 
   }
 

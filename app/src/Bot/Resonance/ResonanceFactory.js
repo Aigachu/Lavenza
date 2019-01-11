@@ -62,11 +62,10 @@ export default class ResonanceFactory {
 
     // This really shouldn't happen...But yeah...
     if (Lavenza.isEmpty(resonance)) {
-      Lavenza.throw('Resonance could not be built. This should not happen. Fix your shitty code, Aiga!');
+      await Lavenza.throw('Resonance could not be built. This should not happen. Fix your shitty code, Aiga!');
     }
 
     // Build the resonance. Then we're good to go. We can send it back to the bot.
-    /** @catch Stop execution. */
     return resonance;
 
   }

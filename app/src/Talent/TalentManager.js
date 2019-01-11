@@ -33,10 +33,10 @@ export default class TalentManager {
   static async prepare() {
 
     // Await the loading of core talents.
-    await this.loadCoreTalents().catch(Lavenza.stop);
+    await this.loadCoreTalents();
 
     // Some flavor text.
-    Lavenza.success("Talent Manager preparations complete!");
+    await Lavenza.success("Talent Manager preparations complete!");
 
   }
 
@@ -54,15 +54,15 @@ export default class TalentManager {
     this.talents = {};
 
     // We fetch the list of all core talents here.
-    let coreTalentDirectories = await Lavenza.Akechi.getDirectoriesFrom(Lavenza.Paths.TALENTS.CORE).catch(Lavenza.stop);
+    let coreTalentDirectories = await Lavenza.Akechi.getDirectoriesFrom(Lavenza.Paths.TALENTS.CORE);
 
     // Await the loading of all talents found.
     await Promise.all(coreTalentDirectories.map(async directory => {
 
       // Await the loading of the talent into the TalentManager.
-      await this.loadTalent(directory).catch(Lavenza.stop);
+      await this.loadTalent(directory);
 
-    })).catch(Lavenza.stop);
+    }));
 
     // Set the list of core talents. This is simply the list of keys. Bots use this later.
     // Since we never actually store the reference to the Talents themselves in the bots, we need these keys.
@@ -84,7 +84,7 @@ export default class TalentManager {
     // If this directory doesn't exist, we end right off the bat.
     if (!fs.existsSync(directory)) {
       let name = path.basename(directory);
-      Lavenza.throw("Attempted to load {{talent}} talent, but it does not exist. Please verify talent configurations and make sure the name in configuration matches the name of the talent's folder.", {talent: name});
+      await Lavenza.throw("Attempted to load {{talent}} talent, but it does not exist. Please verify talent configurations and make sure the name in configuration matches the name of the talent's folder.", {talent: name});
     }
 
     // Get the talent name. This is in fact the name of the directory.
@@ -100,7 +100,7 @@ export default class TalentManager {
     // If the info is empty, we gotta stop here. They are mandatory.
     // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
     if (Lavenza.isEmpty(config)) {
-      Lavenza.throw('Info file could not be located for the {{talent}} talent.', {talent: name});
+      await Lavenza.throw('Info file could not be located for the {{talent}} talent.', {talent: name});
     }
 
     // Set the directory to the info. It's useful information to have in the Talent itself!
@@ -111,12 +111,12 @@ export default class TalentManager {
 
     // If the talent could not be loaded somehow, we end here.
     if (Lavenza.isEmpty(talent)) {
-      Lavenza.throw("An error occurred when requiring the {{talent}} talent's class. Verify the Talent's info file.", {talent: name});
+      await Lavenza.throw("An error occurred when requiring the {{talent}} talent's class. Verify the Talent's info file.", {talent: name});
     }
 
     // Await building of the talent.
     // Talents have build tasks too and are also singletons. We'll run them here.
-    await talent.build(config).catch(Lavenza.stop);
+    await talent.build(config);
 
     // Register the talent to the Manager.
     this.talents[name] = talent;

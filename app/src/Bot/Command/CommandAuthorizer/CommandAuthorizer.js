@@ -51,7 +51,7 @@ export default class CommandAuthorizer {
     // Validate that the command isn't on cooldown.
     // Check if cooldowns are on for this command.
     // If so, we have to return.
-    let cooldownValidation = await this.validateCooldown().catch(Lavenza.stop);
+    let cooldownValidation = await this.validateCooldown();
     if (!cooldownValidation) {
       switch (this.resonance.client.type) {
         case ClientTypes.Discord:
@@ -72,7 +72,7 @@ export default class CommandAuthorizer {
     }
 
     // If command arguments aren't valid, we hit the message with a reply explaining the error, and then end.
-    let argumentsValidation = await this.validateCommandArguments().catch(Lavenza.stop);
+    let argumentsValidation = await this.validateCommandArguments();
     if (!argumentsValidation) {
       return false;
     }

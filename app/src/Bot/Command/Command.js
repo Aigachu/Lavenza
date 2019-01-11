@@ -51,7 +51,7 @@ export default class Command {
    *   Returns the configuration fetched from the database.
    */
   static async getActiveConfigForBot(bot) {
-    return await Lavenza.Gestalt.get(`/bots/${bot.id}/commands/${this.config.key}/config`).catch(Lavenza.stop);
+    return await Lavenza.Gestalt.get(`/bots/${bot.id}/commands/${this.config.key}/config`);
   }
 
   /**
@@ -71,8 +71,7 @@ export default class Command {
   static async execute(resonance) {
 
     // Default execute function. Does nothing right now.
-    Lavenza.warn(`You should probably add an execute function to this command!`);
-    console.log(order);
+    await Lavenza.warn(`You should probably add an execute function to this command!`);
     console.log(resonance);
 
   }
@@ -82,15 +81,13 @@ export default class Command {
    *
    * You can access the bot through the resonance, as well as any of the bot's clients.
    *
-   * @param {Order} order
-   *   Order sent by the CommandInterpreter, including the command arguments and more information.
    * @param {Resonance} resonance
    *   Resonance that invoked this command. All information about the client and message are here.
    */
-  static async help(order, resonance) {
+  static async help(resonance) {
 
     // Get configuration.
-    let config = await this.getActiveConfigForBot(resonance.bot).catch(Lavenza.stop);
+    let config = await this.getActiveConfigForBot(resonance.bot);
 
     // Depending on the type of client, we want the help function to act differently.
     switch (resonance.client.type) {
@@ -99,7 +96,7 @@ export default class Command {
       case ClientTypes.Discord: {
 
         // Start building the usage text by getting the command prefix.
-        let usageText = `\`${await resonance.bot.getCommandPrefix(resonance).catch(Lavenza.stop)}${config.key}`;
+        let usageText = `\`${await resonance.bot.getCommandPrefix(resonance)}${config.key}`;
 
         // If there is input defined for this command, we will add them to the help text.
         if (config.input) {
@@ -163,7 +160,7 @@ export default class Command {
           },
           fields: fields,
           thumbnail: resonance.client.user.avatarURL
-        }).catch(Lavenza.stop);
+        });
         break;
       }
 

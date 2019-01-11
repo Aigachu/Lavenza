@@ -119,7 +119,7 @@ export default class Resonance {
     }
 
     // Now, using the information from the parameters, we fetch necessary translations.
-    let content = Lavenza.__({phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED');
+    let content = await Lavenza.__({phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED').catch(Lavenza.stop);
 
     // And finally we can send the message to the destination.
     return await this.doSend(destination, content).catch(Lavenza.stop);
@@ -139,7 +139,7 @@ export default class Resonance {
   async doSend(destination, content) {
     console.log(destination);
     console.log(content);
-    Lavenza.throw('Tried to fire abstract method doSend(). You must implement a doSend() method in the {{class}} class.', {class: this.constructor});
+    await Lavenza.throw('Tried to fire abstract method doSend(). You must implement a doSend() method in the {{class}} class.', {class: this.constructor});
   }
 
   /**
@@ -152,7 +152,7 @@ export default class Resonance {
    */
   async i18n(args) {
     console.log(args);
-    Lavenza.throw('Tried to fire abstract method i18n(). You must implement a i18n() method in the {{class}} class.', {class: this.constructor});
+    await Lavenza.throw('Tried to fire abstract method i18n(). You must implement a i18n() method in the {{class}} class.', {class: this.constructor});
   }
 
   /**

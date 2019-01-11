@@ -103,11 +103,11 @@ export default class Register {
         await conversationChannel.send(`Oh! That's completely fine. Moving on...`).catch(Lavenza.stop);
       }
 
-    }).catch(error => {
+    }).catch(async error => {
       conversationChannel.send(`Seems like you couldn't answer me in time...That's alright! You can try again later. :)`);
 
       // We forcefully throw an error here to end execution. This means that without this prompt, we shouldn't proceed.
-      Lavenza.throw(error);
+      await Lavenza.throw(error);
     });
 
     // Type for 4 seconds.

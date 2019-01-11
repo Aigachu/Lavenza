@@ -55,7 +55,7 @@ export default class Bot {
   async getActiveConfig() {
 
     // We use Gestalt to make a call to the database storage service and return the data.
-    return await Lavenza.Gestalt.get(`/bots/${this.id}/config`).catch(Lavenza.stop);
+    return await Lavenza.Gestalt.get(`/bots/${this.id}/config`);
 
   }
 
@@ -82,13 +82,13 @@ export default class Bot {
   async deploy() {
 
     // Await client initialization.
-    await this.initializeClients().catch(Lavenza.stop);
+    await this.initializeClients();
 
     // Await clients authentication.
-    await this.authenticateClients().catch(Lavenza.stop);
+    await this.authenticateClients();
 
     // Await talent initializations for this bot.
-    await this.initializeTalentsForBot().catch(Lavenza.stop);
+    await this.initializeTalentsForBot();
   }
 
   /**
@@ -101,13 +101,13 @@ export default class Bot {
   async prepare() {
 
     // Await talent grants.
-    await this.grantTalents().catch(Lavenza.stop);
+    await this.grantTalents();
 
     // Await command inheritance.
-    await this.setCommands().catch(Lavenza.stop);
+    await this.setCommands();
 
     // Await listener initialization & inheritance.
-    await this.setListeners().catch(Lavenza.stop);
+    await this.setListeners();
 
   }
 
@@ -132,13 +132,13 @@ export default class Bot {
 
     // Check if there are custom talents defined.
     if (Lavenza.isEmpty(this.config.talents)) {
-      Lavenza.warn('Talents configuration missing for {{bot}}. Only core talents will be loaded.', {bot: this.id});
+      await Lavenza.warn('Talents configuration missing for {{bot}}. Only core talents will be loaded.', {bot: this.id});
       return;
     }
 
     // Await validation of custom talents configured.
     // This basically checks if the talents entered are valid. Invalid ones are removed from the array.
-    await this.validateCustomTalents().catch(Lavenza.stop);
+    await this.validateCustomTalents();
 
     // After validations are complete, we merge the core talents defined for the bot, with the custom ones.
     // This completes the list of talents assigned to the bot.
@@ -180,7 +180,7 @@ export default class Bot {
       this.commands = Object.assign({}, this.commands, TalentManager.talents[talent].commands);
       this.commandAliases = Object.assign({}, this.commandAliases, TalentManager.talents[talent].commandAliases);
 
-    })).catch(Lavenza.stop);
+    }));
   }
 
   /**
@@ -204,7 +204,7 @@ export default class Bot {
       // Merge the bot's listeners with the Talent's listeners.
       this.listeners = [...this.listeners, ...TalentManager.talents[talentKey].listeners]
 
-    })).catch(Lavenza.stop);
+    }));
   }
 
   /**
@@ -232,14 +232,14 @@ export default class Bot {
       // Await the loading of the talent.
       // If it the load fails, we'll remove the talent from the bot's configuration.
       /** @catch Remove the talent from the configuration list. */
-      await TalentManager.loadTalent(pathToTalent).catch(error => {
+      await TalentManager.loadTalent(pathToTalent).catch(async error => {
         this.config.talents = Lavenza.removeFromArray(this.config.talents, talentKey);
 
         // Send a warning message to the console.
-        Lavenza.warn('Error occurred while loading the {{talent}} talent...', {talent: talentKey});
-        Lavenza.warn(error.message);
+        await Lavenza.warn('Error occurred while loading the {{talent}} talent...', {talent: talentKey});
+        await Lavenza.warn(error.message);
       });
-    })).catch(Lavenza.stop);
+    }));
   }
 
   /**
@@ -279,17 +279,17 @@ export default class Bot {
     await Promise.all(this.prompts.map(async prompt => {
 
       // Fire the listen function.
-      await prompt.listen(resonance).catch(Lavenza.stop);
+      await prompt.listen(resonance);
 
-    })).catch(Lavenza.stop);
+    }));
 
     // Fire all of the bot's listeners.
     await Promise.all(this.listeners.map(async listener => {
 
       // Fire the listen function.
-      await listener.listen(resonance).catch(Lavenza.stop);
+      await listener.listen(resonance);
 
-    })).catch(Lavenza.stop);
+    }));
 
   }
 
@@ -326,7 +326,7 @@ export default class Bot {
     // If we go past the lifespan, the prompt will throw an error. This error must be caught and handled accordingly.
     // Basically, when implementing this method elsewhere, catch the error and do whatever you want with it.
     /** @catch Throw the error for specific case handling. */
-    await prompt.await(lifespan).catch(Lavenza.throw);
+    await prompt.await(lifespan).catch(await Lavenza.throw);
 
   }
 
@@ -389,7 +389,7 @@ export default class Bot {
 
       // Await authentication of the bot.
       /** @catch Continue execution. */
-      await this.clients[key].authenticate().catch(Lavenza.stop);
+      await this.clients[key].authenticate();
 
       // Make sure database collection exists for this client.
       await Lavenza.Gestalt.createCollection(`/bots/${this.id}/clients/${key}`);
@@ -397,7 +397,7 @@ export default class Bot {
       // Run appropriate bootstrapping depending on the client.
       await Lavenza.Gestalt.bootstrapClientDatabaseForBot(this, key);
 
-    })).catch(Lavenza.stop);
+    }));
 
   }
 
@@ -414,16 +414,16 @@ export default class Bot {
     let clientKeys = Object.keys(this.config.clients);
 
     // Get active config once.
-    let activeConfig = await this.getActiveConfig().catch(Lavenza.stop);
+    let activeConfig = await this.getActiveConfig();
 
     // Await the processing and initialization of all clients in the configurations.
     await Promise.all(clientKeys.map(async key => {
 
       // Uses the ClientFactory to build the appropriate factory given the type.
       // The client is then set to the bot.
-      this.clients[key] = await ClientFactory.build(key, activeConfig.clients[key], this).catch(Lavenza.stop);
+      this.clients[key] = await ClientFactory.build(key, activeConfig.clients[key], this);
 
-    })).catch(Lavenza.stop);
+    }));
 
   }
 
@@ -438,9 +438,9 @@ export default class Bot {
     await Promise.all(this.talents.map(async talentKey => {
 
       // Run this talent's initialize function for this bot.
-      await TalentManager.talents[talentKey].initialize(this).catch(Lavenza.stop);
+      await TalentManager.talents[talentKey].initialize(this);
 
-    })).catch(Lavenza.stop);
+    }));
 
   }
 
@@ -456,7 +456,7 @@ export default class Bot {
   async getCommandPrefix(resonance) {
 
     // Get the configuration.
-    let botConfig = await this.getActiveConfig().catch(Lavenza.stop);
+    let botConfig = await this.getActiveConfig();
 
     // Variable to store retrieved cprefix.
     let cprefix = undefined;
@@ -467,7 +467,7 @@ export default class Bot {
       // In the case of a Discord client, we check to see if there's a custom prefix set for the resonance's guild.
       case ClientTypes.Discord: {
 
-        let guildConfig = await Lavenza.Gestalt.get(`/bots/${this.id}/clients/discord/guilds`).catch(Lavenza.stop);
+        let guildConfig = await Lavenza.Gestalt.get(`/bots/${this.id}/clients/discord/guilds`);
         if (resonance.message.guild) {
           cprefix = guildConfig[resonance.message.guild.id].cprefix || undefined;
         }

@@ -34,10 +34,10 @@ export default class Morgana {
    * @param {string} locale
    *   Set the locale to determine the language.
    */
-  static log(message, replacers, type, locale = process.env.DEFAULT_LOCALE) {
+  static async log(message, replacers, type, locale = process.env.DEFAULT_LOCALE) {
 
     // Fetch translations of output.
-    let output = Lavenza.__(message, replacers, locale);
+    let output = await Lavenza.__(message, replacers, locale);
 
     // Depending on the type, we send different types of outputs.
     switch (type) {
@@ -74,11 +74,11 @@ export default class Morgana {
    * Shortcut function to send a success message.
    * @inheritDoc
    */
-  static success(message, replacers) {
+  static async success(message, replacers) {
 
     // If the message is not set, we'll fetch the default success message.
     message = message || 'SUCCESS';
-    this.log(message, replacers,'success');
+    await this.log(message, replacers,'success');
 
   }
 
@@ -86,31 +86,27 @@ export default class Morgana {
    * Shortcut function to set a status message.
    * @inheritDoc
    */
-  static status(message, replacers) {
-
-    this.log(message, replacers, 'status');
-
+  static async status(message, replacers) {
+    await this.log(message, replacers, 'status');
   }
 
   /**
    * Shortcut function to set a warning message.
    * @inheritDoc
    */
-  static warn(message, replacers) {
-
-    this.log(message, replacers, 'warning');
-
+  static async warn(message, replacers) {
+    await this.log(message, replacers, 'warning');
   }
 
   /**
    * Shortcut function to set a error message.
    * @inheritDoc
    */
-  static error(message, replacers) {
+  static async error(message, replacers) {
 
     // If the message is not set, we'll fetch the default error message.
     message = message || 'ERROR';
-    this.log(message, replacers, 'error');
+    await this.log(message, replacers, 'error');
 
   }
 

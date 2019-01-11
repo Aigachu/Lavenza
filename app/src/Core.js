@@ -58,22 +58,22 @@ export default class Core {
     this.bots = typeof bots === "string" ? [bots] : bots;
 
     // Some flavor text for the console.
-    Lavenza.warn("Initializing Lavenza (v{{version}})...", {version: this.version});
+    await Lavenza.warn("Initializing Lavenza (v{{version}})...", {version: this.version});
 
     // Separation.
-    Lavenza.warn("-----------------------------------------------------------");
+    await Lavenza.warn("-----------------------------------------------------------");
 
     /*
      * Fire necessary preparations.
      * The application can end here if we hit an error in the prep function.
      */
-    await this.prepare().catch(Lavenza.stop);
+    await this.prepare();
 
     /*
      * If preparations go through without problems, go for run tasks.
      * Run tasks should be done only after all prep is complete.
      */
-    await this.run().catch(Lavenza.stop);
+    await this.run();
 
   }
 
@@ -93,19 +93,19 @@ export default class Core {
      * Run preparation handler for the Gestalt service.
      * We need to set all database management before we generate bots.
      */
-    await Gestalt.prepare().catch(Lavenza.stop);
+    await Gestalt.prepare();
 
     // Run preparation functions for the Talent Manager.
-    await TalentManager.prepare().catch(Lavenza.stop);
+    await TalentManager.prepare();
 
     // Run preparation functions for the Bot Manager.
-    await BotManager.prepare().catch(Lavenza.stop);
+    await BotManager.prepare();
 
     /*
      * Run bootstrap handler for Gestalt.
      * This is the process that creates and syncs the database.
      */
-    await Gestalt.bootstrap().catch(Lavenza.stop);
+    await Gestalt.bootstrap();
 
     /*
      * Await Makoto's Preparation.
@@ -113,13 +113,13 @@ export default class Core {
      * No announcements needed for this. She can prepare quietly.
      * @TODO - Manage this elsewhere.
      */
-    Lavenza.Makoto.build().catch(Lavenza.stop);
+    await Lavenza.Makoto.build();
 
     // Some more flavor.
-    Lavenza.success("Preparations complete. Moving on to execution...");
+    await Lavenza.success("Preparations complete. Moving on to execution...");
 
     // Separation.
-    Lavenza.warn("-----------------------------------------------------------");
+    await Lavenza.warn("-----------------------------------------------------------");
 
   }
 
@@ -137,10 +137,10 @@ export default class Core {
     Lavenza.status("Commencing Lavenza's execution phase!");
 
     // Deploy bots from the BotBunker.
-    await BotManager.deploy().catch(Lavenza.stop);
+    await BotManager.deploy();
 
     // Separation.
-    Lavenza.warn("-----------------------------------------------------------");
+    await Lavenza.warn("-----------------------------------------------------------");
 
   }
 
