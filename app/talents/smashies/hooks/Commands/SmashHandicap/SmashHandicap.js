@@ -134,13 +134,9 @@ export default class SmashHandicap extends Lavenza.Command {
 
     // Send the results to the caller.
     // Add a bit of delay for flavor.
-    resonance.message.reply("your handicap will be...").then(() => {
-      resonance.message.channel.startTyping(1);
-      Lavenza.wait(rand.timeout).then(() => {
-        resonance.message.channel.send(message);
-        resonance.message.channel.stopTyping();
-      });
-    });
+    await resonance.reply("Your handicap will be...");
+    await resonance.client.typeFor(2, resonance.channel);
+    await resonance.reply(message);
   }
 
 }

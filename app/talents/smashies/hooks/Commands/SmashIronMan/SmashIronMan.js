@@ -38,7 +38,7 @@ export default class SmashIronMan extends Lavenza.Command {
     // If the input is not a number, we'll send them running.
     if (isNaN(count)) {
       // Send a message saying they fucked up.
-      resonance.message.channel.send(`I only accept digital input okay? I'm sorry!`);
+      resonance.reply(`I only accept digital input okay? I'm sorry!`);
       return;
     }
 
@@ -46,7 +46,7 @@ export default class SmashIronMan extends Lavenza.Command {
     // @TODO - Check if the data is a number before even doing this check.
     if (count > roster_size) {
       // Send a message saying they fucked up.
-      resonance.message.channel.send("That number is too high! There are only **" + roster_size + "** characters in the Smash 4 roster you idiot! Didn't you know that?! Wow...");
+      resonance.reply("That number is too high! There are only **" + roster_size + "** characters in the Smash 4 roster you idiot! Didn't you know that?! Wow...");
       return;
     }
 
@@ -90,7 +90,7 @@ export default class SmashIronMan extends Lavenza.Command {
 
     message += "\nThere we go! Good luck against your challenger. ;)";
 
-    resonance.message.channel.send(message);
+    resonance.reply(message);
 
   }
 
