@@ -128,7 +128,7 @@ export const Heart = {
 
     // If the text is untranslated, we'll fallback to google translate.
     if (params.locale !== 'en' && englishTranslation === translation) {
-      [translation] = await translate.translate(translation, params.locale);
+      [translation] = await translate.translate(params.phrase, params.locale);
 
       // Now the genius part...
       // We'll save Google's translation to our translation file, so we can re-use it later.
@@ -137,9 +137,16 @@ export const Heart = {
       let storage = require(`${RootPath}/lang/${params.locale}.json`);
       storage[params.phrase] = translation;
 
-      fs.writeFile(`${RootPath}/lang/${params.locale}.json`, JSON.stringify(storage, null, 2), function (err) {
+      await fs.writeFile(`${RootPath}/lang/${params.locale}.json`, JSON.stringify(storage, null, 2), function (err) {
         if (err) return console.log(err);
       });
+
+      // If we have replacers to set, we set them manually just for this time.
+      if (params.replacers !== undefined) {
+        await Promise.all(Object.keys(params.replacers).map(async replacer => {
+          translation = translation.replace(`{{${replacer}}}`, params.replacers[replacer]);
+        }));
+      }
     }
 
     return translation;

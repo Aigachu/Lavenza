@@ -25,11 +25,8 @@ export default class Paint extends Lavenza.Command {
 
     // @TODO - Check if the bot is at the top of the role list and has the proper permissions.
 
-    console.log(resonance.order);
-
     // If the "c" option is used, a color role will be created.
     if ("c" in resonance.order.args) {
-      console.log(resonance.order.args.c);
       await this.createColor(resonance.order.args.c, resonance);
     }
 
@@ -72,7 +69,7 @@ export default class Paint extends Lavenza.Command {
     let color = await this.getColorData(input, resonance);
 
     // If the color data wasn't properly fetched.
-    if (!color) {
+    if (Lavenza.isEmpty(color)) {
       return false;
     }
 
@@ -80,7 +77,7 @@ export default class Paint extends Lavenza.Command {
     let foundColor = await this.findColorInCurrentGuild(color, resonance);
 
     // Check if the color already exists.
-    if (foundColor !== false) {
+    if (!Lavenza.isEmpty(foundColor)) {
       await resonance.message.channel.send(`Seems like that color already exists! - <@&` + foundColor.id + `>`);
       return false;
     }
@@ -93,7 +90,7 @@ export default class Paint extends Lavenza.Command {
       permissions: resonance.message.guild.defaultRole.permissions,
     })
       .then(async (role) => {
-        await role.setPosition(resonance.message.guild.roles.array().length - 2)
+        await role.setPosition(resonance.message.guild.roles.array().length - 5)
           .then(async () => {
             await resonance.message.channel.send(`I've successfully created a new color in this server: ` + role);
           })
@@ -127,7 +124,7 @@ export default class Paint extends Lavenza.Command {
     let color = await this.getColorData(input, resonance);
 
     // If a color wasn't obtained, we do nothing.
-    if (!color) {
+    if (Lavenza.isEmpty(color)) {
       return false;
     }
 
@@ -136,7 +133,7 @@ export default class Paint extends Lavenza.Command {
 
     // Check if the color exists.
     // If it doesn't, we can't set it. We'll tell the user that they must create it.
-    if (colorRoleToSet === false) {
+    if (Lavenza.isEmpty(colorRoleToSet)) {
       await resonance.message.reply(`Seems like that color doesn't exist! You have to create it first. :O`);
       return false;
     }
@@ -145,13 +142,13 @@ export default class Paint extends Lavenza.Command {
     let memberCurrentColorRole = await this.getMemberColorInCurrentGuild(resonance.message.member);
 
     // If someone tries to set the same color more than once...
-    if (memberCurrentColorRole !== false && memberCurrentColorRole.id === colorRoleToSet.id) {
+    if (!Lavenza.isEmpty(memberCurrentColorRole) && memberCurrentColorRole.id === colorRoleToSet.id) {
       await resonance.message.reply(`hey, you already have that color! I can't paint you with the same color twice. xD`);
       return false;
     }
 
     // Remove color if the member has one already.
-    if (memberCurrentColorRole !== false) {
+    if (!Lavenza.isEmpty(memberCurrentColorRole)) {
       // Remove color if one is set.
       await this.removeColorFromMember(resonance, resonance.message.member);
     }
@@ -184,7 +181,7 @@ export default class Paint extends Lavenza.Command {
     let memberCurrentColorRole = await this.getMemberColorInCurrentGuild(member);
 
     // If there's no color to remove, then we can just return. Nothing to do.
-    if (memberCurrentColorRole === false) {
+    if (Lavenza.isEmpty(memberCurrentColorRole)) {
       return false;
     }
 
@@ -211,14 +208,14 @@ export default class Paint extends Lavenza.Command {
     // Try to get a color by name first if the input is a name.
     // If it's found, we'll return the values and mark it as existing.
     let color = await resonance.message.guild.roles.find(role => role.name === input + '.color');
-    if (color !== null) {
+    if (!Lavenza.isEmpty(color)) {
       return {hex: color.hexColor, name: color.name, exists: true};
     }
 
     // Try to get a color by role name if they enter the complete role name.
     // If it's found, we'll return the values and mark it as existing.
     color = await resonance.message.guild.roles.find(role => role.name === input);
-    if (color !== null) {
+    if (!Lavenza.isEmpty(color)) {
       return {hex: color.hexColor, name: input, exists: true};
     }
 
@@ -254,18 +251,18 @@ export default class Paint extends Lavenza.Command {
 
     // Try to find the color through Hex Value.
     let color = await resonance.message.guild.roles.find(role => role.hexColor === colorData.hex);
-    if (color !== null) {
+    if (!Lavenza.isEmpty(color)) {
       return color;
     }
 
     // Try to find the color through name.
     color = await resonance.message.guild.roles.find(role => role.name === colorData.name);
-    if (color !== null) {
+    if (!Lavenza.isEmpty(color)) {
       return color;
     }
 
     // If we reach here, color was not found. We'll return false.
-    return false;
+    return undefined;
 
   }
 
