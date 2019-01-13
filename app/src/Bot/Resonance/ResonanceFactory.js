@@ -65,6 +65,9 @@ export default class ResonanceFactory {
       await Lavenza.throw('Resonance could not be built. This should not happen. Fix your shitty code, Aiga!');
     }
 
+    // Run Resonance async build.
+    await resonance.build();
+
     // Build the resonance. Then we're good to go. We can send it back to the bot.
     return resonance;
 

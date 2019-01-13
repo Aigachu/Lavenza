@@ -117,7 +117,7 @@ export const Heart = {
   __: async (...parameters) => {
 
     // Get our parameters using Sojiro's help.
-    let params = Sojiro.parseI18NParams(parameters);
+    let params = await Sojiro.parseI18NParams(parameters);
 
     // If the locale is undefined, we simply use the default one.
     params.locale = params.locale ? params.locale : process.env.DEFAULT_LOCALE;

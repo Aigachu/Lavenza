@@ -37,8 +37,19 @@ export default class Resonance {
     this.message = message;
     this.bot = bot;
     this.client = client;
-    this.order = undefined;
-    this.origin = this.resolveOrigin();
+    this.order = undefined; // An order is set to the Resonance only if it is found in the command interpreter.
+  }
+
+  /**
+   * Perform build tasks for a Resonance.
+   *
+   * This function runs shortly after a resonance is constructed. Consider this an asynchronous constructor.
+   *
+   * @returns {Promise<void>}
+   */
+  async build() {
+    this.origin = await this.resolveOrigin();
+    this.locale = await this.getLocale();
   }
 
   /**
@@ -81,7 +92,7 @@ export default class Resonance {
   async reply(...parameters) {
 
     // Parse the parameters obtained.
-    let params = Lavenza.Sojiro.parseI18NParams(parameters);
+    let params = await Lavenza.Sojiro.parseI18NParams(parameters);
 
     // Basically call the send method, but we already know the destination.
     await this.send(this.origin, {phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED').catch(Lavenza.stop);
@@ -111,16 +122,16 @@ export default class Resonance {
   async send(destination, ...parameters) {
 
     // Parse the parameters obtained.
-    let params = Lavenza.Sojiro.parseI18NParams(parameters);
+    let params = await Lavenza.Sojiro.parseI18NParams(parameters);
 
     // If a locale is not set in the parameters, we need to determine what it is using the Resonance.
     if (params.locale === undefined) {
-      params = await this.i18n(params);
+      params.locale = await this.locale;
     }
 
     // If a locale is STILL not defined after the above code, we set it to the default one set to the bot.
     if (params.locale === undefined) {
-      params = await this.i18n(params);
+      params.locale = await this.bot.getActiveConfig().locale;
     }
 
     // Now, using the information from the parameters, we fetch necessary translations.
@@ -151,13 +162,9 @@ export default class Resonance {
    * Process parameters through i18n translation specifications for this Resonance.
    *
    * This is an abstract method. Each Resonance must manage translations for its cases depending on its client.
-   *
-   * @param {Array} args
-   *   Arguments used to properly
    */
-  async i18n(args) {
-    console.log(args);
-    await Lavenza.throw('Tried to fire abstract method i18n(). You must implement a i18n() method in the {{class}} class.', {class: this.constructor});
+  async getLocale() {
+    await Lavenza.throw('Tried to fire abstract method getLocale(). You must implement a getLocale() method in the {{class}} class.', {class: this.constructor});
   }
 
   /**

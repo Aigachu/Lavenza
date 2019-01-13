@@ -36,13 +36,13 @@ export default class SmashMain extends Lavenza.Command {
     let attachment = new DiscordJS.Attachment(character.portrait, character.filename);
 
     resonance.client.sendEmbed(resonance.message.channel, {
-      title: `${character.name}`,
+      title: character.name,
       header: {
-        text: 'Super Smash Bros. Ultimate',
+        text: Lavenza.__('Super Smash Bros. Ultimate', resonance.locale),
         icon: 'attachment://icon.png'
       },
       footer: {
-        text: `${resonance.message.author.username}'s new main!`,
+        text: Lavenza.__(`{{user}}'s new main character!`, {user: resonance.message.author.username}, resonance.locale),
         icon: resonance.message.author.avatarURL
       },
       attachments: [

@@ -78,7 +78,7 @@ export default class Paint extends Lavenza.Command {
 
     // Check if the color already exists.
     if (!Lavenza.isEmpty(foundColor)) {
-      await resonance.message.channel.send(`Seems like that color already exists! - <@&` + foundColor.id + `>`);
+      await resonance.reply(`Seems like that color already exists! -{{color}}`, {color: `<@&${foundColor.id}>`});
       return false;
     }
 
@@ -92,7 +92,7 @@ export default class Paint extends Lavenza.Command {
       .then(async (role) => {
         await role.setPosition(resonance.message.guild.roles.array().length - 5)
           .then(async () => {
-            await resonance.message.channel.send(`I've successfully created a new color in this server: ` + role);
+            await resonance.reply(`I've successfully created a new color in this server: {{color}}`, {color: role});
           })
           .catch((error) => {
             resonance.message.channel.send(`An error may have occurred with the creation of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't deal well with roles that are above mine. :( You're going to have to move me to the top of your server role list!`);

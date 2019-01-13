@@ -46,7 +46,7 @@ export default class Sojiro {
    * @return {*}
    *   Object containing all information necessary to translate a string.
    */
-  static parseI18NParams(parameters) {
+  static async parseI18NParams(parameters) {
 
     // If for some reason we receive parameters that are already parsed, simply return them.
     // @TODO - Not sure how to feel about this one. We'll most likely refactor this in the future.

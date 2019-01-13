@@ -50,14 +50,14 @@ export default class Reminder extends Lavenza.Talent {
     // If they were successfully loaded, send a message to the console.
     // If they aren't loaded, it's fine. A new database will be initialized.
     if (!Lavenza.isEmpty(this.reminders[bot.id])) {
-      Lavenza.status("<Reminder>: Loaded reminders from database for {{bot}}.", {bot: bot.id});
+      // Lavenza.status("<Reminder>: Loaded reminders from database for {{bot}}.", {bot: bot.id});
     }
 
     // Set the pinger.
     // The pinger is basically a function that will run every *second* to check if a reminder must be
     // fired. This is intensive, I know, but it's the best (first) way I thought of doing this.
-    setInterval(() => {
-      this.ping(bot);
+    setInterval(async () => {
+     await this.ping(bot);
     }, 1000);
 
   }
@@ -104,7 +104,7 @@ export default class Reminder extends Lavenza.Talent {
       }
 
       // Save reminders to the database.
-      await this.save(bot);
+      this.save(bot);
 
     }
 
