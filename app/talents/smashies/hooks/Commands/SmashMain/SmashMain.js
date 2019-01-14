@@ -38,11 +38,11 @@ export default class SmashMain extends Lavenza.Command {
     resonance.client.sendEmbed(resonance.message.channel, {
       title: character.name,
       header: {
-        text: Lavenza.__('Super Smash Bros. Ultimate', resonance.locale),
+        text: await Lavenza.__('Super Smash Bros. Ultimate', resonance.locale),
         icon: 'attachment://icon.png'
       },
       footer: {
-        text: Lavenza.__(`{{user}}'s new main character!`, {user: resonance.message.author.username}, resonance.locale),
+        text: await Lavenza.__(`{{user}}'s new main character!`, {user: resonance.message.author.username}, resonance.locale),
         icon: resonance.message.author.avatarURL
       },
       attachments: [

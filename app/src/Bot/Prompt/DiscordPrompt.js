@@ -36,7 +36,7 @@ export default class DiscordPrompt extends Prompt {
   async prompt() {
 
     // In discord, the line is always a channel. We send the request message there.
-    this.line.send(this.request);
+    await this.resonance.send(this.line, this.request);
 
   }
 

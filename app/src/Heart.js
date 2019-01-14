@@ -128,7 +128,15 @@ export const Heart = {
 
     // If the text is untranslated, we'll fallback to google translate.
     if (params.locale !== 'en' && englishTranslation === translation) {
+
+      // Google Translate doesn't have parsing for replacers.
+      // We want to add a unique identifier to the beginning of each replacer key to prevent translation.
+      params.phrase = await params.phrase.replace(/{{/g, '{{RPL.');
       [translation] = await translate.translate(params.phrase, params.locale);
+
+      // Now we can set everything back to normal before they're stored and sent.
+      params.phrase = await params.phrase.replace(/{{RPL\./g, '{{');
+      translation = await translation.replace(/{{RPL\./g, '{{');
 
       // Now the genius part...
       // We'll save Google's translation to our translation file, so we can re-use it later.

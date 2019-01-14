@@ -119,7 +119,7 @@ export default class Command {
         // Set the usage section.
         let fields = [
           {
-            name: 'Usage',
+            name: await Lavenza.__('Usage', resonance.locale),
             text: usageText
           }
         ];
@@ -127,12 +127,13 @@ export default class Command {
         // If there are options defined for this command, we add a section for options.
         if (config.options) {
           let optionsList = '';
-          config.options.every(option => {
-            optionsList += `**${option.name}** \`-${option.key} {${option['expects'].replace(' ', '_').toLowerCase()}}\` - ${option.description}\n\n`;
-            return true;
-          });
+          await Promise.all(config.options.map(async option => {
+            let description = await Lavenza.__(option.description, resonance.locale);
+            let name = await Lavenza.__(option.name, resonance.locale);
+            optionsList += `**${name}** \`-${option.key} {${option['expects'].replace(' ', '_').toLowerCase()}}\` - ${description}\n\n`;
+          }));
           fields.push({
-            name: 'Options',
+            name: await Lavenza.__('Options', resonance.locale),
             text: optionsList
           });
         }
@@ -140,22 +141,23 @@ export default class Command {
         // If there are flags defi-...You get the idea.
         if (config.flags) {
           let flagsList = '';
-          config.flags.every(flag => {
-            flagsList += `**${flag.name}** \`-${flag.key}\` - ${flag.description}\n\n`;
-            return true;
-          });
+          await Promise.all(config.flags.map(async flag => {
+            let description = await Lavenza.__(flag.description, resonance.locale);
+            let name = await Lavenza.__(flag.name, resonance.locale);
+            flagsList += `**${name}** \`-${flag.key}\` - ${description}\n\n`;
+          }));
           fields.push({
-            name: 'Flags',
+            name: await Lavenza.__('Flags', resonance.locale),
             text: flagsList
           });
         }
 
         // Finally, send the embed.
         await resonance.client.sendEmbed(resonance.message.channel, {
-          title: `${config.name}`,
-          description: `${config.description}`,
+          title: await Lavenza.__(`${config.name}`, resonance.locale),
+          description: await Lavenza.__(`${config.description}`, resonance.locale),
           header: {
-            text: 'Lavenza Guide',
+            text: await Lavenza.__('Lavenza Guide', resonance.locale),
             icon: resonance.client.user.avatarURL
           },
           fields: fields,
