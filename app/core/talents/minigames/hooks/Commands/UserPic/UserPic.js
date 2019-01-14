@@ -25,7 +25,7 @@ export default class UserPic extends Lavenza.Command {
 
     // If a member isn't found, the input may be wrong.
     if (member === null) {
-      resonance.message.channel.send(`Hmm...Did you make a mistake? I couldn't get a pic with the input you provided... :(`);
+      resonance.reply(`Hmm...Did you make a mistake? I couldn't get a pic with the input you provided... :(`);
       return;
     }
 

@@ -19,7 +19,7 @@ export default class EightBall extends Lavenza.Command {
     // @TODO - Check if the input is actually a question.
     if (Lavenza.isEmpty(resonance.order.rawContent)) {
       // If no input is given, then no question was actually asked.
-      resonance.message.reply("8ball says: \"_Now now, ask me something. Don't be shy!_\"");
+      resonance.reply(`8ball says: "_Now now, ask me something. Don't be shy!_"`);
       return;
     }
 
@@ -114,7 +114,7 @@ export default class EightBall extends Lavenza.Command {
     // Start typing with the chosen answer's timeout, then send the reply to the user.
     resonance.message.channel.startTyping(1);
     Lavenza.wait(rand.timeout).then(() => {
-      resonance.message.reply(rand.message);
+      resonance.reply(rand.message);
       resonance.message.channel.stopTyping();
     });
   }

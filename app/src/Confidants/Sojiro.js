@@ -94,6 +94,10 @@ export default class Sojiro {
           parsed.replacers = parameters[1];
           parsed.locale = parameters[2];
         }
+      } else {
+        if (parameters[2] !== undefined) {
+          parsed.locale = parameters[2];
+        }
       }
 
       return parsed;

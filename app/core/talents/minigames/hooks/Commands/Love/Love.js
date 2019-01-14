@@ -23,7 +23,7 @@ export default class Love extends Lavenza.Command {
     // Processes the command only if there's input.
     if (Lavenza.isEmpty(resonance.order.rawContent)) {
       // Store the message to be returned.
-      resonance.message.reply(`${resonance.message.author}, you have 100% for ZeRo & M2K's AS5es if you don't specify an object or person!`);
+      resonance.reply(`{{author}}, you have 100% for ZeRo & M2K's AS5es if you don't specify an object or person!`, {author: resonance.message.author});
       return;
     }
 
@@ -36,13 +36,10 @@ export default class Love extends Lavenza.Command {
     // @TODO - Make it calculate a percent using an algorithm, so the result is always the same.
     let percent = Math.floor(Math.random() * 100);
 
-    // Store the message to be returned.
-    message = `There is __**${percent}%**__ love between ${resonance.message.author} and **${thing}**!`;
-
     // I'll be honest, I forget the joke behind the message that is returned here. But it seems funny.
 
     // Send the message.
-    resonance.message.channel.send(message);
+    resonance.reply(`There is __**{{percent}}%**__ love between {{author}} and **{{thing}}**!`, {percent: percent, author: resonance.author, thing: thing});
 
   }
 

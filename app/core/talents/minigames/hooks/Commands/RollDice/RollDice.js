@@ -23,10 +23,7 @@ export default class RollDice extends Lavenza.Command {
     let dice_faces = resonance.order.args._[0] || 6;
 
     // Roll the dice
-    let roll = (Math.floor(Math.random() * dice_faces) + 1);
-
-    // Store result message.
-    let result_msg = " the result of your roll is: **" + roll + "**!";
+    let roll = Math.floor(Math.random() * dice_faces) + 1;
 
     // Roll types are randomized and have different delays.
     let roll_types = [];
@@ -53,10 +50,10 @@ export default class RollDice extends Lavenza.Command {
     let rand = roll_types[Math.floor(Math.random() * roll_types.length)];
 
     // Send everything we just computed to the channel.
-    resonance.message.channel.send(rand.message).then(() => {
+    resonance.reply(rand.message).then(() => {
       resonance.message.channel.startTyping(1);
       Lavenza.wait(rand.timeout).then(() => {
-        resonance.message.reply(result_msg);
+        resonance.reply("{{author}}, the result of your roll is: **{{roll}}**!", {author: resonance.author, roll: roll});
         resonance.message.channel.stopTyping();
       });
     });

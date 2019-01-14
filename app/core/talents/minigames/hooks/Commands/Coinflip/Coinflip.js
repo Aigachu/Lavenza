@@ -32,17 +32,17 @@ export default class Coinflip extends Lavenza.Command {
 
     // Setting the flip types.
     flip_types.push({
-      message: "_Coinflip emulation has begun. Just a moment..._",
+      message: "Coinflip emulation has begun! Just a moment...",
       timeout: 2
     });
 
     flip_types.push({
-      message: "_Coinflip emulation has begun. Looks like..._",
+      message: "Coinflip emulation has begun. Looks like...",
       timeout: 1
     });
 
     flip_types.push({
-      message: "_Coinflip emulation has begun. The coin spins_\nWait for it...",
+      message: `Coinflip emulation has begun. The coin spins. Wait for it...`,
       timeout: 5
     });
 
@@ -51,11 +51,11 @@ export default class Coinflip extends Lavenza.Command {
     let rand = flip_types[Math.floor(Math.random() * flip_types.length)];
 
     // Send the flip to the channel.
-    resonance.message.channel.send(rand.message).then(() => {
+    resonance.reply(rand.message).then(() => {
       // Start typing for the amount of time the flip_type is set to.
       resonance.message.channel.startTyping(1);
       Lavenza.wait(rand.timeout).then(() => {
-        resonance.message.channel.send(`<@${resonance.message.author.id}> obtained **${result}** !`);
+        resonance.reply(`{{author}} obtained **{{result}}**!`, {author: resonance.message.author, result: result});
         resonance.message.channel.stopTyping();
       });
     });
