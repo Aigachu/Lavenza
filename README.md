@@ -83,6 +83,45 @@ If your bot responds, we're on the right track!
 
 Report any issues to me. I'll always prioritize issues pertaining to the setup of the application.
 
+## Features
+
+Here is a quick list of many features Lavenza has, for you to get a feel for it!
+
+### Core Features
+
+#### Multi-Bot Instances
+You can run as many bots as you want at once! Each bot can have it's own commands and configurations.
+
+#### Multi-Client support.
+Each bot can connect to multiple clients at once (i.e. Twitch, Discord & Slack). This allows for potential communication between clients.
+
+#### Translation
+All texts in the application can be translated to any language, and supports automatic translation for [all languages supported by Google Cloud Translation](https://cloud.google.com/translate/docs/languages). All translations are stored in JSON files and any string passed through automatic translation by Google is also saved in JSON.
+
+#### Credentials Management in a .env file.
+Credentials are all managed in a git-ignored .env file. This assures that sensitive information like bot tokens are not committed to the repository.
+
+#### Talents
+Bot features are organized in Talents. They can be seen as collections of features that can easily be added / removed from a bot at any given time.
+
+#### Commands
+With bots come commands. Easy development of commands for bots. Commands can be configured to only work on certain clients. They can also be configured with permissions.
+
+#### Command Input, Arguments & Flags.
+Each command can have a set of configured arguments and flags that affect what the command does. `!ping --arg1 -flag Hello` is a good example.
+
+#### Configuration Management in YAML files.
+All configurations are easily managed in YAML files, which are easy to understand and edit.
+
+#### Database Storage
+Database storage is currently supported and all information is stored in YAML files. The database is easily accessible in the Code through a REST inspired format.
+
+#### Permissions Management
+Permissions per command can be configured easily with the **oplevel** concept. A higher **oplevel** means higher permissions. Furthermore, permissions can be set per command as well as per command arguments.
+
+#### Premade Talents
+Many talents for common commands such as `!coinflip` or `!rolldice` already exist. They can be used as examples to make your own commands.
+
 ## The Framework
 
 ### The 'Lavenza' Global

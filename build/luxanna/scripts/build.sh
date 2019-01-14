@@ -63,7 +63,7 @@ echo "--------------------------------------"
 
 # Copy config & .env to the Lavenza codebase on Luxanna.
 scp -r ../../../app/bots aigachu@aigachu.com:~/apps/Lavenza-II/app
-scp ../../../app/.env aigachu@aigachu.com:~/apps/Lavenza-II/app
+# scp ../../../app/.env aigachu@aigachu.com:~/apps/Lavenza-II/app
 
 # Summon the bots using Forever.
 # Forever will automatically restart the bots if they crash, but only a maximum of 5 times.
