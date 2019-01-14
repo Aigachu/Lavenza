@@ -314,7 +314,7 @@ export default class Paint extends Lavenza.Command {
 
     // Send the text to the channel.
     // We add a delay for some flavor. Don't actually need it.
-    await resonance.message.channel.send(`_Scanning available colors in this server..._`);
+    await resonance.reply(`_Scanning available colors in this server..._`);
     await resonance.client.typeFor(1, resonance.channel);
     await Lavenza.wait(3);
     if (list_msg === `Here is the list of all colors in this server:\n\n`) {
