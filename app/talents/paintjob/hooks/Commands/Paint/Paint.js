@@ -155,7 +155,7 @@ export default class Paint extends Lavenza.Command {
 
     // Add the color to the member.
     await resonance.message.member.addRole(colorRoleToSet).then(async () => {
-      await resonance.reply(`All done! You look great in ${colorRoleToSet.name.replace('.color', '')}! ;) :sparkles:`).catch(async (error) => {
+      await resonance.reply(`All done! You look great in the {{color}} color! ;) {{sparkles}}`, {color: colorRoleToSet.name.replace('.color', ''), sparkles: ':sparkles:'}).catch(async (error) => {
           await resonance.reply(`An error may have occurred with the setting of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't set roles that are above mine. :( You're going to have to move me to the top of your server role list!`);
           console.error(error);
         });
@@ -189,7 +189,7 @@ export default class Paint extends Lavenza.Command {
     // Error message if something went wrong.
     // If an error happens, the bot may not have permissions to tamper with the member's roles.
     await member.removeRole(memberCurrentColorRole).then(async () => {
-      await resonance.reply(`You're all cleaned up! :sparkles:`);
+      await resonance.reply(`You're all cleaned up! {{sparkles}}`, {sparkles: ':sparkles:'});
     }).catch(async error => {
       await resonance.reply(`An error may have occurred with the removing of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't set roles to users that have a role above mine. :( You're going to have to move me to the top of your server role list!`);
       console.error(error);
