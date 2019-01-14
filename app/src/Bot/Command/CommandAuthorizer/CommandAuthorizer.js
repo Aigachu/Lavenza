@@ -55,7 +55,7 @@ export default class CommandAuthorizer {
     if (!cooldownValidation) {
       switch (this.resonance.client.type) {
         case ClientTypes.Discord:
-          this.resonance.message.reply(`That command is on global cooldown. :) Please wait!`).then(async message => {
+          this.resonance.reply(`That command is on cooldown. :) Please wait!`).then(async message => {
 
             // Delete the message containing the command.
             this.resonance.message.delete().catch(Lavenza.continue);

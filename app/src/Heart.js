@@ -157,6 +157,11 @@ export const Heart = {
       }
     }
 
+    // Hotfix...
+    // Fucking Discord tags man.
+    translation = await translation.replace(/&lt;/g, '<');
+    translation = await translation.replace(/&gt;/g, '>');
+
     return translation;
 
   },

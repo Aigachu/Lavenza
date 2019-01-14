@@ -95,7 +95,7 @@ export default class Resonance {
     let params = await Lavenza.Sojiro.parseI18NParams(parameters);
 
     // Basically call the send method, but we already know the destination.
-    await this.send(this.origin, {phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED').catch(Lavenza.stop);
+    return await this.send(this.origin, {phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED').catch(Lavenza.stop);
 
   }
 
