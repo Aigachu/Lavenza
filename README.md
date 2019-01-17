@@ -8,9 +8,8 @@ future clients will be supported (and even communication between clients through
 ## Requirements
 
 - [Node.js - Latest LTS Version](https://nodejs.org/en/download/)
-- [npm](https://www.npmjs.com/get-npm)
 - A good IDE. I recommend Sublime Text 3, or WebStorm if you can get it.
-- A decent command-line utility application (Most of the steps in the ReadMe will use command line tools)
+- A decent command-line utility application (Most of the steps in the README will use the command line)
 - A brain
 - A sense of humour
 
@@ -22,7 +21,7 @@ Before starting the guide, make sure you have all the above requirements. :)
 
 There are many different ways to use Lavenza, but first you should try to get a bot up and running!
 
-To start off, we'll use **npm** to fetch our dependencies. In your command-line, travel to the root of this repository and do the following:
+To start off, we'll use **npm** to fetch our dependencies. In your command-line, travel to the Lavenza-II folder, wherever you cloned it, and do the following:
 
 ```
 cd app;
@@ -53,7 +52,7 @@ This is where you will configure your bot. Carefully read through the file and a
 - Set the name to whatever you want!
 - Make the command prefix **unique**! Don't use the common '!' or '$' or even '%'. Go for something like '°°' or '.~'.
 - Keep the default pingpong talent for now until you test your bot for the first time. You can enable more talents later.
-- For Discord Configurations, set your own Discord ID as one of the Gods. You can replace the ID that's already there. You can also set some of your friends as operators and masters. (Only if you can trust them...)
+- For Discord Configurations, set your own Discord ID as one of the Gods. You can replace the ID that's already there. You can also set some of your friends as masters or operators. (Only if you can trust them...)
 
 ### Setting up client credentials
 
@@ -162,8 +161,7 @@ The beauty of Talents is that they are **abstract by nature**. They leave the po
 
 #### Commands
 
-###### Authority & OpLevel
-###### 
+##### Authority & OpLevel
 
 #### Listeners
 
