@@ -2,6 +2,9 @@
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
  *
+ * @file babelify.js
+ *   Handles compiling the code to natural Javascript using Babel.
+ *
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
