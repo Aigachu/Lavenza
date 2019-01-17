@@ -23,8 +23,10 @@ export default class Gestalt extends Lavenza.Command {
    */
   static async build(config, talent) {
 
+    // Run the parent build function. Must always be done.
     await super.build(config, talent);
 
+    // Set REST protocols.
     this.protocols = [
       'get',
       'post',
@@ -39,6 +41,7 @@ export default class Gestalt extends Lavenza.Command {
    */
   static async execute(resonance) {
 
+    // The first argument must be one of the protocols, or we don't do anything.
     if (!_.contains(this.protocols, resonance.order.args._[0])) {
       resonance.message.reply('You need to use one of the API protocols.');
       return;

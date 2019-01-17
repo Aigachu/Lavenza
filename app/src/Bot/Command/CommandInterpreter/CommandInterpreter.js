@@ -81,7 +81,7 @@ export default class CommandInterpreter {
     }
 
     // Attempt to fetch the command from the bot.
-    let command = bot.getCommand(splitContent[1].toLowerCase());
+    let command = await bot.getCommand(splitContent[1].toLowerCase());
 
     // If the command doesn't exist, we'll stop here.
     if (!command) {

@@ -63,8 +63,6 @@ export default class Command {
    *
    * You can access the bot through the resonance, as well as any of the bot's clients.
    *
-   * @param {Order} order
-   *   Order sent by the CommandInterpreter, including the command arguments and more information.
    * @param {Resonance} resonance
    *   Resonance that invoked this command. All information about the client and message are here.
    */

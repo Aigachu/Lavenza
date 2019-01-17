@@ -51,6 +51,11 @@ export default class Prompt {
    */
   async listen(resonance) {
 
+    // If the resonance that was just heard is not from the same client, we do nothing.
+    if (resonance.client.type !== this.resonance.client.type) {
+      return;
+    }
+
     // We check the condition defined in this prompt. If it passes, we resolve it.
     if (await this.condition(resonance)) {
 
@@ -61,7 +66,7 @@ export default class Prompt {
       this.onResponse(resonance, this);
 
       // Disable this prompt since it's resolved.
-      this.disable();
+      await this.disable();
     }
   }
 

@@ -65,7 +65,7 @@ export default class Core {
 
     /*
      * Fire necessary preparations.
-     * The application can end here if we hit an error in the prep function.
+     * The application can end here if we hit an error in the prepare() function.
      */
     await this.prepare();
 
@@ -78,9 +78,10 @@ export default class Core {
   }
 
   /**
-   * Application preparation phase.
+   * Run all preparation tasks.
    *
-   * Make all necessary preparations before the application can run properly.
+   * This involves reading and parsing bot files, talent files and commands. Database preparations and instances are
+   * also prepared here.
    *
    * @returns {Promise.<void>}
    */
@@ -91,7 +92,7 @@ export default class Core {
 
     /*
      * Run preparation handler for the Gestalt service.
-     * We need to set all database management before we generate bots.
+     * We need to set up the database first and foremost.
      */
     await Gestalt.prepare();
 
@@ -103,7 +104,7 @@ export default class Core {
 
     /*
      * Run bootstrap handler for Gestalt.
-     * This is the process that creates and syncs the database.
+     * This is the process that makes sure all database collections that should exist, do exist.
      */
     await Gestalt.bootstrap();
 
@@ -129,14 +130,13 @@ export default class Core {
    * All execution tasks are ran here.
    *
    * @returns {Promise.<void>}
-   *   Returns a promise when the function is successfully completed.
    */
   static async run() {
 
     // Some more flavor.
     Lavenza.status("Commencing Lavenza's execution phase!");
 
-    // Deploy bots from the BotBunker.
+    // Deploy bots from the BotManager.
     await BotManager.deploy();
 
     // Separation.

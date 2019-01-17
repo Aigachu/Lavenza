@@ -8,7 +8,7 @@
 /**
  * Right now she is quite literally a copy paste of the good old legendary MaidenCooldownManager.
  *
- * NEEDS A REVAMP. @todo
+ * NEEDS A REVAMP. @TODO
  */
 export default class Makoto {
 
@@ -17,8 +17,10 @@ export default class Makoto {
    * Takes the client of the bot as an argument.
    */
   static async build() {
+
     // Instantiate the cooldowns object.
     this.cooldowns = {}; // @TODO - Save cooldowns in a database file.
+
   }
 
   /**
