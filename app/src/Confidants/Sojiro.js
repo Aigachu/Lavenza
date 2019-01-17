@@ -105,6 +105,7 @@ export default class Sojiro {
 
     // Technically we shouldn't reach here.
     return undefined;
+
   }
 
   /**
@@ -144,6 +145,7 @@ export default class Sojiro {
     }
 
     return false;
+
   }
 
   /**
@@ -183,8 +185,9 @@ export default class Sojiro {
    *   Evaluates to true if empty, false otherwise.
    */
   static isEmpty(variable) {
+
     // So underscore is cool and all...
-    // BUT any FUNCTION passed to its isEmpty evaluates to TRUE for...I don't know what reason.
+    // BUT any FUNCTION passed to its isEmpty() function evaluates to TRUE for...I don't know what reason.
     // Here we handle this case.
     if (typeof variable === 'function') {
       return false;
@@ -192,6 +195,7 @@ export default class Sojiro {
 
     // If it's not a function, underscore SHOULD cover the rest of the cases.
     return _.isEmpty(variable);
+
   }
 
   /**

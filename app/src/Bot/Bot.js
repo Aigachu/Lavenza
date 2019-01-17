@@ -16,7 +16,7 @@ import ClientTypes from "./Client/ClientTypes";
 /**
  * Provides a class for Bots.
  *
- * Bots are the fruit of this application. They're the whole point of it. And this is where it all begins.
+ * Bots are the fruit of this application. They're the whole point of it. And this is where it all happens!
  *
  * Configuration for bots are managed in a 'config.yml' file found in their folder. From there, functions in here
  * manage the authentication to the bot's clients and what talents the bot has.
@@ -75,7 +75,7 @@ export default class Bot {
   /**
    * Deployment handler for this Bot.
    *
-   * Authenticates the clients.
+   * Authenticates the clients and initializes talents.
    *
    * @returns {Promise.<void>}
    */
@@ -88,7 +88,9 @@ export default class Bot {
     await this.authenticateClients();
 
     // Await talent initializations for this bot.
+    // We do this AFTER authenticating clients. Some talents might need client info to perform their initializations.
     await this.initializeTalentsForBot();
+
   }
 
   /**
@@ -119,9 +121,9 @@ export default class Bot {
    * Custom Talents are configured in the Bot's configuration file. You must enter the ID (directory name) of
    * the talent in the bot's config so that it can be loaded here.
    *
-   * It's important to note that references to the Talents are never stored in the bot. Only the IDs are stored.
+   * It's important to note that Talent Classes are never stored in the bot. Only the IDs are stored.
    *
-   * Talents will always be accessed through the Manager itself.
+   * Talents will always be accessed through the TalentManager itself.
    *
    * @returns {Promise.<void>}
    */
@@ -152,9 +154,9 @@ export default class Bot {
    * @param {string} commandKey
    *   The key of the command to search for.
    *
-   * @returns {Lavenza.Command}
+   * @returns {Promise.<Lavenza.Command>}
    */
-  getCommand(commandKey) {
+  async getCommand(commandKey) {
     if (!Lavenza.isEmpty(this.commandAliases[commandKey])) {
       return this.commands[this.commandAliases[commandKey]];
     }
@@ -181,6 +183,7 @@ export default class Bot {
       this.commandAliases = Object.assign({}, this.commandAliases, TalentManager.talents[talent].commandAliases);
 
     }));
+
   }
 
   /**
@@ -205,6 +208,7 @@ export default class Bot {
       this.listeners = [...this.listeners, ...TalentManager.talents[talentKey].listeners]
 
     }));
+
   }
 
   /**
@@ -233,12 +237,14 @@ export default class Bot {
       // If it the load fails, we'll remove the talent from the bot's configuration.
       /** @catch Remove the talent from the configuration list. */
       await TalentManager.loadTalent(pathToTalent).catch(async error => {
+
         this.config.talents = Lavenza.removeFromArray(this.config.talents, talentKey);
 
         // Send a warning message to the console.
         await Lavenza.warn('Error occurred while loading the {{talent}} talent...', {talent: talentKey});
         await Lavenza.warn(error.message);
       });
+
     }));
   }
 
@@ -247,25 +253,24 @@ export default class Bot {
    *
    * Now, explanations.
    *
-   * This function will be used in clients to send a 'Message' back to the bot. This happens whenever a message
+   * This function will be used in clients to send a 'communication' back to the bot. This happens whenever a message
    * is 'heard', meaning that the bot is in a chat room and a message was sent by someone (or another bot).
    *
-   * When this function is run, we fetch the raw content of the message sent, and we build a Resonance object. This is
-   * a fancy name for an object that stores information about a Message received. Then, we send off the Resonance to
-   * the listeners that are on the bot.
+   * When this function is ran, we fetch the raw content of the message sent, and we build a Resonance object. This is
+   * a fancy name for an object that stores information about a received communication. Then, we send off the Resonance
+   * to the listeners that are on the bot.
    *
-   * Listeners will receive the Resonance, and then they react to them. Perfect example if the CommandListener, that
-   * will receive a Resonance and determine whether a command was ordered. Custom Talent Listeners can do whatever they
+   * Listeners will receive the Resonance, and then they react to them. Perfect example is the CommandListener, that
+   * will receive a Resonance and determine whether a command was issued. Custom Talent Listeners can do whatever they
    * want!
    *
    * @see ./Listener/Listener
-   * @see ../Model/Resonance
+   * @see ./Resonance/Resonance
    *
    * @param {*} message
    *   Message object heard from a client.
    * @param {*} client
    *   Client where the Message Object was heard from.
-   *
    */
   async listen(message, client) {
 
@@ -390,9 +395,6 @@ export default class Bot {
       // Await authentication of the bot.
       /** @catch Continue execution. */
       await this.clients[key].authenticate();
-
-      // Make sure database collection exists for this client.
-      await Lavenza.Gestalt.createCollection(`/bots/${this.id}/clients/${key}`);
 
       // Run appropriate bootstrapping depending on the client.
       await Lavenza.Gestalt.bootstrapClientDatabaseForBot(this, key);

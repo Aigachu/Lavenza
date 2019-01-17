@@ -21,7 +21,7 @@ import ClientTypes from "../Bot/Client/ClientTypes";
  * This class serves as the accessor for the main StorageService that Lavenza will be using. A Storage Service is
  * essentially the service that will access the database of the application, wherever it is stored. It is the job
  * of the StorageService to determine what type of data storage it will access, and the responsibility of it to
- * implement the necessary methods for Lavenza to work. It will adopt the structure of a REST protocol: GET
+ * implement the necessary methods for Lavenza to work. It MUST adopt the structure of a REST protocol: GET
  * POST, UPDATE & DELETE.
  *
  * We want to keep things simple and store JSON type data. In the future, we may explore SQL storage and the like.
@@ -48,81 +48,9 @@ export default class Gestalt {
   }
 
   /**
-   * Prepare database files for a specific client depending on the type.
-   *
-   * @param {Bot} bot
-   *   The bot to bootstrap for. Each bot has a separate database.
-   * @param {string} clientType
-   *   The client type to bootstrap for.
-   *
-   * @TODO - Put all this in factory design.
-   *
-   * @returns {Promise<void>}
-   */
-  static async bootstrapClientDatabaseForBot(bot, clientType) {
-
-    // Initialize i18n database collection for this client if it doesn't already exist.
-    await this.createCollection(`/i18n/${bot.id}/clients/${clientType}`);
-
-    // Depending on the client type, we create different database files.
-    switch (clientType) {
-
-      // For Discord Clients...
-      case ClientTypes.Discord: {
-
-        // Initialize i18n contexts, creating them if they don't exist.
-        // Translations are manageable through all of these contexts.
-        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/guilds`);
-        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/channels`);
-        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/users`);
-
-        // We start by syncing the guild configuration.
-        let guilds = await this.sync({}, `/bots/${bot.id}/clients/${clientType}/guilds`);
-        await Lavenza.wait(1); // @TODO - Fix this shit.
-
-        // This is the default guild configuration for Discord.
-        let defaultGuildConfig = {
-          cprefix: '',
-          operators: [],
-          masters: []
-        };
-
-        // For all guilds, we initialize this default configuration.
-        await Promise.all(bot.getClient(ClientTypes.Discord).guilds.map(async guild => {
-          if (!(guild.id in guilds)) {
-            guilds[guild.id] = defaultGuildConfig;
-          }
-          guilds[guild.id].name = `${guild.name}`;
-          await this.update(`/bots/${bot.id}/clients/${clientType}/guilds`, guilds)
-        }));
-        break;
-
-      }
-
-      // For Twitch Clients...
-      case ClientTypes.Twitch: {
-
-        // await this.sync({}, `/bots/${bot.id}/clients/${clientType}/channels`);
-        break;
-
-      }
-
-      // For Slack Clients...
-      case ClientTypes.Slack: {
-
-        // await this.sync({}, `/bots/${bot.id}/clients/${clientType}/workspaces`);
-        break;
-
-      }
-
-    }
-
-  }
-
-  /**
    * Bootstrap the database.
    *
-   * This creates all database collections needed for the application to function properly.
+   * This creates all database entries needed for the application to function properly.
    *
    * @returns {Promise<void>}
    */
@@ -189,22 +117,97 @@ export default class Gestalt {
 
     }));
 
-    // Await creation of the Bots collection.
+    // Await creation of the Talents collection.
     await this.createCollection('/talents');
 
-    // Await bootstrapping of each bot's data.
+    // Await bootstrapping of each talent's data.
     await Promise.all(Object.keys(TalentManager.talents).map(async talentKey => {
 
       // Get the actual talent.
       let talent = TalentManager.talents[talentKey];
 
-      // Initialize the database collection for this bot if it doesn't already exist.
+      // Initialize the database collection for this talent if it doesn't already exist.
       await this.createCollection(`/talents/${talent.id}`);
 
     }));
 
     // Some more flavor.
     await Lavenza.success("Gestalt database successfully bootstrapped!");
+  }
+
+  /**
+   * Prepare database files for a specific bot's client depending on the type.
+   *
+   * @param {Bot} bot
+   *   The bot to bootstrap for. Each bot has a separate database.
+   * @param {string} clientType
+   *   The client type to bootstrap for.
+   *
+   * @TODO - Put all this in factory design.
+   *
+   * @returns {Promise<void>}
+   */
+  static async bootstrapClientDatabaseForBot(bot, clientType) {
+
+    // Make sure database collection exists for this client for the given bot.
+    await this.createCollection(`/bots/${bot.id}/clients/${clientType}`);
+
+    // Initialize i18n database collection for this client if it doesn't already exist.
+    await this.createCollection(`/i18n/${bot.id}/clients/${clientType}`);
+
+    // Depending on the client type, we create different database files.
+    switch (clientType) {
+
+      // For Discord Clients...
+      case ClientTypes.Discord: {
+
+        // Initialize i18n contexts, creating them if they don't exist.
+        // Translations are manageable through all of these contexts.
+        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/guilds`);
+        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/channels`);
+        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/users`);
+
+        // We start by syncing the guild configuration.
+        let guilds = await this.sync({}, `/bots/${bot.id}/clients/${clientType}/guilds`);
+        await Lavenza.wait(1); // @TODO - Fix this bullshit.
+
+        // This is the default guild configuration for Discord.
+        let defaultGuildConfig = {
+          cprefix: '',
+          operators: [],
+          masters: []
+        };
+
+        // For all guilds, we initialize this default configuration.
+        await Promise.all(bot.getClient(ClientTypes.Discord).guilds.map(async guild => {
+          if (!(guild.id in guilds)) {
+            guilds[guild.id] = defaultGuildConfig;
+          }
+          guilds[guild.id].name = `${guild.name}`;
+          await this.update(`/bots/${bot.id}/clients/${clientType}/guilds`, guilds)
+        }));
+        break;
+
+      }
+
+      // For Twitch Clients...
+      case ClientTypes.Twitch: {
+
+        // await this.sync({}, `/bots/${bot.id}/clients/${clientType}/channels`);
+        break;
+
+      }
+
+      // For Slack Clients...
+      case ClientTypes.Slack: {
+
+        // await this.sync({}, `/bots/${bot.id}/clients/${clientType}/workspaces`);
+        break;
+
+      }
+
+    }
+
   }
 
   /**

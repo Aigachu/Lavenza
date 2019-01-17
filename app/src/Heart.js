@@ -68,6 +68,7 @@ colors.setTheme({
 import arp from 'app-root-path';
 let RootPath = arp.path;
 let Keys = {
+
   // Core functionality folders name.
   CORE_FUNCTIONALITY_FOLDER_NAME: 'core',
 
@@ -79,6 +80,7 @@ let Keys = {
 
   // The name of the folder containing talents.
   TALENTS_FOLDER_NAME: 'talents',
+
 };
 
 // Import the filesystem.

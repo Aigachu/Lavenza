@@ -28,7 +28,7 @@ export default class Talent {
    * their properties.
    *
    * @param {Object} config
-   *   The configuration used to build the Talent. Provided from a '?.info.yml' file found in the Talent's folder.
+   *   The configuration used to build the Talent. Provided from a '?.config.yml' file found in the Talent's folder.
    *
    * @returns {Promise.<void>}
    */
@@ -43,7 +43,7 @@ export default class Talent {
     await this.loadCommands().catch(Lavenza.continue);
 
     // Await the process of loading listeners.
-    /** @catch Continue execution. */
+    /** @catch Pocket error and continue. */
     await this.loadListeners().catch(Lavenza.pocket);
 
   }
@@ -63,7 +63,7 @@ export default class Talent {
     // Set the path to the talent's global database.
     this.databases.global = `/talents/${this.id}`;
 
-    // Set the path talent's bot specific database.
+    // Set the path to the talent's bot specific database.
     this.databases[bot.id] = `/bots/${bot.id}/talents/${this.id}`;
 
   }
@@ -86,7 +86,7 @@ export default class Talent {
   }
 
   /**
-   * Auto-Load all commands from the 'Commands' folder nested in the Talent's directory.
+   * Auto-Load all commands from the 'hooks/Commands' folder nested in the Talent's directory.
    *
    * Commands can't necessarily be added alone. They must be bundled in a Talent. This function fetches them all from
    * the 'Commands' folder.
@@ -101,8 +101,8 @@ export default class Talent {
 
     // Determine the path to this Talent's commands.
     // Each command has its own directory. We'll get the list here.
-    /** @catch Pocket error. */
     let commandDirectoriesPath = this.directory + '/hooks/Commands';
+    /** @catch Pocket error. */
     let commandDirectories = await Lavenza.Akechi.getDirectoriesFrom(commandDirectoriesPath).catch(Lavenza.pocket);
 
     // We'll throw an error for this function if the 'Commands' directory doesn't exist or is empty.
@@ -112,7 +112,6 @@ export default class Talent {
     }
 
     // We'll now act on each command directory found.
-    /** @catch Continue execution. */
     await Promise.all(commandDirectories.map(async directory => {
 
       // The name of the command will be the directory name.
@@ -120,7 +119,6 @@ export default class Talent {
 
       // Get the config file for the command.
       // Each command should have a file with the format 'COMMAND_NAME.config.yml'.
-      /** @catch Continue execution. */
       let configFilePath = directory + '/' + name.toLowerCase() + '.config.yml';
       let config = await Lavenza.Akechi.readYamlFile(configFilePath).catch(Lavenza.continue);
 
@@ -156,7 +154,7 @@ export default class Talent {
   }
 
   /**
-   * Auto-Load all listeners from the 'Listeners' folder nested in the Talent's directory.
+   * Auto-Load all listeners from the 'hooks/Listeners' folder nested in the Talent's directory.
    *
    * Listeners are other entities that are used to...Pretty much LISTEN to messages received by clients.
    * Listeners then decide what to do with these messages they hear.

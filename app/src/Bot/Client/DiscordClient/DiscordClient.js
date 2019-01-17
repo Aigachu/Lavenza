@@ -6,7 +6,6 @@
  */
 
 // Imports.
-import ClientTypes from '../ClientTypes';
 import DiscordJS, {Client as DiscordJSClient, RichEmbed as Embed, Attachment} from 'discord.js';
 
 /**
@@ -36,7 +35,7 @@ export default class DiscordClient extends DiscordJSClient {
     this.bot = bot;
 
     // Just a utility value to track the client type.
-    this.type = ClientTypes.Discord;
+    this.type = Lavenza.ClientTypes.Discord;
 
     // Assign configurations to the client.
     this.config = config;
@@ -51,7 +50,7 @@ export default class DiscordClient extends DiscordJSClient {
 
     // Event: When the discord client receives a message.
     this.on('message', (message) => {
-      this.bot.listen(message, this);
+      this.bot.listen(message, this).catch(Lavenza.continue);
     });
 
     // Event: When the clients disconnects from Discord.
@@ -148,7 +147,6 @@ export default class DiscordClient extends DiscordJSClient {
       attachments: [
         image.attachment
       ],
-
     });
   }
 
@@ -259,6 +257,7 @@ export default class DiscordClient extends DiscordJSClient {
    * @returns {Promise<void>}
    */
   async authenticate() {
+
     // Get the token.
     let token = process.env[`${this.bot.id.toUpperCase()}_DISCORD_TOKEN`];
 
@@ -271,5 +270,6 @@ export default class DiscordClient extends DiscordJSClient {
     await super.login(token).catch(async error => {
       await Lavenza.throw('Failed to authenticate Discord client for {{bot}}.', {bot: this.bot.id});
     });
+
   }
 }

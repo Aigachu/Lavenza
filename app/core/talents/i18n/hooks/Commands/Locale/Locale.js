@@ -19,7 +19,7 @@ export default class Hello extends Lavenza.Command {
    */
   static async execute(resonance) {
 
-    // If set is the first argument, we allow the user to set locale settings for themselves.
+    // If "set" is the first argument, we allow the user to set locale settings for themselves.
     // @TODO - This will be much more intricate later on!
     if (resonance.order.args._[0] === 'set') {
       let locale = resonance.order.args._[1];

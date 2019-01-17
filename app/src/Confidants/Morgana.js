@@ -5,9 +5,6 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-// Imports.
-import _ from 'underscore';
-
 /**
  * Provides a class that handles input/output to the console & errors.
  *
@@ -43,31 +40,37 @@ export default class Morgana {
     switch (type) {
 
       // Status messages.
-      case 'status':
+      case 'status': {
         console.log(output.status);
         break;
+      }
 
       // Warning messages.
-      case 'warning':
+      case 'warning': {
         console.log(output.warning);
         break;
+      }
 
       // Success messages.
-      case 'success':
+      case 'success': {
         console.log(output.success);
         break;
+      }
 
       // Error messages.
-      case 'error':
+      case 'error': {
         // Send default error message.
         console.log(output.error);
         break;
+      }
 
       // By default, do a regular log.
-      default:
+      default: {
         console.log(output);
         break;
+      }
     }
+
   }
 
   /**

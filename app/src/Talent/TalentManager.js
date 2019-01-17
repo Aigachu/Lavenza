@@ -90,7 +90,7 @@ export default class TalentManager {
     // Get the talent name. This is in fact the name of the directory.
     let name = path.basename(directory);
 
-    // @TODO - The persona name should be checked for a specific format. Only snake_case should be accepted.
+    // @TODO - The talent name should be checked for a specific format. Only snake_case should be accepted.
 
     // Get the info file for the talent.
     /** @catch Pocket error. */
@@ -122,4 +122,5 @@ export default class TalentManager {
     this.talents[name] = talent;
 
   }
+  
 }

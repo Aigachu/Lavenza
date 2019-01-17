@@ -143,7 +143,7 @@ export default class BotManager {
 
       // If for some reason, bot directories could not be loaded, we stop the app.
       if (botDirectories === undefined) {
-        await Lavenza.throw("Other than the 'example' folder, no bot folders seem to exist at /app/bots. The whole point of this app is to run bots, so create one!");
+        await Lavenza.throw("Other than the 'example' folder, no bot folders seem to exist in /app/bots. The whole point of this app is to run bots, so create one!");
       }
     }
 
