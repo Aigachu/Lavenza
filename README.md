@@ -86,7 +86,7 @@ Report any issues to me. I'll always prioritize issues pertaining to the setup o
 
 Here is a quick list of many features Lavenza has, for you to get a feel for it!
 
-### Core Features
+### Core
 
 #### Multi-Bot Instances
 You can run as many bots as you want at once! Each bot can have it's own commands and configurations.
@@ -121,27 +121,90 @@ Permissions per command can be configured easily with the **oplevel** concept. A
 #### Premade Talents
 Many talents for common commands such as `!coinflip` or `!rolldice` already exist. They can be used as examples to make your own commands.
 
+***Client Specific features documentation coming soon!***
+
 ## The Framework
 
 ### The 'Lavenza' Global
+As development progressed, the convenience of a Global definitely came into play. When using the framework, a global named `Lavenza` is made available across the code, housing all the functions needed to access common utilities.
 
-***Documentation soon...I promise...***
-
-#### Confidants
-
-***Documentation soon...I promise...***
+In many examples below, you will see this global being used. To check what's actually in the Global, refer to `/app/core/lib/Heart.js`.
 
 ### Gestalt
 
 #### The Database Structure
+All data is stored in YML files for ease of reading. It's quite simple. When using Gestalt, you simply determine the path to the file or directory you want to load/modify/create.
 
-***Documentation soon...I promise...***
+Querying a directory will automatically return the data in object format, reading the contents of all yml files in the directory. Additionally, it will process sub-directories recursively.
+
+```
+// Example of getting some data.
+// This will get the contents of the /app/database/bots/lavenza/config YAML file.
+let data = await Lavenza.Gestalt.get(`/bots/lavenza/config`);
+
+// Example of creating a collection of data (a directory).
+// This will create the /app/database/bots/lavenza/cookies directory.
+await Lavenza.Gestalt.createCollection(`/bots/lavenza/cookies`);
+
+// Example of adding data to the cookies directory.
+// This will create a YAML file at the path, with the data provided.
+await Lavenza.Gestalt.post(`/bots/lavenza/cookies/oreo`, {chocolate: true, milk: true});
+
+// Example of getting all cookies data.
+// This will get the contents of the cookies directory, load all the YAMLs inside, and return an object.
+let data = await Lavenza.Gestalt.get(`/bots/lavenza/cookies`);
+```
+
+Get familiar with this example to understand how it works!
 
 #### Future of Gestalt
+In the future, we will aim to plug a more modern database storage service into Gestalt. It's made so that future implementations should be easily pluggable. For now, database storage in files seems to do the job nicely.
 
-***Documentation soon...I promise...***
+### Translation
 
-## Talents
+#### Translating strings in the code
+String translation can easily be achieved using Lavenza's `__()` function. Here's an example of how you would get the translation of `Hello`.
+
+```
+// Set the english string.
+let hello = 'Hello';
+
+// Get the French version.
+let frenchHello = await Lavenza.__('Hello', 'fr');
+
+// Get the Japanese version.
+let japaneseHello = await Lavenza.__('Hello', 'ja');
+```
+
+Below are more complex examples of translation, covering specific cases such as: added variables to translation, specifying a locale or not & using markdown.
+
+```
+// Adding variables.
+let frenchHello = await Lavenza.__('Hello {{personName}}', {personName: 'Kyle'}, 'fr');
+
+// Using Markdown.
+// Coming soon!
+```
+
+#### Storage Files
+Translations are stored in the `/app/lang` folder. There will be a file for each language. This directory is normally empty at first, and the files will be generated as you trigger translation for specific languages in the code.
+
+The default language will always be English, and all strings should be written in English in the code.
+
+When you trigger a translation in the code, a file for the language you are translating to is automatically created. It then assumes you will translate it manually in the files. _Unless_ you use Google Translate. More on that below!
+
+#### Google Translate
+A neat feature in Lavenza is the ability to activate Google Translate. It will serve as a fallback when translations don't exist in a language you attempt to translate a string to.
+
+So if you try to translate `'Hello'` from English to French, but the French translation doesn't exist in the `/app/lang/fr.json` file, it will use Google Translate to translate it to `'Bonjour'`, and even save it in your fr.json file for future use.
+
+This feature is disabled by default, but can be enabled by setting it to `true` in the `/app/.env` file.
+
+For this feature to actually work, you're going to need to set up an account with google, as well as get familiar with the Google Cloud API. All needed documentation to get this up and running is found [here](https://cloud.google.com/docs/authentication/getting-started).
+
+If you follow the steps correctly, you should end up with a `.json` file containing an access key to your Cloud service account. The path to this file must be provided in the `/app/.env` file to allow any Google features to work properly.
+
+### Talents
 
 Lavenza II is designed as a plugin-based system centered around what we call **Talents**.
 
@@ -155,21 +218,41 @@ This Talent is built using the most basic structure and overviews the features o
 
 The beauty of Talents is that they are **abstract by nature**. They leave the possibility to add very pushed functionality into them and can even be seen as sub-applications that attach to your bot.
 
-### Structure of a Talent
+There are **Core** Talents, provided with the framework and that can be enabled already. Otherwise, you can build your own talents and add them to the `/app/talents` folder.
 
-### Talent Hooks
+For an example Talent to base yourself on, definitely take a look at `/app/core/talents/example`.
 
-#### Commands
+#### Structure of a Talent
 
-##### Authority & OpLevel
+***Coming soon...I promise...***
 
-#### Listeners
+#### Talent Hooks
 
-***Documentation soon...I promise...***
+***Coming soon...I promise...***
+
+##### Commands
+
+***Coming soon...I promise...***
+
+##### Listeners
+
+***Coming soon...I promise...***
+
+### Commands
+
+***Coming soon...I promise...***
+
+#### Authority & OpLevel
+
+***Coming soon...I promise...***
 
 ## Building & Deployment
 
-***Documentation soon...I promise...***
+Currently, the code is only configured to deploy on **Luxanna**, my personally rented and hosted server. To even use the build commands, you must have SSH Key access to **Luxanna**.
+
+It's not a priority right now, but in the future I will streamline and generalize the build process more, to make it easier for people using the repository to set up deployments on Servers.
+
+For now, feel free to take a look at what I have in the build folder so far. If you want to host your application on your own server, you can base yourself on what's there & ask me for help or tips! Though I will say, what's there right now is very lazily and quickly coded! It can be 100 times better. :)
 
 ----
 

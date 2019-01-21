@@ -7,7 +7,7 @@
 
 // Modules.
 import DiscordJS from "discord.js";
-import ClientTypes from "../../src/Bot/Client/ClientTypes";
+import ClientTypes from "../../lib/Bot/Client/ClientTypes";
 
 // I have to include twitch-api-v5 in the old way because this package isn't ES6 ready...GROSS!!!
 const twitch = require('twitch-api-v5');

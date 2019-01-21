@@ -12,7 +12,7 @@
  *
  * A great testing command.
  */
-export default class Hello extends Lavenza.Command {
+export default class TestOne extends Lavenza.Command {
 
   /**
    * @inheritDoc

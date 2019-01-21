@@ -10,6 +10,10 @@ version: 0.2.0
 # Path to the main class of the Talent, relative to this directory.
 class: 'Reminder'
 
+# Set dependencies for this talent.
+# This talent will not be enabled if any of its dependencies aren't enabled.
+dependencies: []
+
 # Determine which clients this talent should be enabled in.
 clients:
   - discord
