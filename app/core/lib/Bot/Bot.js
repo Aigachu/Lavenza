@@ -129,22 +129,19 @@ export default class Bot {
    */
   async grantTalents() {
 
-    // Start by setting the core talent list to the bot.
-    this.talents = TalentManager.coreTalentList;
-
-    // Check if there are custom talents defined.
+    // Check if there are talents set in configuration.
     if (Lavenza.isEmpty(this.config.talents)) {
-      await Lavenza.warn('Talents configuration missing for {{bot}}. Only core talents will be loaded.', {bot: this.id});
+      await Lavenza.warn('Talents configuration missing for {{bot}}. The bot will not have any features!', {bot: this.id});
       return;
     }
 
     // Await validation of custom talents configured.
     // This basically checks if the talents entered are valid. Invalid ones are removed from the array.
-    await this.validateCustomTalents();
+    await this.validateTalents();
 
     // After validations are complete, we merge the core talents defined for the bot, with the custom ones.
     // This completes the list of talents assigned to the bot.
-    this.talents = [...this.talents, ...this.config.talents];
+    this.talents = this.config.talents;
 
   }
 
@@ -218,7 +215,7 @@ export default class Bot {
    *
    * @returns {Promise.<void>}
    */
-  async validateCustomTalents() {
+  async validateTalents() {
 
     // Await the processing of all talents in the bot's config object.
     await Promise.all(this.config.talents.map(async (talentKey) => {
@@ -230,13 +227,10 @@ export default class Bot {
         return;
       }
 
-      // Compute the path to the talent, should it exist.
-      let pathToTalent = Lavenza.Paths.TALENTS.CUSTOM + '/' + talentKey;
-
       // Await the loading of the talent.
       // If it the load fails, we'll remove the talent from the bot's configuration.
       /** @catch Remove the talent from the configuration list. */
-      await TalentManager.loadTalent(pathToTalent).catch(async error => {
+      await TalentManager.loadTalent(talentKey).catch(async error => {
 
         this.config.talents = Lavenza.removeFromArray(this.config.talents, talentKey);
 

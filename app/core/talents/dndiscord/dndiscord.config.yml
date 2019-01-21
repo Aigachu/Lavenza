@@ -1,14 +1,18 @@
 # Read-Friendly Name of the Talent.
-name: 'Twitch Notify Talent'
+name: 'Dungeons & Discord Talent'
 
 # Talent description.
-description: 'Customize notifications for live channels on Twitch.'
+description: 'The ultimate Dungeons & Discord feature!'
 
 # Talent Version.
 version: 1.0.0
 
 # Path to the main class of the Talent, relative to this directory.
-class: 'TwitchNotify'
+class: 'DnDiscord'
+
+# Set dependencies for this talent.
+# This talent will not be enabled if any of its dependencies aren't enabled.
+dependencies: []
 
 # Determine which clients this talent should be enabled in.
 clients:

@@ -11,7 +11,7 @@
 // Includes Babelify.
 // This file will use Babel to compile all of our ES6 code into code that NodeJS can run properly.
 // Since we want a head start on ES6, we use this! NodeJS is not fully compatible with ES6 quite yet.
-require('./includes/babelify');
+require('./core/includes/babelify');
 
 // Load CLI arguments.
 let argv = require('minimist')(process.argv.slice(2));

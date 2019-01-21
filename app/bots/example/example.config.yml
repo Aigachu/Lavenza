@@ -14,6 +14,7 @@ command_prefix: ';-'
 
 # Default Locale.
 # Set the default language the bot will speak in.
+# Be advised that without Google Translate enabled, the bot will talk in English at first regardless.
 locale: 'en'
 
 # Talents configuration.
