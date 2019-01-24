@@ -14,5 +14,6 @@ export default {
   Discord: 'discord',
   Twitch: 'twitch',
   Slack: 'slack',
+  Youtube: 'youtube', // Coming soon in V3!...
   Skype: 'a funny joke',
 };

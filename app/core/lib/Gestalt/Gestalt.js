@@ -76,7 +76,7 @@ export default class Gestalt {
       await this.createCollection(`/i18n/${bot.id}/clients`);
 
       // Await the synchronization of data between the Bot's default configuration and the database configuration.
-      bot.config = await this.sync(bot.config, `/bots/${bot.id}/config`);
+      await this.sync(bot.config, `/bots/${bot.id}/config`);
 
       // Create a database collection for the talents granted to a bot.
       await this.createCollection(`/bots/${bot.id}/talents`);
@@ -105,10 +105,10 @@ export default class Gestalt {
         let command = bot.commands[commandKey];
 
         // Create a database collection for commands belonging to a Bot.
-        await this.createCollection(`/bots/${bot.id}/commands/${command.config.key}`);
+        await this.createCollection(`/bots/${bot.id}/commands/${command.id}`);
 
         // Await the synchronization of data between the Command's default configuration and the database configuration.
-        await this.sync(command.config, `/bots/${bot.id}/commands/${command.config.key}/config`);
+        await this.sync(command.config, `/bots/${bot.id}/commands/${command.id}/config`);
 
       }));
 
@@ -193,7 +193,30 @@ export default class Gestalt {
       // For Twitch Clients...
       case ClientTypes.Twitch: {
 
-        // await this.sync({}, `/bots/${bot.id}/clients/${clientType}/channels`);
+        // Initialize i18n contexts, creating them if they don't exist.
+        // Translations are manageable through all of these contexts.
+        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/channels`);
+        await this.sync({}, `/i18n/${bot.id}/clients/${clientType}/users`);
+
+        // We start by syncing the guild configuration.
+        let channels = await this.sync({}, `/bots/${bot.id}/clients/${clientType}/channels`);
+        await Lavenza.wait(1); // @TODO - Fix this bullshit.
+
+        // This is the default guild configuration for Discord.
+        let defaultChannelConfig = {
+          cprefix: '',
+          operators: [],
+          masters: []
+        };
+
+        // For all guilds, we initialize this default configuration.
+        let config = await bot.getClientConfig(ClientTypes.Twitch);
+        await Promise.all( config.channels.map(async channel => {
+          if (!(channel in channels)) {
+            channels[channel] = defaultChannelConfig;
+          }
+          await this.update(`/bots/${bot.id}/clients/${clientType}/channels`, channels)
+        }));
         break;
 
       }

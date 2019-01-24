@@ -5,6 +5,13 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Modules.
+import {Message as DiscordJSMessage, Channel as DiscordJSChannel, User as DiscordJSUser} from 'discord.js';
+
+// Imports.
+import TwitchUser from '../Client/TwitchClient/TwitchUser';
+import TwitchChannel from '../Client/TwitchClient/TwitchChannel';
+
 /**
  * Provides a model that regroups information about a message received from a client.
  *
@@ -50,6 +57,7 @@ export default class Resonance {
   async build() {
     this.origin = await this.resolveOrigin();
     this.locale = await this.getLocale();
+    this.private = await this.resolvePrivacy();
   }
 
   /**
@@ -79,6 +87,25 @@ export default class Resonance {
    *
    * This will send a formatted reply to the Resonance, replying directly to the message that was heard.
    *
+   * @param {*} content
+   *   Content to send back.
+   *
+   * @returns {Promise<*>}
+   *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
+   *   act upon it if needed.
+   */
+  async reply(content) {
+
+    // Basically call the send method, but we already know the destination.
+    return await this.send(this.origin, content);
+
+  }
+
+  /**
+   * Reply to the current resonance, with a translating the string.
+   *
+   * This will send a formatted reply to the Resonance, replying directly to the message that was heard.
+   *
    * We make this function flexible, similar to how i18n.__() works. It will allow multiple definitions for function
    * calls and act depending on what types of parameters are given.
    *
@@ -89,18 +116,41 @@ export default class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  async reply(...parameters) {
+  async __reply(...parameters) {
 
     // Parse the parameters obtained.
     let params = await Lavenza.Sojiro.parseI18NParams(parameters);
 
     // Basically call the send method, but we already know the destination.
-    return await this.send(this.origin, {phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED').catch(Lavenza.stop);
+    return await this.__send(this.origin, {phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED').catch(Lavenza.stop);
 
   }
 
   /**
    * Send a message to a destination using information from the resonance.
+   *
+   * This will send a formatted message to it's destination.
+   *
+   * This function acts as a shortcut to sending messages back to a resonance.
+   *
+   * @param {*} destination
+   *   Destination to send this message to.
+   * @param {*} content
+   *   Content to send back to the destination.
+   *
+   * @returns {Promise<*>}
+   *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
+   *   act upon it if needed.
+   */
+  async send(destination, content) {
+
+    // And finally we can send the message to the destination.
+    return await this.doSend(destination, content);
+
+  }
+
+  /**
+   * Send a message to a destination using information from the resonance, translating the text.
    *
    * This will send a formatted message to it's destination.
    *
@@ -119,7 +169,7 @@ export default class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  async send(destination, ...parameters) {
+  async __send(destination, ...parameters) {
 
     // Parse the parameters obtained.
     let params = await Lavenza.Sojiro.parseI18NParams(parameters);
@@ -137,6 +187,23 @@ export default class Resonance {
     // Now, using the information from the parameters, we fetch necessary translations.
     let content = await Lavenza.__({phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED');
 
+    // Depending on the type of client the Destination is from, we want to send using the appropriate methods.
+    // In the case of Discord, we check if the destination is an instance of any of the DiscordJS classes.
+    if (destination instanceof DiscordJSMessage || destination instanceof DiscordJSUser || destination instanceof DiscordJSChannel) {
+
+      // We fire the DiscordResonance's sending method.
+      return await this.DiscordResonance.doSend(destination, content);
+
+    }
+
+    // Twitch objects will contain these kinds of properties.
+    if (typeof destination === 'string' || destination instanceof TwitchUser || destination instanceof TwitchChannel) {
+
+      // We fire the TwitchResonance's sending method.
+      return await this.TwitchResonance.doSend(destination, content);
+
+    }
+
     // And finally we can send the message to the destination.
     return await this.doSend(destination, content);
 
@@ -152,7 +219,7 @@ export default class Resonance {
    * @param {string} content
    *   Content of the message to send back.
    */
-  async doSend(destination, content) {
+  static async doSend(destination, content) {
     console.log(destination);
     console.log(content);
     await Lavenza.throw('Tried to fire abstract method doSend(). You must implement a doSend() method in the {{class}} class.', {class: this.constructor});
@@ -168,7 +235,7 @@ export default class Resonance {
   }
 
   /**
-   * Obtain the origin of the message.
+   * Determine the origin of the message.
    *
    * Depending on the client, the origin will be determined differently. The goal is to be able to easily send
    * anything back to the origin, without necessarily having to go get it.
@@ -178,6 +245,19 @@ export default class Resonance {
    */
   resolveOrigin() {
     Lavenza.throw('Tried to fire abstract method resolveOrigin(). You must implement a resolveOrigin() method in the {{class}} class.', {class: this.constructor});
+  }
+
+  /**
+   * Determine whether or not this resonance was a private message to the bot.
+   *
+   * Depending on the client, the privacy will be determined differently. The goal is to be able to easily send
+   * anything back privately if needed.
+   *
+   * @return {*}
+   *   Privacy of the message. Depending on the client's checks, it will return either 'public' or 'private'.
+   */
+  resolvePrivacy() {
+    Lavenza.throw('Tried to fire abstract method resolvePrivacy(). You must implement a resolvePrivacy() method in the {{class}} class.', {class: this.constructor});
   }
 
 }

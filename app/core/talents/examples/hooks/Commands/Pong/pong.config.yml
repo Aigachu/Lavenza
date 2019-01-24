@@ -1,24 +1,19 @@
 # Reader-Friendly name of the command.
-name: 'TestOne'
+name: 'Pong Command'
 
 # Command description. This may be used in the bot and seen by users. Make it good!
-description: 'Provide the first simple test example.'
+description: 'The final example, containing more advanced implementations of Lavenza.'
 
 # Path to the main class containing the logic of the command, relative to this directory.
-class: 'TestOne'
+class: 'Pong'
 
 # Command key. This is what users will use to invoke the command.
-key: 'testone'
+key: 'pong'
 
 # Additional "keys" that can be used to invoke the command.
 aliases:
-  - 't1'
-  - 'test1'
-
-# Set whether or not this command is activated by default.
-# A deactivated command is only accessible if you or your environment are whitelisted.
-# Default: true
-# active: true
+  - 'pongu'
+  - 'pongo'
 
 # Command Input, Options & Flags.
 #   > Input - Raw text input that normally comes after the command key.
@@ -29,10 +24,8 @@ aliases:
 # Input: "me", Flag: "-d", Option: "-n" with its value being "2".
 #
 # This is not compulsory, but can be used to extend command versatility.
-# Arguments are parsed regardless of the configuration entered here.
-# If the values below are populated, extra validation will be
+# Arguments are parsed regardless of the data entered here. If these values are populated, extra validation will be
 # done upon command invocations to make sure valid options / arguments are provided.
-# Additionally, the values in this configuration will be used to fuel the --help calls for this command.
 #input:
 #  requests:
 #    - 'user'
@@ -51,15 +44,14 @@ aliases:
 #    description: 'Say hello in dms instead.'
 #    oplevel: 0
 
-# Configure the cooldown of the command.
+# Configure the global cooldown of the command.
 # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
 cooldown:
   global: 0
-  user: 5
+  user: 0
 
 # Clients where this command will function.
 # If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.
-# In the command's class, you can set up checks or factories to manage what to do with each client.
 clients: '*'
 
 # Client specific configurations.
@@ -84,26 +76,38 @@ clients.config:
         users: []
 
       # Determines whether or not this command can work in direct messages with the bot.
-      # Default: false
       pms: false
 
       # Determines level of operation needed to use this command. A value of 0 means everyone can use it.
-      # 3 - Can only be used by GODS.
-      # 2 - Can only be used by Masters & GODS.
-      # 1 - Can only be used by Operators, Masters & GODS.
-      # 0 - Can be used by anyone and everyone.
-      # Default: 0
       oplevel: 0
 
-    # Configure the cooldown of the command in the context of Discord.
-    # This will overwrite above configuration if set.
+    # Cooldown overrides for Discord, if needed.
     # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
     cooldown:
       global: 0
-      user: 5
+      user: 0
 
-#  twitch:
-#    authorization: []
+  twitch:
+
+    # Authorization configuration.
+    authorization:
+
+      # Blacklist - Prevent use of the command in certain contexts.
+      blacklist:
+        channels: []
+        users: []
+
+      # Whitelist - Permit use of the command in contexts where the command is globally blacklisted.
+      whitelist:
+        channels: []
+        users: []
+
+    # Cooldown overrides for Discord, if needed.
+    # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
+    cooldown:
+      global: 0
+      user: 0
+
 #
 #  slack:
 #    authorization: []

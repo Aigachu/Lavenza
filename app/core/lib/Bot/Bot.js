@@ -47,6 +47,89 @@ export default class Bot {
   }
 
   /**
+   * Deployment handler for this Bot.
+   *
+   * Authenticates the clients and initializes talents.
+   *
+   * @returns {Promise.<void>}
+   */
+  async deploy() {
+
+    // Await client initialization.
+    await this.initializeClients();
+
+    // Await clients authentication.
+    await this.authenticateClients();
+
+    // Await building of architect.
+    await this.materializeArchitect();
+
+    // Await talent initializations for this bot.
+    // We do this AFTER authenticating clients. Some talents might need client info to perform their initializations.
+    await this.initializeTalentsForBot();
+
+  }
+
+  /**
+   * Preparation handler for the Bot.
+   *
+   * Initializes clients, talents, commands and listeners.
+   *
+   * @returns {Promise.<void>}
+   */
+  async prepare() {
+
+    // Await talent grants.
+    await this.grantTalents();
+
+    // Await command inheritance.
+    await this.setCommands();
+
+    // Await listener initialization & inheritance.
+    await this.setListeners();
+
+  }
+
+  /**
+   * For each client, we build the architect's identification and data.
+   *
+   * We should be able to access the architect from the bot at all times.
+   *
+   * @returns {Promise<void>}
+   */
+  async materializeArchitect() {
+
+    // Initialize architect object.
+    this.architect = {};
+
+    // Await processing of all clients.
+    await Promise.all(this.clients.map(async client => {
+
+      // Get the client's configuration.
+      let config = await this.getClientConfig(client.type);
+
+      // Depending on the type of client, we act accordingly.
+      switch(client.type) {
+
+        // In Discord, we fetch the architect's user using the ID.
+        case Lavenza.ClientTypes.Discord: {
+          this.architect.discord = await client.fetchUser(config.architect);
+          break;
+        }
+
+        // In Twitch, we build a custom object using only the username.
+        // @TODO - Build a TwitchUser object using the client.
+        case Lavenza.ClientTypes.Twitch: {
+          this.architect.twitch = {username: config.architect};
+          break;
+        }
+
+      }
+
+    }));
+  }
+
+  /**
    * Get the active configuration from the database for this Bot.
    *
    * @returns {Promise<Object>}
@@ -73,43 +156,26 @@ export default class Bot {
   }
 
   /**
-   * Deployment handler for this Bot.
+   * Retrieve configuration for a specific client in a bot.
    *
-   * Authenticates the clients and initializes talents.
+   * @param {string} clientType
+   *   The type of client configuration to return for the bot.
    *
-   * @returns {Promise.<void>}
+   * @returns {Promise<void>}
+   *   The requested client.
    */
-  async deploy() {
+  async getClientConfig(clientType) {
 
-    // Await client initialization.
-    await this.initializeClients();
+    // Determine path to client configuration.
+    let pathToClientConfig = `${this.directory}/${clientType}.yml`;
 
-    // Await clients authentication.
-    await this.authenticateClients();
+    // Attempt to fetch client configuration.
+    if (!await Lavenza.Akechi.fileExists(pathToClientConfig)){
+      return undefined;
+    }
 
-    // Await talent initializations for this bot.
-    // We do this AFTER authenticating clients. Some talents might need client info to perform their initializations.
-    await this.initializeTalentsForBot();
-
-  }
-
-  /**
-   * Preparation handler for the Bot.
-   *
-   * Initializes clients, talents, commands and listeners.
-   *
-   * @returns {Promise.<void>}
-   */
-  async prepare() {
-
-    // Await talent grants.
-    await this.grantTalents();
-
-    // Await command inheritance.
-    await this.setCommands();
-
-    // Await listener initialization & inheritance.
-    await this.setListeners();
+    // Load configuration since it exists.
+    return await Lavenza.Akechi.readYamlFile(pathToClientConfig);
 
   }
 
@@ -364,8 +430,11 @@ export default class Bot {
         return message.content;
       }
 
-      // case ClientTypes.Twitch:
-      //   return message;
+      // In the case of Discord, we get the 'content' property of the message object.
+      // For Twitch, the Message object is custom built.
+      case ClientTypes.Twitch: {
+        return message.content;
+      }
 
       // case ClientTypes.Slack:
       //   return message;
@@ -407,17 +476,23 @@ export default class Bot {
   async initializeClients() {
 
     // Get the keys of the clients, that should match the names defined in ClientTypes.
-    let clientKeys = Object.keys(this.config.clients);
-
-    // Get active config once.
-    let activeConfig = await this.getActiveConfig();
+    let clientIds = this.config.clients;
 
     // Await the processing and initialization of all clients in the configurations.
-    await Promise.all(clientKeys.map(async key => {
+    await Promise.all(clientIds.map(async id => {
+
+      // Load configuration since it exists.
+      let clientConfig = await this.getClientConfig(id);
+
+      if (Lavenza.isEmpty(clientConfig)) {
+        await Lavenza.warn('Configuration file could not be loaded for the {{client}} client in {{bot}}. This client will not be instantiated.' +
+          'To create a configuration file, you can copy the ones found in the "example" bot folder.', {client: id, bot: this.id});
+        return;
+      }
 
       // Uses the ClientFactory to build the appropriate factory given the type.
       // The client is then set to the bot.
-      this.clients[key] = await ClientFactory.build(key, activeConfig.clients[key], this);
+      this.clients[id] = await ClientFactory.build(id, clientConfig, this);
 
     }));
 
@@ -454,6 +529,9 @@ export default class Bot {
     // Get the configuration.
     let botConfig = await this.getActiveConfig();
 
+    // Get client configuration.
+    let clientConfig = await this.getClientConfig(resonance.client.type);
+
     // Variable to store retrieved cprefix.
     let cprefix = undefined;
 
@@ -479,7 +557,7 @@ export default class Bot {
     }
 
     // By default, return the following.
-    return cprefix || botConfig.clients[resonance.client.type]['command_prefix'] || botConfig['command_prefix'];
+    return cprefix || clientConfig['command_prefix'] || botConfig['command_prefix'];
 
   }
 

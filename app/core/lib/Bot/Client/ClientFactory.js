@@ -8,7 +8,7 @@
 // Includes
 import ClientTypes from './ClientTypes';
 import DiscordClient from './DiscordClient/DiscordClient';
-// import TwitchClient from './TwitchClient/TwitchClient';
+import TwitchClient from './TwitchClient/TwitchClient';
 // import SlackClient from './SlackClient/SlackClient';
 
 /**
@@ -46,12 +46,12 @@ export default class ClientFactory {
         break;
       }
 
-      // // Create a TwitchClient if the type is Discord.
-      // case ClientTypes.Twitch: {
-      //   client = new TwitchClient(config, bot);
-      //   break;
-      // }
-      //
+      // Create a TwitchClient if the type is Discord.
+      case ClientTypes.Twitch: {
+        client = new TwitchClient(config, bot);
+        break;
+      }
+
       // // Create a SlackClient if the type is Discord.
       // case ClientTypes.Slack: {
       //   client = new SlackClient(config, bot);

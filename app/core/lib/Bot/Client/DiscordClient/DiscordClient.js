@@ -50,7 +50,11 @@ export default class DiscordClient extends DiscordJSClient {
 
     // Event: When the discord client receives a message.
     this.on('message', (message) => {
-      this.bot.listen(message, this).catch(Lavenza.continue);
+
+      // We ignore messages from any bot.
+      if (message.author.bot === true) { return; }
+
+      this.bot.listen(message, this).catch(Lavenza.stop);
     });
 
     // Event: When the clients disconnects from Discord.

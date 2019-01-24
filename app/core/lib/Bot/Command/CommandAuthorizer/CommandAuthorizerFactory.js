@@ -7,7 +7,7 @@
 
 // Imports.
 import DiscordCommandAuthorizer from './DiscordCommandAuthorizer';
-import ClientTypes from "../../Client/ClientTypes";
+import TwitchCommandAuthorizer from './TwitchCommandAuthorizer';
 
 /**
  * Provides a factory to create the appropriate CommandAuthorizer given a client.
@@ -33,14 +33,15 @@ export default class CommandAuthorizerFactory {
     switch (resonance.client.type) {
 
       // For Discord, we create a specific authorizer.
-      case ClientTypes.Discord: {
+      case Lavenza.ClientTypes.Discord: {
         authorizer = new DiscordCommandAuthorizer(resonance);
         break;
       }
 
-      // case ClientTypes.Twitch:
-      //   client = new TwitchClient(config);
-      //   break;
+      case Lavenza.ClientTypes.Twitch: {
+        authorizer = new TwitchCommandAuthorizer(resonance);
+        break;
+      }
 
       // case ClientTypes.Slack:
       //   client = new SlackClient(config);
@@ -53,7 +54,7 @@ export default class CommandAuthorizerFactory {
     }
 
     // Build the authorizer. Then we're good to go. We can send it back to the listener.
-    await authorizer.build();
+    await authorizer.build(resonance);
     return authorizer;
   }
 

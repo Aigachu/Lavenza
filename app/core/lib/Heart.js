@@ -99,13 +99,21 @@ i18n.configure({
 // @see https://cloud.google.com/docs/authentication/getting-started
 import {Translate} from '@google-cloud/translate';
 
-// Your Google Cloud Platform project ID
-const projectId = 'lavenza-ii';
+// Initialize variable that will house translate client.
+let googleTranslate = undefined;
 
-// Instantiates a client
-const translate = new Translate({
-  projectId: projectId,
-});
+// If a project ID is set, we can set up translate.
+if (process.env.GOOGLE_TRANSLATE_PROJECT_ID) {
+
+  // Your Google Cloud Platform project ID is fetched from the .env file.
+  const googleTranslateProjectId = process.env.GOOGLE_TRANSLATE_PROJECT_ID;
+
+  // Instantiates a translation client.
+  googleTranslate = new Translate({
+    projectId: googleTranslateProjectId,
+  });
+
+}
 
 // Define the Heart of the module.
 // This is the object that is later set as a global.
@@ -128,13 +136,13 @@ export const Heart = {
     let englishTranslation = i18n.__({phrase: params.phrase, locale: 'en'}, params.replacers);
     let translation = i18n.__({phrase: params.phrase, locale: params.locale}, params.replacers);
 
-    // If the text is untranslated, we'll fallback to google translate.
-    if (params.locale !== 'en' && englishTranslation === translation) {
+    // If the text is untranslated, we'll fallback to google translate if it's enabled.
+    if (process.env.GOOGLE_TRANSLATE_STATUS === 'enabled' && googleTranslate && params.locale !== 'en' && englishTranslation === translation) {
 
       // Google Translate doesn't have parsing for replacers.
       // We want to add a unique identifier to the beginning of each replacer key to prevent translation.
       params.phrase = await params.phrase.replace(/{{/g, '{{RPL.');
-      [translation] = await translate.translate(params.phrase, params.locale);
+      [translation] = await googleTranslate.translate(params.phrase, params.locale);
 
       // Now we can set everything back to normal before they're stored and sent.
       params.phrase = await params.phrase.replace(/{{RPL\./g, '{{');
@@ -217,6 +225,6 @@ export const Heart = {
     },
   },
 };
-
+console.log('setting global');
 // Set Lavenza in the global scope for ease of access in other files.
 global["Lavenza"] = Heart;

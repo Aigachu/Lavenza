@@ -5,6 +5,14 @@ Lavenza II is a large development project aiming to create powerful, multi-platf
 The main focus right now is Discord development, but all code will be written with the idea in mind that
 future clients will be supported (and even communication between clients through a single command).
 
+***Currently Supported Clients***
+- Discord
+- Twitch
+
+***Future Clients***
+- Slack (V2)
+- Youtube (V3)
+
 ## Requirements
 
 - [Node.js - Latest LTS Version](https://nodejs.org/en/download/)
@@ -30,6 +38,71 @@ npm install;
 
 This should take a few moments to install the project's dependencies.
 
+### Setting up client credentials
+
+For each client (as in application) your want your bot to have access to, you need to configure the needed credentials. This is all done in an un-tracked file called `.env` found in the `/app` folder.
+
+Copy the `/app/.env.example` file into a new file called `.env` in the `/app` folder, then open your new file and take a read in there.
+
+For each section, follow the detailed instructions in the file.
+
+Make sure your `.env` file is properly located at `/app/.env`.
+
+**Without proper configuration of this step, your bot will not work.**
+
+Follow the next subsections to configure each client you want to configure. You can skip sections for clients you may not be interested in yet. This might take between 15 mins to a half hour, depending on how good you are. >:D
+
+#### Discord
+Setting up your bot to access Discord starts [here](https://discordapp.com/developers/applications/). Login to your Discord account (your main one), and create an application.
+
+Enter a sweet name for your application. This will be the name of your Bot, so choose wisely.
+
+Afterwards, you can access the **Bot** tab on the left hand side, and click the **Add Bot** button. Once you hit the confirmation, you'll have a bot linked to your application.
+
+Right next to your bot's avatar, under its name, you'll see a **Token** section. Click **Copy**, and paste this token into your `.env` file that you created earlier, in the appropriate section.
+
+The Discord section of your `.env` should look a little like this.
+
+```
+# ==========================
+# ==== Discord Settings ====
+# ==========================
+
+# Discord Bot Tokens
+# Enter the token of your bot. The variable name must have the following format: {BOTNAME}_DISCORD_TOKEN
+# Keep this secure and don't share it! Never commit it in a repository!
+# @see https://discordapp.com/developers/applications/
+LAVENZA_DISCORD_TOKEN='cxNTk4NzU1ODU1.Dx28Xg.xKOvlnuak8e3bD'
+```
+
+The only thing different will be the `LAVENZA_DISCORD_TOKEN='NTExOTI3ODcxNTk4NzU1ODU1.Dx28Xg.xKOvlnuak8e3bDuSniMgDZHQubo'` line. It will have the name of **your** bot instead, and have **your** token.
+
+#### Twitch
+Setting up a bot on Twitch starts with the **[creation of an account on Twitch](). Your bot will use this new account**.
+
+***Note: It is HIGHLY recommended to verify the email address of the bot's account. This can prevent headaches in the future.***
+
+Once the account is created, you can [visit this link](https://twitchapps.com/tmi/) **logged in as the account your bot will use** to obtain the OAuth token for the account you created.
+
+Copy this token and paste it into your `.env` file that you created earlier, in the appropriate section.
+
+The Twitch section of your `.env` should look a little like this.
+
+```
+# ==========================
+# ==== Twitch Settings =====
+# ==========================
+
+# Twitch OAuth Tokens
+# Used to access the Twitch API with your bots.
+# Each bot should have a token. The variable name must have the following format: {BOTNAME}_TWITCH_OAUTH_TOKEN
+# @see https://dev.twitch.tv/docs/irc/
+# @see https://twitchapps.com/tmi/
+LAVENZA_TWITCH_OAUTH_TOKEN='oauth:175ftvu816f1yvb1ig18y1'
+```
+
+The only thing different will be the `LAVENZA_TWITCH_OAUTH_TOKEN='oauth:1hgy816yg1bg18g81vy9'` line. It will have the name of **your** bot instead, and have **your** token.
+
 ### Configuring a Bot 
 
 Start by copying the `/app/bots/example` folder into a new folder with the name of your bot in lowercase.
@@ -47,24 +120,15 @@ In your new folder, you'll have one file named `example.config.yml`. Rename this
 
 This is where you will configure your bot. Carefully read through the file and adjust values accordingly.
 
+**For each client you plan on using, you must create a `CLIENT_NAME.yml` file in the same folder. Refer to the `example` bot folder to see examples of this.**
+
 #### Recommended Configurations
 
 - Set the name to whatever you want!
 - Make the command prefix **unique**! Don't use the common '!' or '$' or even '%'. Go for something like '°°' or '.~'.
-- Keep the default pingpong talent for now until you test your bot for the first time. You can enable more talents later.
-- For Discord Configurations, set your own Discord ID as one of the Gods. You can replace the ID that's already there. You can also set some of your friends as masters or operators. (Only if you can trust them...)
-
-### Setting up client credentials
-
-For each client your want your bot to have access to, you need to configure the needed credentials. This is all done in an untracked file called `.env` found in the `/app` folder.
-
-Copy the `/app/.env.example` file into a new file called `.env` in the `/app` folder, then open your new file and take a read in there.
-
-For each section, follow the detailed instructions in the file.
-
-Make sure your `.env` file is properly located at `/app/.env`.
-
-**Without proper configuration of this step, your bot will not work.**
+- Keep the default `examples` talent for now until you test your bot for the first time. You can enable more talents later.
+- For Discord Configurations, set your own Discord ID as the Architect. You can replace the ID that's already there. You can also set some of your friends as masters or operators. (Only if you can trust them...)
+- For Twitch Configurations, set your own channel as one of the channels the bot has access to, and set your username as. Also, set the username as the **EXACT** username you have for your bot's twitch account.
 
 ### Running the application
 

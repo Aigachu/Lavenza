@@ -6,17 +6,18 @@
  */
 
 // Imports.
-import TwitchJSClient from 'twitch'
+import {Client as TMIClient} from 'tmi.js'
+import TwitchUser from './TwitchUser';
+import TwitchChannel from './TwitchChannel';
 
 /**
  * Provides a class for Twitch Clients managed in Lavenza.
  *
- * This class extends d-fischer's wonderful twitch.js package. Couldn't do this
- * without em. Much love!
+ * This class extends tmi.js. Much love to their work and developers!
  *
  * @see https://www.npmjs.com/package/twitch
  */
-export default class TwitchClient extends TwitchJSClient {
+export default class TwitchClient extends TMIClient {
 
   /**
    * TwitchClient constructor.
@@ -28,62 +29,66 @@ export default class TwitchClient extends TwitchJSClient {
    */
   constructor(config, bot) {
 
+    // Build the configuration that the parent TMI client wants.
+    let tmiConfiguration = {
+      identity: {
+        username: config.username,
+        password: process.env[`${bot.id.toUpperCase()}_TWITCH_OAUTH_TOKEN`]
+      },
+      channels: config.channels
+    };
+
     // Call the constructor of the Discord Client parent Class.
-    super();
+    super(tmiConfiguration);
 
     // Assign the bot to the current client.
     this.bot = bot;
 
     // Just a utility value to track the client type.
-    this.type = Lavenza.ClientTypes.Discord;
+    this.type = Lavenza.ClientTypes.Twitch;
 
     // Assign configurations to the client.
     this.config = config;
 
-    // Event: When the client connects to Discord and is ready.
-    this.on('ready', async () => {
-      await Lavenza.success('Discord client successfully connected for {{bot}}!', {bot: this.bot.id});
-
-      // Set game text.
-      this.user.setActivity(this.config['activity']).catch(console.error);
+    // Event: When the client connects to Twitch and is ready.
+    this.on('connected', async () => {
+      await Lavenza.success('Twitch client successfully connected for {{bot}}!', {bot: this.bot.id});
     });
 
-    // Event: When the discord client receives a message.
-    this.on('message', (message) => {
-      this.bot.listen(message, this).catch(Lavenza.continue);
-    });
+    // Event: When the twitch client receives a message.
+    this.on('message', (target, context, message, self) => {
 
-    // Event: When the clients disconnects from Discord.
-    this.on('disconnected', () => {
-      Lavenza.status('Discord client for {{bot}} has disconnected.', {bot: this.bot.id});
-    });
+      // Ignore messages from this bot.
+      if (self) { return; }
 
-    // Event: When the clients disconnects from Discord.
-    this.on('error', async () => {
-      await Lavenza.error("Error has occurred for {{bot}}'s client...", {bot: this.bot.id});
+      // Relevant information will be built and stored like so.
+      // It is built to be organized like Discord.JS organizes it. Seems to be our best bet to keep things clean!
+      let msgData = {
+        author: new TwitchUser(
+          context['id'],
+          context['username'],
+          context['display-name'],
+        ),
+        content: message,
+        context: context,
+        channel: new TwitchChannel(target.replace('#', ''), context['message-type'])
+      };
+
+      this.bot.listen(msgData, this).catch(Lavenza.stop);
+
     });
 
   }
 
   /**
-   * Authenticate the client. (Login to Discord)
+   * Authenticate the client. (Connect to Twitch)
    *
    * @returns {Promise<void>}
    */
   async authenticate() {
 
-    // Get the token.
-    let token = process.env[`${this.bot.id.toUpperCase()}_DISCORD_TOKEN`];
-
-    // If the token isn't found, we throw an error.
-    if (token === undefined) {
-      await Lavenza.throw('Discord application token is missing for {{bot}}. Make sure the token is set in the /app/.env file at the root of the project. See /app/.env.example for more details.', {bot: this.bot.id});
-    }
-
-    // Await the login in of this client.
-    await super.login(token).catch(async error => {
-      await Lavenza.throw('Failed to authenticate Discord client for {{bot}}.', {bot: this.bot.id});
-    });
+    // Simply call TMI's connect function.
+    await this.connect();
 
   }
 }

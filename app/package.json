@@ -50,7 +50,7 @@
     "moment": "^2.23.0",
     "moment-timezone": "^0.5.23",
     "tmi": "^2.0.0",
-    "twitch": "^1.2.0",
+    "tmi.js": "^1.2.1",
     "twitch-api-v5": "^2.0.4",
     "underscore": "^1.9.1",
     "uws": "^99.0.0",
