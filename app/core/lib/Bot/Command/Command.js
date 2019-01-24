@@ -37,6 +37,8 @@ export default class Command {
 
     this.talent = talent;
     this.config = config;
+    this.directory = config.directory;
+    this.id = config.id;
 
   }
 
@@ -52,6 +54,60 @@ export default class Command {
    */
   static async getActiveConfigForBot(bot) {
     return await Lavenza.Gestalt.get(`/bots/${bot.id}/commands/${this.config.key}/config`);
+  }
+
+  /**
+   * Retrieve active client configuration for a specific client in a bot.
+   *
+   * @param {string} clientType
+   *   The type of client configuration to return for the bot.
+   * @param {Bot} bot
+   *   Bot to get this configuration for.
+   *
+   * @returns {Promise<void>}
+   *   The requested client.
+   */
+  static async getActiveClientConfig(clientType, bot) {
+
+    // Attempt to get the active configuration from the database.
+    let activeConfig = await Lavenza.Gestalt.get(`/bots/${bot.id}/commands/${this.id}/${clientType}`);
+    if (!Lavenza.isEmpty(activeConfig)) {
+      return activeConfig;
+    }
+
+    // If we don't find any configurations in the database, we'll fetch it normally and then save it.
+    let config = await this.getClientConfig(clientType);
+
+    // Sync it to the database.
+    await Lavenza.Gestalt.sync(config, `/bots/${bot.id}/commands/${this.id}/${clientType}`);
+
+    // Return the configuration.
+    return config;
+
+  }
+
+  /**
+   * Retrieve configuration for a specific client.
+   *
+   * @param {string} clientType
+   *   The type of client configuration to return for the bot.
+   *
+   * @returns {Promise<void>}
+   *   The requested client.
+   */
+  static async getClientConfig(clientType) {
+
+    // Determine path to client configuration.
+    let pathToClientConfig = `${this.directory}/${this.id}.${clientType}.yml`;
+
+    // Attempt to fetch client configuration.
+    if (!await Lavenza.Akechi.fileExists(pathToClientConfig)){
+      return undefined;
+    }
+
+    // Load configuration since it exists.
+    return await Lavenza.Akechi.readYamlFile(pathToClientConfig);
+
   }
 
   /**

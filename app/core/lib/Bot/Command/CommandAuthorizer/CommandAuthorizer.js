@@ -5,9 +5,6 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-// Imports.
-import ClientTypes from "../../Client/ClientTypes";
-
 /**
  * Provides a base class for Command Authorizers.
  *
@@ -26,14 +23,34 @@ export default class CommandAuthorizer {
   constructor(resonance) {
     this.resonance = resonance;
     this.order = resonance.order;
-    this.bot = this.resonance.bot;
+    this.command = resonance.order.command;
+    this.bot = resonance.bot;
     this.type = resonance.client.type;
+  }
+
+  /**
+   * Perform async operations that occur right after building an Authorizer.
+   *
+   * @returns {Promise<void>}
+   */
+  async build(resonance) {
+    this.clientConfig = await Lavenza.Gestalt.get(`/bots/${this.bot.id}/clients/discord`);
+    this.clientMasterConfig = await resonance.bot.getClientConfig(this.type);
+    this.operators = this.clientMasterConfig.operators;
+    this.masters = this.clientMasterConfig.masters;
+    this.deities = this.clientMasterConfig.deities;
+    this.architect = this.clientMasterConfig.architect;
     this.commandConfig = this.order.config.command;
-    this.commandClientConfig = this.commandConfig['clients.config'][this.type];
-    this.masters = this.order.config.bot.clients[this.type].masters;
-    this.operators = this.order.config.bot.clients[this.type].operators;
-    this.gods = this.order.config.bot.clients[this.type].gods;
+    this.commandClientConfig = await this.command.getActiveClientConfig(this.type, resonance.bot);
     this.cooldowns = this.commandClientConfig['cooldown'] || this.commandConfig['cooldown'];
+
+    this.operatorsToValidate = [...this.operators, ...this.masters, ...this.deities];
+    this.mastersToValidate = [...this.masters, ...this.deities];
+
+    // Add the architect to all lists.
+    this.operatorsToValidate.push(this.architect);
+    this.mastersToValidate.push(this.architect);
+    this.deities.push(this.architect);
   }
 
   /**
@@ -53,22 +70,41 @@ export default class CommandAuthorizer {
     // If so, we have to return.
     let cooldownValidation = await this.validateCooldown();
     if (!cooldownValidation) {
+
+      // Depending on the type of client we have, we want to alert the person that tried to use the command differently.
       switch (this.resonance.client.type) {
-        case ClientTypes.Discord:
+
+        // On Discord, we send a simple message and delete it later.
+        case Lavenza.ClientTypes.Discord: {
+
+          // Send a reply alerting the user that the command is on cooldown.
           this.resonance.reply(`That command is on cooldown. :) Please wait!`).then(async message => {
 
             // Delete the message containing the command.
             this.resonance.message.delete().catch(Lavenza.continue);
 
             // After 5 seconds, delete the reply originally sent.
-            Lavenza.wait(5).then( () => {
-              message.delete().catch(Lavenza.continue);
-            });
+            await Lavenza.wait(5);
+            await message.delete().catch(Lavenza.continue);
+
           });
           break;
+
+        }
+
+        // On Twitch, we whisper a message to the resonance's author. We don't wanna clog the chat.
+        case Lavenza.ClientTypes.Twitch: {
+
+          // Send a whisper directly to the author.
+          await this.resonance.send(this.resonance.author, `That command is on cooldown. :) Please wait!`);
+          break;
+
+        }
+
       }
 
       return false;
+
     }
 
     // If command arguments aren't valid, we hit the message with a reply explaining the error, and then end.
@@ -114,7 +150,7 @@ export default class CommandAuthorizer {
 
     // Cools the command after usage for the user.
     if (this.cooldowns.user !== 0) {
-      Lavenza.Makoto.set(this.bot.id, 'command', this.commandConfig.key, this.resonance.message.author.id, this.cooldowns.user * 1000);
+      Lavenza.Makoto.set(this.bot.id, 'command', this.commandConfig.key, this.resonance.author.id, this.cooldowns.user * 1000);
     }
   }
 
@@ -134,7 +170,7 @@ export default class CommandAuthorizer {
       return false;
     }
 
-    if (Lavenza.Makoto.check(this.bot.id, 'command', this.commandConfig.key, this.resonance.message.author.id)) {
+    if (Lavenza.Makoto.check(this.bot.id, 'command', this.commandConfig.key, this.resonance.author.id)) {
       return false;
     }
 

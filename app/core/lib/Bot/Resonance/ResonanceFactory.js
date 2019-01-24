@@ -7,10 +7,7 @@
 
 // Imports.
 import DiscordResonance from './DiscordResonance';
-// import TwitchResonance from 'TwitchResonance';
-// import SlackResonance from 'SlackResonance';
-import ClientTypes from '../Client/ClientTypes';
-
+import TwitchResonance from './TwitchResonance';
 
 /**
  * Provides a factory to create the appropriate CommandAuthorizer given a client.
@@ -41,16 +38,16 @@ export default class ResonanceFactory {
     switch (client.type) {
 
       // For Discord, we create a specific resonance.
-      case ClientTypes.Discord: {
+      case Lavenza.ClientTypes.Discord: {
         resonance = new DiscordResonance(content, message, bot, client);
         break;
       }
 
       // For Twitch, we create a specific resonance.
-      // case ClientTypes.Twitch: {
-      //   resonance = new TwitchResonance(content, message, bot, client);
-      //   break;
-      // }
+      case Lavenza.ClientTypes.Twitch: {
+        resonance = new TwitchResonance(content, message, bot, client);
+        break;
+      }
 
       // For Slack, we create a specific resonance.
       // case ClientTypes.Slack: {
@@ -67,6 +64,10 @@ export default class ResonanceFactory {
 
     // Run Resonance async build.
     await resonance.build();
+
+    // Add dependencies since for some reason we can't do circular dependencies.
+    resonance.DiscordResonance = DiscordResonance;
+    resonance.TwitchResonance = TwitchResonance;
 
     // Build the resonance. Then we're good to go. We can send it back to the bot.
     return resonance;

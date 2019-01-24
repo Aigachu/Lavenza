@@ -50,15 +50,33 @@ export default class Coinflip extends Lavenza.Command {
     // We get it by generating a random number when choosing which key to get from the array.
     let rand = flip_types[Math.floor(Math.random() * flip_types.length)];
 
-    // Send the flip to the channel.
-    resonance.reply(rand.message).then(() => {
-      // Start typing for the amount of time the flip_type is set to.
-      resonance.message.channel.startTyping(1);
-      Lavenza.wait(rand.timeout).then(() => {
-        resonance.reply(`{{author}} obtained **{{result}}**!`, {author: resonance.message.author, result: result});
-        resonance.message.channel.stopTyping();
-      });
-    });
+    // Build the response, with translations.
+    let response = await Lavenza.__(`{{author}} obtained **{{result}}**!`, {author: resonance.message.author, result: result});
+
+    // Send initial message.
+    await resonance.__reply(rand.message);
+
+    // Depending on the type of client, we do different actions.
+    switch(resonance.client.type) {
+
+      // If we're in Discord, we do a bit of typing to make it seem more natural.
+      case Lavenza.ClientTypes.Discord: {
+        // Start typing with the chosen answer's timeout, then send the reply to the user.
+        await resonance.client.typeFor(1, resonance.channel);
+        await Lavenza.wait(rand.timeout);
+        await resonance.reply(response);
+        await resonance.message.channel.stopTyping();
+        return;
+      }
+
+      // If we're in Twitch, simply send the answer.
+      case Lavenza.ClientTypes.Twitch: {
+        // Start typing with the chosen answer's timeout, then send the reply to the user.
+        await resonance.reply(response);
+        return;
+      }
+    }
+
   }
 
 }

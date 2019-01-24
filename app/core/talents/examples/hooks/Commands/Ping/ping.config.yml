@@ -1,6 +1,11 @@
 # Reader-Friendly name of the command.
 name: 'Ping Command'
 
+# Set whether or not the command is active.
+# Commands are active by default. If you absolutely want to disable a command, set this to false.
+# If you omit this, the command will be active.
+active: true
+
 # Command description. This may be used in the bot and seen by users. Make it good!
 description: 'Command that simply orders the bot to say "Pong!"'
 
@@ -52,43 +57,6 @@ cooldown:
 
 # Clients where this command will function.
 # If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.
+# For each enabled client, you should create a 'COMMANDNAME.CLIENTNAME.yml' file in this same directory.
+# Examples of these files can be taken straight from the 'examples' talent, in the Ping command.
 clients: '*'
-
-# Client specific configurations.
-clients.config:
-
-  # Discord configurations.
-  discord:
-
-    # Authorization configuration.
-    authorization:
-
-      # Blacklist - Prevent use of the command in certain contexts.
-      blacklist:
-        guilds: []
-        channels: []
-        users: []
-
-      # Whitelist - Permit use of the command in contexts where the command is globally blacklisted.
-      whitelist:
-        guilds: []
-        channels: []
-        users: []
-
-      # Determines whether or not this command can work in direct messages with the bot.
-      pms: false
-
-      # Determines level of operation needed to use this command. A value of 0 means everyone can use it.
-      oplevel: 0
-
-    # Cooldown overrides for Discord, if needed.
-    # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
-    cooldown:
-      global: 0
-      user: 0
-
-#  twitch:
-#    authorization: []
-#
-#  slack:
-#    authorization: []

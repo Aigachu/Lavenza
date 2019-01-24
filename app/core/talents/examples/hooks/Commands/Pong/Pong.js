@@ -6,13 +6,11 @@
  */
 
 /**
- * Ping command.
+ * Pong command.
  *
- * Literally just replies with 'Pong!'.
- *
- * A great testing command.
+ * The last tutorial command. It'll be way more advanced. :)
  */
-export default class Ping extends Lavenza.Command {
+export default class Pong extends Lavenza.Command {
 
   /**
    * This is the static build function of the command.
@@ -27,16 +25,13 @@ export default class Ping extends Lavenza.Command {
     // The build function must always run the parent's build function! Don't remove this line.
     await super.build(config, talent);
 
-    // Example of setting a property to use across the command.
-    this.pingMessage = 'Pong!'
-
   }
 
   /**
    * @inheritDoc
    */
   static execute(resonance) {
-    resonance.reply('Pong! Here is your ID: {{id}}! {{tea}}', {id: resonance.message.author.id, tea: ':tea:'});
+    resonance.reply('Pong! Here is your ID: {{id}}! {{tea}}', {id: resonance.author.id, tea: ':tea:'});
   }
 
 }

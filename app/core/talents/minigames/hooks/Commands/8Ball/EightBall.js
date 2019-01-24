@@ -19,7 +19,7 @@ export default class EightBall extends Lavenza.Command {
     // @TODO - Check if the input is actually a question.
     if (Lavenza.isEmpty(resonance.order.rawContent)) {
       // If no input is given, then no question was actually asked.
-      resonance.reply(`8ball says: "_Now now, ask me something. Don't be shy!_"`);
+      resonance.reply(`"Now now, ask me something. Don't be shy!"`);
       return;
     }
 
@@ -27,83 +27,83 @@ export default class EightBall extends Lavenza.Command {
     let answers = [];
 
     answers.push({
-      message: `8ball says: _**"It is certain."**_`,
+      message: `"It is certain."`,
       timeout: 2
     });
     answers.push({
-      message: `8ball says: _**"It is decidedly so."**_`,
+      message: `"It is decidedly so."`,
       timeout: 2
     });
     answers.push({
-      message: `8ball says: _**"Without a doubt."**_`,
+      message: `"Without a doubt."`,
       timeout: 3
     });
     answers.push({
-      message: `8ball says: _**"Yes, definitely."**_`,
+      message: `"Yes, definitely."`,
       timeout: 4
     });
     answers.push({
-      message: `8ball says: _**"You may rely on it."**_`,
+      message: `"You may rely on it."`,
       timeout: 2
     });
     answers.push({
-      message: `8ball says: _**"As I see it, yes."**_`,
+      message: `"As I see it, yes."`,
       timeout: 3
     });
     answers.push({
-      message: `8ball says: _**"Most likely."**_`,
+      message: `"Most likely."`,
       timeout: 4
     });
     answers.push({
-      message: `8ball says: _**"Outlook good."**_`,
+      message: `"Outlook good."`,
       timeout: 2
     });
     answers.push({
-      message: `8ball says: _**"Yes."**_`,
+      message: `"Yes."`,
       timeout: 4
     });
     answers.push({
-      message: `8ball says: _**"Signs point to yes."**_`,
+      message: `"Signs point to yes."`,
       timeout: 2
     });
     answers.push({
-      message: `8ball says: _**"Reply hazy try again."**_`,
+      message: `"Reply hazy try again."`,
       timeout: 2
     });
     answers.push({
-      message: `8ball says: _**"Ask again later."**_`,
+      message: `"Ask again later."`,
       timeout: 2
     });
     answers.push({
-      message: `8ball says: _**"Better not tell you now."**_`,
+      message: `"Better not tell you now."`,
       timeout: 3
     });
     answers.push({
-      message: `8ball says: _**"Cannot predict now."**_`,
+      message: `"Cannot predict now."`,
       timeout: 4
     });
     answers.push({
-      message: `8ball says: _**"Concentrate and ask again."**_`,
+      message: `"Concentrate and ask again."`,
       timeout: 2
     });
     answers.push({
-      message: `8ball says: _**"Don't count on it."**_`,
+      message: `"Don't count on it."`,
       timeout: 3
     });
     answers.push({
-      message: `8ball says: _**"My reply is no."**_`,
+      message: `"My reply is no."`,
       timeout: 4
     });
     answers.push({
-      message: `8ball says: _**"My sources say no."**_`,
+      message: `"My sources say no."`,
       timeout: 2
     });
     answers.push({
-      message: `8ball says: _**"Very doubtful."**_`,
+      message: `"Very doubtful."`,
       timeout: 4
     });
     answers.push({
-      message: `8ball says: _**"Outlook not so good."**_`,
+      message: `"Outlook not so good."`,
       timeout: 2
     });
 
@@ -111,12 +111,31 @@ export default class EightBall extends Lavenza.Command {
     // We'll use a random number for the array key.
     let rand = answers[Math.floor(Math.random() * answers.length)];
 
-    // Start typing with the chosen answer's timeout, then send the reply to the user.
-    resonance.message.channel.startTyping(1);
-    Lavenza.wait(rand.timeout).then(() => {
-      resonance.reply(rand.message);
-      resonance.message.channel.stopTyping();
-    });
+    // Build the response, translated.
+    let response = await Lavenza.__(`8ball says: {{response}}`, {response: rand.message});
+
+    // Depending on the type of client, we do different actions.
+    switch(resonance.client.type) {
+
+      // If we're in Discord, we do a bit of typing to make it seem more natural.
+      case Lavenza.ClientTypes.Discord: {
+        // Start typing with the chosen answer's timeout, then send the reply to the user.
+        await resonance.client.typeFor(1, resonance.channel);
+        await Lavenza.wait(rand.timeout);
+        await resonance.reply(response);
+        await resonance.message.channel.stopTyping();
+        return;
+      }
+
+      // If we're in Twitch, simply send the answer.
+      case Lavenza.ClientTypes.Twitch: {
+        // Start typing with the chosen answer's timeout, then send the reply to the user.
+        await resonance.reply(response);
+        return;
+      }
+    }
+
+
   }
 
 }

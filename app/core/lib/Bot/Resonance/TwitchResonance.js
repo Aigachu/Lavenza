@@ -7,11 +7,13 @@
 
 // Imports.
 import Resonance from './Resonance';
+import TwitchUser from '../Client/TwitchClient/TwitchUser';
+import TwitchChannel from '../Client/TwitchClient/TwitchChannel';
 
 /**
  * Provides specific Resonance properties for messages coming from Discord.
  */
-export default class DiscordResonance extends Resonance {
+export default class TwitchResonance extends Resonance {
 
   /**
    * DiscordResonance constructor.
@@ -22,9 +24,8 @@ export default class DiscordResonance extends Resonance {
     // Run parent constructor.
     super(content, message, bot, client);
 
-    // For Discord, we'll set some useful information to the class.
+    // For Twitch, we'll set some useful information to the class.
     this.author = message.author;
-    this.guild = message.guild;
     this.channel = message.channel;
 
   }
@@ -46,7 +47,7 @@ export default class DiscordResonance extends Resonance {
   async getLocale() {
 
     // First, we check if configurations exist for this user.
-    let i18nUserConfig = await Lavenza.Gestalt.get(`/i18n/${this.bot.id}/clients/discord/users`).catch(Lavenza.stop);
+    let i18nUserConfig = await Lavenza.Gestalt.get(`/i18n/${this.bot.id}/clients/twitch/users`).catch(Lavenza.stop);
 
     // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
     if (i18nUserConfig[this.author.id] && i18nUserConfig[this.author.id].locale && i18nUserConfig[this.author.id].locale !== 'default') {
@@ -61,14 +62,6 @@ export default class DiscordResonance extends Resonance {
       return i18nChannelConfig[this.channel.id].locale;
     }
 
-    // First, we check if configurations exist for this guild.
-    let i18nGuildConfig = await Lavenza.Gestalt.get(`/i18n/${this.bot.id}/clients/discord/guilds`).catch(Lavenza.stop);
-
-    // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
-    if (i18nGuildConfig[this.author.id] && i18nGuildConfig[this.author.id].locale && i18nGuildConfig[this.author.id].locale !== 'default') {
-      return i18nGuildConfig[this.guild.id].locale;
-    }
-
     // Return the parameters.
     return await this.bot.getActiveConfig().locale;
 
@@ -80,7 +73,29 @@ export default class DiscordResonance extends Resonance {
    * @inheritDoc
    */
   static async doSend(destination, content) {
-    return await destination.send(content).catch(Lavenza.stop);
+
+    // If the destination is a channel, and it's a private whisper channel, we use TMI's whisper function instead.
+    if (destination instanceof TwitchChannel && destination.type === 'whisper') {
+      return await this.bot.getClient(Lavenza.ClientTypes.Twitch).whisper(destination.id, content);
+    }
+
+    // If the destination is a user, then we send a whisper as well.
+    if (destination instanceof TwitchUser) {
+      return await this.bot.getClient(Lavenza.ClientTypes.Twitch).whisper(destination.username, content);
+    }
+
+    // If the destination is a string and doesn't start with '#', we send it through a whisper.
+    if (typeof destination === 'string' && !destination.startsWith('#')) {
+      return await this.bot.getClient(Lavenza.ClientTypes.Twitch).whisper(destination, content);
+    }
+
+    // If the destination is a string and starts with '#', we send it to the channel.
+    if (typeof destination === 'string' && !destination.startsWith('#')) {
+      return await this.bot.getClient(Lavenza.ClientTypes.Twitch).say(destination, content);
+    }
+
+    // Otherwise, we just send it to the destination, assuming it's simply the name of a channel.
+    return await this.bot.getClient(Lavenza.ClientTypes.Twitch).say(destination.id, content);
   }
 
   /**
@@ -97,12 +112,12 @@ export default class DiscordResonance extends Resonance {
   /**
    * Get privacy of the resonance.
    *
-   * In the case of Discord, we get the type of channel the message was heard from.
+   * In the case of Twitch, we get the type of message that was sent.
    *
    * @inheritDoc
    */
   resolvePrivacy() {
-    return this.message.channel.type === "dm" ? 'private' : 'public';
+    return this.message.channel.type === "whisper" ? 'private' : 'public';
   }
 
 }

@@ -56,12 +56,15 @@ export default class Gestalt extends Lavenza.Command {
         let getResult = await Lavenza.Gestalt.get(endpoint);
 
         if (Lavenza.isEmpty(getResult)) {
-          resonance.message.reply('No data found for that path, sadly. :(');
+          await resonance.message.__reply('No data found for that path, sadly. :(');
           return;
         }
 
-        let getResultToString = JSON.stringify(getResult, null, '\t');
-        resonance.message.reply('```\n' + getResultToString + '\n```');
+        // If a Discord Client exists for the bot, we send a message to the Discord architect.
+        if (!Lavenza.isEmpty(resonance.bot.getClient(Lavenza.ClientTypes.Discord))) {
+          let getResultToString = JSON.stringify(getResult, null, '\t');
+          await resonance.send(resonance.architect.discord, '```\n' + getResultToString + '\n```');
+        }
         break;
       }
 
@@ -69,12 +72,15 @@ export default class Gestalt extends Lavenza.Command {
         let updateResult = await Lavenza.Gestalt.update(endpoint, payload).catch(Lavenza.continue);
 
         if (Lavenza.isEmpty(updateResult)) {
-          resonance.message.reply('No data found at that path, sadly. :(');
+          await resonance.__reply('No data found at that path, sadly. :(');
           return;
         }
 
-        let updateResultToString = JSON.stringify(updateResult, null, '\t');
-        resonance.message.reply('```\n' + updateResultToString + '\n```');
+        // If a Discord Client exists for the bot, we send a message to the Discord architect.
+        if (!Lavenza.isEmpty(resonance.bot.getClient(Lavenza.ClientTypes.Discord))) {
+          let updateResultToString = JSON.stringify(updateResult, null, '\t');
+          await resonance.send(resonance.architect.discord, '```\n' + updateResultToString + '\n```');
+        }
         break;
       }
     }

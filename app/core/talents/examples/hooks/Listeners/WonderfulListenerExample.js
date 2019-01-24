@@ -11,6 +11,8 @@
 export default class WonderfulListenerExample extends Lavenza.Listener {
 
   /**
+   * This is the function that listens to messages and acts upon them.
+   *
    * @inheritDoc
    */
   static async listen(resonance) {

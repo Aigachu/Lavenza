@@ -117,6 +117,9 @@ export default class Talent {
       // The name of the command will be the directory name.
       let name = path.basename(directory);
 
+      // The ID of the command will be its name in lowercase.
+      let id = name.toLowerCase();
+
       // Get the config file for the command.
       // Each command should have a file with the format 'COMMAND_NAME.config.yml'.
       let configFilePath = directory + '/' + name.toLowerCase() + '.config.yml';
@@ -129,6 +132,12 @@ export default class Talent {
         await Lavenza.warn('Configuration file could not be loaded for the {{command}} command in the {{talent}} talent.', {command: name, talent: this.id});
         return;
       }
+
+      // Set directory to the configuration. It's nice to have quick access to the command folder from within the command.
+      config.directory = directory;
+
+      // Set the ID to the configuration as well.
+      config.id = id;
 
       // If the configuration exists, we can process by loading the class of the Command.
       // If the class doesn't exist (this could be caused by the configuration being wrong), we stop.

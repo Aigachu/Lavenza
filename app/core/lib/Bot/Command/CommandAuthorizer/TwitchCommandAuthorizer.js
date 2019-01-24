@@ -11,7 +11,7 @@ import CommandAuthorizer from "./CommandAuthorizer";
 /**
  * Provides an Authorizer for commands invoked in Discord.
  */
-export default class DiscordCommandAuthorizer extends CommandAuthorizer {
+export default class TwitchCommandAuthorizer extends CommandAuthorizer {
 
   /**
    * Since authorizers are static classes, we'll have a build function to make preparations.
@@ -23,16 +23,15 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
     // Run parent build function.
     await super.build(resonance);
 
-    this.authorUser = this.resonance.message.author;
-    this.msg = this.resonance.message;
-    this.guild = this.resonance.message.guild;
-    this.channel = this.resonance.message.channel;
+    this.author = resonance.author;
+    this.channel = resonance.channel;
 
-    // If there's a guild assigned to the resonance, we can add guild defined operators & masters.
-    if (!Lavenza.isEmpty(this.guild)) {
-      this.operatorsToValidate = [...this.operatorsToValidate, ...this.clientConfig.guilds[this.guild.id].operators, ...this.clientConfig.guilds[this.guild.id].masters];
-      this.mastersToValidate = [...this.mastersToValidate, ...this.clientConfig.guilds[this.guild.id].masters];
+    // If there's a channel assigned to the resonance, we can add channel defined operators & masters.
+    if (!Lavenza.isEmpty(this.channel)) {
+      this.operatorsToValidate = [...this.operatorsToValidate, ...this.clientConfig.guilds[this.channel.id].operators, ...this.clientConfig.guilds[this.channel.id].masters];
+      this.mastersToValidate = [...this.mastersToValidate, ...this.clientConfig.guilds[this.channel.id].masters];
     }
+
   }
 
   /**
@@ -52,7 +51,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
 
     // At this point, if the configuration is empty, we have no checks to make, so we let it pass.
     if (Lavenza.isEmpty(this.commandClientConfig)) {
-      await Lavenza.warn('No configuration was found for this command...Is this normal?...');
+      // await Lavenza.warn('No configuration was found for this command...Is this normal?...');
       return true;
     }
 
@@ -70,20 +69,6 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
 
     // Check if the user has appropriate operation access rights.
     if (!this.validateOpLevel()) {
-
-      // We send a fancy error message for this one.
-      this.resonance.client.sendError(this.resonance.message.channel, {
-        text: 'You are not authorized to use this command.',
-        code: 401
-      }).then(async message => {
-
-        // Delete the message after 30 seconds to avoid clogging chat.
-        await Lavenza.wait(30);
-        this.resonance.message.delete();
-        message.delete().catch(Lavenza.continue);
-
-      });
-
       await Lavenza.warn('oplevel validation failed');
       return false;
     }
@@ -91,12 +76,6 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
     // Check if this command is allowed to be used in DMs.
     if (!this.validatePMCommand()) {
       await Lavenza.warn('pm channel validation failed');
-      return false;
-    }
-
-    // Validate that the command is allowed to be used in this Guild (Server).
-    if (!this.validateGuild()) {
-      await Lavenza.warn('guild validation failed');
       return false;
     }
 
@@ -149,41 +128,24 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       }
 
       // Validate level 1. Operators.
-      if (argConfig['oplevel'] === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
+      if (argConfig['oplevel'] === 1 && !this.operatorsToValidate.includes(this.author.username)) {
         await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       // Validate level 2. Masters.
-      if (argConfig['oplevel'] === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
+      if (argConfig['oplevel'] === 2 && !this.mastersToValidate.includes(this.author.username)) {
         await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       // Validate level 3. Deities.
-      if (argConfig['oplevel'] === 3 && !this.deities.includes(this.authorUser.id)) {
+      if (argConfig['oplevel'] === 3 && !this.deities.includes(this.author.username)) {
         await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       return true;
 
     })).catch(error => {
-
-      console.error(error);
-
-      // Send a fancy error message if that command is not usable.
-      this.resonance.client.sendError(this.resonance.message.channel, {
-        text: error.message,
-        code: 401
-      }).then(async message => {
-
-        // Delete error message after 30 seconds to avoid clogging channels.
-        await Lavenza.wait(30);
-        this.resonance.message.delete();
-        message.delete().catch(Lavenza.continue);
-
-      });
-
       return false;
-
     });
 
     // Get out if it failed.
@@ -211,24 +173,9 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
     }
 
     if (!this.commandConfig.active) {
-      return this.commandClientConfig.authorization['whitelist'].guilds.includes(this.guild.id)
-        || this.commandClientConfig.authorization['whitelist'].channels.includes(this.channel.id)
+      return this.commandClientConfig.authorization['whitelist'].channels.includes(this.channel)
         || this.commandClientConfig.authorization['whitelist'].users.includes(this.authorUser.id)
     }
-  }
-
-  /**
-   * Validate that the user is not blacklisted.
-   *
-   * @returns {Boolean}
-   *   TRUE if this authorization passes, FALSE otherwise.
-   */
-  validateUser() {
-    if (Lavenza.isEmpty(this.commandClientConfig.authorization['blacklist'].users)) {
-      return true;
-    }
-
-    return this.commandClientConfig.authorization['blacklist'].users.includes(this.authorUser.id);
   }
 
   /**
@@ -243,16 +190,30 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       return true;
     }
 
-    if (this.commandClientConfig.authorization['oplevel'] === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
+    if (this.commandClientConfig.authorization['oplevel'] === 1 && !this.operatorsToValidate.includes(this.author.username)) {
       return false;
     }
 
-    if (this.commandClientConfig.authorization['oplevel'] === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
+    if (this.commandClientConfig.authorization['oplevel'] === 2 && !this.mastersToValidate.includes(this.author.username)) {
       return false;
     }
 
-    return !(this.commandClientConfig.authorization['oplevel'] === 3 && !this.deities.includes(this.authorUser.id));
+    return !(this.commandClientConfig.authorization['oplevel'] === 3 && !this.deities.includes(this.author.username));
 
+  }
+
+  /**
+   * Validate that the user is not blacklisted.
+   *
+   * @returns {Boolean}
+   *   TRUE if this authorization passes, FALSE otherwise.
+   */
+  validateUser() {
+    if (Lavenza.isEmpty(this.commandClientConfig.authorization['blacklist'].users)) {
+      return true;
+    }
+
+    return this.commandClientConfig.authorization['blacklist'].users.includes(this.author.username);
   }
 
   /**
@@ -262,25 +223,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    *   TRUE if this authorization passes, FALSE otherwise.
    */
   validatePMCommand() {
-    return !(this.msg.channel.type === "dm" && !this.commandClientConfig.authorization['pms']);
-  }
-
-  /**
-   * Validates that the command can be used in the Discord Guild (Server) where it was invoked.
-   *
-   * @returns {*}
-   *   TRUE if this authorization passes, FALSE otherwise.
-   */
-  validateGuild() {
-    if (this.msg.channel.type === "dm") {
-      return true;
-    }
-
-    if (Lavenza.isEmpty(this.commandClientConfig.authorization['blacklist'].guilds)) {
-      return true;
-    }
-
-    return this.commandClientConfig.authorization['blacklist'].guilds.includes(this.guild.id);
+    return !(this.channel.type === "whisper" && !this.commandClientConfig.authorization['pms']);
   }
 
   /**
@@ -294,7 +237,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       return true;
     }
 
-    return this.commandClientConfig.authorization['blacklist'].channels.includes(this.channel.id);
+    return this.commandClientConfig.authorization['blacklist'].channels.includes(this.channel);
   }
 
 }
