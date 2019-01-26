@@ -38,18 +38,18 @@ echo "cd apps/Lavenza-II/; git reset --hard;"
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git reset --hard;'
 echo "--------------------------------------"
 
-# On Luxanna, pull latest changes.
-echo "Pull latest changes."
-echo "--------------------------------------"
-echo "cd apps/Lavenza-II; git pull;"
-ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git pull;'
-echo "--------------------------------------"
-
 # On Luxanna, checkout the master branch.
 echo "Checkout the master branch."
 echo "--------------------------------------"
 echo "cd apps/Lavenza-II; git checkout master;"
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git checkout master;'
+echo "--------------------------------------"
+
+# On Luxanna, pull latest changes.
+echo "Pull latest changes."
+echo "--------------------------------------"
+echo "cd apps/Lavenza-II; git pull;"
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II; git pull;'
 echo "--------------------------------------"
 
 # On Luxanna, re-install node libraries.
@@ -63,6 +63,7 @@ echo "--------------------------------------"
 
 # Copy config & .env to the Lavenza codebase on Luxanna.
 scp -r ../../../app/bots aigachu@aigachu.com:~/apps/Lavenza-II/app
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; rm .env;'
 scp ../../../app/.env aigachu@aigachu.com:~/apps/Lavenza-II/app
 
 # Summon the bots using Forever.
