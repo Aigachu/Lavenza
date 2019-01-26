@@ -9,6 +9,7 @@
 import {Message as DiscordJSMessage, Channel as DiscordJSChannel, User as DiscordJSUser} from 'discord.js';
 
 // Imports.
+import ResonanceFactory from './ResonanceFactory';
 import TwitchUser from '../Client/TwitchClient/TwitchUser';
 import TwitchChannel from '../Client/TwitchClient/TwitchChannel';
 
@@ -144,8 +145,25 @@ export default class Resonance {
    */
   async send(destination, content) {
 
-    // And finally we can send the message to the destination.
-    return await this.doSend(destination, content);
+    // Depending on the type of client the Destination is from, we want to send using the appropriate methods.
+    // In the case of Discord, we check if the destination is an instance of any of the DiscordJS classes.
+    if (destination instanceof DiscordJSMessage || destination instanceof DiscordJSUser || destination instanceof DiscordJSChannel) {
+
+      // We fire the DiscordResonance's sending method.
+      return await ResonanceFactory.send(Lavenza.ClientTypes.Discord, this.bot, destination, content);
+
+    }
+
+    // Twitch objects will contain these kinds of properties.
+    if (typeof destination === 'string' || destination instanceof TwitchUser || destination instanceof TwitchChannel) {
+
+      // We fire the TwitchResonance's sending method.
+      return await ResonanceFactory.send(Lavenza.ClientTypes.Twitch, this.bot, destination, content);
+
+    }
+
+    // If all fails, we'll simply use this instance's doSend function.
+    return await this.constructor.doSend(this.bot, destination, content);
 
   }
 
@@ -187,25 +205,8 @@ export default class Resonance {
     // Now, using the information from the parameters, we fetch necessary translations.
     let content = await Lavenza.__({phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED');
 
-    // Depending on the type of client the Destination is from, we want to send using the appropriate methods.
-    // In the case of Discord, we check if the destination is an instance of any of the DiscordJS classes.
-    if (destination instanceof DiscordJSMessage || destination instanceof DiscordJSUser || destination instanceof DiscordJSChannel) {
-
-      // We fire the DiscordResonance's sending method.
-      return await this.DiscordResonance.doSend(destination, content);
-
-    }
-
-    // Twitch objects will contain these kinds of properties.
-    if (typeof destination === 'string' || destination instanceof TwitchUser || destination instanceof TwitchChannel) {
-
-      // We fire the TwitchResonance's sending method.
-      return await this.TwitchResonance.doSend(destination, content);
-
-    }
-
-    // And finally we can send the message to the destination.
-    return await this.doSend(destination, content);
+    // Invoke the regular send function.
+    return await this.send(destination, content);
 
   }
 
@@ -214,12 +215,18 @@ export default class Resonance {
    *
    * This is an abstract method. Each Resonance must manage sending of messages for its cases depending on its client.
    *
+   * @param {Bot} bot
+   *   The bot sending the message.
    * @param {*} destination
    *   Destination to send the message to.
    * @param {string} content
    *   Content of the message to send back.
+   *
+   * @returns {Promise<*>}
+   *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
+   *   act upon it if needed.
    */
-  static async doSend(destination, content) {
+  static async doSend(bot, destination, content) {
     console.log(destination);
     console.log(content);
     await Lavenza.throw('Tried to fire abstract method doSend(). You must implement a doSend() method in the {{class}} class.', {class: this.constructor});

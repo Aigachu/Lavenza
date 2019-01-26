@@ -21,4 +21,4 @@ authorization:
 # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
 cooldown:
   global: 0
-  user: 5
+  user: 10

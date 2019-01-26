@@ -112,10 +112,10 @@ export default class EightBall extends Lavenza.Command {
     let rand = answers[Math.floor(Math.random() * answers.length)];
 
     // Build the response, translated.
-    let response = await Lavenza.__(`8ball says: {{response}}`, {response: rand.message});
+    let response = await Lavenza.__(`8ball says: {{response}}`, {response: await Lavenza.__(rand.message, resonance.locale)}, resonance.locale);
 
     // Depending on the type of client, we do different actions.
-    switch(resonance.client.type) {
+    switch (resonance.client.type) {
 
       // If we're in Discord, we do a bit of typing to make it seem more natural.
       case Lavenza.ClientTypes.Discord: {

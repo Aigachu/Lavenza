@@ -32,7 +32,7 @@ export default class Core {
    */
   static get version() {
 
-    return "0.9.4";
+    return "1.0.0";
 
   }
 

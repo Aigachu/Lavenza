@@ -28,8 +28,8 @@ export default class TwitchCommandAuthorizer extends CommandAuthorizer {
 
     // If there's a channel assigned to the resonance, we can add channel defined operators & masters.
     if (!Lavenza.isEmpty(this.channel)) {
-      this.operatorsToValidate = [...this.operatorsToValidate, ...this.clientConfig.guilds[this.channel.id].operators, ...this.clientConfig.guilds[this.channel.id].masters];
-      this.mastersToValidate = [...this.mastersToValidate, ...this.clientConfig.guilds[this.channel.id].masters];
+      this.operatorsToValidate = [...this.operatorsToValidate, ...this.botClientConfig.channels[this.channel.id].operators, ...this.botClientConfig.channels[this.channel.id].masters];
+      this.mastersToValidate = [...this.mastersToValidate, ...this.botClientConfig.channels[this.channel.id].masters];
     }
 
   }
@@ -213,7 +213,7 @@ export default class TwitchCommandAuthorizer extends CommandAuthorizer {
       return true;
     }
 
-    return this.commandClientConfig.authorization['blacklist'].users.includes(this.author.username);
+    return !this.commandClientConfig.authorization['blacklist'].users.includes(this.author.username);
   }
 
   /**

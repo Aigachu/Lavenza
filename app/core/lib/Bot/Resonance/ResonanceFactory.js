@@ -65,13 +65,45 @@ export default class ResonanceFactory {
     // Run Resonance async build.
     await resonance.build();
 
-    // Add dependencies since for some reason we can't do circular dependencies.
-    resonance.DiscordResonance = DiscordResonance;
-    resonance.TwitchResonance = TwitchResonance;
-
     // Build the resonance. Then we're good to go. We can send it back to the bot.
     return resonance;
 
+  }
+
+  /**
+   * Sender wrapper that is managed in the Factory.
+   *
+   * Since circular imports are broken in ES6, we need the factory to handle invoking the child Resonance doSend()
+   * methods. We manage all this here.
+   *
+   * @param {string} clientType
+   *   Type of client we're sending a message with.
+   * @param {Bot} bot
+   *   The bot sending the message.
+   * @param {*} destination
+   *   The destination of the message.
+   * @param {string} content
+   *   The text content of the message.
+   *
+   * @returns {Promise<*>}
+   *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
+   *   act upon it if needed.
+   */
+  static async send(clientType, bot, destination, content) {
+
+    // Depending on the client, we call the appropriate sender.
+    switch (clientType) {
+
+      // Discord.
+      case Lavenza.ClientTypes.Discord: {
+        return await DiscordResonance.doSend(bot, destination, content);
+      }
+
+      // Twitch.
+      case Lavenza.ClientTypes.Twitch: {
+        return await TwitchResonance.doSend(bot, destination, content);
+      }
+    }
   }
 
 

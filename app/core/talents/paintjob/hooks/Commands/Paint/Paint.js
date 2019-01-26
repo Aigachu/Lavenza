@@ -78,7 +78,7 @@ export default class Paint extends Lavenza.Command {
 
     // Check if the color already exists.
     if (!Lavenza.isEmpty(foundColor)) {
-      await resonance.reply(`Seems like that color already exists! -{{color}}`, {color: `<@&${foundColor.id}>`});
+      await resonance.__reply(`Seems like that color already exists! -{{color}}`, {color: `<@&${foundColor.id}>`});
       return false;
     }
 
@@ -92,15 +92,15 @@ export default class Paint extends Lavenza.Command {
       .then(async (role) => {
         await role.setPosition(resonance.message.guild.roles.array().length - 5)
           .then(async () => {
-            await resonance.reply(`I've successfully created a new color in this server: {{color}}`, {color: role});
+            await resonance.__reply(`I've successfully created a new color in this server: {{color}}`, {color: role});
           })
           .catch(async (error) => {
-            await resonance.reply(`An error may have occurred with the creation of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't deal well with roles that are above mine. :( You're going to have to move me to the top of your server role list!`);
+            await resonance.__reply(`An error may have occurred with the creation of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't deal well with roles that are above mine. :( You're going to have to move me to the top of your server role list!`);
             console.error(error);
           });
       })
       .catch(async (error) => {
-        await resonance.reply(`An error may have occurred with the creation of the color.\nI may not have permissions to create roles in this server. You will have to give me the **Manage Roles** permission!`);
+        await resonance.__reply(`An error may have occurred with the creation of the color.\nI may not have permissions to create roles in this server. You will have to give me the **Manage Roles** permission!`);
         console.error(error);
       });
 
@@ -134,7 +134,7 @@ export default class Paint extends Lavenza.Command {
     // Check if the color exists.
     // If it doesn't, we can't set it. We'll tell the user that they must create it.
     if (Lavenza.isEmpty(colorRoleToSet)) {
-      await resonance.reply(`Seems like that color doesn't exist! You have to create it first. :O`);
+      await resonance.__reply(`Seems like that color doesn't exist! You have to create it first. :O`);
       return false;
     }
 
@@ -143,7 +143,7 @@ export default class Paint extends Lavenza.Command {
 
     // If someone tries to set the same color more than once...
     if (!Lavenza.isEmpty(memberCurrentColorRole) && memberCurrentColorRole.id === colorRoleToSet.id) {
-      await resonance.reply(`You already have that color! I can't paint you with the same color twice. xD`);
+      await resonance.__reply(`You already have that color! I can't paint you with the same color twice. xD`);
       return false;
     }
 
@@ -155,8 +155,8 @@ export default class Paint extends Lavenza.Command {
 
     // Add the color to the member.
     await resonance.message.member.addRole(colorRoleToSet).then(async () => {
-      await resonance.reply(`All done! You look great in the {{color}} color! ;) {{sparkles}}`, {color: colorRoleToSet.name.replace('.color', ''), sparkles: ':sparkles:'}).catch(async (error) => {
-          await resonance.reply(`An error may have occurred with the setting of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't set roles that are above mine. :( You're going to have to move me to the top of your server role list!`);
+      await resonance.__reply(`All done! You look great in the {{color}} color! ;) {{sparkles}}`, {color: colorRoleToSet.name.replace('.color', ''), sparkles: ':sparkles:'}).catch(async (error) => {
+          await resonance.__reply(`An error may have occurred with the setting of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't set roles that are above mine. :( You're going to have to move me to the top of your server role list!`);
           console.error(error);
         });
     });
@@ -189,9 +189,9 @@ export default class Paint extends Lavenza.Command {
     // Error message if something went wrong.
     // If an error happens, the bot may not have permissions to tamper with the member's roles.
     await member.removeRole(memberCurrentColorRole).then(async () => {
-      await resonance.reply(`You're all cleaned up! {{sparkles}}`, {sparkles: ':sparkles:'});
+      await resonance.__reply(`You're all cleaned up! {{sparkles}}`, {sparkles: ':sparkles:'});
     }).catch(async error => {
-      await resonance.reply(`An error may have occurred with the removing of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't set roles to users that have a role above mine. :( You're going to have to move me to the top of your server role list!`);
+      await resonance.__reply(`An error may have occurred with the removing of the color.\nThis is most likely caused by the fact that my bot role may not be at the top of the role list in your server. I can't set roles to users that have a role above mine. :( You're going to have to move me to the top of your server role list!`);
       console.error(error);
     });
 
@@ -220,7 +220,7 @@ export default class Paint extends Lavenza.Command {
     }
 
     // At this point, we know the input is possibly a hex value.
-    let colorHex = input;
+    let colorHex = input.toString();
 
     // Make sure the # is prepended.
     // Convenience. Users will be able to enter the rgb in hex without the # if they want.
@@ -230,7 +230,7 @@ export default class Paint extends Lavenza.Command {
 
     // Check if the hex color is valid.
     if (!this.isHexColor(colorHex)) {
-      await resonance.reply(`That seems to be an invalid HEX value or color name!`);
+      await resonance.__reply(`That seems to be an invalid HEX value or color name!`);
       return false;
     }
 
@@ -314,11 +314,11 @@ export default class Paint extends Lavenza.Command {
 
     // Send the text to the channel.
     // We add a delay for some flavor. Don't actually need it.
-    await resonance.reply(`_Scanning available colors in this server..._`);
+    await resonance.__reply(`Scanning available colors in this server...`);
     await resonance.client.typeFor(1, resonance.channel);
     await Lavenza.wait(3);
     if (list_msg === `Here is the list of all colors in this server:\n\n`) {
-      await resonance.reply(`There are no colors in this server! Better start creating some. :)`);
+      await resonance.__reply(`There are no colors in this server! Better start creating some. :)`);
     } else {
       await resonance.message.channel.send(list_msg);
     }
@@ -341,7 +341,7 @@ export default class Paint extends Lavenza.Command {
       }
     }));
 
-    await resonance.reply(`I have cleared all color roles from the server. :)`);
+    await resonance.__reply(`I have cleared all color roles from the server. :)`);
 
   }
 

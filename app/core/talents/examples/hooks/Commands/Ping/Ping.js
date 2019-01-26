@@ -48,7 +48,7 @@ export default class Ping extends Lavenza.Command {
     // Sending a very simple message.
     // Resonances come with a shortcut reply() function built it. This will send a message back to the same context.
     // Regardless of the client it came from, this function should work. So you don't have to worry about that.
-    await resonance.reply(`Pong! Hey there!`);
+    await resonance.__reply(`Pong! Hey there!`);
 
     // Sending a reply with the built-in reply() function in the resonance.
     // Resonances have a built-in reply() function that handles the sending depending on the client.
@@ -65,13 +65,14 @@ export default class Ping extends Lavenza.Command {
 
       // If we're in Discord..
       case Lavenza.ClientTypes.Discord: {
-        await resonance.reply('Ah, we seem to be on Discord! This application is so much better than Skype & TeamSpeak. Oof!');
+        await resonance.__reply('Ah, we seem to be on Discord! This application is so much better than Skype & TeamSpeak. Oof!');
         break;
       }
 
       // If we're in Twitch...
       case Lavenza.ClientTypes.Twitch: {
-        await resonance.reply(`I love Twitch! It's such a cool website. :P`);
+        await resonance.__reply(`I love Twitch! It's such a cool website. :P`);
+        await resonance.__send(resonance.bot.architect.discord, 'Hey, a ping command was invoked on Twitch. :)');
         break;
       }
     }

@@ -30,7 +30,7 @@ export default class Hello extends Lavenza.Command {
       await Lavenza.Gestalt.update(`/i18n/${resonance.bot.id}/clients/${resonance.client.type}/users`, payload);
 
       // Send a reply.
-      await resonance.reply("I've modified your locale settings! From now on, I will answer you in this language when I can. You can change this setting at any time.", locale);
+      await resonance.__reply("I've modified your locale settings! From now on, I will answer you in this language when I can. You can change this setting at any time.", locale);
     }
 
   }

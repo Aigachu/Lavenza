@@ -55,7 +55,7 @@ export default class TwitchResonance extends Resonance {
     }
 
     // Second, we check if configurations exist for this channel.
-    let i18nChannelConfig = await Lavenza.Gestalt.get(`/i18n/${this.bot.id}/clients/discord/channels`).catch(Lavenza.stop);
+    let i18nChannelConfig = await Lavenza.Gestalt.get(`/i18n/${this.bot.id}/clients/twitch/channels`).catch(Lavenza.stop);
 
     // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
     if (i18nChannelConfig[this.author.id] && i18nChannelConfig[this.author.id].locale && i18nChannelConfig[this.author.id].locale !== 'default') {
@@ -72,30 +72,30 @@ export default class TwitchResonance extends Resonance {
    *
    * @inheritDoc
    */
-  static async doSend(destination, content) {
+  static async doSend(bot, destination, content) {
 
     // If the destination is a channel, and it's a private whisper channel, we use TMI's whisper function instead.
     if (destination instanceof TwitchChannel && destination.type === 'whisper') {
-      return await this.bot.getClient(Lavenza.ClientTypes.Twitch).whisper(destination.id, content);
+      return await bot.getClient(Lavenza.ClientTypes.Twitch).whisper(destination.id, content);
     }
 
     // If the destination is a user, then we send a whisper as well.
     if (destination instanceof TwitchUser) {
-      return await this.bot.getClient(Lavenza.ClientTypes.Twitch).whisper(destination.username, content);
+      return await bot.getClient(Lavenza.ClientTypes.Twitch).whisper(destination.username, content);
     }
 
     // If the destination is a string and doesn't start with '#', we send it through a whisper.
     if (typeof destination === 'string' && !destination.startsWith('#')) {
-      return await this.bot.getClient(Lavenza.ClientTypes.Twitch).whisper(destination, content);
+      return await bot.getClient(Lavenza.ClientTypes.Twitch).whisper(destination, content);
     }
 
     // If the destination is a string and starts with '#', we send it to the channel.
     if (typeof destination === 'string' && !destination.startsWith('#')) {
-      return await this.bot.getClient(Lavenza.ClientTypes.Twitch).say(destination, content);
+      return await bot.getClient(Lavenza.ClientTypes.Twitch).say(destination, content);
     }
 
     // Otherwise, we just send it to the destination, assuming it's simply the name of a channel.
-    return await this.bot.getClient(Lavenza.ClientTypes.Twitch).say(destination.id, content);
+    return await bot.getClient(Lavenza.ClientTypes.Twitch).say(destination.id, content);
   }
 
   /**

@@ -3,11 +3,13 @@ authorization:
 
   # Blacklist - Prevent use of the command in certain contexts.
   blacklist:
+    guilds: []
     channels: []
     users: []
 
   # Whitelist - Permit use of the command in contexts where the command is globally blacklisted.
   whitelist:
+    guilds: []
     channels: []
     users: []
 
@@ -21,4 +23,4 @@ authorization:
 # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
 cooldown:
   global: 0
-  user: 10
+  user: 5

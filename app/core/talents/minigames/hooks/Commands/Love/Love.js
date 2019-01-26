@@ -23,7 +23,7 @@ export default class Love extends Lavenza.Command {
     // Processes the command only if there's input.
     if (Lavenza.isEmpty(resonance.order.rawContent)) {
       // Store the message to be returned.
-      resonance.reply(`{{author}}, you have 100% for ZeRo & M2K's AS5es if you don't specify an object or person!`, {author: resonance.message.author});
+      await resonance.__reply(`{{author}}, you have 100% for ZeRo & M2K's AS5es if you don't specify an object or person!`, {author: resonance.message.author.username});
       return;
     }
 
@@ -39,7 +39,7 @@ export default class Love extends Lavenza.Command {
     // I'll be honest, I forget the joke behind the message that is returned here. But it seems funny.
 
     // Send the message.
-    resonance.reply(`There is __**{{percent}}%**__ love between {{author}} and **{{thing}}**!`, {percent: percent, author: resonance.author, thing: thing});
+    await resonance.__reply(`There is {{percent}}% love between {{author}} and {{thing}}!`, {percent: percent, author: resonance.author, thing: thing});
 
   }
 

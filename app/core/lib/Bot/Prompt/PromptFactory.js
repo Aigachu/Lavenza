@@ -7,7 +7,7 @@
 
 // Imports.
 import DiscordPrompt from './DiscordPrompt';
-import ClientTypes from "../Client/ClientTypes";
+import TwitchPrompt from './TwitchPrompt';
 
 /**
  * Provide a factory class that manages the creation of the right client given a type.
@@ -24,17 +24,17 @@ export default class PromptFactory {
     switch (resonance.client.type) {
 
       // For Discord clients, we build a Discord Prompt.
-      case ClientTypes.Discord: {
+      case Lavenza.ClientTypes.Discord: {
         prompt = new DiscordPrompt(request, line, resonance, onResponse, bot);
         break;
       }
 
-      // // For Twitch clients, we build a Twitch Prompt.
-      // case ClientTypes.Twitch: {
-      //     prompt = new TwitchPrompt(request, line, resonance, onResponse, bot);
-      //   break;
-      // }
-      //
+      // For Twitch clients, we build a Twitch Prompt.
+      case Lavenza.ClientTypes.Twitch: {
+          prompt = new TwitchPrompt(request, line, resonance, onResponse, bot);
+        break;
+      }
+
       // // For Slack clients, we build a Slack Prompt.
       // case ClientTypes.Slack: {
       //   prompt = new SlackPrompt(request, line, resonance, onResponse, bot);

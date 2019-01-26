@@ -41,7 +41,7 @@ export default class Register {
 
     // If player data already exists, we exit the process here.
     if (!Lavenza.isEmpty(playerData)) {
-      await resonance.reply(`Hey, you already have an account! You don't need to register again.`);
+      await resonance.__reply(`Hey, you already have an account! You don't need to register again.`);
       return;
     }
 
@@ -55,7 +55,7 @@ export default class Register {
       await resonance.client.typeFor(2, conversationChannel);
 
       // Tell the user we'll take this to the DMs.
-      await resonance.reply(`Ooh, you wanna register for DNDiscord? Alright! I'll dm you in a second!`);
+      await resonance.__reply(`Ooh, you wanna register for DNDiscord? Alright! I'll dm you in a second!`);
 
       // Wait 5 seconds.
       await Lavenza.wait(5);
@@ -80,14 +80,15 @@ export default class Register {
     await resonance.client.typeFor(2, conversationChannel);
 
     // A little welcome message.
-    await resonance.send(conversationChannel, `Welcome to **Dungeons & Discord**!`).catch(Lavenza.stop);
+    await resonance.__send(conversationChannel, `Welcome to **Dungeons & Discord**!`).catch(Lavenza.stop);
 
     // Type for 3 seconds.
     await resonance.client.typeFor(3, conversationChannel);
 
     // Ask the player if they want green tea.
     /** @catch Throw the error to stop execution. */
-    await resonance.bot.prompt(`First thing's first, to break the ice, would you like some green tea?`, conversationChannel, resonance, 30, async (responseResonance, prompt) => {
+    let promptText = await Lavenza.__(`First thing's first, to break the ice, would you like some green tea?`);
+    await resonance.bot.prompt(promptText, conversationChannel, resonance, 30, async (responseResonance, prompt) => {
 
       // Type for 2 seconds.
       await resonance.client.typeFor(2, conversationChannel);
@@ -96,15 +97,15 @@ export default class Register {
       if (Lavenza.Sojiro.isConfirmation(responseResonance.content)) {
 
         // Save the green tea for later.
-        await resonance.send(conversationChannel, `Awesome! I'll get started on that right away. In the meantime...`).catch(Lavenza.stop);
+        await resonance.__send(conversationChannel, `Awesome! I'll get started on that right away. In the meantime...`).catch(Lavenza.stop);
         playerData.greenTea = true;
 
       } else {
-        await resonance.send(conversationChannel, `Oh! That's completely fine. Moving on...`).catch(Lavenza.stop);
+        await resonance.__send(conversationChannel, `Oh! That's completely fine. Moving on...`).catch(Lavenza.stop);
       }
 
     }).catch(async error => {
-      await resonance.send(conversationChannel, `Seems like you couldn't answer me in time...That's alright! You can try again later. :)`);
+      await resonance.__send(conversationChannel, `Seems like you couldn't answer me in time...That's alright! You can try again later. :)`);
 
       // We forcefully throw an error here to end execution. This means that without this prompt, we shouldn't proceed.
       await Lavenza.throw(error);
@@ -119,22 +120,22 @@ export default class Register {
     // }).catch(Lavenza.stop);
 
     // Little conclusion.
-    await resonance.send(conversationChannel, `Okay so, normally I'd ask you a bunch of questions, but it seems like Aiga's been lazy as usual...:sweat_smile:`);
+    await resonance.__send(conversationChannel, `Okay so, normally I'd ask you a bunch of questions, but it seems like Aiga's been lazy as usual...:sweat_smile:`);
 
     // Register the player.
     await core.registerPlayer(playerData).catch(Lavenza.stop);
 
     // More conclusions.
     await resonance.client.typeFor(4, conversationChannel);
-    await resonance.send(conversationChannel, `I went ahead and created your player in my database. You should be set. Your next step will be to create a character! Use \`;° dnd --newgame\` to get started with that.`);
+    await resonance.__send(conversationChannel, `I went ahead and created your player in my database. You should be set. Your next step will be to create a character! Use \`;° dnd --newgame\` to get started with that.`);
     await resonance.client.typeFor(4, conversationChannel);
-    await resonance.send(conversationChannel, `Remember to let your imagination run wild! And have fun. :)`);
+    await resonance.__send(conversationChannel, `Remember to let your imagination run wild! And have fun. :)`);
 
     // If the player asked for tea in the beginning, hand it to them!
     if (playerData.greenTea) {
       await Lavenza.wait(10).catch(Lavenza.stop);
       await resonance.client.typeFor(2, conversationChannel);
-      resonance.send(conversationChannel, `Wait! I almost forgot...Here's your tea! - {{tea}}`, {tea: ':tea:'}).catch(Lavenza.stop);
+      resonance.__send(conversationChannel, `Wait! I almost forgot...Here's your tea! - {{tea}}`, {tea: ':tea:'}).catch(Lavenza.stop);
     }
   }
 }

@@ -168,9 +168,11 @@ export const Heart = {
     }
 
     // Hotfix...
-    // Fucking Discord tags man.
+    // FUCKING SPECIAL CHARACTERS MAN.
     translation = await translation.replace(/&lt;/g, '<');
     translation = await translation.replace(/&gt;/g, '>');
+    translation = await translation.replace(/&amp;/g, '&');
+    translation = await translation.replace(/&quot;/g, '"');
 
     return translation;
 
@@ -225,6 +227,6 @@ export const Heart = {
     },
   },
 };
-console.log('setting global');
+
 // Set Lavenza in the global scope for ease of access in other files.
 global["Lavenza"] = Heart;
