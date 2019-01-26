@@ -16,5 +16,4 @@ dependencies: []
 
 # Determine which clients this talent should be enabled in.
 # If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.
-clients:
-  - discord
+clients: '*'

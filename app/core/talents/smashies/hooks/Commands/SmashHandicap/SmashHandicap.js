@@ -128,15 +128,22 @@ export default class SmashHandicap extends Lavenza.Command {
     let rand = handicaps[Math.floor(Math.random() * handicaps.length)];
 
     // Generate the message.
-    let message = `**${rand.title}**`;
-    message += `\n${rand.details}`;
-    message += `\n\nGood luck! :P`;
+    let message = `${rand.title}: ${rand.details}`;
 
     // Send the results to the caller.
     // Add a bit of delay for flavor.
-    await resonance.reply("Your handicap will be...");
-    await resonance.client.typeFor(2, resonance.channel);
-    await resonance.reply(message);
+    await resonance.__reply("Your handicap will be...");
+
+    // Type if we're in Discord.
+    if (resonance.client.type === Lavenza.ClientTypes.Discord) {
+      resonance.client.typeFor(rand.timeout, resonance.channel).catch(Lavenza.continue);
+    }
+
+    // Wait the timeout.
+    await Lavenza.wait(rand.timeout);
+
+    // Send the message.
+    await resonance.__reply(message);
   }
 
 }

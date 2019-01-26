@@ -26,7 +26,7 @@ export default class NewGame {
 
     // If player data doesn't exists, we exit the process here.
     if (Lavenza.isEmpty(player)) {
-      await resonance.reply(`Hmm, it doesn't seem like you have an account. You may want to create one with the \`--register\` option! If this is an error, make sure to contact Aiga directly. :)`);
+      await resonance.__reply(`Hmm, it doesn't seem like you have an account. You may want to create one with the \`--register\` option! If this is an error, make sure to contact Aiga directly. :)`);
       return;
     }
 
@@ -42,7 +42,7 @@ export default class NewGame {
       await resonance.client.typeFor(2, conversationChannel);
 
       // Tell the user we'll take this to the DMs.
-      await resonance.reply(`Ah you want to create a character? Awesome! I'll dm you in just a second. ;)`);
+      await resonance.__reply(`Ah you want to create a character? Awesome! I'll dm you in just a second. ;)`);
 
       // Wait 5 seconds.
       await Lavenza.wait(5);
@@ -55,12 +55,12 @@ export default class NewGame {
     }
 
     // Now we enter the character creation process.
-    await resonance.send(conversationChannel, `Uhhh! This command actually isn't ready yet...(Aiga come on...Hurry up!) :sweat_smile:`);
+    await resonance.__send(conversationChannel, `Uhhh! This command actually isn't ready yet...(Aiga come on...Hurry up!) :sweat_smile:`);
 
     // Make her type for a bit.
     await resonance.client.typeFor(2, conversationChannel);
 
-    await resonance.send(conversationChannel, `Ummm...In the meantime here's your player data? I guess?`);
+    await resonance.__send(conversationChannel, `Ummm...In the meantime here's your player data? I guess?`);
 
     await resonance.bot.getClient(Lavenza.ClientTypes.Discord).sendEmbed(conversationChannel, {
       description: `\`\`\`${JSON.stringify(await player.data(), null, '\t')}\`\`\``

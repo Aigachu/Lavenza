@@ -5,8 +5,6 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import ClientTypes from "../Client/ClientTypes";
-
 /**
  * Provides a base class for Commands.
  *
@@ -147,7 +145,7 @@ export default class Command {
     switch (resonance.client.type) {
 
       // If we're in Discord, we want to send a formatted rich embed.
-      case ClientTypes.Discord: {
+      case Lavenza.ClientTypes.Discord: {
 
         // Start building the usage text by getting the command prefix.
         let usageText = `\`${await resonance.bot.getCommandPrefix(resonance)}${config.key}`;

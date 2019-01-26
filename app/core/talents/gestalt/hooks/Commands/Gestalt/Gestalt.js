@@ -63,7 +63,7 @@ export default class Gestalt extends Lavenza.Command {
         // If a Discord Client exists for the bot, we send a message to the Discord architect.
         if (!Lavenza.isEmpty(resonance.bot.getClient(Lavenza.ClientTypes.Discord))) {
           let getResultToString = JSON.stringify(getResult, null, '\t');
-          await resonance.send(resonance.architect.discord, '```\n' + getResultToString + '\n```');
+          await resonance.send(resonance.bot.architect.discord, '```\n' + getResultToString + '\n```');
         }
         break;
       }
@@ -79,7 +79,7 @@ export default class Gestalt extends Lavenza.Command {
         // If a Discord Client exists for the bot, we send a message to the Discord architect.
         if (!Lavenza.isEmpty(resonance.bot.getClient(Lavenza.ClientTypes.Discord))) {
           let updateResultToString = JSON.stringify(updateResult, null, '\t');
-          await resonance.send(resonance.architect.discord, '```\n' + updateResultToString + '\n```');
+          await resonance.send(resonance.bot.architect.discord, '```\n' + updateResultToString + '\n```');
         }
         break;
       }

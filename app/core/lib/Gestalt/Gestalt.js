@@ -9,7 +9,6 @@
 import Chronicler from './StorageService/Chronicler/Chronicler';
 import BotManager from '../Bot/BotManager';
 import TalentManager from '../Talent/TalentManager';
-import ClientTypes from "../Bot/Client/ClientTypes";
 
 /**
  * Gestalt manages the storage and retrieval of JSON type data.
@@ -159,7 +158,7 @@ export default class Gestalt {
     switch (clientType) {
 
       // For Discord Clients...
-      case ClientTypes.Discord: {
+      case Lavenza.ClientTypes.Discord: {
 
         // Initialize i18n contexts, creating them if they don't exist.
         // Translations are manageable through all of these contexts.
@@ -179,7 +178,7 @@ export default class Gestalt {
         };
 
         // For all guilds, we initialize this default configuration.
-        await Promise.all(bot.getClient(ClientTypes.Discord).guilds.map(async guild => {
+        await Promise.all(bot.getClient(Lavenza.ClientTypes.Discord).guilds.map(async guild => {
           if (!(guild.id in guilds)) {
             guilds[guild.id] = defaultGuildConfig;
           }
@@ -191,7 +190,7 @@ export default class Gestalt {
       }
 
       // For Twitch Clients...
-      case ClientTypes.Twitch: {
+      case Lavenza.ClientTypes.Twitch: {
 
         // Initialize i18n contexts, creating them if they don't exist.
         // Translations are manageable through all of these contexts.
@@ -210,7 +209,7 @@ export default class Gestalt {
         };
 
         // For all guilds, we initialize this default configuration.
-        let config = await bot.getClientConfig(ClientTypes.Twitch);
+        let config = await bot.getClientConfig(Lavenza.ClientTypes.Twitch);
         await Promise.all( config.channels.map(async channel => {
           if (!(channel in channels)) {
             channels[channel] = defaultChannelConfig;
@@ -222,7 +221,7 @@ export default class Gestalt {
       }
 
       // For Slack Clients...
-      case ClientTypes.Slack: {
+      case Lavenza.ClientTypes.Slack: {
 
         // await this.sync({}, `/bots/${bot.id}/clients/${clientType}/workspaces`);
         break;

@@ -28,35 +28,57 @@ export default class RollDice extends Lavenza.Command {
     // Roll types are randomized and have different delays.
     let roll_types = [];
 
-    // Set role types.
+    // Set roll types.
     roll_types.push({
-      message: "_rolls the dice normally_",
+      message: "*rolls the dice normally*",
       timeout: 1
     });
     roll_types.push({
-      message: "_rolls the dice violently_\n_the die falls on the ground_",
+      message: "*throws the dice on the ground violently...*",
       timeout: 2
     });
     roll_types.push({
-      message: "_accidentally drops the dice on the ground while getting ready_\nOops! Still counts right...?",
+      message: "*accidentally drops the dice on the ground while getting ready*",
       timeout: 2
     });
     roll_types.push({
-      message: "_spins the dice_\nWait for it...",
+      message: "*spins the dice*",
       timeout: 5
     });
 
     // Choose a roll type with a random key.
     let rand = roll_types[Math.floor(Math.random() * roll_types.length)];
 
-    // Send everything we just computed to the channel.
-    resonance.reply(rand.message).then(() => {
-      resonance.message.channel.startTyping(1);
-      Lavenza.wait(rand.timeout).then(() => {
-        resonance.reply("{{author}}, the result of your roll is: **{{roll}}**!", {author: resonance.author, roll: roll});
-        resonance.message.channel.stopTyping();
-      });
-    });
+    // Build the response.
+    let response = await Lavenza.__("{{author}}, the result of your roll is: **{{roll}}**!", {
+      author: resonance.author.username,
+      roll: roll
+    }, resonance.locale);
+
+    //
+    await resonance.__reply(rand.message);
+
+    // Depending on the type of client, we do different actions.
+    switch (resonance.client.type) {
+
+      // If we're in Discord, we do a bit of typing to make it seem more natural.
+      case Lavenza.ClientTypes.Discord: {
+        // Start typing with the chosen answer's timeout, then send the reply to the user.
+        await resonance.client.typeFor(1, resonance.channel);
+        await Lavenza.wait(rand.timeout);
+        await resonance.reply(response);
+        await resonance.message.channel.stopTyping();
+        return;
+      }
+
+      // If we're in Twitch, simply send the answer.
+      case Lavenza.ClientTypes.Twitch: {
+        await Lavenza.wait(rand.timeout);
+        // Start typing with the chosen answer's timeout, then send the reply to the user.
+        await resonance.reply(response);
+        return;
+      }
+    }
   }
 
 }

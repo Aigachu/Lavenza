@@ -51,7 +51,7 @@ export default class Coinflip extends Lavenza.Command {
     let rand = flip_types[Math.floor(Math.random() * flip_types.length)];
 
     // Build the response, with translations.
-    let response = await Lavenza.__(`{{author}} obtained **{{result}}**!`, {author: resonance.message.author, result: result});
+    let response = await Lavenza.__(`{{author}} obtained **{{result}}**!`, {author: resonance.message.author.username, result: result}, resonance.locale);
 
     // Send initial message.
     await resonance.__reply(rand.message);
@@ -71,6 +71,7 @@ export default class Coinflip extends Lavenza.Command {
 
       // If we're in Twitch, simply send the answer.
       case Lavenza.ClientTypes.Twitch: {
+        await Lavenza.wait(rand.timeout);
         // Start typing with the chosen answer's timeout, then send the reply to the user.
         await resonance.reply(response);
         return;

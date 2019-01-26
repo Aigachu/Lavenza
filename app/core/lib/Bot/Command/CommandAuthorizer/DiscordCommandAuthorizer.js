@@ -30,8 +30,8 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
 
     // If there's a guild assigned to the resonance, we can add guild defined operators & masters.
     if (!Lavenza.isEmpty(this.guild)) {
-      this.operatorsToValidate = [...this.operatorsToValidate, ...this.clientConfig.guilds[this.guild.id].operators, ...this.clientConfig.guilds[this.guild.id].masters];
-      this.mastersToValidate = [...this.mastersToValidate, ...this.clientConfig.guilds[this.guild.id].masters];
+      this.operatorsToValidate = [...this.operatorsToValidate, ...this.botClientConfig.guilds[this.guild.id].operators, ...this.botClientConfig.guilds[this.guild.id].masters];
+      this.mastersToValidate = [...this.mastersToValidate, ...this.botClientConfig.guilds[this.guild.id].masters];
     }
   }
 
@@ -228,7 +228,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       return true;
     }
 
-    return this.commandClientConfig.authorization['blacklist'].users.includes(this.authorUser.id);
+    return !this.commandClientConfig.authorization['blacklist'].users.includes(this.authorUser.id);
   }
 
   /**

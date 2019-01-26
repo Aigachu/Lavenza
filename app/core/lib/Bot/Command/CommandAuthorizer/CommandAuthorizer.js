@@ -34,7 +34,7 @@ export default class CommandAuthorizer {
    * @returns {Promise<void>}
    */
   async build(resonance) {
-    this.clientConfig = await Lavenza.Gestalt.get(`/bots/${this.bot.id}/clients/discord`);
+    this.botClientConfig = await Lavenza.Gestalt.get(`/bots/${this.bot.id}/clients/${resonance.client.type}`);
     this.clientMasterConfig = await resonance.bot.getClientConfig(this.type);
     this.operators = this.clientMasterConfig.operators;
     this.masters = this.clientMasterConfig.masters;

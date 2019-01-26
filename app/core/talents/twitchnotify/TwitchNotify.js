@@ -7,7 +7,6 @@
 
 // Modules.
 import DiscordJS from "discord.js";
-import ClientTypes from "../../lib/Bot/Client/ClientTypes";
 
 // I have to include twitch-api-v5 in the old way because this package isn't ES6 ready...GROSS!!!
 const twitch = require('twitch-api-v5');
@@ -47,7 +46,7 @@ export default class TwitchNotify extends Lavenza.Talent {
     this.guilds[bot.id] = await Lavenza.Gestalt.sync({}, this.guildConfigStorages[bot.id]);
 
     // Await the processing of all Discord guilds available in the bot's Discord client.
-    await Promise.all(bot.getClient(ClientTypes.Discord).guilds.map(async guild => {
+    await Promise.all(bot.getClient(Lavenza.ClientTypes.Discord).guilds.map(async guild => {
 
       // If the guild definition is not already created in the database, we initialize it here.
       if (Lavenza.isEmpty(this.guilds[bot.id][guild.id])) {
@@ -92,7 +91,7 @@ export default class TwitchNotify extends Lavenza.Talent {
     this.guilds[bot.id] = await Lavenza.Gestalt.get(this.guildConfigStorages[bot.id]);
 
     // We'll perform checks for every guild this bot is part of.
-    await Promise.all(bot.getClient(ClientTypes.Discord).guilds.map(async guild => {
+    await Promise.all(bot.getClient(Lavenza.ClientTypes.Discord).guilds.map(async guild => {
 
       // If for whatever reason, the guild being processed has no configuration, we return.
       if (Lavenza.isEmpty(this.guilds[bot.id])) {
@@ -178,7 +177,7 @@ export default class TwitchNotify extends Lavenza.Talent {
   static async ttvannFire(guildConfig, streamData, streamUser, bot) {
 
     // Here we do some initializations and retrieval of needed data. Pretty straightforward.
-    let announcementChannel = bot.getClient(ClientTypes.Discord).channels.find(channel => channel.id === guildConfig.ann_channel);
+    let announcementChannel = bot.getClient(Lavenza.ClientTypes.Discord).channels.find(channel => channel.id === guildConfig.ann_channel);
     let name = streamData.channel.display_name;
     let streamTitle = streamData.channel.status;
     let previewImage = streamData.preview.large;

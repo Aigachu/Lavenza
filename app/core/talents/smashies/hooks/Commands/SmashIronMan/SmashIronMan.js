@@ -18,7 +18,7 @@ export default class SmashIronMan extends Lavenza.Command {
    */
   static async execute(resonance) {
     // Get all SSB4 character directories from the maiden's assets folder.
-    let smash4_character_directories = fs.readdirSync(this.talent.directory + '/assets/portraits/smash4');
+    let smash4_character_directories = fs.readdirSync(this.talent.directory + '/assets/portraits/ultimate');
 
     // Why the fuck is this a - 2?
     // Oh, right. There are two folders that aren't characters...
@@ -38,7 +38,7 @@ export default class SmashIronMan extends Lavenza.Command {
     // If the input is not a number, we'll send them running.
     if (isNaN(count)) {
       // Send a message saying they fucked up.
-      await resonance.reply(`I only accept digital input okay? I'm sorry!`);
+      await resonance.__reply(`I only accept digital input okay? I'm sorry!`);
       return;
     }
 
@@ -46,7 +46,7 @@ export default class SmashIronMan extends Lavenza.Command {
     // @TODO - Check if the data is a number before even doing this check.
     if (count > roster_size) {
       // Send a message saying they fucked up.
-      await resonance.reply("That number is too high! There are only **" + roster_size + "** characters in the Smash 4 roster you idiot! Didn't you know that?! Wow...");
+      await resonance.__reply(`That number is too high! There are only {{rosterSize}} characters in the Smash 4 roster you idiot! Didn't you know that?! Wow...`, {rosterSize: roster_size});
       return;
     }
 
@@ -80,17 +80,18 @@ export default class SmashIronMan extends Lavenza.Command {
     }
 
     // Set message.
-    let message = "Here's your list of iron man characters!\n\n";
+    await resonance.__reply("Here's your list of iron man characters!");
+
+    // Set variable for characters message.
+    let charactersMessage  = '';
 
     // Append characters the the list.
     charlist.every((char) => {
-      message += `-- **${char}**\n`;
+      charactersMessage += `${char} | `;
       return true;
     });
 
-    message += "\nThere we go! Good luck against your challenger. ;)";
-
-    await resonance.reply(message);
+    await resonance.reply(charactersMessage);
 
   }
 

@@ -25,11 +25,12 @@ export default class UserPic extends Lavenza.Command {
 
     // If a member isn't found, the input may be wrong.
     if (member === null) {
-      resonance.reply(`Hmm...Did you make a mistake? I couldn't get a pic with the input you provided... :(`);
+      await resonance.__reply(`Hmm...Did you make a mistake? I couldn't get a pic with the input you provided... :(`);
       return;
     }
 
     // Send the user's avatar to the channel.
-    resonance.message.channel.send(member.user.avatarURL);  }
+    await resonance.message.channel.send(member.user.avatarURL);
+  }
 
 }

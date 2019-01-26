@@ -79,7 +79,7 @@ export default class DiscordResonance extends Resonance {
    *
    * @inheritDoc
    */
-  static async doSend(destination, content) {
+  static async doSend(bot, destination, content) {
     return await destination.send(content).catch(Lavenza.stop);
   }
 

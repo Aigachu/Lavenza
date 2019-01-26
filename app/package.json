@@ -1,6 +1,6 @@
 {
   "name": "lavenza-ii",
-  "version": "0.9.4",
+  "version": "1.0.0",
   "description": "A development framework for chatbots that supports many platforms. The successor to Lavenza, built in NodeJS and written in ES6!",
   "main": "core/lib/Heart",
   "scripts": {

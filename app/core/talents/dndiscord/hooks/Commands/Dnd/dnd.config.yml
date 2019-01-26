@@ -58,5 +58,7 @@ cooldown:
 
 # Clients where this command will function.
 # If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.
+# For each enabled client, you should create a 'COMMANDNAME.CLIENTNAME.yml' file in this same directory.
+# Examples of these files can be taken straight from the 'examples' talent, in the Ping command.
 clients:
   - discord

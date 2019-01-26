@@ -125,7 +125,7 @@ export default class DiscordClient extends DiscordJSClient {
       case 'warning':
         color = '0xf4d742';
         image = {
-          attachment: new DiscordJS.Attachment('./assets/warning.png', 'warning.png'),
+          attachment: new DiscordJS.Attachment('./core/assets/warning.png', 'warning.png'),
           name: 'warning.png'
         };
         break;
@@ -133,7 +133,7 @@ export default class DiscordClient extends DiscordJSClient {
       default:
         color = '0xa5201d';
         image = {
-          attachment: new DiscordJS.Attachment('./assets/error.png', 'error.png'),
+          attachment: new DiscordJS.Attachment('./core/assets/error.png', 'error.png'),
           name: 'error.png'
         };
         break;

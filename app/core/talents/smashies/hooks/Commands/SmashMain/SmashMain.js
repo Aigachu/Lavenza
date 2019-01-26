@@ -35,24 +35,38 @@ export default class SmashMain extends Lavenza.Command {
     // Build Discord Attachment.
     let attachment = new DiscordJS.Attachment(character.portrait, character.filename);
 
-    resonance.client.sendEmbed(resonance.message.channel, {
-      title: character.name,
-      header: {
-        text: await Lavenza.__('Super Smash Bros. Ultimate', resonance.locale),
-        icon: 'attachment://icon.png'
-      },
-      footer: {
-        text: await Lavenza.__(`{{user}}'s new main character!`, {user: resonance.message.author.username}, resonance.locale),
-        icon: resonance.message.author.avatarURL
-      },
-      attachments: [
-        attachment,
-        new DiscordJS.Attachment(`${this.talent.directory}/icon.png`, 'icon.png')
-      ],
-      image: `attachment://${character.filename}`,
-      // thumbnail: `attachment://icon.png`
+    // Depending on client we act differently.
+    switch (resonance.client.type) {
 
-    }).catch(Lavenza.continue);
+      // If we're in Discord..
+      case Lavenza.ClientTypes.Discord: {
+        resonance.client.sendEmbed(resonance.message.channel, {
+          title: character.name,
+          header: {
+            text: await Lavenza.__('Super Smash Bros. Ultimate', resonance.locale),
+            icon: 'attachment://icon.png'
+          },
+          footer: {
+            text: await Lavenza.__(`{{user}}'s new main character!`, {user: resonance.message.author.username}, resonance.locale),
+            icon: resonance.message.author.avatarURL
+          },
+          attachments: [
+            attachment,
+            new DiscordJS.Attachment(`${this.talent.directory}/icon.png`, 'icon.png')
+          ],
+          image: `attachment://${character.filename}`,
+          // thumbnail: `attachment://icon.png`
+
+        }).catch(Lavenza.continue);
+        break;
+      }
+
+      // If we're in Twitch...
+      case Lavenza.ClientTypes.Twitch: {
+        await resonance.__reply(`Your new main is...{{character}}`, {character: character.name});
+        break;
+      }
+    }
   }
 
   /**

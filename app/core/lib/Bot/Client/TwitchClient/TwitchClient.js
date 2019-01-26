@@ -65,7 +65,7 @@ export default class TwitchClient extends TMIClient {
       // It is built to be organized like Discord.JS organizes it. Seems to be our best bet to keep things clean!
       let msgData = {
         author: new TwitchUser(
-          context['id'],
+          context['username'],
           context['username'],
           context['display-name'],
         ),

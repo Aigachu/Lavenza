@@ -11,7 +11,6 @@ import ResonanceFactory from './Resonance/ResonanceFactory'
 import TalentManager from '../Talent/TalentManager';
 import CommandListener from './Command/CommandListener/CommandListener';
 import PromptFactory from './Prompt/PromptFactory';
-import ClientTypes from "./Client/ClientTypes";
 
 /**
  * Provides a class for Bots.
@@ -103,17 +102,17 @@ export default class Bot {
     this.architect = {};
 
     // Await processing of all clients.
-    await Promise.all(this.clients.map(async client => {
+    await Promise.all(Object.keys(this.clients).map(async clientKey => {
 
       // Get the client's configuration.
-      let config = await this.getClientConfig(client.type);
+      let config = await this.getClientConfig(clientKey);
 
       // Depending on the type of client, we act accordingly.
-      switch(client.type) {
+      switch(clientKey) {
 
         // In Discord, we fetch the architect's user using the ID.
         case Lavenza.ClientTypes.Discord: {
-          this.architect.discord = await client.fetchUser(config.architect);
+          this.architect.discord = await this.getClient(clientKey).fetchUser(config.architect);
           break;
         }
 
@@ -426,17 +425,17 @@ export default class Bot {
     switch (client.type) {
 
       // In the case of Discord, we get the 'content' property of the message object.
-      case ClientTypes.Discord: {
+      case Lavenza.ClientTypes.Discord: {
         return message.content;
       }
 
       // In the case of Discord, we get the 'content' property of the message object.
       // For Twitch, the Message object is custom built.
-      case ClientTypes.Twitch: {
+      case Lavenza.ClientTypes.Twitch: {
         return message.content;
       }
 
-      // case ClientTypes.Slack:
+      // case Lavenza.ClientTypes.Slack:
       //   return message;
     }
   }
@@ -539,11 +538,22 @@ export default class Bot {
     switch (resonance.client.type) {
 
       // In the case of a Discord client, we check to see if there's a custom prefix set for the resonance's guild.
-      case ClientTypes.Discord: {
+      case Lavenza.ClientTypes.Discord: {
 
         let guildConfig = await Lavenza.Gestalt.get(`/bots/${this.id}/clients/discord/guilds`);
         if (resonance.message.guild) {
           cprefix = guildConfig[resonance.message.guild.id].cprefix || undefined;
+        }
+        break;
+
+      }
+
+      // In the case of a Twitch client, we check to see if there's a custom prefix set for the resonance's guild.
+      case Lavenza.ClientTypes.Twitch: {
+
+        let channelConfig = await Lavenza.Gestalt.get(`/bots/${this.id}/clients/twitch/channels`);
+        if (resonance.message.channel) {
+          cprefix = channelConfig[resonance.message.channel.id].cprefix || undefined;
         }
         break;
 

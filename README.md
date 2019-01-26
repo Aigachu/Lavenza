@@ -158,8 +158,11 @@ You can run as many bots as you want at once! Each bot can have it's own command
 #### Multi-Client support.
 Each bot can connect to multiple clients at once (i.e. Twitch, Discord & Slack). This allows for potential communication between clients.
 
-#### Translation
+#### Translation Management
 All texts in the application can be translated to any language, and supports automatic translation for [all languages supported by Google Cloud Translation](https://cloud.google.com/translate/docs/languages). All translations are stored in JSON files and any string passed through automatic translation by Google is also saved in JSON.
+
+#### Google Translate
+Texts can be automatically translated using the Google Translate API. This can be enabled by linking a Google Cloud account!
 
 #### Credentials Management in a .env file.
 Credentials are all managed in a git-ignored .env file. This assures that sensitive information like bot tokens are not committed to the repository.
