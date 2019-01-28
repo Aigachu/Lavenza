@@ -18,7 +18,7 @@ export default class WonderfulListenerExample extends Lavenza.Listener {
   static async listen(resonance) {
 
     // Say wonderful!
-    this.sayWonderfulToo(resonance);
+    await this.sayWonderfulToo(resonance);
 
   }
 
@@ -28,11 +28,11 @@ export default class WonderfulListenerExample extends Lavenza.Listener {
    * @param {Resonance} resonance
    *   The resonance heard by the listener.
    */
-  static sayWonderfulToo(resonance) {
+  static async sayWonderfulToo(resonance) {
 
     // If we hear 'wonderful', we say Wonderful! <3.
     if (resonance.content === 'wonderful') {
-      resonance.message.reply('Wonderful! <3');
+      await resonance.reply('Wonderful! <3');
     }
 
   }

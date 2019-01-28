@@ -105,7 +105,7 @@ export default class Bot {
     await Promise.all(Object.keys(this.clients).map(async clientKey => {
 
       // Get the client's configuration.
-      let config = await this.getClientConfig(clientKey);
+      let config = await this.getActiveClientConfig(clientKey);
 
       // Depending on the type of client, we act accordingly.
       switch(clientKey) {
@@ -136,8 +136,17 @@ export default class Bot {
    */
   async getActiveConfig() {
 
-    // We use Gestalt to make a call to the database storage service and return the data.
-    return await Lavenza.Gestalt.get(`/bots/${this.id}/config`);
+    // Attempt to get the active configuration from the database.
+    let activeConfig = await Lavenza.Gestalt.get(`/bots/${this.id}/config/core`);
+    if (!Lavenza.isEmpty(activeConfig)) {
+      return activeConfig;
+    }
+
+    // Sync it to the database.
+    await Lavenza.Gestalt.sync(this.config, `/bots/${this.id}/config/core`);
+
+    // Return the configuration.
+    return this.config;
 
   }
 
@@ -175,6 +184,34 @@ export default class Bot {
 
     // Load configuration since it exists.
     return await Lavenza.Akechi.readYamlFile(pathToClientConfig);
+
+  }
+
+  /**
+   * Retrieve active client configuration for this bot.
+   *
+   * @param {string} clientType
+   *   The type of client configuration to return for the bot.
+   *
+   * @returns {Promise<void>}
+   *   The requested client.
+   */
+   async getActiveClientConfig(clientType) {
+
+    // Attempt to get the active configuration from the database.
+    let activeConfig = await Lavenza.Gestalt.get(`/bots/${this.id}/config/${clientType}`);
+    if (!Lavenza.isEmpty(activeConfig)) {
+      return activeConfig;
+    }
+
+    // If we don't find any configurations in the database, we'll fetch it normally and then save it.
+    let config = await this.getClientConfig(clientType);
+
+    // Sync it to the database.
+    await Lavenza.Gestalt.sync(config, `/bots/${this.id}/config/${clientType}`);
+
+    // Return the configuration.
+    return config;
 
   }
 
@@ -481,7 +518,7 @@ export default class Bot {
     await Promise.all(clientIds.map(async id => {
 
       // Load configuration since it exists.
-      let clientConfig = await this.getClientConfig(id);
+      let clientConfig = await this.getActiveClientConfig(id);
 
       if (Lavenza.isEmpty(clientConfig)) {
         await Lavenza.warn('Configuration file could not be loaded for the {{client}} client in {{bot}}. This client will not be instantiated.' +

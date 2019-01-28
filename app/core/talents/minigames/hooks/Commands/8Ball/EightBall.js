@@ -11,130 +11,131 @@
 export default class EightBall extends Lavenza.Command {
 
   /**
+   * This is the static build function of the command.
+   *
+   * You can treat this as a constructor. Assign any properties that the command may
+   * use!
+   *
    * @inheritDoc
    */
-  static async execute(resonance) {
+  static async build(config, talent) {
 
-    // If some input was actually given, we can process the command.
-    // @TODO - Check if the input is actually a question.
-    if (Lavenza.isEmpty(resonance.order.rawContent)) {
-      // If no input is given, then no question was actually asked.
-      resonance.reply(`"Now now, ask me something. Don't be shy!"`);
-      return;
-    }
+    // The build function must always run the parent's build function! Don't remove this line.
+    await super.build(config, talent);
 
     // We'll store all possible answers in an array.
-    let answers = [];
-
-    answers.push({
+    // The timeout is the amount of time before the answer is actually said. Adds a bit of suspense!
+    this.answers = [];
+    this.answers.push({
       message: `"It is certain."`,
       timeout: 2
     });
-    answers.push({
+    this.answers.push({
       message: `"It is decidedly so."`,
       timeout: 2
     });
-    answers.push({
+    this.answers.push({
       message: `"Without a doubt."`,
       timeout: 3
     });
-    answers.push({
+    this.answers.push({
       message: `"Yes, definitely."`,
       timeout: 4
     });
-    answers.push({
+    this.answers.push({
       message: `"You may rely on it."`,
       timeout: 2
     });
-    answers.push({
+    this.answers.push({
       message: `"As I see it, yes."`,
       timeout: 3
     });
-    answers.push({
+    this.answers.push({
       message: `"Most likely."`,
       timeout: 4
     });
-    answers.push({
+    this.answers.push({
       message: `"Outlook good."`,
       timeout: 2
     });
-    answers.push({
+    this.answers.push({
       message: `"Yes."`,
       timeout: 4
     });
-    answers.push({
+    this.answers.push({
       message: `"Signs point to yes."`,
       timeout: 2
     });
-    answers.push({
+    this.answers.push({
       message: `"Reply hazy try again."`,
       timeout: 2
     });
-    answers.push({
+    this.answers.push({
       message: `"Ask again later."`,
       timeout: 2
     });
-    answers.push({
+    this.answers.push({
       message: `"Better not tell you now."`,
       timeout: 3
     });
-    answers.push({
+    this.answers.push({
       message: `"Cannot predict now."`,
       timeout: 4
     });
-    answers.push({
+    this.answers.push({
       message: `"Concentrate and ask again."`,
       timeout: 2
     });
-    answers.push({
+    this.answers.push({
       message: `"Don't count on it."`,
       timeout: 3
     });
-    answers.push({
+    this.answers.push({
       message: `"My reply is no."`,
       timeout: 4
     });
-    answers.push({
+    this.answers.push({
       message: `"My sources say no."`,
       timeout: 2
     });
-    answers.push({
+    this.answers.push({
       message: `"Very doubtful."`,
       timeout: 4
     });
-    answers.push({
+    this.answers.push({
       message: `"Outlook not so good."`,
       timeout: 2
     });
 
-    // The 'rand' variable will contain the answer chosen.
+  }
+
+  /**
+   * Get a random answer for 8Ball to say.
+   *
+   * @returns {Promise<string>}
+   *   The answer, fetched randomly from the list of answers.
+   */
+  static async getRandomAnswer() {
+
     // We'll use a random number for the array key.
-    let rand = answers[Math.floor(Math.random() * answers.length)];
+    return this.answers[Math.floor(Math.random() * this.answers.length)];
 
-    // Build the response, translated.
-    let response = await Lavenza.__(`8ball says: {{response}}`, {response: await Lavenza.__(rand.message, resonance.locale)}, resonance.locale);
+  }
 
-    // Depending on the type of client, we do different actions.
-    switch (resonance.client.type) {
+  /**
+   * @inheritDoc
+   */
+  static async execute(resonance) {
 
-      // If we're in Discord, we do a bit of typing to make it seem more natural.
-      case Lavenza.ClientTypes.Discord: {
-        // Start typing with the chosen answer's timeout, then send the reply to the user.
-        await resonance.client.typeFor(1, resonance.channel);
-        await Lavenza.wait(rand.timeout);
-        await resonance.reply(response);
-        await resonance.message.channel.stopTyping();
-        return;
-      }
+    // Get a random answer.
+    let rand = await this.getRandomAnswer();
 
-      // If we're in Twitch, simply send the answer.
-      case Lavenza.ClientTypes.Twitch: {
-        // Start typing with the chosen answer's timeout, then send the reply to the user.
-        await resonance.reply(response);
-        return;
-      }
-    }
+    // Translate the answer's message real quick.
+    let answerMessage = await Lavenza.__(rand.message, resonance.locale);
 
+    // Invoke Client Handlers to determine what to do in each client.
+    /** @see ./handlers */
+    await this.handlers(resonance, {answer: answerMessage, delay: rand.timeout});
 
   }
 

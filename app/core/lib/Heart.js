@@ -29,6 +29,7 @@ import Igor from './Confidants/Igor';
 import Morgana from './Confidants/Morgana';
 import Sojiro from './Confidants/Sojiro';
 import Makoto from "./Confidants/Makoto";
+import Kawakami from "./Confidants/Kawakami";
 
 // Services.
 // Services are similar to Confidants, but are much more intricate.
@@ -38,6 +39,7 @@ import Gestalt from './Gestalt/Gestalt';
 // These are classes that are extended or used across the application. We import them here once.
 // They are linked in the global variable for easy access.
 import Command from './Bot/Command/Command';
+import CommandClientHandler from './Bot/Command/CommandClientHandler';
 import Talent from './Talent/Talent';
 import Listener from './Bot/Listener/Listener';
 import Resonance from './Bot/Resonance/Resonance';
@@ -184,12 +186,14 @@ export const Heart = {
   Morgana: Morgana,
   Sojiro: Sojiro,
   Makoto: Makoto,
+  Kawakami: Kawakami,
 
   // Services.
   Gestalt: Gestalt,
 
   // Models.
   Command: Command,
+  CommandClientHandler: CommandClientHandler,
   Talent: Talent,
   Listener: Listener,
   Resonance: Resonance,
@@ -212,6 +216,9 @@ export const Heart = {
   getRandomElementFromArray: Sojiro.getRandomElementFromArray,
   removeFromArray: Sojiro.removeFromArray,
   wait: Sojiro.wait,
+  bold: Kawakami.bold,
+  italics: Kawakami.italics,
+  code: Kawakami.code,
 
   // Keys.
   Keys: Keys,
