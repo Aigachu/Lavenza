@@ -19,13 +19,16 @@ export default class Handler extends Lavenza.CommandClientHandler {
    */
   async execute(data = {}) {
 
-    // Build the response, translated.
-    let response = await Lavenza.__(`8ball says: {{response}}`, {response: data.answer}, this.resonance.locale);
+    // Build the response, with translations.
+    let response = await Lavenza.__(`{{author}} obtained {{result}}!`, {
+      author: this.resonance.message.author.username,
+      result: data.result
+    }, this.resonance.locale);
 
-    // Wait for the amount of time defined.
+    // Wait for the delay.
     await Lavenza.wait(data.delay);
 
-    // Send the reply to the user.
+    // Send the result.
     await this.resonance.reply(response);
 
   }
