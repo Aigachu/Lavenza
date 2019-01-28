@@ -20,13 +20,6 @@ export default class Love extends Lavenza.Command {
     // Variable to hold the message.
     let message = '';
 
-    // Processes the command only if there's input.
-    if (Lavenza.isEmpty(resonance.order.rawContent)) {
-      // Store the message to be returned.
-      await resonance.__reply(`{{author}}, you have 100% for ZeRo & M2K's AS5es if you don't specify an object or person!`, {author: resonance.message.author.username});
-      return;
-    }
-
     // Get the thing the caller is getting love percentage for.
     // Lol Aiga naming your variable 'thing' really? xD
     let thing = resonance.order.rawContent;
@@ -34,12 +27,15 @@ export default class Love extends Lavenza.Command {
     // Calculate the percent.
     // It's completely random.
     // @TODO - Make it calculate a percent using an algorithm, so the result is always the same.
-    let percent = Math.floor(Math.random() * 100);
+    let percent = `${Math.floor(Math.random() * 100)}%`;
 
-    // I'll be honest, I forget the joke behind the message that is returned here. But it seems funny.
-
-    // Send the message.
-    await resonance.__reply(`There is {{percent}}% love between {{author}} and {{thing}}!`, {percent: percent, author: resonance.author, thing: thing});
+    // Invoke Client Handlers to determine what to do in each client.
+    /** @see ./handlers */
+    await this.handlers(resonance, {
+        thing: thing,
+        percent: percent,
+      }
+    );
 
   }
 
