@@ -26,12 +26,9 @@ export default class Handler extends Lavenza.CommandClientHandler {
     // Build the response, translated.
     let response = await Lavenza.__(`8ball says: {{response}}`, {response: answerMessage}, this.resonance.locale);
 
-    // Start typing with the chosen answer's timeout, then send the reply to the user.
-    await this.resonance.client.typeFor(1, this.resonance.channel);
-    await Lavenza.wait(data.delay);
+    // Start typing with the chosen answer's timeout, then send the reply to the user afterwards.
+    await this.resonance.client.typeFor(data.delay, this.resonance.channel);
     await this.resonance.reply(response);
-    await this.resonance.message.channel.stopTyping();
-
   }
 
 }
