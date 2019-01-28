@@ -68,14 +68,17 @@ export default class Gestalt {
       // Initialize the database collection for this bot if it doesn't already exist.
       await this.createCollection(`/bots/${bot.id}`);
 
+      // Initialize the database collection for this bot's configurations if it doesn't already exist.
+      await this.createCollection(`/bots/${bot.id}/config`);
+
+      // Sync core bot config to the database.
+      await this.sync(bot.config, `/bots/${bot.id}/config/core`);
+
       // Initialize i18n database collection for this bot if it doesn't already exist.
       await this.createCollection(`/i18n/${bot.id}`);
 
       // Initialize i18n database collection for this bot's clients configurations if it doesn't already exist.
       await this.createCollection(`/i18n/${bot.id}/clients`);
-
-      // Await the synchronization of data between the Bot's default configuration and the database configuration.
-      await this.sync(bot.config, `/bots/${bot.id}/config`);
 
       // Create a database collection for the talents granted to a bot.
       await this.createCollection(`/bots/${bot.id}/talents`);

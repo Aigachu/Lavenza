@@ -59,23 +59,10 @@ export default class Ping extends Lavenza.Command {
     // That was the simple part, so make sure you understand it before moving on!
 
     // Different actions per client type.
-    // Here, we use a switch statement to do different actions depending on the client.
+    // Here, we use what we call Handlers to handle tasks that should be done depending on the client we're on!
     // Note that this is UNNECESSARY if your command is intended to only work on one client!
-    switch (resonance.client.type) {
-
-      // If we're in Discord..
-      case Lavenza.ClientTypes.Discord: {
-        await resonance.__reply('Ah, we seem to be on Discord! This application is so much better than Skype & TeamSpeak. Oof!');
-        break;
-      }
-
-      // If we're in Twitch...
-      case Lavenza.ClientTypes.Twitch: {
-        await resonance.__reply(`I love Twitch! It's such a cool website. :P`);
-        await resonance.__send(resonance.bot.architect.discord, 'Hey, a ping command was invoked on Twitch. :)');
-        break;
-      }
-    }
+    /** @see ./handlers */
+    await this.handlers(resonance);
 
   }
 

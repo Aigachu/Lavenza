@@ -129,6 +129,51 @@ export default class Command {
   }
 
   /**
+   * Execute client specific tasks if needed.
+   *
+   * Some commands are available in all clients, and as such need to be able to do different tasks depending on the
+   * client they are invoked in. This function fires any custom client handlers that are defined.
+   *
+   * @param {Resonance} resonance
+   *   The original resonance that invoked the command.
+   * @param {Object} data
+   *   Any custom data that should be used.
+   *
+   * @returns {Promise<void>}
+   */
+  static async handlers(resonance, data = {}) {
+
+    // Define variable for client task handler.
+    let HandlerClass = undefined;
+
+    // Define path to Handler.
+    let pathToHandler = `${this.directory}/handlers/${resonance.client.type}/Handler`;
+
+    // Try to fetch a handler for this client.
+    try {
+      // Automatically require the handler we want.
+      HandlerClass = require(pathToHandler).default;
+    } catch (error) {
+
+      // Log a message.
+      await Lavenza.warn('Command handler for {{client}} could not be loaded for the {{command}} command. If you are using the handlers() function, make sure client handlers exist for each client this command is usable in.');
+
+      // Log the error that occurred.
+      await Lavenza.warn(error.message);
+
+      // Return.
+      return;
+    }
+
+    // Now we can instantiate the Handler.
+    let Handler = new HandlerClass(this, resonance, pathToHandler);
+
+    // Then we can execute the tasks in the Handler.
+    Handler.execute(data);
+
+  }
+
+  /**
    * Provides help text for the current command.
    *
    * You can access the bot through the resonance, as well as any of the bot's clients.
@@ -209,7 +254,7 @@ export default class Command {
           title: await Lavenza.__(`${config.name}`, resonance.locale),
           description: await Lavenza.__(`${config.description}`, resonance.locale),
           header: {
-            text: await Lavenza.__('Lavenza Guide', resonance.locale),
+            text: await Lavenza.__('{{bot}} Guide', {bot: resonance.bot.config.name},resonance.locale),
             icon: resonance.client.user.avatarURL
           },
           fields: fields,
