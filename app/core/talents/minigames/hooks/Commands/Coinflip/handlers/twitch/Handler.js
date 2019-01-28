@@ -25,6 +25,10 @@ export default class Handler extends Lavenza.CommandClientHandler {
       result: data.result
     }, this.resonance.locale);
 
+    // Send initial message.
+    // We modify it to give it a bit of Markdown flavor.
+    await this.resonance.__reply(data.initialMessage);
+
     // Wait for the delay.
     await Lavenza.wait(data.delay);
 
