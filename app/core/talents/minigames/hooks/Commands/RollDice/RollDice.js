@@ -13,72 +13,79 @@
 export default class RollDice extends Lavenza.Command {
 
   /**
+   * This is the static build function of the command.
+   *
+   * You can treat this as a constructor. Assign any properties that the command may
+   * use!
+   *
+   * @inheritDoc
+   */
+  static async build(config, talent) {
+
+    // The build function must always run the parent's build function! Don't remove this line.
+    await super.build(config, talent);
+
+    // Roll types are randomized and have different delays.
+    this.rolls = [];
+
+    // Set roll types.
+    this.rolls.push({
+      message: "*rolls the dice normally*",
+      timeout: 2
+    });
+    this.rolls.push({
+      message: "*throws the dice on the ground violently...*",
+      timeout: 3
+    });
+    this.rolls.push({
+      message: "*accidentally drops the dice on the ground while getting ready*",
+      timeout: 4
+    });
+    this.rolls.push({
+      message: "*spins the dice*",
+      timeout: 4
+    });
+
+  }
+
+  /**
+   * Get a random answer for 8Ball to say.
+   *
+   * @returns {Promise<string>}
+   *   The answer, fetched randomly from the list of answers.
+   */
+  static async getRandomRoll() {
+
+    // We'll use a random number for the array key.
+    return this.rolls[Math.floor(Math.random() * this.rolls.length)];
+
+  }
+
+  /**
    * @inheritDoc
    */
   static async execute(resonance) {
 
-    // Array to hold all of the rolls.
-    let result = "";
+    // Determine the type of die requested.
+    // It will default to 6 face dice.
+    let faces = resonance.order.args._[0] || 6;
 
-    let dice_faces = resonance.order.args._[0] || 6;
-
-    // Roll the dice
-    let roll = Math.floor(Math.random() * dice_faces) + 1;
-
-    // Roll types are randomized and have different delays.
-    let roll_types = [];
-
-    // Set roll types.
-    roll_types.push({
-      message: "*rolls the dice normally*",
-      timeout: 1
-    });
-    roll_types.push({
-      message: "*throws the dice on the ground violently...*",
-      timeout: 2
-    });
-    roll_types.push({
-      message: "*accidentally drops the dice on the ground while getting ready*",
-      timeout: 2
-    });
-    roll_types.push({
-      message: "*spins the dice*",
-      timeout: 5
-    });
+    // Roll the die.
+    let roll = Math.floor(Math.random() * faces) + 1;
 
     // Choose a roll type with a random key.
-    let rand = roll_types[Math.floor(Math.random() * roll_types.length)];
+    let rand = await this.getRandomRoll();
 
-    // Build the response.
-    let response = await Lavenza.__("{{author}}, the result of your roll is: **{{roll}}**!", {
-      author: resonance.author.username,
-      roll: roll
-    }, resonance.locale);
+    // Send the initial message.
+    await resonance.reply(rand.message);
 
-    //
-    await resonance.__reply(rand.message);
-
-    // Depending on the type of client, we do different actions.
-    switch (resonance.client.type) {
-
-      // If we're in Discord, we do a bit of typing to make it seem more natural.
-      case Lavenza.ClientTypes.Discord: {
-        // Start typing with the chosen answer's timeout, then send the reply to the user.
-        await resonance.client.typeFor(1, resonance.channel);
-        await Lavenza.wait(rand.timeout);
-        await resonance.reply(response);
-        await resonance.message.channel.stopTyping();
-        return;
+    // Invoke Client Handlers to determine what to do in each client.
+    /** @see ./handlers */
+    await this.handlers(resonance, {
+        roll: roll,
+        delay: rand.timeout
       }
-
-      // If we're in Twitch, simply send the answer.
-      case Lavenza.ClientTypes.Twitch: {
-        await Lavenza.wait(rand.timeout);
-        // Start typing with the chosen answer's timeout, then send the reply to the user.
-        await resonance.reply(response);
-        return;
-      }
-    }
+    );
   }
 
 }
