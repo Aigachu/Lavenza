@@ -17,7 +17,7 @@
 export default class Kawakami {
 
   /**
-   * Surrounds text in **TEXT** to make it bold according to Markdown syntax.
+   * Surrounds text in **{TEXT}** to make it bold according to Markdown syntax.
    *
    * @param {string} text
    *   Text to "boldify".
@@ -30,7 +30,7 @@ export default class Kawakami {
   }
 
   /**
-   * Surrounds text in **TEXT** to make it italicized according to Markdown syntax.
+   * Surrounds text in _{TEXT}_ to make it italicized according to Markdown syntax.
    *
    * @param {string} text
    *   Text to "italicize".
@@ -43,7 +43,7 @@ export default class Kawakami {
   }
 
   /**
-   * Surrounds text in ```TEXT``` to make put it in a code block according to Markdown syntax.
+   * Surrounds text in ```{TEXT}``` to make put it in a code block according to Markdown syntax.
    *
    * @param {string} text
    *   Text to put into a code block.
