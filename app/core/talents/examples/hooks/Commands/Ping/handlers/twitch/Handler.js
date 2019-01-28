@@ -19,7 +19,6 @@ export default class Handler extends Lavenza.CommandClientHandler {
    */
   async execute(data = {}) {
     await this.resonance.__reply(`I love Twitch! It's such a cool website. :P`);
-    await this.resonance.__send(this.resonance.bot.architect.discord, 'Hey, a ping command was invoked on Twitch. :)');
   }
 
 }
