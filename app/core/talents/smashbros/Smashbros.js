@@ -10,6 +10,6 @@
  *
  * This Talent manages all commands and behaviors related to Smash. It provides a wide range of cool features to use.
  */
-export default class Smashies extends Lavenza.Talent {
+export default class Smashbros extends Lavenza.Talent {
 
 }
