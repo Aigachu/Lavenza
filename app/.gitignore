@@ -5,10 +5,10 @@
 /.env
 
 # Ignore Lavenza directories.
+/backup
 /bots/*
 !/bots/example
 /database/*
 !/database/.gitkeep
-/backup
 /lang/*
 !/lang/.gitkeep
