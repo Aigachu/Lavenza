@@ -1,5 +1,6 @@
 bots/**
 !bots/example
+!bots/.gitkeep
 .env
 database/**
 !database/.gitkeep
