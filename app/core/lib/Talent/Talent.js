@@ -18,6 +18,17 @@ import path from "path";
  * The idea here is that bot features are coded in their own folders and contexts. The power here comes from the flexibility we have
  * since talents can be granted to multiple bots, and talents can be tracked in separate repositories if needed. Also,
  * they can easily be toggled on and off. Decoupling the features from the bots seemed like a good move.
+ *
+ * @property {string} id
+ *   ID of the talent.
+ * @property {Object} config
+ *   Configuration of the talent. Highly recommended to use getActiveConfigForBot() instead of accessing this property.
+ * @property {string} directory
+ *   Path to the directory where this talent is located.
+ * @property {Object} databases
+ *   Contains paths to Gestalt databases for this Talent.
+ *    - databases.global    - Path to global database. i.e. /talents/{TALENT_NAME}
+ *    - databases.{BOT_ID}  - Path to bot specific database for this talent. i.e. /bots/{YOUR_BOT}/talents/{TALENT_NAME}
  */
 export default class Talent {
 

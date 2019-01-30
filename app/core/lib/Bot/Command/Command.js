@@ -169,7 +169,7 @@ export default class Command {
     let Handler = new HandlerClass(this, resonance, pathToHandler);
 
     // Then we can execute the tasks in the Handler.
-    Handler.execute(data);
+    await Handler.execute(data);
 
   }
 

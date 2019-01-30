@@ -8,7 +8,7 @@ description: 'Provides fun commands related to Super Smash Bros!'
 version: 0.4.0
 
 # Path to the main class of the Talent, relative to this directory.
-class: 'Smashies'
+class: 'Smashbros'
 
 # Set dependencies for this talent.
 # This talent will not be enabled if any of its dependencies aren't enabled.
