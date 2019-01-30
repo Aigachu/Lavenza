@@ -41,6 +41,7 @@ export default class CommandAuthorizer {
     this.deities = this.clientMasterConfig.deities;
     this.architect = this.clientMasterConfig.architect;
     this.commandConfig = this.order.config.command;
+    this.commandParameterConfig = await this.command.getActiveParameterConfig(resonance.bot);
     this.commandClientConfig = await this.command.getActiveClientConfig(this.type, resonance.bot);
     this.cooldowns = this.commandClientConfig['cooldown'] || this.commandConfig['cooldown'];
 
@@ -130,8 +131,8 @@ export default class CommandAuthorizer {
   async validateCommandArguments() {
 
     // First, we perform input validations.
-    if (this.commandConfig.input) {
-      if (this.commandConfig.input.required === true && Lavenza.isEmpty(this.order.args._)) {
+    if (this.commandParameterConfig.input) {
+      if (this.commandParameterConfig.input.required === true && Lavenza.isEmpty(this.order.args._)) {
         return false;
       }
     }

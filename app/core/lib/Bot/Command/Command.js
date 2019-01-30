@@ -90,8 +90,8 @@ export default class Command {
    * @param {string} clientType
    *   The type of client configuration to return for the bot.
    *
-   * @returns {Promise<void>}
-   *   The requested client.
+   * @returns {Promise<Object>}
+   *   The requested client configuration.
    */
   static async getClientConfig(clientType) {
 
@@ -105,6 +105,55 @@ export default class Command {
 
     // Load configuration since it exists.
     return await Lavenza.Akechi.readYamlFile(pathToClientConfig);
+
+  }
+
+  /**
+   * Retrieve active parameter configuration for the command in a specific bot
+   *
+   * @param {Bot} bot
+   *   Bot to get this configuration for.
+   *
+   * @returns {Promise<Object>}
+   *   The requested client.
+   */
+  static async getActiveParameterConfig(bot) {
+
+    // Attempt to get the active configuration from the database.
+    let activeConfig = await Lavenza.Gestalt.get(`/bots/${bot.id}/commands/${this.id}/parameters`);
+    if (!Lavenza.isEmpty(activeConfig)) {
+      return activeConfig;
+    }
+
+    // If we don't find any configurations in the database, we'll fetch it normally and then save it.
+    let config = await this.getParameterConfig();
+
+    // Sync it to the database.
+    await Lavenza.Gestalt.sync(config, `/bots/${bot.id}/commands/${this.id}/parameters`);
+
+    // Return the configuration.
+    return config;
+
+  }
+
+  /**
+   * Retrieve parameter configuration for this command.
+   *
+   * @returns {Promise<Object>}
+   *   The configuration.
+   */
+  static async getParameterConfig() {
+
+    // Determine path to client configuration.
+    let pathToParameterConfig = `${this.directory}/${this.id}.parameters.yml`;
+
+    // Attempt to fetch client configuration.
+    if (!await Lavenza.Akechi.fileExists(pathToParameterConfig)){
+      return undefined;
+    }
+
+    // Load configuration since it exists.
+    return await Lavenza.Akechi.readYamlFile(pathToParameterConfig);
 
   }
 

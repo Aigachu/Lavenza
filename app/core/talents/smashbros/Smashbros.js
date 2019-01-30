@@ -5,9 +5,6 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-// Imports.
-import RoomManager from "./src/RoomManager/RoomManager";
-
 /**
  * Provides a class for the Smash Brothers talent.
  *
@@ -31,9 +28,6 @@ export default class Smashbros extends Lavenza.Talent {
     // Run default builders.
     /** @catch Stop execution. */
     await super.build(config);
-
-    // Run Room Manager builders.
-    await RoomManager.build(this);
 
   }
 

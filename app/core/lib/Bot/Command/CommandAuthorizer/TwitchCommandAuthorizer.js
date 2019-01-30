@@ -104,8 +104,8 @@ export default class TwitchCommandAuthorizer extends CommandAuthorizer {
     }
 
     // We'll merge the options and flags together for easier comparisons.
-    let configOptions = this.commandConfig.options || [];
-    let configFlags = this.commandConfig.flags || [];
+    let configOptions = this.commandParameterConfig.options || [];
+    let configFlags = this.commandParameterConfig.flags || [];
     let configArgs = [...configOptions, ...configFlags];
 
     // If args is empty, we don't have any validations to do.

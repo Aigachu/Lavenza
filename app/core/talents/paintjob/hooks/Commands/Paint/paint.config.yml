@@ -4,6 +4,11 @@ name: 'Paint Command'
 # Command description. This may be used in the bot and seen by users. Make it good!
 description: 'Add colors to your server and allow users to use them!'
 
+# Set whether or not the command is active.
+# Commands are active by default. If you absolutely want to disable a command, set this to false.
+# If you omit this, the command will be active.
+# active: false
+
 # Path to the main class containing the logic of the command, relative to this directory.
 class: 'Paint'
 
@@ -14,52 +19,6 @@ key: 'paint'
 aliases:
   - 'color'
   - 'col'
-
-# Set whether or not this command is activated.
-# A deactivated command is only accessible if you or your environment are whitelisted.
-# active: false
-
-# Command Input, Options & Flags.
-#   > Input - Raw text input that normally comes after the command key.
-#   > Flags - Arguments that come after the command. They take no input and must simply be placed afterwards.
-#   > Options - Flags that also take input.
-#
-# Example: ;°ping me -n 2 -d
-# Input: "me", Flag: "-d", Option: "-n" with its value being "2".
-#
-# This is not compulsory, but can be used to extend command versatility.
-# Arguments are parsed regardless of the data entered here. If these values are populated, extra validation will be
-# done upon command invocations to make sure valid options / arguments are provided.
-#input:
-#  requests:
-#    - 'user'
-#  required: false
-
-options:
-  - key: c
-    name: 'Create'
-    expects: 'Color Hex'
-    description: 'Create a color that can be used by users in this server.'
-    oplevel: 1
-  - key: s
-    name: 'Set'
-    expects: 'Hex/Name/Role'
-    description: 'Assign a color to yourself! Make sure the color exists. :)'
-    oplevel: 0
-
-flags:
-  - key: l
-    name: 'List'
-    description: 'List the custom colors available in this server.'
-    oplevel: 0
-  - key: r
-    name: 'Remove'
-    description: 'Remove a color from yourself only!'
-    oplevel: 0
-  - key: x
-    name: 'Delete All'
-    description: 'Delete all color roles from this server...But that would suck right? :('
-    oplevel: 1
 
 # Configure the global cooldown of the command.
 # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.

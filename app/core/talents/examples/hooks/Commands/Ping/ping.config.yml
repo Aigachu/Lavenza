@@ -1,13 +1,13 @@
 # Reader-Friendly name of the command.
 name: 'Ping Command'
 
+# Command description. This may be used in the bot and seen by users. Make it good!
+description: 'Command that simply orders the bot to say "Pong!"'
+
 # Set whether or not the command is active.
 # Commands are active by default. If you absolutely want to disable a command, set this to false.
 # If you omit this, the command will be active.
-active: true
-
-# Command description. This may be used in the bot and seen by users. Make it good!
-description: 'Command that simply orders the bot to say "Pong!"'
+# active: false
 
 # Path to the main class containing the logic of the command, relative to this directory.
 class: 'Ping'
@@ -19,35 +19,6 @@ key: 'ping'
 aliases:
   - 'pingu'
   - 'pingo'
-
-# Command Input, Options & Flags.
-#   > Input - Raw text input that normally comes after the command key.
-#   > Flags - Arguments that come after the command. They take no input and must simply be placed afterwards.
-#   > Options - Flags that also take input.
-#
-# Example: ;°ping me -n 2 -d
-# Input: "me", Flag: "-d", Option: "-n" with its value being "2".
-#
-# This is not compulsory, but can be used to extend command versatility.
-# Arguments are parsed regardless of the data entered here. If these values are populated, extra validation will be
-# done upon command invocations to make sure valid options / arguments are provided.
-#input:
-#  requests:
-#    - 'user'
-#  required: false
-#
-#options:
-#  - key: t
-#    name: 'Text'
-#    expects: 'Custom Text'
-#    description: 'Customize the text of the hello command.'
-#    oplevel: 1
-#
-#flags:
-#  - key: d
-#    name: 'DM'
-#    description: 'Say hello in dms instead.'
-#    oplevel: 0
 
 # Configure the global cooldown of the command.
 # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.

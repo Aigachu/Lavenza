@@ -4,6 +4,11 @@ name: 'DND Command'
 # Command description. This may be used in the bot and seen by users. Make it good!
 description: 'Central command to manage the general features of the Dungeons & Discord game!'
 
+# Set whether or not the command is active.
+# Commands are active by default. If you absolutely want to disable a command, set this to false.
+# If you omit this, the command will be active.
+# active: false
+
 # Path to the main class containing the logic of the command, relative to this directory.
 class: 'Dnd'
 
@@ -13,42 +18,6 @@ key: 'dnd'
 # Additional "keys" that can be used to invoke the command.
 aliases:
   - 'd&d'
-
-# Set whether or not this command is activated.
-# A deactivated command is only accessible if you or your environment are whitelisted.
-# active: false
-
-# Command Input, Options & Flags.
-#   > Input - Raw text input that normally comes after the command key.
-#   > Flags - Arguments that come after the command. They take no input and must simply be placed afterwards.
-#   > Options - Flags that also take input.
-#
-# Example: ;°ping me -n 2 -d
-# Input: "me", Flag: "-d", Option: "-n" with its value being "2".
-#
-# This is not compulsory, but can be used to extend command versatility.
-# Arguments are parsed regardless of the data entered here. If these values are populated, extra validation will be
-# done upon command invocations to make sure valid options / arguments are provided.
-#input:
-#  requests:
-#    - 'user'
-#  required: false
-#
-#options:
-#  - key: t
-#    name: 'Text'
-#    expects: 'Custom Text'
-#    description: 'Customize the text of the hello command.'
-#    oplevel: 1
-flags:
-  - key: newgame
-    name: 'New Game'
-    description: 'Go through the character creation process!'
-    oplevel: 0
-  - key: register
-    name: 'Register'
-    description: 'Go through the registration process! Use this to start your adventure in the world of Dungeons & Discord.'
-    oplevel: 0
 
 # Configure the global cooldown of the command.
 # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
