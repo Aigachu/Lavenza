@@ -149,7 +149,7 @@ export default class Command {
 
     // Attempt to fetch client configuration.
     if (!await Lavenza.Akechi.fileExists(pathToParameterConfig)){
-      return undefined;
+      return {};
     }
 
     // Load configuration since it exists.
@@ -187,10 +187,20 @@ export default class Command {
    *   The original resonance that invoked the command.
    * @param {Object} data
    *   Any custom data that should be used.
-   *
+   * @param {String} method
+   *   The method to run on the handler. By default, it will run the execute method in the handler class.
    * @returns {Promise<void>}
    */
-  static async handlers(resonance, data = {}) {
+  static async handlers(resonance, data, method = 'execute') {
+
+    // If the second provided parameter is a string, this means it's the method we want to run, and data is null.
+    if (typeof data === 'string') {
+      method = data;
+      data = {};
+    }
+
+    // If data is not set, set it to an empty object.
+    if (data === undefined) { data = {}; }
 
     // Define variable for client task handler.
     let HandlerClass = undefined;
@@ -217,8 +227,13 @@ export default class Command {
     // Now we can instantiate the Handler.
     let Handler = new HandlerClass(this, resonance, pathToHandler);
 
+    // If the method set doesn't exist, we throw an error here.
+    if (Lavenza.isEmpty(Handler[method])) {
+      await Lavenza.throw(`The {{method}} method does not exist in the {{client}} handler for your {{command}} command. Please verify your handler code!`);
+    }
+
     // Then we can execute the tasks in the Handler.
-    await Handler.execute(data);
+    await Handler[method](data);
 
   }
 

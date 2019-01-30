@@ -58,20 +58,29 @@ export default class Pong extends Lavenza.Command {
     // First, we translate the text of the question.
     let promptText = await Lavenza.__(`Anyways, did you have a nice day, {{author}}?`, {author: resonance.author.username}, resonance.locale);
 
+    // Set a variable to track whether the user had a good day.
+    let goodDay = undefined;
+
     // Then, we can set the prompt.
     // This will immediately ask the question and await a response.
     // You set the required parameters, we SHOULD be straightforward. The fourth parameter is the time limit set for
     // the response. If that time is elapsed, you will fall into the catch() block below.
     // The fifth parameter is the callback function for when a response is received.
-    await resonance.bot.prompt(promptText, resonance.channel, resonance, 30, async (responseResonance, prompt) => {
+    await resonance.bot.prompt(promptText, resonance.channel, resonance, 10, async (responseResonance, prompt) => {
 
       // Check if the user says yes or no.
       if (responseResonance.content === 'yes') {
+
+        // They had a good day,
+        goodDay = true;
 
         // Says they're happy to hear that!
         await resonance.__reply(`Awesome! I'm so glad to hear that. :)`).catch(Lavenza.stop);
 
       } else if (responseResonance.content === 'no') {
+
+        // They had a bad day,
+        goodDay = false;
 
         // Say that's unfortunate...
         await resonance.__reply(`How unfortunate...I hope you have a better day tomorrow!!`).catch(Lavenza.stop);
@@ -90,6 +99,13 @@ export default class Pong extends Lavenza.Command {
       await resonance.__reply(`Hey, are you ignoring me? That's rude...I'll remember this. >:(`);
 
     });
+
+    // Different actions per client type, but with a custom method invoked through the handler.
+    // By default, when you use handlers, they will call the execute() method within the handler.
+    // Here is an example where you tell the handlers to run a different function.
+    // This can become very useful if you wanna do client specific things many times in your command!
+    /** @see ./handlers */
+    await this.handlers(resonance, {goodDay: goodDay}, 'myCustomMethod');
 
   }
 
