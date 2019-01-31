@@ -175,6 +175,8 @@ export const Heart = {
     translation = await translation.replace(/&gt;/g, '>');
     translation = await translation.replace(/&amp;/g, '&');
     translation = await translation.replace(/&quot;/g, '"');
+    translation = await translation.replace(/&#39;/g, '\'');
+    translation = await translation.replace(/&#x60;/g, '`');
 
     return translation;
 
