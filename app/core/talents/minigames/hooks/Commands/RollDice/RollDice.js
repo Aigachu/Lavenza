@@ -70,6 +70,11 @@ export default class RollDice extends Lavenza.Command {
     // It will default to 6 face dice.
     let faces = resonance.order.args._[0] || 6;
 
+    // If the # of faces is not a number, we send a message and return.
+    if (isNaN(faces)) {
+      return;
+    }
+
     // Roll the die.
     let roll = Math.floor(Math.random() * faces) + 1;
 
