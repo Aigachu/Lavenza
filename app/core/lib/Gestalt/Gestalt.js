@@ -171,23 +171,20 @@ export default class Gestalt {
 
         // We start by syncing the guild configuration.
         let guilds = await this.sync({}, `/bots/${bot.id}/clients/${clientType}/guilds`);
-        await Lavenza.wait(1); // @TODO - Fix this bullshit.
-
-        // This is the default guild configuration for Discord.
-        let defaultGuildConfig = {
-          cprefix: '',
-          operators: [],
-          masters: []
-        };
 
         // For all guilds, we initialize this default configuration.
         await Promise.all(bot.getClient(Lavenza.ClientTypes.Discord).guilds.map(async guild => {
           if (!(guild.id in guilds)) {
-            guilds[guild.id] = defaultGuildConfig;
+            guilds[guild.id] = {
+              cprefix: '',
+              operators: [],
+              masters: [],
+              name: `${guild.name}`,
+            };
           }
-          guilds[guild.id].name = `${guild.name}`;
           await this.update(`/bots/${bot.id}/clients/${clientType}/guilds`, guilds)
         }));
+
         break;
 
       }
@@ -202,20 +199,16 @@ export default class Gestalt {
 
         // We start by syncing the guild configuration.
         let channels = await this.sync({}, `/bots/${bot.id}/clients/${clientType}/channels`);
-        await Lavenza.wait(1); // @TODO - Fix this bullshit.
-
-        // This is the default guild configuration for Discord.
-        let defaultChannelConfig = {
-          cprefix: '',
-          operators: [],
-          masters: []
-        };
 
         // For all guilds, we initialize this default configuration.
         let config = await bot.getClientConfig(Lavenza.ClientTypes.Twitch);
         await Promise.all( config.channels.map(async channel => {
           if (!(channel in channels)) {
-            channels[channel] = defaultChannelConfig;
+            channels[channel] = {
+              cprefix: '',
+              operators: [],
+              masters: []
+            };
           }
           await this.update(`/bots/${bot.id}/clients/${clientType}/channels`, channels)
         }));
