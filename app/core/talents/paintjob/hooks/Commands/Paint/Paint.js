@@ -302,27 +302,22 @@ export default class Paint extends Lavenza.Command {
   static async listColorRolesInGuild(resonance) {
 
     // Variable that will store the message to be sent, listing all color roles in the guild.
-    let list_msg = await Lavenza.__(`Here is the list of all colors in this server:\n\n`, resonance.locale);
+    await resonance.__reply(await Lavenza.italics(`Scanning available colors in the server...`));
+
+    // Type for a bit.
+    await resonance.client.typeFor( 2, resonance.channel);
 
     // Loop in the guild's roles and check for all color roles.
     await Promise.all(resonance.message.guild.roles.map(async role => {
       // If a color role is found, we'll append it to the list.
       if (role.name.includes('.color')) {
-        list_msg += `  - ${role.name.replace('.color', '')} \`${role.hexColor}\`\n`;
+        await resonance.client.sendEmbed(resonance.message.channel, {
+          title: await Lavenza.__(role.name.replace(/\.color/g, ''), resonance.locale),
+          description: `(${role.hexColor})`,
+          color: role.color
+        });
       }
     }));
-
-    // Send the text to the channel.
-    // We add a delay for some flavor. Don't actually need it.
-    await resonance.__reply(`Scanning available colors in this server...`);
-    await resonance.client.typeFor(1, resonance.channel);
-    await Lavenza.wait(3);
-    if (list_msg === `Here is the list of all colors in this server:\n\n`) {
-      await resonance.__reply(`There are no colors in this server! Better start creating some. :)`);
-    } else {
-      await resonance.message.channel.send(list_msg);
-    }
-    resonance.message.channel.stopTyping();
 
   }
 
