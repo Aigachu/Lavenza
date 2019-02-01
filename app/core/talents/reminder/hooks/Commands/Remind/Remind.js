@@ -29,6 +29,19 @@ export default class Remind extends Lavenza.Command {
    * @inheritDoc
    */
   static async execute(resonance) {
+
+    // First, we want to parse the reminder text.
+    let reminder = await this.parseReminder(resonance.order.rawContent);
     console.log(parseReminder('remind ' + resonance.order.rawContent));
+  }
+
+  /**
+   * Parse a reminder from content entered by a user.
+   *
+   * @param content
+   * @returns {Promise<void>}
+   */
+  static async parseReminder(content) {
+
   }
 }

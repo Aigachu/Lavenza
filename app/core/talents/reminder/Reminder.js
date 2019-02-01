@@ -42,5 +42,22 @@ export default class Reminder extends Lavenza.Talent {
     // Path to the database file for the specific bot.
     this.reminderStorages[bot.id] = this.databases[bot.id] + `/reminders`;
 
+    // Get the current reminders for this bot.
+    this.reminders[bot.id] = await Lavenza.Gestalt.sync({}, this.reminderStorages[bot.id]);
+
+  }
+
+  /**
+   * Set a reminder in the database for the given bot.
+   *
+   * @param {Bot} bot
+   *   The bot to set the reminder for.
+   * @param {Object} reminder
+   *   The object containing reminder data.
+   *
+   * @returns {Promise<void>}
+   */
+  static async setReminder(bot, reminder) {
+    
   }
 }
