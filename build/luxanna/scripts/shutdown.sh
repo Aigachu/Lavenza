@@ -5,4 +5,4 @@
 #
 
 # Shutdown Lavenza
-ssh aigachu@aigachu.com 'forever stopall;'
+ssh aigachu@aigachu.com 'pm2 stop lavenza;'

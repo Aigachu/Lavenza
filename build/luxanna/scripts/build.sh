@@ -67,10 +67,10 @@ ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; rm .env;'
 scp ../../../app/.env aigachu@aigachu.com:~/apps/Lavenza-II/app
 
 # Summon the bots using Forever.
-# Forever will automatically restart the bots if they crash, but only a maximum of 5 times.
+# PM2 will automatically restart the bots if they crash, but only a maximum of 15 times.
 echo "Summoning bots..."
 echo "--------------------------------------"
-echo "cd apps/Lavenza-II/app; forever -m5 start summon.js --babel --bot=lavenza;"
-ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; forever -m5 start summon.js --babel --bot=lavenza;'
+echo "cd apps/Lavenza-II/app; pm2 start summon.js --name=lavenza -- --babel --bot=lavenza;"
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; pm2 start summon.js --name=lavenza -- --babel --bot=lavenza;'
 echo "--------------------------------------"
 echo "Script is done executing!"

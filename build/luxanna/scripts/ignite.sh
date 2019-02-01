@@ -5,4 +5,4 @@
 #
 
 # Ignite Lavenza.
-ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; forever -m5 start summon.js --babel --bot=lavenza;'
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; pm2 start summon.js --name=lavenza -- --babel --bot=lavenza;'
