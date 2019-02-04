@@ -12,8 +12,8 @@
 # On Luxanna, stop any bot processes that may currently be running.
 echo "Stop any bot processes that may currently be running."
 echo "--------------------------------------"
-echo "forever stopall;"
-ssh aigachu@aigachu.com 'forever stopall;'
+echo "pm2 stop lavenza;"
+ssh aigachu@aigachu.com 'pm2 stop lavenza;'
 echo "--------------------------------------"
 
 # On Luxanna, clone repository if not present.
