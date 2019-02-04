@@ -153,8 +153,8 @@ export default class Command {
     }
 
     // Load configuration since it exists.
-    return await Lavenza.Akechi.readYamlFile(pathToParameterConfig);
-
+    let config = await Lavenza.Akechi.readYamlFile(pathToParameterConfig);
+    return Lavenza.isEmpty(config) ? {} : config;
   }
 
   /**
