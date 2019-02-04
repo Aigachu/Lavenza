@@ -339,7 +339,28 @@ export default class Bot {
         // Send a warning message to the console.
         await Lavenza.warn('Error occurred while loading the {{talent}} talent...', {talent: talentKey});
         await Lavenza.warn(error.message);
+
       });
+
+      // Check talent's configuration to see if dependencies are loaded into this bot.
+      await Promise.all(TalentManager.talents[talentKey].config.dependencies.map(async (dependency) => {
+
+        // If the dependency isn't found in th`is bot's config, we shouldn't load this talent.
+        if (!this.config.talents.includes(dependency)) {
+
+          // Send a warning to the console.
+          await Lavenza.warn(`The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.`, {
+            talent: talentKey,
+            parent: dependency,
+            bot: this.id
+          });
+
+          // Remove this talent from the bot.
+          this.config.talents = Lavenza.removeFromArray(this.config.talents, talentKey);
+
+        }
+
+      }));
 
     }));
   }
