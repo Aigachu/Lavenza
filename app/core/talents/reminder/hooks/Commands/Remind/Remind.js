@@ -8,6 +8,7 @@
 // Modules.
 import moment from 'moment';
 import parseReminder from 'parse-reminder';
+
 /**
  * Remind command.
  */
@@ -31,17 +32,10 @@ export default class Remind extends Lavenza.Command {
   static async execute(resonance) {
 
     // First, we want to parse the reminder text.
-    let reminder = await this.parseReminder(resonance.order.rawContent);
-    console.log(parseReminder('remind ' + resonance.order.rawContent));
-  }
+    // let reminder = await parseReminder('remind ' + resonance.order.rawContent);
+    let reminder = await this.handlers(resonance,{info: parseReminder('remind ' + resonance.order.rawContent)}, 'parseReminder');
 
-  /**
-   * Parse a reminder from content entered by a user.
-   *
-   * @param content
-   * @returns {Promise<void>}
-   */
-  static async parseReminder(content) {
-
+    let string = JSON.stringify(reminder, null, '\t');
+    await resonance.reply( '```\n' + string + '\n```');
   }
 }

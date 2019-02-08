@@ -234,7 +234,7 @@ export default class Command {
     }
 
     // Then we can execute the tasks in the Handler.
-    await Handler[method](data);
+    return await Handler[method](data);
 
   }
 
