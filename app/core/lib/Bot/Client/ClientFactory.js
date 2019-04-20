@@ -8,7 +8,7 @@
 // Includes
 import DiscordClient from './DiscordClient/DiscordClient';
 import TwitchClient from './TwitchClient/TwitchClient';
-// import SlackClient from './SlackClient/SlackClient';
+import SlackClient from './SlackClient/SlackClient';
 
 /**
  * Provide a factory class that manages the creation of the right client given a type.
@@ -45,17 +45,17 @@ export default class ClientFactory {
         break;
       }
 
-      // Create a TwitchClient if the type is Discord.
+      // Create a TwitchClient if the type is Twitch.
       case Lavenza.ClientTypes.Twitch: {
         client = new TwitchClient(config, bot);
         break;
       }
 
-      // // Create a SlackClient if the type is Discord.
-      // case Lavenza.ClientTypes.Slack: {
-      //   client = new SlackClient(config, bot);
-      //   break;
-      // }
+      // Create a SlackClient if the type is Slack.
+      case Lavenza.ClientTypes.Slack: {
+        client = new SlackClient(config, bot);
+        break;
+      }
 
     }
 

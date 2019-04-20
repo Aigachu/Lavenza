@@ -1,0 +1,25 @@
+# Status to set to the bot when it's running.
+status: 'Running on Lavenza!'
+
+# Command Prefix override for Slack.
+# command_prefix: ';-s'
+
+# Architect
+# The Architect is the maker of the bot. Enter your own username here.
+# There can only be 1 architect. You have access to all commands and some commands will send certain things to you.
+architect: 'aigachu'
+
+# Deities
+# Enter the Slack Usernames of the users that will have Deity status.
+# Deities are the highest authority for the bot and will have access to all commands.
+deities: []
+
+# Masters
+# Enter the Slack Usernames of the users that will have Master status.
+# They are a level under the deities, and will have access to commands with an oplevel of 2 or under.
+masters: []
+
+# Operators are a level below masters.
+# Enter the Slack Usernames of the users that will have Operator status.
+# They are a level under the masters, and will have access to commands with an oplevel of 1 or under.
+operators: []

@@ -28,3 +28,4 @@ talents:
 clients:
   - discord
   - twitch
+  - slack
