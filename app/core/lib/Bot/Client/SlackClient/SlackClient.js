@@ -1,6 +1,6 @@
 /**
  * Project Lavenza
- * Copyright 2017-2018 Aigachu, All Rights Reserved
+ * Copyright 2017-2019 Aigachu, All Rights Reserved
  *
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
@@ -28,17 +28,8 @@ export default class SlackClient extends SlackRTMClient {
    */
   constructor(config, bot) {
 
-    // Retrieve the client token beforehand, since it is needed for the
-    // superclass constructor call.
-    let token = process.env[`${bot.id.toUpperCase()}_SLACK_TOKEN`];
-
-    // If the token isn't found, we throw an error.
-    if (token === undefined) {
-      Lavenza.throw('Slack application token is missing for {{bot}}. Make sure the token is set in the /app/.env file at the root of the project. See /app/.env.example for more details.', {bot: bot.id});
-    }
-
     // Call the constructor of the Slack Client parent Class.
-    super(token);
+    super();
 
     // Assign the bot to the current client.
     this.bot = bot;
@@ -57,6 +48,15 @@ export default class SlackClient extends SlackRTMClient {
    * @returns {Promise<void>}
    */
   async authenticate() {
+
+    // Retrieve the client token beforehand, since it is needed for the
+    // superclass constructor call.
+    let token = process.env[`${this.bot.id.toUpperCase()}_SLACK_TOKEN`];
+
+    // If the token isn't found, we throw an error.
+    if (token === undefined) {
+      Lavenza.throw('Slack application token is missing for {{bot}}. Make sure the token is set in the /app/.env file at the root of the project. See /app/.env.example for more details.', {bot: this.bot.id});
+    }
 
     // Await the logging in of this client.
     await super.start().catch(async error => {

@@ -617,6 +617,17 @@ export default class Bot {
 
       }
 
+      // In the case of a Slack client, we check to see if there's a custom
+      // prefix set for the resonance's workspace.
+      case Lavenza.ClientTypes.Slack: {
+
+        let workspaceConfig = await Lavenza.Gestalt.get(`/bots/${this.id}/clients/slack/workspaces`);
+        if (resonance.message.workspace) {
+          cprefix = workspaceConfig[resonance.message.workspace.id].cprefix || undefined;
+        }
+
+      }
+
     }
 
     // Reset it to undefined if it's empty.
