@@ -30,7 +30,7 @@ export default class Coinflip extends Lavenza.Command {
     // We'll store these in an array.
     this.flips = [];
     this.flips.push({
-      message: "Coinflip emulation has begun! Just a moment...",
+      message: "Just a moment...",
       timeout: 2
     });
     this.flips.push({

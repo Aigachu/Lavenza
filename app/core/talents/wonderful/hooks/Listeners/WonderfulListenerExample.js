@@ -32,7 +32,7 @@ export default class WonderfulListenerExample extends Lavenza.Listener {
 
     // If we hear 'wonderful', we say Wonderful! <3.
     if (resonance.content === 'wonderful') {
-      await resonance.reply('Wonderful! <3');
+      await resonance.__reply('Wonderful! <3');
     }
 
   }

@@ -249,6 +249,7 @@ export default class Command {
 
     // Get configuration.
     let config = await this.getActiveConfigForBot(resonance.bot);
+    let parameterConfig = await this.getActiveParameterConfig(resonance.bot);
 
     // Depending on the type of client, we want the help function to act differently.
     switch (resonance.client.type) {
@@ -260,8 +261,8 @@ export default class Command {
         let usageText = `\`${await resonance.bot.getCommandPrefix(resonance)}${config.key}`;
 
         // If there is input defined for this command, we will add them to the help text.
-        if (config.input) {
-          config.input.requests.every(request => {
+        if (parameterConfig.input) {
+          parameterConfig.input.requests.every(request => {
             usageText += ` {${request.replace(' ', '_').toLowerCase()}}\`\n`;
           });
         } else {
@@ -269,9 +270,9 @@ export default class Command {
         }
 
         // If there are aliases defined for this command, add all usage examples to the help text.
-        if (config['aliases']) {
+        if (parameterConfig['aliases']) {
           let original = usageText;
-          config['aliases'].every(alias => {
+          parameterConfig['aliases'].every(alias => {
             usageText += original.replace(`${config.key}`, alias);
             return true;
           });
@@ -286,9 +287,9 @@ export default class Command {
         ];
 
         // If there are options defined for this command, we add a section for options.
-        if (config.options) {
+        if (parameterConfig.options) {
           let optionsList = '';
-          await Promise.all(config.options.map(async option => {
+          await Promise.all(parameterConfig.options.map(async option => {
             let description = await Lavenza.__(option.description, resonance.locale);
             let name = await Lavenza.__(option.name, resonance.locale);
             optionsList += `**${name}** \`-${option.key} {${option['expects'].replace(' ', '_').toLowerCase()}}\` - ${description}\n\n`;
@@ -300,9 +301,9 @@ export default class Command {
         }
 
         // If there are flags defi-...You get the idea.
-        if (config.flags) {
+        if (parameterConfig.flags) {
           let flagsList = '';
-          await Promise.all(config.flags.map(async flag => {
+          await Promise.all(parameterConfig.flags.map(async flag => {
             let description = await Lavenza.__(flag.description, resonance.locale);
             let name = await Lavenza.__(flag.name, resonance.locale);
             flagsList += `**${name}** \`-${flag.key}\` - ${description}\n\n`;
