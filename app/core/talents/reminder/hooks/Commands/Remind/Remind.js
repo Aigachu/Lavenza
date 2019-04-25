@@ -6,7 +6,7 @@
  */
 
 // Modules.
-import moment from 'moment';
+import moment from 'moment-timezone';
 import parseReminder from 'parse-reminder';
 
 /**
@@ -31,11 +31,34 @@ export default class Remind extends Lavenza.Command {
    */
   static async execute(resonance) {
 
+    // If the client is Twitch, we want to send a message saying it's currently unavailable.
+    if (resonance.client === Lavenza.ClientTypes.Twitch) {
+      await resonance.__reply(`Reminders are currently unavailable on Twitch because Aiga's too lazy to finish it up...Since he won't listen to me, try pestering him to finish up Twitch support.`);
+      return;
+    }
+
     // First, we want to parse the reminder text.
     // let reminder = await parseReminder('remind ' + resonance.order.rawContent);
     let reminder = await this.handlers(resonance,{info: parseReminder('remind ' + resonance.order.rawContent)}, 'parseReminder');
 
-    let string = JSON.stringify(reminder, null, '\t');
-    await resonance.reply( '```\n' + string + '\n```');
+    // If the reminder is null, we don't do anything.
+    if (reminder === null) {
+      return;
+    }
+
+    // Set when the reminder should fire.
+    let time = reminder.when;
+    reminder.when = moment(time).format('x');
+
+    // Run this through the talent.
+    await this.talent.setReminder(resonance.bot, reminder);
+
+    // Send a message to confirm this.
+    await resonance.__reply(`Okay {{invoker}}, I will follow up on this on the following date: {{date}} at {{time}}`, {
+      invoker: await Lavenza.bold(resonance.author.username),
+      date: await Lavenza.bold(moment(time).tz('UTC').format('MMMM Do, YYYY')),
+      time: await Lavenza.bold(moment(time).tz('UTC').format('hh:mm:ss A zz'))
+    });
+
   }
 }

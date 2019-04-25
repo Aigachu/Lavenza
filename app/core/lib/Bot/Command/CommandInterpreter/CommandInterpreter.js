@@ -68,12 +68,13 @@ export default class CommandInterpreter {
     // If there is a command prefix override for this client, we will set it. If not, we grab the default.
     let cprefix = await bot.getCommandPrefix(resonance);
 
-    // If the content doesn't start with the command prefix, it's not a command.
+    // If the content doesn't start with the command prefix or the bot tag, it's not a command.
+    // @todo - In Discord, we want to be able to tag the bot. Maybe in other clients too. But for now we'll keep it simple.
     if (!splitContent[0].startsWith(cprefix)) {
       return false
     }
 
-    // At this point we know it's a command. We'll need to find out which command was called.
+    // At this point we know it's potentially a command. We'll need to find out which command was called.
     // First, we'll format the string accordingly if needed.
     // If a user enters a command attached to the prefix, we separate them here.
     if (splitContent[0].length !== cprefix.length) {

@@ -14,7 +14,7 @@ authorization:
     users: []
 
   # Determines whether or not this command can work in direct messages with the bot.
-  pms: false
+  pms: true
 
   # Determines level of operation needed to use this command. A value of 0 means everyone can use it.
   oplevel: 0
