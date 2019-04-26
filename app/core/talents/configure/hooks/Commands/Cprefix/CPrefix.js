@@ -15,11 +15,6 @@
 export default class CPrefix extends Lavenza.Command {
 
   /**
-   * This is the static build function of the command.
-   *
-   * You can treat this as a constructor. Assign any properties that the command may
-   * use!
-   *
    * @inheritDoc
    */
   static async build(config, talent) {
@@ -28,20 +23,27 @@ export default class CPrefix extends Lavenza.Command {
   }
 
   /**
-   * The execution of the command's actions.
-   *
-   * If this is a command that is available in multiple clients, you can make cases surrounding the 'type' property
-   * of the resonance's client. A simple way to do this is to implement a switch statement on 'resonance.client.type'.
-   *
-   * Available for use is also the this.handlers() function. The best way to understand this is to take a long at this
-   * command's folder and code!
-   *
-   * Alternatively, you can adopt any design pattern you want.
-   *
    * @inheritDoc
    */
   static async execute(resonance) {
+    // Manage the 's' option.
+    if ('s' in resonance.order.args) {
+      // If the value is empty, we should get out.
+      if (Lavenza.isEmpty(resonance.order.args.s)) return;
 
+      // Get the current cprefix.
+      let currentConfig = await Lavenza.Gestalt.get(`/bots/${resonance.bot.id}/config/core`);
+      let currentPrefix = currentConfig.command_prefix;
+
+      // Update the cprefix.
+      await Lavenza.Gestalt.update(`/bots/${resonance.bot.id}/config/core`, {command_prefix: resonance.order.args.s});
+
+      // Send a confirmation.
+      await resonance.__reply(`I've updated the command prefix from {{oldPrefix}} to {{newPrefix}}.`, {
+        oldPrefix: await Lavenza.bold(currentPrefix),
+        newPrefix: await Lavenza.bold(resonance.order.args.s)
+      });
+    }
   }
 
 }

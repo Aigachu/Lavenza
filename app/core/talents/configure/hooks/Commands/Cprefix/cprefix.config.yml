@@ -1,5 +1,5 @@
 # Reader-Friendly name of the command.
-name: 'Pong Command'
+name: 'CPrefix Command'
 
 # Set whether or not the command is active.
 # Commands are active by default. If you absolutely want to disable a command, set this to false.
@@ -7,18 +7,17 @@ name: 'Pong Command'
 active: true
 
 # Command description. This may be used in the bot and seen by users. Make it good!
-description: 'Command that simply orders the bot to say "Ping!"'
+description: 'Command that allows you to configure the CPrefix for the bot.'
 
 # Path to the main class containing the logic of the command, relative to this directory.
-class: 'Pong'
+class: 'CPrefix'
 
 # Command key. This is what users will use to invoke the command.
-key: 'pong'
+key: 'cprefix'
 
 # Additional "keys" that can be used to invoke the command.
 aliases:
-  - 'pongu'
-  - 'pongo'
+  - 'cpfx'
 
 # Command Input, Options & Flags.
 #   > Input - Raw text input that normally comes after the command key.
