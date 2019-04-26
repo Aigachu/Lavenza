@@ -11,6 +11,9 @@ import DiscordJS from "discord.js";
 // I have to include twitch-api-v5 in the old way because this package isn't ES6 ready...GROSS!!!
 const twitch = require('twitch-api-v5');
 twitch.clientID = process.env.TWITCH_CLIENT_ID;
+if (Lavenza.isEmpty(process.env.TWITCH_CLIENT_ID)) {
+  Lavenza.warn(`There doesn't seem to be a TWITCH_CLIENT_ID environment variable set in your .env file. This will BREAK a lot of Twitch functionality. It is highly recommended to add this variable to your .env. See the .example.env file for more details!`);
+}
 
 /**
  * Twitch Notification Talent
@@ -184,15 +187,16 @@ export default class TwitchNotify extends Lavenza.Talent {
     let streamLogo = streamData.channel.logo;
     let game = streamData.game;
     let url = streamData.channel.url;
+    let client = await bot.getClient(Lavenza.ClientTypes.Discord);
 
     // We send a beautiful embed to the announcement channel.
-    bot.getClient(ClientTypes.Discord).sendEmbed(announcementChannel, {
-      title: `${name} is now live with ${game}!`,
+    await client.sendEmbed(announcementChannel, {
+      title: `${name} is playing ${game}`,
       description: `${streamTitle}`,
       url: url,
       color: '0x6441A5',
       header: {
-        text: 'Twitch Announcements',
+        text: `${name} has began a livestream on Twitch!`,
         icon: 'attachment://icon.png'
       },
       attachments: [
@@ -297,13 +301,13 @@ export default class TwitchNotify extends Lavenza.Talent {
     let streamIndex = this.guilds[bot.id][guildId].ttvann.streams.indexOf(streamUser);
     let liveIndex = this.guilds[bot.id][guildId].ttvann.live.indexOf(streamUser);
 
-    // If they exist, we remove them.
-    if (streamIndex > -1) {
-      this.guilds[bot.id][guildId].ttvann.streams.splice(streamIndex, 1);
+    if (liveIndex > -1) {
+      await this.guilds[bot.id][guildId].ttvann.live.splice(liveIndex, 1);
     }
 
-    if (liveIndex > -1) {
-      this.guilds[bot.id][guildId].ttvann.live.splice(liveIndex, 1);
+    // If they exist, we remove them.
+    if (streamIndex > -1) {
+      await this.guilds[bot.id][guildId].ttvann.streams.splice(streamIndex, 1);
     }
 
     // Finally, we save configurations.
@@ -350,7 +354,6 @@ export default class TwitchNotify extends Lavenza.Talent {
    */
   static async enable(guild, bot) {
     this.guilds[bot.id][guild['id']].ttvann.enabled = true;
-    console.log(this.guilds[bot.id][guild['id']]);
     await this.save(bot);
   }
 

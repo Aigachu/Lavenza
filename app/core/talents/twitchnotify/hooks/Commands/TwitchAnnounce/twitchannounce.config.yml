@@ -4,6 +4,11 @@ name: 'Twitch Announce Command'
 # Command description. This may be used in the bot and seen by users. Make it good!
 description: 'Command to set up Twitch announcements in a Discord server!'
 
+# Set whether or not the command is active.
+# Commands are active by default. If you absolutely want to disable a command, set this to false.
+# If you omit this, the command will be active.
+# active: false
+
 # Path to the main class containing the logic of the command, relative to this directory.
 class: 'TwitchAnnounce'
 
@@ -19,44 +24,6 @@ aliases:
 # A deactivated command is only accessible if you or your environment are whitelisted.
 # active: false
 
-# Command Input, Options & Flags.
-#   > Input - Raw text input that normally comes after the command key.
-#   > Flags - Arguments that come after the command. They take no input and must simply be placed afterwards.
-#   > Options - Flags that also take input.
-#
-# Example: ;°ping me -n 2 -d
-# Input: "me", Flag: "-d", Option: "-n" with its value being "2".
-#
-# This is not compulsory, but can be used to extend command versatility.
-# Arguments are parsed regardless of the data entered here. If these values are populated, extra validation will be
-# done upon command invocations to make sure valid options / arguments are provided.
-#input:
-#  requests:
-#    - 'user'
-#  required: false
-#
-options:
-  - key: a
-    name: 'Add'
-    expects: 'Channel Name'
-    description: 'Add a twitch channel to the list of channels that should be automatically announced in this server.'
-    oplevel: 1
-  - key: r
-    name: 'Remove'
-    expects: 'Channel Name'
-    description: 'Remove a twitch channel from the list of channels that should be automatically announced in this server.'
-    oplevel: 1
-  - key: c
-    name: 'Channel'
-    expects: 'ChannelTag'
-    description: 'Set the channel in this server where streams should automatically be announced.'
-    oplevel: 1
-flags:
-  - key: s
-    name: 'Status'
-    description: 'Check the status of the Twitch Announcements feature. It can be Enabled or Disabled.'
-    oplevel: 1
-
 # Configure the global cooldown of the command.
 # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
 cooldown:
@@ -67,42 +34,3 @@ cooldown:
 # If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.
 clients:
   - discord
-
-# Client specific configurations.
-clients.config:
-
-  # Discord configurations.
-  discord:
-
-    # Authorization configuration.
-    authorization:
-
-      # Blacklist - Prevent use of the command in certain contexts.
-      blacklist:
-        guilds: []
-        channels: []
-        users: []
-
-      # Whitelist - Permit use of the command in contexts where the command is globally blacklisted.
-      whitelist:
-        guilds: []
-        channels: []
-        users: []
-
-      # Determines whether or not this command can work in direct messages with the bot.
-      pms: false
-
-      # Determines level of operation needed to use this command. A value of 0 means everyone can use it.
-      oplevel: 2
-
-    # Configure the global cooldown of the command.
-    # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
-    cooldown:
-      global: 0
-      user: 0
-
-#  twitch:
-#    authorization: []
-#
-#  slack:
-#    authorization: []
