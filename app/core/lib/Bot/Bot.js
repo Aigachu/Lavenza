@@ -277,6 +277,26 @@ export default class Bot {
     // Await the processing of all talents loaded in the bot.
     await Promise.all(this.talents.map(async talent => {
 
+      // First we attempt to see if there is intersection going on with the commands.
+      // This will happen if there are multiple instances of the same commands (or aliases).
+      // The bot will still work, but one command will effectively override the other. Since this information is only
+      // important for developers, we should just throw a warning if this happens.
+      let commandsIntersection = Object.keys(this.commands).filter({}.hasOwnProperty.bind(TalentManager.talents[talent].commands));
+      let aliasesIntersection = Object.keys(this.commandAliases).filter({}.hasOwnProperty.bind(TalentManager.talents[talent].commandAliases));
+      if (!Lavenza.isEmpty(commandsIntersection)) {
+        await Lavenza.warn(`There seems to be duplicate commands in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
+          bot: this.id,
+          intersect: JSON.stringify(commandsIntersection)
+        });
+      }
+
+      if (!Lavenza.isEmpty(aliasesIntersection)) {
+        await Lavenza.warn(`There seems to be duplicate command aliases in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
+          bot: this.id,
+          intersect: JSON.stringify(commandsIntersection)
+        });
+      }
+
       // Merge the bot's commands with the Talent's commands.
       this.commands = Object.assign({}, this.commands, TalentManager.talents[talent].commands);
       this.commandAliases = Object.assign({}, this.commandAliases, TalentManager.talents[talent].commandAliases);
