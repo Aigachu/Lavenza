@@ -33,6 +33,7 @@
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
+    "cleverbot": "^1.0.1",
     "colors": "^1.3.3",
     "discord.js": "^11.4.2",
     "dotenv": "^6.2.0",
