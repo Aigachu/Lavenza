@@ -46,6 +46,7 @@ export default class Resonance {
     this.bot = bot;
     this.client = client;
     this.order = undefined; // An order is set to the Resonance only if it is found in the command interpreter.
+    this.author = undefined; // The author will be resolved depending on the type of Resonance.
   }
 
   /**
