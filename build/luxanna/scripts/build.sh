@@ -61,16 +61,20 @@ echo "cd apps/Lavenza-II/app; npm install;"
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; npm install;'
 echo "--------------------------------------"
 
-# Copy config & .env to the Lavenza codebase on Luxanna.
+# Copy local botss folder to server.
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; rm -rf bots;'
 scp -r ../../../app/bots aigachu@aigachu.com:~/apps/Lavenza-II/app
+
+# Copy config & .env to the Lavenza codebase on Luxanna.
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; rm .env;'
 scp ../../../app/.env aigachu@aigachu.com:~/apps/Lavenza-II/app
 
-# Summon the bots using Forever.
+# Summon the bots using PM2.
 # PM2 will automatically restart the bots if they crash, but only a maximum of 15 times.
 echo "Summoning bots..."
 echo "--------------------------------------"
 echo "cd apps/Lavenza-II/app; pm2 start summon.js --name=lavenza -- --babel --bot=lavenza;"
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; pm2 start summon.js --name=lavenza -- --babel --bot=lavenza;'
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; pm2 start summon.js --name=yuria -- --babel --bot=yuria;'
 echo "--------------------------------------"
 echo "Script is done executing!"
