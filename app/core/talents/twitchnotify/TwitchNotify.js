@@ -181,10 +181,10 @@ export default class TwitchNotify extends Lavenza.Talent {
 
     // Here we do some initializations and retrieval of needed data. Pretty straightforward.
     let announcementChannel = bot.getClient(Lavenza.ClientTypes.Discord).channels.find(channel => channel.id === guildConfig.ann_channel);
-    let name = streamData.channel.display_name;
+    let name = streamData.channel['display_name'];
     let streamTitle = streamData.channel.status;
     let previewImage = streamData.preview.large;
-    let streamLogo = streamData.channel.logo;
+    let streamLogo = streamData.channel['logo'];
     let game = streamData.game;
     let url = streamData.channel.url;
     let client = await bot.getClient(Lavenza.ClientTypes.Discord);
@@ -216,25 +216,34 @@ export default class TwitchNotify extends Lavenza.Talent {
   /**
    * Add a stream to guild configuration to mark it for announcements.
    *
-   * @param {string} guildId
-   *   ID of the guild to add the stream to.
+   * @param {Resonance} resonance
+   *   The Resonance that called this function.
    * @param {string} streamUser
    *   The name of the twitch channel. Must be the exact name.
-   * @param {Bot} bot
-   *   The bot to perform this function for.
    *
    * @returns {Promise<void>}
    */
-  static async ttvannAddStream(guildId, streamUser, bot) {
+  static async ttvannAddStream(resonance, streamUser) {
+    // Initialize our variables.
+    let bot = resonance.bot;
+    let guildId = resonance.message.guild.id;
 
     // If the stream is already in the configuration, we shouldn't do anything.
     if (this.guilds[bot.id][guildId].ttvann.streams.includes(streamUser)) {
-      await Lavenza.throw('Stream already set for announcements in this guild.');
+      await resonance.__reply(`It seems like the {{stream}} channel is already set up for announcements.`, {
+        stream: await Lavenza.bold(streamUser),
+      });
+      return;
     }
 
     // If not, we simply add it to the array and save the configuration.
     this.guilds[bot.id][guildId].ttvann.streams.push(streamUser);
     await this.save(bot);
+
+    // Send a confirmation.
+    await resonance.__reply(`Alright, the {{stream}} channel is now in the list. When that channel goes live, I will let everyone know.`, {
+      stream: await Lavenza.bold(streamUser),
+    });
   }
 
   /**
@@ -286,16 +295,25 @@ export default class TwitchNotify extends Lavenza.Talent {
   /**
    * Remove a stream from guild configuration to stop announcements for it.
    *
-   * @param {string} guildId
-   *   ID of the guild to remove the stream from.
+   * @param {Resonance} resonance
+   *   The Resonance that called this function.
    * @param {string} streamUser
    *   The name of the twitch channel. Must be the exact name.
-   * @param {Bot} bot
-   *   The bot to perform this function for.
    *
    * @returns {Promise<void>}
    */
-  static async ttvannRemoveStream(guildId, streamUser, bot) {
+  static async ttvannRemoveStream(resonance, streamUser) {
+    // Initialize our variables.
+    let bot = resonance.bot;
+    let guildId = resonance.message.guild.id;
+
+    // If the stream isn't in the configuration, we shouldn't do anything.
+    if (!this.guilds[bot.id][guildId].ttvann.streams.includes(streamUser)) {
+      await resonance.__reply(`Hmm...The {{stream}} channel isn't in the list. Did you make a typo or something?`, {
+        stream: await Lavenza.bold(streamUser),
+      });
+      return;
+    }
 
     // We check the indexes of the stream user channel name in both the streams & live configurations.
     let streamIndex = this.guilds[bot.id][guildId].ttvann.streams.indexOf(streamUser);
@@ -312,6 +330,11 @@ export default class TwitchNotify extends Lavenza.Talent {
 
     // Finally, we save configurations.
     await this.save(bot);
+
+    // Send confirmation.
+    await resonance.__reply(`Gotcha. The {{stream}} channel has been removed from the list.`, {
+      stream: await Lavenza.bold(streamUser),
+    });
   }
 
   /**

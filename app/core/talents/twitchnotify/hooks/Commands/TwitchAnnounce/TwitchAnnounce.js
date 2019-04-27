@@ -19,26 +19,20 @@ export default class TwitchAnnounce extends Lavenza.Command {
 
     // If the "a" option is used, add a stream to the list of announcements in the server.
     if ('a' in resonance.order.args) {
-      await this.talent.ttvannAddStream(resonance.message.guild.id, resonance.order.args.a, resonance.bot);
-      await resonance.__reply(`Added {{stream}} to the list of Twitch Announcements in this server!`, {
-        stream: await Lavenza.bold(resonance.order.args.a)
-      });
+      await this.talent.ttvannAddStream(resonance, resonance.order.args.a);
       return;
     }
 
     // If the "r" option is used, remove a stream to the list of announcements in the server.
     if ("r" in resonance.order.args) {
-      await this.talent.ttvannRemoveStream(resonance.message.guild.id, resonance.order.args.r, resonance.bot);
-      await resonance.__reply(`Removed {{stream}} to the list of Twitch Announcements in this server!`, {
-        stream: await Lavenza.bold(resonance.order.args.r)
-      });
+      await this.talent.ttvannRemoveStream(resonance, resonance.order.args.r);
       return;
     }
 
     // If the "s" option is used, check the status of the watchdog in this guild.
     if ("s" in resonance.order.args) {
       let status = await this.talent.status(resonance.message.guild, resonance.bot) ? `Enabled` : `Disabled`;
-      await resonance.__reply(`Twitch Announcements is currently {{status}}.`, {
+      await resonance.__reply(`Twitch channel stream announcements are currently {{status}}.`, {
         status: await Lavenza.bold(status),
       });
       return;
@@ -55,7 +49,7 @@ export default class TwitchAnnounce extends Lavenza.Command {
       }
 
       await this.talent.ttvannSetAnnChannel(resonance.message.guild.id, resonance.order.args.c, resonance.bot);
-      await resonance.__reply(`Set the announcement channel to {{channel}} for this server!`, {
+      await resonance.__reply(`Twitch announcements will now be done in the {{channel}}. Adjust your notifications accordingly if you don't want to get spammed!`, {
         channel: `<#${resonance.order.args.c}>`,
       });
       return;
@@ -67,7 +61,7 @@ export default class TwitchAnnounce extends Lavenza.Command {
     // Get the new status.
     let status = toggle ? `Enabled` : `Disabled`;
 
-    await resonance.__reply(`Twitch Announcements is now {{status}}.`, {
+    await resonance.__reply(`Twitch channel stream announcements are now {{status}}.`, {
       status: await Lavenza.bold(status),
     });
 

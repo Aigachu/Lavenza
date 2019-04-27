@@ -250,6 +250,8 @@ export default class Command {
 
     // Get configuration.
     let config = await this.getActiveConfigForBot(resonance.bot);
+    console.log(this.config);
+    console.log(config);
     let parameterConfig = await this.getActiveParameterConfig(resonance.bot);
 
     // Depending on the type of client, we want the help function to act differently.
