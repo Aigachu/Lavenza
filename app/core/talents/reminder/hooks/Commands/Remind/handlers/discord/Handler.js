@@ -34,7 +34,7 @@ export default class Handler extends Lavenza.CommandClientHandler {
     parse.channel = this.resonance.message.channel.id;
 
     // If this is being called through whispers, there is no guild.
-    if (this.resonance.message.type === 'text') {
+    if (this.resonance.message.type !== 'dm' && this.resonance.message.type !== 'group') {
       parse.guild = this.resonance.message.guild.id;
     }
 
