@@ -27,6 +27,8 @@ export default class Core {
    *
    * Remember to update this you nut!
    *
+   * @TODO - I mean IDEALLY, we wouldn't have to update this each time. Honestly though, why do you even need this?
+   *
    * @returns {string}
    *   Value of the version, that's literally written right under this.
    */
@@ -67,13 +69,13 @@ export default class Core {
      * Fire necessary preparations.
      * The application can end here if we hit an error in the prepare() function.
      */
-    await this.prepare();
+    await this.prepare().catch(Lavenza.stop);
 
     /*
      * If preparations go through without problems, go for run tasks.
      * Run tasks should be done only after all prep is complete.
      */
-    await this.run();
+    await this.run().catch(Lavenza.stop);
 
   }
 

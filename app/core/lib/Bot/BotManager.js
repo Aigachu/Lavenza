@@ -55,7 +55,7 @@ export default class BotManager {
    */
   static async prepare() {
 
-    // Await registration all bots from the application files.
+    // Await registration of all bots from the application files.
     // Upon error in registration, stop the application.
     await this.registerBots();
 
@@ -147,13 +147,13 @@ export default class BotManager {
       }
     }
 
-    // Loop through all directories found in the /bots folder.
+    // Loop through all directories we need to.
     await Promise.all(botDirectories.map(async directory => {
 
       // Get the bot name. This is in fact the name of the directory.
       let name = path.basename(directory);
 
-      // If the bot name is part of the ignored bot list, return true now.
+      // If the bot name is part of the ignored bot list, return now.
       if (name in this.ignoredBots) {
         return;
       }
