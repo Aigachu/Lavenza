@@ -76,7 +76,7 @@ export default class TwitchNotify extends Lavenza.Talent {
     // The pinger is basically a function that will run every *minute* to check if a stream must be announced.
     setInterval(async () => {
       await this.ping(bot).catch(Lavenza.continue);
-    }, 1000);
+    }, 60000);
 
   }
 
@@ -196,7 +196,7 @@ export default class TwitchNotify extends Lavenza.Talent {
       url: url,
       color: '0x6441A5',
       header: {
-        text: `${name} has began a livestream on Twitch!`,
+        text: `${name} is currently livestreaming on Twitch!`,
         icon: 'attachment://icon.png'
       },
       attachments: [
@@ -412,10 +412,36 @@ export default class TwitchNotify extends Lavenza.Talent {
   }
 
   /**
-   * Save configurations to the database using Gestalt.
+   * Save twitch notification data to the database for a specific bot.
+   *
+   * @param {Bot} bot
+   *    Bot to save the data for.
+   *
+   * @returns {Promise<void>}
    */
   static async save(bot) {
     await Lavenza.Gestalt.post(this.guildConfigStorages[bot.id], this.guilds[bot.id]);
+  }
+
+  /**
+   * List the list of streams set up for announcements in a given guild.
+   *
+   * @param {Resonance} resonance
+   *    Resonance to analyze and reply to.
+   *
+   * @returns {Promise<void>}
+   */
+  static async list(resonance) {
+    // Get the list of streams in an array.
+    let list = this.guilds[resonance.bot.id][resonance.message.guild.id].ttvann.streams;
+    let message = await Lavenza.__(`Here is the list of twitch channels that are set up for announcements:`);
+    message += '\n';
+    message += '```';
+    await Promise.all(list.map((channel) => {
+      message += `\n${channel}`;
+    }));
+    message += '```';
+    await resonance.reply(message);
   }
 
   /**

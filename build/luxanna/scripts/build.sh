@@ -75,6 +75,6 @@ echo "Summoning bots..."
 echo "--------------------------------------"
 echo "cd apps/Lavenza-II/app; pm2 start summon.js --name=lavenza -- --babel --bot=lavenza;"
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; pm2 start summon.js --name=lavenza -- --babel --bot=lavenza;'
-ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; pm2 start summon.js --name=yuria -- --babel --bot=yuria;'
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; pm2 start summon.js --name=emma -- --babel --bot=emma;'
 echo "--------------------------------------"
 echo "Script is done executing!"

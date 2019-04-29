@@ -38,6 +38,12 @@ export default class TwitchAnnounce extends Lavenza.Command {
       return;
     }
 
+    // If the "l" option is used, list the channels that are set up for announcements.
+    if ("l" in resonance.order.args) {
+      await this.talent.list(resonance);
+      return;
+    }
+
     // If the "c" option is used, set the announcement channel for this server.
     if ("c" in resonance.order.args) {
       resonance.order.args.c = resonance.order.args.c.replace('<#', '');
@@ -56,10 +62,15 @@ export default class TwitchAnnounce extends Lavenza.Command {
     }
 
     // Toggle the watchdog status.
-    let toggle = await this.talent.status(resonance.message.guild, resonance.bot) ? this.talent.disable(resonance.message.guild, resonance.bot) : this.talent.enable(resonance.message.guild, resonance.bot);
+    let toggle = await this.talent.status(resonance.message.guild, resonance.bot);
+    if (toggle) {
+      await this.talent.disable(resonance.message.guild, resonance.bot)
+    } else {
+      await this.talent.enable(resonance.message.guild, resonance.bot);
+    }
 
     // Get the new status.
-    let status = toggle ? `Enabled` : `Disabled`;
+    let status = !toggle ? `Enabled` : `Disabled`;
 
     await resonance.__reply(`Twitch channel stream announcements are now {{status}}.`, {
       status: await Lavenza.bold(status),
