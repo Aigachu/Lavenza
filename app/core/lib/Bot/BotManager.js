@@ -37,7 +37,6 @@ export default class BotManager {
    * @returns {Promise.<void>}
    */
   static async prepare() {
-
     // Await registration of all bots from the application files.
     // Upon error in registration, stop the application.
     await this.registerAllBotsInDirectory();
@@ -47,7 +46,6 @@ export default class BotManager {
 
     // Some more flavor.
     await Lavenza.success("Bot Manager preparations complete!");
-
   }
 
   /**
@@ -63,18 +61,39 @@ export default class BotManager {
 
     // Some more flavor.
     await Lavenza.success("Booted the master bot, {{bot}}!", {bot: Lavenza.Core.settings['master']});
+
+    // Boot auto-boot bots.
+    // Some bots are set up for auto-booting. We'll handle those too.
+    await this.bootAutoBoots();
   }
 
   /**
-   * Deployment handler for the BotManager.
-   *
-   * This function essentially authenticates and readies all bots.
+   * Activates the Master Bot for your application.
    *
    * @returns {Promise.<void>}
    */
   static async bootMasterBot() {
     // Await deployment of the master bot.
     await this.boot(Lavenza.Core.settings['master']);
+  }
+
+  /**
+   * Boots all bots set up in the 'autoboot' array of the settings.
+   *
+   * @returns {Promise.<void>}
+   */
+  static async bootAutoBoots() {
+    // If the autoboot array is empty, we don't do anything here.
+    if (Lavenza.isEmpty(Lavenza.Core.settings['autoboot'])) {
+      await Lavenza.warn(`No bots set up for autobooting. Continuing!`);
+      return;
+    }
+
+    // Boot all bots set up in autobooting.
+    await Promise.all(Lavenza.Core.settings['autoboot'].map(async (botId) => {
+      await this.boot(botId);
+      await Lavenza.success("Successfully Auto-Booted {{bot}}!", {bot: botId});
+    }));
   }
 
   /**
@@ -86,6 +105,12 @@ export default class BotManager {
    * @returns {Promise.<void>}
    */
   static async boot(bot) {
+    // If the bot isn't found, we can't boot it.
+    if (Lavenza.isEmpty(this.bots[bot])) {
+      await Lavenza.warn(`Tried to boot an non-existent bot: {{bot}}. Gracefully continuing the program.`, {bot: bot});
+      return;
+    }
+
     // Await deployment handlers for a single bot.
     await this.bots[bot].deploy();
   }
@@ -99,6 +124,12 @@ export default class BotManager {
    * @returns {Promise<void>}
    */
   static async shutdown(bot) {
+    // If the bot isn't found, we can't shut it down.
+    if (Lavenza.isEmpty(this.bots[bot])) {
+      await Lavenza.warn(`Tried to shutdown an non-existent bot: {{bot}}. Gracefully continuing the program.`, {bot: bot});
+      return;
+    }
+
     await this.bots[bot].shutdown();
   }
 

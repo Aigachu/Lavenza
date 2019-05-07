@@ -91,15 +91,17 @@ export default class Resonance {
    *
    * @param {*} content
    *   Content to send back.
+   * @param {string} personalizationTag
+   *   Tag for text personalizations, if needed. This will use Yoshida to get personalizations for the current bot.
    *
    * @returns {Promise<*>}
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  async reply(content) {
+  async reply(content, personalizationTag = '') {
 
     // Basically call the send method, but we already know the destination.
-    return await this.send(this.origin, content);
+    return await this.send(this.origin, content, personalizationTag);
 
   }
 
@@ -124,7 +126,7 @@ export default class Resonance {
     let params = await Lavenza.Sojiro.parseI18NParams(parameters);
 
     // Basically call the send method, but we already know the destination.
-    return await this.__send(this.origin, {phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED').catch(Lavenza.stop);
+    return await this.__send(this.origin, {phrase: params.phrase, locale: params.locale, tag: params.tag}, params.replacers, 'PARSED').catch(Lavenza.stop);
 
   }
 
@@ -139,28 +141,31 @@ export default class Resonance {
    *   Destination to send this message to.
    * @param {*} content
    *   Content to send back to the destination.
+   * @param {string} personalizationTag
+   *   Tag for text personalizations, if needed. This will use Yoshida to get personalizations for the current bot.
    *
    * @returns {Promise<*>}
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  async send(destination, content) {
+  async send(destination, content, personalizationTag = '') {
+
+    // If a personalization tag is set, we want to use Yoshida to get a personalization for this bot.
+    if (!Lavenza.isEmpty(personalizationTag)) {
+      content = await Lavenza.Yoshida.getPersonalization(personalizationTag, content, this.bot).catch(Lavenza.stop);
+    }
 
     // Depending on the type of client the Destination is from, we want to send using the appropriate methods.
     // In the case of Discord, we check if the destination is an instance of any of the DiscordJS classes.
     if (destination instanceof DiscordJSMessage || destination instanceof DiscordJSUser || destination instanceof DiscordJSChannel) {
-
       // We fire the DiscordResonance's sending method.
       return await ResonanceFactory.send(Lavenza.ClientTypes.Discord, this.bot, destination, content);
-
     }
 
     // Twitch objects will contain these kinds of properties.
     if (typeof destination === 'string' || destination instanceof TwitchUser || destination instanceof TwitchChannel) {
-
       // We fire the TwitchResonance's sending method.
       return await ResonanceFactory.send(Lavenza.ClientTypes.Twitch, this.bot, destination, content);
-
     }
 
     // If all fails, we'll simply use this instance's doSend function.
@@ -201,6 +206,11 @@ export default class Resonance {
     // If a locale is STILL not defined after the above code, we set it to the default one set to the bot.
     if (params.locale === undefined) {
       params.locale = await this.bot.getActiveConfig().locale;
+    }
+
+    // If a personalization tag is set, we want to use Yoshida to get a personalization for this bot.
+    if (!Lavenza.isEmpty(params.tag)) {
+      params.phrase = await Lavenza.Yoshida.getPersonalization(params.tag, params.phrase, this.bot).catch(Lavenza.stop);
     }
 
     // Now, using the information from the parameters, we fetch necessary translations.

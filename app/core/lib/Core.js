@@ -23,13 +23,14 @@ export default class Core {
    * Remember to update this you nut!
    *
    * @TODO - I mean IDEALLY, we wouldn't have to update this each time. Honestly though, why do you even need this?
+   * @TODO - FOUND SOMETHING! https://www.npmjs.com/package/git-tag-version
    *
    * @returns {string}
    *   Value of the version, that's literally written right under this.
    */
   static get version() {
 
-    return "1.2.0";
+    return "2.0.7DEV";
 
   }
 

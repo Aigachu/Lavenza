@@ -35,6 +35,7 @@ import Morgana from './Confidants/Morgana';
 import Sojiro from './Confidants/Sojiro';
 import Makoto from "./Confidants/Makoto";
 import Kawakami from "./Confidants/Kawakami";
+import Yoshida from "./Confidants/Yoshida";
 
 // Services.
 // Services are similar to Confidants, but are much more intricate.
@@ -194,6 +195,7 @@ export const Heart = {
   Sojiro: Sojiro,
   Makoto: Makoto,
   Kawakami: Kawakami,
+  Yoshida: Yoshida,
 
   // Managers.
   BotManager: BotManager,

@@ -59,6 +59,7 @@ export default class Sojiro {
       phrase: undefined,
       locale: undefined,
       replacers: undefined,
+      tag: undefined,
     };
 
     // If no parameters are passed, we can't really do much.
@@ -67,36 +68,74 @@ export default class Sojiro {
     }
 
     // If it's called with an object as the parameter.
-    // i.e. __({phrase: "Hello {{name}}", locale: "en"}, {name: 'Kyle'}
+    // i.e. __({phrase: "Hello {{name}}", locale: "en", tag: "PING_RESPONSE"}, {name: 'Kyle'}
     if (typeof parameters[0] === 'object') {
 
       // Parse parameters.
       parsed.phrase = parameters[0].phrase;
       parsed.locale = parameters[0].locale;
       parsed.replacers = parameters[1] || undefined;
+      parsed.tag = parameters[0].tag;
 
       return parsed;
     }
 
     // If it's called with a string as the parameter.
-    // i.e. __("Hello {{name}}", {name: 'Kyle'}, 'en')
-    // i.e. __("Hello", 'en')
+    // i.e. __("Hello {{name}}", {name: 'Kyle'}, 'en', 'PING_RESPONSE')
+    // i.e. __("Hello", 'en', 'PING_RESPONSE')
     if (typeof parameters[0] === 'string') {
 
       // Parse parameters.
       parsed.phrase = parameters[0];
 
-      // If a second parameter is set.
+      // If a second parameter is set and is not undefined.
       if (parameters[1] !== undefined) {
+        // If the second parameter is a string, we're expecting to get the locale directly.
+        // i.e. __("Hello", 'en')
+        // i.e. __("Hello", 'en', 'PING_RESPONSE')
         if (typeof parameters[1] === 'string') {
-          parsed.locale = parameters[1];
-        } else {
-          parsed.replacers = parameters[1];
-          parsed.locale = parameters[2];
+          // Tags can't be less than 4 characters. So if the string here is less than 4 characters, it's a locale.
+          if (!parameters[1].startsWith('::')) {
+            parsed.locale = parameters[1];
+            parsed.tag = parameters[2] || undefined;
+          }
+          // Otherwise, we're gonna assume that the string provided is indeed a tag.
+          else {
+            parsed.locale = undefined;
+            parsed.tag = parameters[1];
+          }
         }
-      } else {
+        // Otherwise, the replacers are most likely set in the second parameter as an object, and the locale in the
+        // third. If there's a tag, it'll be in the fourth.
+        // i.e. __("Hello {{name}}", {name: 'Kyle'}, 'en')
+        // i.e. __("Hello {{name}}", {name: 'Kyle'}, 'en', 'PING_RESPONSE')
+        else {
+          parsed.replacers = parameters[1];
+          if (parameters[2] !== undefined) {
+            if (typeof parameters[2] === 'string') {
+              // Tags can't be less than 4 characters. So if the string here is less than 4 characters, it's a locale.
+              if (!parameters[2].startsWith('::')) {
+                parsed.locale = parameters[2];
+                parsed.tag = parameters[3] || undefined;
+              }
+              // Otherwise, we're gonna assume that the string provided is indeed a tag.
+              else {
+                parsed.locale = undefined;
+                parsed.tag = parameters[2];
+              }
+            }
+          } else {
+            parsed.locale = parameters[2] || 'en';
+            parsed.tag = parameters[3] || undefined;
+          }
+        }
+      }
+      // This can occur when replacers are forcefully set to 'undefined'. See Morgana.js.
+      else {
+        // If a locale is set but replacers are set to null,
         if (parameters[2] !== undefined) {
           parsed.locale = parameters[2];
+          parsed.tag = parameters[3] || undefined;
         }
       }
 

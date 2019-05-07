@@ -43,6 +43,7 @@ export default class Bot {
     this.commandAliases = {};
     this.listeners = [];
     this.prompts = [];
+    this.maintenance = false;
     this.isMaster = false;
   }
 

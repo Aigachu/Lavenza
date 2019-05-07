@@ -61,7 +61,7 @@ echo "cd apps/Lavenza-II/app; npm install;"
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; npm install;'
 echo "--------------------------------------"
 
-# Copy local botss folder to server.
+# Copy local bots folder to server.
 ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; rm -rf bots;'
 scp -r ../../../app/bots aigachu@aigachu.com:~/apps/Lavenza-II/app
 
@@ -74,7 +74,6 @@ scp ../../../app/.env aigachu@aigachu.com:~/apps/Lavenza-II/app
 echo "Summoning bots..."
 echo "--------------------------------------"
 echo "cd apps/Lavenza-II/app; pm2 start summon.js --name=lavenza -- --babel --bot=lavenza;"
-ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; pm2 start summon.js --name=lavenza -- --babel --bot=lavenza;'
-ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; pm2 start summon.js --name=emma -- --babel --bot=emma;'
+ssh aigachu@aigachu.com 'cd apps/Lavenza-II/app; pm2 start summon.js --name=lavenza'
 echo "--------------------------------------"
 echo "Script is done executing!"

@@ -1,4 +1,4 @@
-# Lavenza II [![Build Status](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/build-status/master)
+# Lavenza II [![Build Status](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/?branch=master)
 
 Lavenza II is a large development project aiming to create powerful, multi-platform chatbots!
 
