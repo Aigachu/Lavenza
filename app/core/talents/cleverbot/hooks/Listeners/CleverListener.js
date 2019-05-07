@@ -21,8 +21,10 @@ export default class CleverListener extends Lavenza.Listener {
 
     // Say something clever! A 1% chance to do so.
     // We only bought 15K API calls for now...We don't want this to happen too often.
-    if (Math.random() < 0.01)
+    // 2% chance of saying something clever.
+    if (Math.random() < 0.02) {
       await this.saySomethingClever(resonance);
+    }
 
   }
 

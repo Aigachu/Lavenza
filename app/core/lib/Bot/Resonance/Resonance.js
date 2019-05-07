@@ -85,6 +85,31 @@ export default class Resonance {
   }
 
   /**
+   * Set up a prompt to a specified user.
+   *
+   * Prompts are interactive ways to query information from a user in a seamless conversational way.
+   *
+   * @param {*} user
+   *   User that is being prompted.
+   * @param {String} request
+   *   Message that will be sent describing the requested information.
+   * @param {*} line
+   *   The communication line for this prompt. Basically, where we want the interaction to happen.
+   * @param {int} lifespan
+   *   The lifespan of this Prompt.
+   *   If the bot doesn't receive an answer in time, we cancel the prompt.
+   *   10 seconds is the average time a white boy waits for a reply from a girl he's flirting with after sending her a
+   *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO!
+   * @param {*} onResponse
+   *   The callback function that runs once a response has been heard.
+   *
+   * @returns {Promise<void>}
+   */
+  async prompt(user, request, line, lifespan, onResponse) {
+
+  }
+
+  /**
    * Reply to the current resonance.
    *
    * This will send a formatted reply to the Resonance, replying directly to the message that was heard.
@@ -169,7 +194,8 @@ export default class Resonance {
     }
 
     // If all fails, we'll simply use this instance's doSend function.
-    return await this.constructor.doSend(this.bot, destination, content);
+    // Which will currently crash the program.
+    return await this.constructor.doSend(this.bot, destination, content).catch(Lavenza.stop);
 
   }
 

@@ -6,12 +6,10 @@
  */
 
 /**
- * Example Talent.
+ * Coinflip Talent.
  *
- * This class can do *anything* or *nothing*. It's an entry point for extended development of features.
+ * This talent grants the coinflip command and has many additional features included in it!
  */
 export default class Coinflip extends Lavenza.Talent {
-  // The possibilities are endless, my lord...
-  // ...That's not a Persona 5 reference...It's me being dumb...
-  // No but seriously, you can do whatever you want here. Commands are linked to their Talents, and they can easily interest with this class.
+
 }

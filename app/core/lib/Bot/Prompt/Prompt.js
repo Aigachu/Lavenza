@@ -18,6 +18,8 @@ export default class Prompt {
   /**
    * Prompt constructor.
    *
+   * @param {*} user
+   *   User that is being prompted.
    * @param {String} request
    *   Message that will be sent describing the requested information.
    * @param {*} line
@@ -29,10 +31,12 @@ export default class Prompt {
    * @param {Bot} bot
    *   The Bot this prompt is being created for.
    */
-  constructor(request, line, resonance, onResponse, bot) {
+  constructor(user, request, line, resonance, onResponse, bot) {
     this.request = request;
     this.line = line;
     this.resonance = resonance;
+    this.requester = resonance.author;
+    this.user = user;
     this.onResponse = onResponse;
     this.bot = bot;
     this.ee = new EventEmitter();

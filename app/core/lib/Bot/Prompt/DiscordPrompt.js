@@ -16,8 +16,8 @@ export default class DiscordPrompt extends Prompt {
   /**
    * @inheritDoc
    */
-  constructor(request, line, resonance, onResponse, bot) {
-    super(request, line, resonance, onResponse, bot);
+  constructor(user, request, line, resonance, onResponse, bot) {
+    super(user, request, line, resonance, onResponse, bot);
   }
 
   /**
@@ -26,7 +26,7 @@ export default class DiscordPrompt extends Prompt {
   condition(resonance) {
 
     // In Discord, we wait for the next message that comes from the author, in the configured 'line'.
-    return resonance.message.channel.id === this.line.id && resonance.message.author.id === this.resonance.message.author.id;
+    return resonance.message.channel.id === this.line.id && resonance.message.author.id === this.user.id;
 
   }
 

@@ -63,10 +63,10 @@ export default class Pong extends Lavenza.Command {
 
     // Then, we can set the prompt.
     // This will immediately ask the question and await a response.
-    // You set the required parameters, we SHOULD be straightforward. The fourth parameter is the time limit set for
+    // You set the required parameters, which SHOULD be straightforward. The fourth parameter is the time limit set for
     // the response. If that time is elapsed, you will fall into the catch() block below.
     // The fifth parameter is the callback function for when a response is received.
-    await resonance.bot.prompt(promptText, resonance.channel, resonance, 10, async (responseResonance, prompt) => {
+    await resonance.bot.prompt(resonance.author, promptText, resonance.channel, resonance, 10, async (responseResonance, prompt) => {
 
       // Check if the user says yes or no.
       if (responseResonance.content === 'yes') {

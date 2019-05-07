@@ -462,6 +462,8 @@ export default class Bot {
    *
    * Prompts are interactive ways to query information from a user in a seamless conversational way.
    *
+   * @param {*} user
+   *   User that is being prompted.
    * @param {String} request
    *   Message that will be sent describing the requested information.
    * @param {*} line
@@ -478,10 +480,10 @@ export default class Bot {
    *
    * @returns {Promise<void>}
    */
-  async prompt(request, line, resonance, lifespan, onResponse) {
+  async prompt(user, request, line, resonance, lifespan, onResponse) {
 
     // Create the new prompt using the factory.
-    let prompt = await PromptFactory.build(request, line, resonance, onResponse, this);
+    let prompt = await PromptFactory.build(user, request, line, resonance, onResponse, this);
 
     // Set the prompt to the bot.
     this.prompts.push(prompt);

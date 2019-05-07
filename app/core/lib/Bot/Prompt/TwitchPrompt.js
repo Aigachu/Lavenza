@@ -16,8 +16,8 @@ export default class TwitchPrompt extends Prompt {
   /**
    * @inheritDoc
    */
-  constructor(request, line, resonance, onResponse, bot) {
-    super(request, line, resonance, onResponse, bot);
+  constructor(user, request, line, resonance, onResponse, bot) {
+    super(user, request, line, resonance, onResponse, bot);
   }
 
   /**
@@ -26,7 +26,7 @@ export default class TwitchPrompt extends Prompt {
   condition(resonance) {
 
     // In Twitch, we wait for the next message that comes from the same user.
-    return resonance.message.channel.id === this.line.id && resonance.message.author.id === this.resonance.message.author.id;
+    return resonance.message.channel.id === this.line.id && resonance.message.author.id === this.user.id;
 
   }
 
@@ -35,7 +35,7 @@ export default class TwitchPrompt extends Prompt {
    */
   async prompt() {
 
-    // In discord, the line is always a channel. We send the request message there.
+    // In Twitch, the line is always a channel. We send the request message there.
     await this.resonance.send(this.line, this.request);
 
   }
