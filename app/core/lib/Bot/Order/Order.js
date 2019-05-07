@@ -25,7 +25,7 @@ export default class Order {
    *   Raw content obtained from the resonance.
    * @param {Object} config
    *   The configuration of the bot & command fetched from the database, for the bot that called this.
-   * @param {Lavenza.Resonance} resonance
+   * @param {Resonance} resonance
    *   The resonance that this order originates from.
    */
   constructor(command, args, rawContent, config, resonance) {

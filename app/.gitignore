@@ -8,6 +8,7 @@
 /backup
 /bots/*
 !/bots/example
+!/bots/settings.example.yml
 /database/*
 !/database/.gitkeep
 /lang/*

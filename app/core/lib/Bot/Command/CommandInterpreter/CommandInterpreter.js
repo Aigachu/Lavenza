@@ -71,7 +71,7 @@ export default class CommandInterpreter {
     // If the content doesn't start with the command prefix or the bot tag, it's not a command.
     // @todo - In Discord, we want to be able to tag the bot. Maybe in other clients too. But for now we'll keep it simple.
     if (!splitContent[0].startsWith(cprefix)) {
-      return false
+      return false;
     }
 
     // At this point we know it's potentially a command. We'll need to find out which command was called.

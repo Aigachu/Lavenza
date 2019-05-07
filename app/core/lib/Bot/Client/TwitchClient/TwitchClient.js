@@ -91,4 +91,18 @@ export default class TwitchClient extends TMIClient {
     await this.connect();
 
   }
+
+  /**
+   * Disconnect from Twitch.
+   *
+   * @returns {Promise<void>}
+   */
+  async disconnect() {
+
+    // Simply call TMI's disconnect function.
+    await this.disconnect();
+
+    await Lavenza.warn('Twitch client disconnected for {{bot}}.', {bot: this.bot.id});
+
+  }
 }

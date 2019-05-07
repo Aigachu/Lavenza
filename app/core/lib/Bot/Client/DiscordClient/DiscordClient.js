@@ -276,4 +276,18 @@ export default class DiscordClient extends DiscordJSClient {
     });
 
   }
+
+  /**
+   * Disconnect from Discord.
+   *
+   * @returns {Promise<void>}
+   */
+  async disconnect() {
+
+    // Call the destruction function to disconnect the client.
+    await this.destroy();
+
+    await Lavenza.warn('Discord client disconnected for {{bot}}.', {bot: this.bot.id});
+
+  }
 }

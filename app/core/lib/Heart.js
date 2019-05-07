@@ -21,6 +21,11 @@ DotEnv.load();
 // This is where the wonderful ignite() function is, as well as the rest of the bootstrapping.
 import Core from './Core';
 
+// Managers.
+// These classes will manage big parts of the application and are integral.
+import BotManager from "./Bot/BotManager";
+import TalentManager from "./Talent/TalentManager";
+
 // Confidants.
 // Re-usable functionality is managed in what I'm calling Confidants for this project. Shoutouts to Persona 5!
 // Each confidant has a specific use. See each of their files for more deets.
@@ -189,6 +194,10 @@ export const Heart = {
   Sojiro: Sojiro,
   Makoto: Makoto,
   Kawakami: Kawakami,
+
+  // Managers.
+  BotManager: BotManager,
+  TalentManager: TalentManager,
 
   // Services.
   Gestalt: Gestalt,

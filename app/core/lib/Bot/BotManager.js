@@ -30,23 +30,6 @@ export default class BotManager {
   }
 
   /**
-   * Deployment handler for the BotManager.
-   *
-   * This function essentially authenticates and readies all bots.
-   *
-   * @returns {Promise.<void>}
-   */
-  static async deploy() {
-
-    // Await deployment of all bots loaded in the manager.
-    await this.deployBots();
-
-    // Some more flavor.
-    await Lavenza.success("All configured bots have been successfully deployed!");
-
-  }
-
-  /**
    * Preparation handler for the BotManager.
    *
    * Registers all bots and fires all of *their* preparation handlers.
@@ -57,10 +40,10 @@ export default class BotManager {
 
     // Await registration of all bots from the application files.
     // Upon error in registration, stop the application.
-    await this.registerBots();
+    await this.registerAllBotsInDirectory();
 
-    // Await preparation handlers of all bots loaded in the manager.
-    await this.prepareBots();
+    // We'll run preparation handlers for all bots as this should only be done once.
+    await this.prepareAllBots();
 
     // Some more flavor.
     await Lavenza.success("Bot Manager preparations complete!");
@@ -68,20 +51,68 @@ export default class BotManager {
   }
 
   /**
-   * Run deployment handlers for all bots loaded in the Manager.
+   * Execution handler for the BotManager.
+   *
+   * Deploy only the "Master" bot.
    *
    * @returns {Promise.<void>}
    */
-  static async deployBots() {
+  static async run() {
+    // Boot master bot that will manage all other bots in the codebase.
+    await this.bootMasterBot();
 
-    // Await deployment handlers for all bots.
-    await Promise.all(this.bots.map(async bot => {
+    // Some more flavor.
+    await Lavenza.success("Booted the master bot, {{bot}}!", {bot: Lavenza.Core.settings['master']});
+  }
 
-      // Await deployment handlers for a single bot.
-      await bot.deploy();
+  /**
+   * Deployment handler for the BotManager.
+   *
+   * This function essentially authenticates and readies all bots.
+   *
+   * @returns {Promise.<void>}
+   */
+  static async bootMasterBot() {
+    // Await deployment of the master bot.
+    await this.boot(Lavenza.Core.settings['master']);
+  }
 
-    }));
+  /**
+   * Run deployment handlers for all bots loaded in the Manager.
+   *
+   * @param {string} bot
+   *    The ID of the bot to deploy.
+   *
+   * @returns {Promise.<void>}
+   */
+  static async boot(bot) {
+    // Await deployment handlers for a single bot.
+    await this.bots[bot].deploy();
+  }
 
+  /**
+   * Shutdown a bot.
+   *
+   * @param {string} bot
+   *   ID of the Bot to shutdown.
+   *
+   * @returns {Promise<void>}
+   */
+  static async shutdown(bot) {
+    await this.bots[bot].shutdown();
+  }
+
+  /**
+   * Run preparation handlers for a single bot loaded in the Manager.
+   *
+   * @param {string} bot
+   *    The ID of the bot to prepare.
+   *
+   * @returns {Promise.<void>}
+   */
+  static async prepareBot(bot) {
+    // Await preparation handler for a single bot.
+    await this.bots[bot].prepare();
   }
 
   /**
@@ -89,16 +120,66 @@ export default class BotManager {
    *
    * @returns {Promise.<void>}
    */
-  static async prepareBots() {
-
+  static async prepareAllBots() {
     // Await preparation handlers for all bots.
-    await Promise.all(this.bots.map(async bot => {
-
+    await Promise.all(Object.keys(this.bots).map(async botId => {
       // Await preparation handler for a single bot.
-      await bot.prepare();
-
+      await this.bots[botId].prepare();
     }));
+  }
 
+  /**
+   * Run registration and instantiate a bot.
+   *
+   * @param {string} botId
+   *    The ID of the bot to register.
+   * @param {string} directory
+   *    Path to the directory where this bot's files are located.
+   *
+   * @returns {Promise.<void>}
+   */
+  static async registerBot(botId, directory = undefined) {
+
+    // If the directory isn't provided, we'll get it ourselves.
+    if (directory === undefined) {
+      directory = Lavenza.Paths.BOTS + '/' + botId;
+    }
+
+    // If the bot name is part of the ignored bot list, return now.
+    if (botId in this.ignoredBots) {
+      return;
+    }
+
+    // Get the config file for the bot.
+    /** @catch Continue execution. */
+    let configFilePath = directory + '/' + Lavenza.Keys.BOT_CONFIG_FILE_NAME;
+    let config = await Lavenza.Akechi.readYamlFile(configFilePath).catch(Lavenza.continue);
+
+    // If the configuration is empty, stop here.
+    // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
+    if (Lavenza.isEmpty(config)) {
+      await Lavenza.warn('Configuration file could not be loaded for following bot: {{bot}}', {bot: botId});
+      return;
+    }
+
+    // Set directory to the configuration. It's nice to have quick access to the bot folder from within the bot.
+    config.directory = directory;
+
+    // If the 'active' flag of the config is set and is not 'true', we don't activate this bot.
+    if (config.active !== undefined && config.active === false) {
+      await Lavenza.warn('The {{bot}} bot has been set to inactive. It will not be registered.', {bot: botId});
+      return;
+    }
+
+    // Instantiate and set the bot to the collection.
+    let bot = new Bot(botId, config);
+    if (bot.id === Lavenza.Core.settings['master']) {
+      bot.isMaster = true;
+    }
+    Object.assign(this.bots, {[botId]: bot});
+
+    // Print a success message.
+    await Lavenza.success('The {{bot}} bot has successfully been registered!', {bot: botId});
   }
 
   /**
@@ -111,40 +192,17 @@ export default class BotManager {
    *
    * @returns {Promise.<void>}
    */
-  static async registerBots() {
+  static async registerAllBotsInDirectory() {
 
     // Initialize variable that will contain all bots.
-    this.bots = [];
+    this.bots = {};
 
-    // Initialize the array to store bot directories.
-    let botDirectories = [];
+    // Fetch all bot directories from the 'bots' folder at the root of the application.
+    let botDirectories = await Lavenza.Akechi.getDirectoriesFrom(Lavenza.Paths.BOTS).catch(Lavenza.pocket);
 
-    // Check if specific bots were set to run in the core.
-    if (Lavenza.Core.bots) {
-
-      // Await the processing of all bots that were set to run.
-      await Promise.all(Lavenza.Core.bots.map(async bot => {
-
-        // We check if a bot directory exists for this bot. If not, we have to throw an error.
-        if (!Lavenza.Akechi.directoryExists(Lavenza.Paths.BOTS + '/' + bot)) {
-          console.log(Lavenza.Paths.BOTS + '/' + bot);
-          await Lavenza.throw(`No directory found for {{bot}}. Verify that a folder exists for this bot at /app/bots.`, {bot: bot});
-        }
-
-        // If the directory exist, we can set it up for processing later.
-        botDirectories.push(Lavenza.Paths.BOTS + '/' + bot);
-
-      })).catch(Lavenza.throw);
-
-    } else {
-
-      // Fetch all bot directories from the 'bots' folder at the root of the application.
-      botDirectories = await Lavenza.Akechi.getDirectoriesFrom(Lavenza.Paths.BOTS).catch(Lavenza.pocket);
-
-      // If for some reason, bot directories could not be loaded, we stop the app.
-      if (botDirectories === undefined) {
-        await Lavenza.throw("Other than the 'example' folder, no bot folders seem to exist in /app/bots. The whole point of this app is to run bots, so create one!");
-      }
+    // If for some reason, bot directories could not be loaded, we stop the app.
+    if (botDirectories === undefined) {
+      await Lavenza.throw("Other than the 'example' folder, no bot folders seem to exist in /app/bots. The whole point of this app is to run bots, so create one!");
     }
 
     // Loop through all directories we need to.
@@ -153,37 +211,8 @@ export default class BotManager {
       // Get the bot name. This is in fact the name of the directory.
       let name = path.basename(directory);
 
-      // If the bot name is part of the ignored bot list, return now.
-      if (name in this.ignoredBots) {
-        return;
-      }
-
-      // Get the config file for the bot.
-      /** @catch Continue execution. */
-      let configFilePath = directory + '/' + Lavenza.Keys.BOT_CONFIG_FILE_NAME;
-      let config = await Lavenza.Akechi.readYamlFile(configFilePath).catch(Lavenza.continue);
-
-      // If the configuration is empty, stop here.
-      // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
-      if (Lavenza.isEmpty(config)) {
-        await Lavenza.warn('Configuration file could not be loaded for following bot: {{bot}}', {bot: name});
-        return;
-      }
-
-      // Set directory to the configuration. It's nice to have quick access to the bot folder from within the bot.
-      config.directory = directory;
-
-      // If the 'active' flag of the config is set and is not 'true', we don't activate this bot.
-      if (config.active !== undefined && config.active === false) {
-        await Lavenza.warn('The {{bot}} bot has been set to inactive. It will not be registered.', {bot: name});
-        return;
-      }
-
-      // Instantiate and set the bot to the collection.
-      this.bots.push(new Bot(name, config));
-
-      // Print a success message.
-      await Lavenza.success('The {{bot}} bot has successfully been registered!', {bot: name});
+      // Register the bot.
+      await this.registerBot(name);
 
     }));
 

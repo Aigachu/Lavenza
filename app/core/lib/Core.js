@@ -6,11 +6,6 @@
  *
  */
 
-// Managers.
-import BotManager from "./Bot/BotManager";
-import TalentManager from "./Talent/TalentManager";
-import Gestalt from "./Gestalt/Gestalt";
-
 /**
  * Provides class for the Core of the Lavenza application.
  *
@@ -48,22 +43,29 @@ export default class Core {
    *
    * All tasks done in the EXECUTION phase are in the run() function.
    *
-   * @param {Array<string>} bots
-   *   Array of ids of bots we want to load.
-   *
    * @returns {Promise.<void>}
    */
-  static async ignite(bots = undefined) {
-
-    // If bots were provided, we set them here.
-    // If a single bot name was given through a string, we set it in an array.
-    this.bots = typeof bots === "string" ? [bots] : bots;
+  static async ignite() {
 
     // Some flavor text for the console.
     await Lavenza.warn("Initializing Lavenza (v{{version}})...", {version: this.version});
 
     // Separation.
     await Lavenza.warn("-----------------------------------------------------------");
+
+    // We'll read the settings file if it exists and load settings into our class.
+    let pathToSettings = Lavenza.Paths.BOTS + '/settings.yml';
+    if (!Lavenza.Akechi.fileExists(pathToSettings)) {
+      await Lavenza.throw(`The settings.yml file does not seem to exist in '/app/bots/settings.yml'. Please create this file using the example file found at the same location.`);
+    }
+
+    // Set settings values to the class.
+    this.settings = await Lavenza.Akechi.readYamlFile(pathToSettings);
+
+    // If a master isn't set, we shouldn't continue. A master bot must set.
+    if (Lavenza.isEmpty(this.settings['master'])) {
+      await Lavenza.throw(`There is no master bot set in your settings.yml file. A master bot must be set so the application knows which bot manages the rest. Refer to the settings.example.yml file for more details.`);
+    }
 
     /*
      * Fire necessary preparations.
@@ -77,6 +79,15 @@ export default class Core {
      */
     await this.run().catch(Lavenza.stop);
 
+  }
+
+  /**
+   * Getter for the settings property of the class.
+   *
+   * @returns {Promise<*>}
+   */
+  static async getSettings() {
+    return this.settings;
   }
 
   /**
@@ -96,19 +107,19 @@ export default class Core {
      * Run preparation handler for the Gestalt service.
      * We need to set up the database first and foremost.
      */
-    await Gestalt.prepare();
+    await Lavenza.Gestalt.prepare();
 
     // Run preparation functions for the Talent Manager.
-    await TalentManager.prepare();
+    await Lavenza.TalentManager.prepare();
 
     // Run preparation functions for the Bot Manager.
-    await BotManager.prepare();
+    await Lavenza.BotManager.prepare();
 
     /*
      * Run bootstrap handler for Gestalt.
      * This is the process that makes sure all database collections that should exist, do exist.
      */
-    await Gestalt.bootstrap();
+    await Lavenza.Gestalt.bootstrap();
 
     /*
      * Await Makoto's Preparation.
@@ -139,7 +150,7 @@ export default class Core {
     Lavenza.status("Commencing Lavenza's execution phase!");
 
     // Deploy bots from the BotManager.
-    await BotManager.deploy();
+    await Lavenza.BotManager.run();
 
     // Separation.
     await Lavenza.warn("-----------------------------------------------------------");

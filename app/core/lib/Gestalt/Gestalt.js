@@ -7,8 +7,6 @@
 
 // Imports.
 import Chronicler from './StorageService/Chronicler/Chronicler';
-import BotManager from '../Bot/BotManager';
-import TalentManager from '../Talent/TalentManager';
 
 /**
  * Gestalt manages the storage and retrieval of JSON type data.
@@ -63,42 +61,45 @@ export default class Gestalt {
     await this.createCollection('/bots');
 
     // Await bootstrapping of each bot's data.
-    await Promise.all(BotManager.bots.map(async bot => {
+    await Promise.all(Object.keys(Lavenza.BotManager.bots).map(async botId => {
+
+      // Load the bot.
+      let bot = Lavenza.BotManager.bots[botId];
 
       // Initialize the database collection for this bot if it doesn't already exist.
-      await this.createCollection(`/bots/${bot.id}`);
+      await this.createCollection(`/bots/${botId}`);
 
       // Initialize the database collection for this bot's configurations if it doesn't already exist.
-      await this.createCollection(`/bots/${bot.id}/config`);
+      await this.createCollection(`/bots/${botId}/config`);
 
       // Sync core bot config to the database.
-      await this.sync(bot.config, `/bots/${bot.id}/config/core`);
+      await this.sync(bot.config, `/bots/${botId}/config/core`);
 
       // Initialize i18n database collection for this bot if it doesn't already exist.
-      await this.createCollection(`/i18n/${bot.id}`);
+      await this.createCollection(`/i18n/${botId}`);
 
       // Initialize i18n database collection for this bot's clients configurations if it doesn't already exist.
-      await this.createCollection(`/i18n/${bot.id}/clients`);
+      await this.createCollection(`/i18n/${botId}/clients`);
 
       // Create a database collection for the talents granted to a bot.
-      await this.createCollection(`/bots/${bot.id}/talents`);
+      await this.createCollection(`/bots/${botId}/talents`);
 
       // Await the bootstrapping of each talent's data.
       await Promise.all(bot.talents.map(async talentKey => {
 
         // Load Talent from the TalentManager.
-        let talent = TalentManager.talents[talentKey];
+        let talent = Lavenza.TalentManager.talents[talentKey];
 
         // Create a database collection for the talents granted to a Bot.
-        await this.createCollection(`/bots/${bot.id}/talents/${talent.id}`);
+        await this.createCollection(`/bots/${botId}/talents/${talent.id}`);
 
         // Await the synchronization of data between the Talent's default configuration and the database configuration.
-        await this.sync(talent.config, `/bots/${bot.id}/talents/${talent.id}/config`);
+        await this.sync(talent.config, `/bots/${botId}/talents/${talent.id}/config`);
 
       }));
 
       // Create a database collection for Commands belonging to a Bot.
-      await this.createCollection(`/bots/${bot.id}/commands`);
+      await this.createCollection(`/bots/${botId}/commands`);
 
       // Await the bootstrapping of Commands data.
       await Promise.all(Object.keys(bot.commands).map(async commandKey => {
@@ -107,15 +108,15 @@ export default class Gestalt {
         let command = bot.commands[commandKey];
 
         // Create a database collection for commands belonging to a Bot.
-        await this.createCollection(`/bots/${bot.id}/commands/${command.id}`);
+        await this.createCollection(`/bots/${botId}/commands/${command.id}`);
 
         // Await the synchronization of data between the Command's default configuration and the database configuration.
-        await this.sync(command.config, `/bots/${bot.id}/commands/${command.id}/config`);
+        await this.sync(command.config, `/bots/${botId}/commands/${command.id}/config`);
 
       }));
 
       // Create a database collection for the clients belonging to a Bot.
-      await this.createCollection(`/bots/${bot.id}/clients`);
+      await this.createCollection(`/bots/${botId}/clients`);
 
     }));
 
@@ -123,10 +124,10 @@ export default class Gestalt {
     await this.createCollection('/talents');
 
     // Await bootstrapping of each talent's data.
-    await Promise.all(Object.keys(TalentManager.talents).map(async talentKey => {
+    await Promise.all(Object.keys(Lavenza.TalentManager.talents).map(async talentKey => {
 
       // Get the actual talent.
-      let talent = TalentManager.talents[talentKey];
+      let talent = Lavenza.TalentManager.talents[talentKey];
 
       // Initialize the database collection for this talent if it doesn't already exist.
       await this.createCollection(`/talents/${talent.id}`);

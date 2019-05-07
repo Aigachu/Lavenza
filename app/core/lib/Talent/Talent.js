@@ -49,13 +49,16 @@ export default class Talent {
     this.directory = config.directory;
     this.databases = {};
 
+    // Set the path to the talent's global database.
+    this.databases.global = `/talents/${this.id}`;
+
     // Await the process of loading commands.
     /** @catch Continue execution. */
-    await this.loadCommands().catch(Lavenza.continue);
+    await this.loadCommands();
 
     // Await the process of loading listeners.
     /** @catch Pocket error and continue. */
-    await this.loadListeners().catch(Lavenza.pocket);
+    await this.loadListeners();
 
   }
 
@@ -70,9 +73,6 @@ export default class Talent {
    * @returns {Promise<void>}
    */
   static async initialize(bot) {
-
-    // Set the path to the talent's global database.
-    this.databases.global = `/talents/${this.id}`;
 
     // Set the path to the talent's bot specific database.
     this.databases[bot.id] = `/bots/${bot.id}/talents/${this.id}`;
@@ -119,7 +119,8 @@ export default class Talent {
     // We'll throw an error for this function if the 'Commands' directory doesn't exist or is empty.
     // This error should be caught and handled above.
     if (Lavenza.isEmpty(commandDirectories)) {
-      await Lavenza.throw('No commands were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
+      // await Lavenza.warn('No commands were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
+      return;
     }
 
     // We'll now act on each command directory found.
@@ -196,7 +197,8 @@ export default class Talent {
     // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.
     // This error should be caught and handled above.
     if (Lavenza.isEmpty(listenerClasses)) {
-      await Lavenza.throw('No listeners were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
+      // await Lavenza.warn('No listeners were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
+      return;
     }
 
     // Await the loading of all listener classes.

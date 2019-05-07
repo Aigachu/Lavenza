@@ -43,6 +43,7 @@ export default class Bot {
     this.commandAliases = {};
     this.listeners = [];
     this.prompts = [];
+    this.isMaster = false;
   }
 
   /**
@@ -66,6 +67,18 @@ export default class Bot {
     // Await talent initializations for this bot.
     // We do this AFTER authenticating clients. Some talents might need client info to perform their initializations.
     await this.initializeTalentsForBot();
+
+  }
+
+  /**
+   * Shutdown the bot, disconnecting it from all clients.
+   *
+   * @returns {Promise<void>}
+   */
+  async shutdown() {
+
+    // Disconnect the bot from all clients.
+    await this.disconnectClients();
 
   }
 
@@ -108,7 +121,7 @@ export default class Bot {
       let config = await this.getActiveClientConfig(clientKey);
 
       // Depending on the type of client, we act accordingly.
-      switch(clientKey) {
+      switch (clientKey) {
 
         // In Discord, we fetch the architect's user using the ID.
         case Lavenza.ClientTypes.Discord: {
@@ -178,7 +191,7 @@ export default class Bot {
     let pathToClientConfig = `${this.directory}/${clientType}.yml`;
 
     // Attempt to fetch client configuration.
-    if (!await Lavenza.Akechi.fileExists(pathToClientConfig)){
+    if (!await Lavenza.Akechi.fileExists(pathToClientConfig)) {
       return undefined;
     }
 
@@ -196,7 +209,7 @@ export default class Bot {
    * @returns {Promise<void>}
    *   The requested client.
    */
-   async getActiveClientConfig(clientType) {
+  async getActiveClientConfig(clientType) {
 
     // Attempt to get the active configuration from the database.
     let activeConfig = await Lavenza.Gestalt.get(`/bots/${this.id}/config/${clientType}`);
@@ -245,6 +258,69 @@ export default class Bot {
     // This completes the list of talents assigned to the bot.
     this.talents = this.config.talents;
 
+  }
+
+  /**
+   * Validates the list of custom talents configured in the bot's config file.
+   *
+   * If a talent is in the list, but does not exist, it will be removed from the configuration list.
+   *
+   * @returns {Promise.<void>}
+   */
+  async validateTalents() {
+
+    // If this is the Master bot, we will grant the Master talent.
+    if (this.isMaster && Lavenza.isEmpty(this.talents['master'])) {
+      this.config.talents.push('master');
+    }
+
+    // Alternatively, we'll do a quick check to see if someone is trying to set the master talent in config.
+    // This talent should not be set here, and instead is automatically assigned to the master bot.
+    if (!Lavenza.isEmpty(this.config.talents['master']) && !this.isMaster) {
+      this.config.talents = Lavenza.removeFromArray(this.config.talents, 'master');
+    }
+
+    // Await the processing of all talents in the bot's config object.
+    await Promise.all(this.config.talents.map(async (talentKey) => {
+
+      // Then, we'll check if this talent already exists in the Manager.
+      // This happens if another bot already loaded it.
+      // If it exists, we're good.
+      if (!Lavenza.isEmpty(TalentManager.talents[talentKey])) {
+        return;
+      }
+
+      // Await the loading of the talent.
+      // If it the load fails, we'll remove the talent from the bot's configuration.
+      /** @catch Remove the talent from the configuration list. */
+      await TalentManager.loadTalent(talentKey).catch(async error => {
+
+        this.config.talents = Lavenza.removeFromArray(this.config.talents, talentKey);
+
+        // Send a warning message to the console.
+        await Lavenza.warn('Error occurred while loading the {{talent}} talent...', {talent: talentKey});
+        await Lavenza.warn(error.message);
+
+      });
+
+      // Check talent's configuration to see if dependencies are loaded into this bot.
+      await Promise.all(TalentManager.talents[talentKey].config.dependencies.map(async (dependency) => {
+
+        // If the dependency isn't found in th`is bot's config, we shouldn't load this talent.
+        if (!this.config.talents.includes(dependency)) {
+
+          // Send a warning to the console.
+          await Lavenza.warn(`The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.`, {
+            talent: talentKey,
+            parent: dependency,
+            bot: this.id
+          });
+
+          // Remove this talent from the bot.
+          this.config.talents = Lavenza.removeFromArray(this.config.talents, talentKey);
+        }
+      }));
+    }));
   }
 
   /**
@@ -328,61 +404,6 @@ export default class Bot {
 
     }));
 
-  }
-
-  /**
-   * Validates the list of custom talents configured in the bot's config file.
-   *
-   * If a talent is in the list, but does not exist, it will be removed from the configuration list.
-   *
-   * @returns {Promise.<void>}
-   */
-  async validateTalents() {
-
-    // Await the processing of all talents in the bot's config object.
-    await Promise.all(this.config.talents.map(async (talentKey) => {
-
-      // First, we'll check if this talent already exists in the Manager.
-      // This happens if another bot already loaded it.
-      // If it exists, we're good.
-      if (!Lavenza.isEmpty(TalentManager.talents[talentKey])) {
-        return;
-      }
-
-      // Await the loading of the talent.
-      // If it the load fails, we'll remove the talent from the bot's configuration.
-      /** @catch Remove the talent from the configuration list. */
-      await TalentManager.loadTalent(talentKey).catch(async error => {
-
-        this.config.talents = Lavenza.removeFromArray(this.config.talents, talentKey);
-
-        // Send a warning message to the console.
-        await Lavenza.warn('Error occurred while loading the {{talent}} talent...', {talent: talentKey});
-        await Lavenza.warn(error.message);
-
-      });
-
-      // Check talent's configuration to see if dependencies are loaded into this bot.
-      await Promise.all(TalentManager.talents[talentKey].config.dependencies.map(async (dependency) => {
-
-        // If the dependency isn't found in th`is bot's config, we shouldn't load this talent.
-        if (!this.config.talents.includes(dependency)) {
-
-          // Send a warning to the console.
-          await Lavenza.warn(`The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.`, {
-            talent: talentKey,
-            parent: dependency,
-            bot: this.id
-          });
-
-          // Remove this talent from the bot.
-          this.config.talents = Lavenza.removeFromArray(this.config.talents, talentKey);
-
-        }
-
-      }));
-
-    }));
   }
 
   /**
@@ -525,12 +546,9 @@ export default class Bot {
    */
   async authenticateClients() {
 
-    // Get all keys from the client configuration, that should match the names defined in ClientTypes.
-    let clientKeys = Object.keys(this.clients);
-
     // Await the authentication of the clients linked to the bot.
     /** @catch Continue execution. */
-    await Promise.all(clientKeys.map(async key => {
+    await Promise.all(Object.keys(this.clients).map(async key => {
 
       // Await authentication of the bot.
       /** @catch Continue execution. */
@@ -538,6 +556,25 @@ export default class Bot {
 
       // Run appropriate bootstrapping depending on the client.
       await Lavenza.Gestalt.bootstrapClientDatabaseForBot(this, key);
+
+    }));
+
+  }
+
+  /**
+   * Disconnect all of the clients in this bot.
+   *
+   * @returns {Promise.<void>}
+   */
+  async disconnectClients() {
+
+    // Await the authentication of the clients linked to the bot.
+    /** @catch Continue execution. */
+    await Promise.all(Object.keys(this.clients).map(async key => {
+
+      // Await authentication of the bot.
+      /** @catch Continue execution. */
+      await this.clients[key].disconnect();
 
     }));
 
@@ -563,7 +600,10 @@ export default class Bot {
 
       if (Lavenza.isEmpty(clientConfig)) {
         await Lavenza.warn('Configuration file could not be loaded for the {{client}} client in {{bot}}. This client will not be instantiated.' +
-          'To create a configuration file, you can copy the ones found in the "example" bot folder.', {client: id, bot: this.id});
+          'To create a configuration file, you can copy the ones found in the "example" bot folder.', {
+          client: id,
+          bot: this.id
+        });
         return;
       }
 
@@ -572,6 +612,21 @@ export default class Bot {
       this.clients[id] = await ClientFactory.build(id, clientConfig, this);
 
     }));
+
+  }
+
+  /**
+   * Disconnect from a determined client on this bot.
+   *
+   * @param {string} client
+   *   The client ID to disconnect from.
+   *
+   * @returns {Promise<void>}
+   */
+  async disconnectClient(client) {
+
+    // Simply call the client's disconnect function.
+    await this.getClient(client).disconnect();
 
   }
 

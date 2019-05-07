@@ -8,25 +8,21 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-// Includes Babelify.
-// This file will use Babel to compile all of our ES6 code into code that NodeJS can run properly.
+// Compile all of our ES6 code into code that NodeJS can run properly.
 // Since we want a head start on ES6, we use this! NodeJS is not fully compatible with ES6 quite yet.
-require('./core/includes/babelify');
+// Transpile all imported code following this line with babel and use 'env' (aka ES6) preset.
+require('babel-register')({
+  presets: [ ["env", { "targets": { "node": "current" } }] ]
+});
 
-// Load CLI arguments.
-let argv = require('minimist')(process.argv.slice(2));
-
-// If a bot is added in the arguments, we get it here.
-let bot = undefined;
-if ('bot' in argv) {
-  bot = argv['bot'];
-}
+// Require Babel Polyfill.
+require("babel-polyfill");
 
 // Load Lavenza module's core.
 /** @see ./src/Heart.js */
 const Lavenza = require('./').Heart;
 
 // Ignite Lavenza...Let's get this going!
-Lavenza.Core.ignite(bot).then(async () => {
+Lavenza.Core.ignite().then(async () => {
   await Lavenza.warn('Lavenza is now running!');
-});
+}).catch(Lavenza.stop);
