@@ -86,7 +86,7 @@ export default class RollDice extends Lavenza.Command {
 
     // Invoke Client Handlers to determine what to do in each client.
     /** @see ./handlers */
-    await this.handlers(resonance, {
+    await this.fireClientHandlers(resonance, {
         roll: roll,
         delay: rand.timeout
       }

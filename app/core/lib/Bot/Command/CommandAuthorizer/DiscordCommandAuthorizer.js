@@ -142,7 +142,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       }
 
       // Attempt to find the argument in the configurations.
-      let argConfig = configArgs.find(configArg => configArg.key === arg);
+      let argConfig = configArgs.find(configArg => configArg.key === arg || configArg['aliases'].includes(arg));
 
       if (Lavenza.isEmpty(argConfig)) {
         await Lavenza.throw(`{{arg}} is not a valid argument for this command.`, {arg: arg});

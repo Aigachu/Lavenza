@@ -11,6 +11,8 @@ import ResonanceFactory from './Resonance/ResonanceFactory'
 import TalentManager from '../Talent/TalentManager';
 import CommandListener from './Command/CommandListener/CommandListener';
 import PromptFactory from './Prompt/PromptFactory';
+import PromptException from "./Prompt/Exception/PromptException";
+import PromptExceptionTypes from "./Prompt/Exception/PromptExceptionTypes";
 
 /**
  * Provides a class for Bots.
@@ -43,6 +45,7 @@ export default class Bot {
     this.commandAliases = {};
     this.listeners = [];
     this.prompts = [];
+    this.architect = {};
     this.maintenance = false;
     this.isMaster = false;
   }
@@ -111,9 +114,6 @@ export default class Bot {
    * @returns {Promise<void>}
    */
   async materializeArchitect() {
-
-    // Initialize architect object.
-    this.architect = {};
 
     // Await processing of all clients.
     await Promise.all(Object.keys(this.clients).map(async clientKey => {
@@ -464,8 +464,6 @@ export default class Bot {
    *
    * @param {*} user
    *   User that is being prompted.
-   * @param {String} request
-   *   Message that will be sent describing the requested information.
    * @param {*} line
    *   The communication line for this prompt. Basically, where we want the interaction to happen.
    * @param {Lavenza.Resonance|Resonance} resonance
@@ -474,25 +472,25 @@ export default class Bot {
    *   The lifespan of this Prompt.
    *   If the bot doesn't receive an answer in time, we cancel the prompt.
    *   10 seconds is the average time a white boy waits for a reply from a girl he's flirting with after sending her a
-   *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO!
+   *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO! Thank you
+   *   AVION for this wonderful advice!
    * @param {*} onResponse
    *   The callback function that runs once a response has been heard.
+   * @param {*} onError
+   *   The callback function that runs once a failure occurs. Failure includes not getting a response.
    *
    * @returns {Promise<void>}
    */
-  async prompt(user, request, line, resonance, lifespan, onResponse) {
+  async prompt(user, line, resonance, lifespan, onResponse, onError = (e) => { console.log(e) }) {
 
     // Create the new prompt using the factory.
-    let prompt = await PromptFactory.build(user, request, line, resonance, onResponse, this);
+    let prompt = await PromptFactory.build(user, line, resonance, lifespan, onResponse, onError, this);
 
     // Set the prompt to the bot.
     this.prompts.push(prompt);
 
     // Await resolution of the prompt.
-    // If we go past the lifespan, the prompt will throw an error. This error must be caught and handled accordingly.
-    // Basically, when implementing this method elsewhere, catch the error and do whatever you want with it.
-    /** @catch Throw the error for specific case handling. */
-    await prompt.await(lifespan).catch(await Lavenza.throw);
+    await prompt.await().catch(Lavenza.pocket);
 
   }
 

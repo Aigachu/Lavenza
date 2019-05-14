@@ -5,6 +5,9 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Imports.
+import GuessGameArgHandler from "./src/ArgHandler/GuessGameArgHandler";
+
 /**
  * Coinflip command.
  *
@@ -13,11 +16,6 @@
 export default class Coinflip extends Lavenza.Command {
 
   /**
-   * This is the static build function of the command.
-   *
-   * You can treat this as a constructor. Assign any properties that the command may
-   * use!
-   *
    * @inheritDoc
    */
   static async build(config, talent) {
@@ -25,36 +23,18 @@ export default class Coinflip extends Lavenza.Command {
     // The build function must always run the parent's build function! Don't remove this line.
     await super.build(config, talent);
 
-    // This command will have different types of flips. It will be selected by random.
-    // Each 'flip type' will take different amounts of time and print different messages.
-    // We'll store these in an array.
-    this.flips = [];
-    this.flips.push({
-      message: "Just a moment...",
-      timeout: 2
-    });
-    this.flips.push({
-      message: "Coinflip emulation has begun. Looks like...",
-      timeout: 1
-    });
-    this.flips.push({
-      message: `Coinflip emulation has begun. The coin spins. Wait for it...`,
-      timeout: 5
-    });
+    // Maximum number of coins to flip.
+    this.maximumNumberOfCoins = 5;
 
   }
 
   /**
-   * Get a random answer for 8Ball to say.
+   * Flip a coin and return Heads or Tails.
    *
    * @returns {Promise<string>}
-   *   The answer, fetched randomly from the list of answers.
    */
-  static async getRandomFlip() {
-
-    // We'll use a random number for the array key.
-    return this.flips[Math.floor(Math.random() * this.flips.length)];
-
+  static flipACoin() {
+    return Math.floor(Math.random() * 2) === 0 ? 'Tails' : 'Heads';
   }
 
   /**
@@ -62,21 +42,92 @@ export default class Coinflip extends Lavenza.Command {
    */
   static async execute(resonance) {
 
-    // Get the result of the flip. Returns either 0 or 1.
-    let result = Math.floor(Math.random() * 2) === 0 ? 'Tails' : 'Heads';
+    // If the 'd' or 'duel' arguments are used, we fire the DuelArgHandler handler.
+    if ('g' in resonance.order.args || 'guess' in resonance.order.args || 'guessgame' in resonance.order.args) {
+      let input = resonance.order.args.d || resonance.order.args['guess'] || resonance.order.args['guessgame'];
+      await GuessGameArgHandler.handle(this, resonance, input).catch(Lavenza.stop);
+      return;
+    }
 
-    // The 'rand' variable will store the flip type.
-    // We get it by generating a random number when choosing which key to get from the array.
-    let rand = await this.getRandomFlip();
+    // Here we go forth with the regular execution of the command.
+    // By default, the user is only flipping 1 coin.
+    let numberOfCoins = 1;
 
-    // Invoke Client Handlers to determine what to do in each client.
-    /** @see ./handlers */
-    await this.handlers(resonance, {
-        initialMessage: rand.message,
-        result: result,
-        delay: rand.timeout
+    // If the 'c' or 'coins' argument is used, we change the number of coins.
+    if ('c' in resonance.order.args || !isNaN(resonance.order.rawContent) && !Lavenza.isEmpty(resonance.order.rawContent)) {
+      // Determine what we're working with.
+      let providedNumber = resonance.order.args.c || parseInt(resonance.order.rawContent);
+
+      // If the provided count isn't a number, we can't go through with this.
+      if (isNaN(providedNumber) || !Number.isInteger(providedNumber)) {
+        await resonance.__reply(`Uh...Sorry {{user}}, but this doesn't seem to be a valid number of coins to flip.`, {user: resonance.author}, '::COINFLIP-INVALID_COIN_COUNT');
+        return;
       }
-    );
+
+      // We'll set a maximum. On va se calmer la...
+      if (providedNumber > this.maximumNumberOfCoins) {
+        await resonance.__reply(`Whoa {{user}}! Let's not exaggerate now haha. Maximum of {{max}} coins okay?!`, {user: resonance.author, max: await Lavenza.bold(this.maximumNumberOfCoins)}, '::COINFLIP-MAX_COIN_COUNT_SURPASSED');
+        return;
+      }
+
+      // Otherwise, we should be good to adjust the number of coins.
+      numberOfCoins = providedNumber;
+    }
+
+    // Now we'll work out flipping the coins.
+    // If we're only flipping 1 coin, we simply do it.
+    if (numberOfCoins === 1) {
+      // Flip the coin already and get the result.
+      let result = this.flipACoin();
+
+      // Type for a second for some added effect!
+      await this.resonance.typeFor(1, this.resonance.channel);
+
+      // First, we'll send the flip message.
+      await this.resonance.__reply(`Okay {{user}}! Flipping a coin!`, {user: this.resonance.author}, '::COINFLIP-FLIP_MESSAGE');
+
+      // Type for 2 seconds.
+      await this.resonance.typeFor(2, this.resonance.channel);
+
+      // Send the result!
+      await this.resonance.__reply(`{{user}}, you obtained {{result}}!`, {user: this.resonance.author, result: await Lavenza.bold(result)}, '::COINFLIP-FLIP_RESULT');
+
+      // End execution here.
+      return;
+    }
+
+    // Alternatively, when there are multiple results, we calculate each result.
+    let results = {
+      tails: 0,
+      heads: 0,
+    };
+
+    // Flip a coin for the number of times defined.
+    for (let i = 0; i < numberOfCoins; i++) {
+      // Flip a coin.
+      if (this.flipACoin() === 'Heads') {
+        results.heads++;
+      } else {
+        results.tails++;
+      }
+    }
+
+    // Alternatively, when we have multiple results...
+    // Type for a second for some added effect!
+    await this.resonance.client.typeFor(1, this.resonance.channel);
+
+    // First, we'll send the flip message.
+    await this.resonance.__reply(`Okay {{user}}! Flipping {{count}} coins. This will only take a moment...`, {user: this.resonance.author, count: await Lavenza.bold(numberOfCoins)}, '::COINFLIP-FLIP_MESSAGE_MULTIPLE');
+
+    // Type for 2 seconds.
+    await this.resonance.client.typeFor(4, this.resonance.channel);
+
+    // Send the result!
+    await this.resonance.__reply(`{{user}}, you obtained the following results:\n\nTails: {{tails}}\nHeads: {{heads}}`, {
+      user: this.resonance.author,
+      tails: await Lavenza.bold(results.tails),
+      heads: await Lavenza.bold(results.heads)
+    }, '::COINFLIP-FLIP_RESULT_MULTIPLE');
 
   }
 

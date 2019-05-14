@@ -26,4 +26,13 @@ export default class TwitchUser {
     this.displayName = displayName;
   }
 
+  /**
+   * Return a string representation of a TwitchUser.
+   *
+   * @returns {username}
+   */
+  toString() {
+    return this.displayName;
+  }
+
 }

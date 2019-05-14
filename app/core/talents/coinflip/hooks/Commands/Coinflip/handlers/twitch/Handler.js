@@ -13,27 +13,9 @@
 export default class Handler extends Lavenza.CommandClientHandler {
 
   /**
-   * Execute this handler's tasks.
-   *
    * @inheritDoc
    */
   async execute(data = {}) {
-
-    // Build the response, with translations.
-    let response = await Lavenza.__(`{{author}} obtained {{result}}!`, {
-      author: this.resonance.message.author.username,
-      result: data.result
-    }, this.resonance.locale);
-
-    // Send initial message.
-    // We modify it to give it a bit of Markdown flavor.
-    await this.resonance.__reply(data.initialMessage);
-
-    // Wait for the delay.
-    await Lavenza.wait(data.delay);
-
-    // Send the result.
-    await this.resonance.reply(response);
 
   }
 

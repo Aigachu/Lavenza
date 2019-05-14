@@ -16,8 +16,8 @@ export default class DiscordPrompt extends Prompt {
   /**
    * @inheritDoc
    */
-  constructor(user, request, line, resonance, onResponse, bot) {
-    super(user, request, line, resonance, onResponse, bot);
+  constructor(user, line, resonance, lifespan, onResponse, onError, bot) {
+    super(user, line, resonance, lifespan, onResponse, onError, bot);
   }
 
   /**
@@ -27,16 +27,6 @@ export default class DiscordPrompt extends Prompt {
 
     // In Discord, we wait for the next message that comes from the author, in the configured 'line'.
     return resonance.message.channel.id === this.line.id && resonance.message.author.id === this.user.id;
-
-  }
-
-  /**
-   * @inheritDoc
-   */
-  async prompt() {
-
-    // In discord, the line is always a channel. We send the request message there.
-    await this.resonance.send(this.line, this.request);
 
   }
 

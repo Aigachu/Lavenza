@@ -39,7 +39,7 @@ export default class Remind extends Lavenza.Command {
 
     // First, we want to parse the reminder text.
     // let reminder = await parseReminder('remind ' + resonance.order.rawContent);
-    let reminder = await this.handlers(resonance,{info: parseReminder('remind ' + resonance.order.rawContent)}, 'parseReminder');
+    let reminder = await this.fireClientHandlers(resonance,{info: parseReminder('remind ' + resonance.order.rawContent)}, 'parseReminder');
 
     // If the reminder is null, we don't do anything.
     if (reminder === null) {

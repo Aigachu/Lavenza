@@ -94,7 +94,7 @@ export default class TalentManager {
 
     // Get the info file for the talent.
     /** @catch Pocket error. */
-    let configFilePath = talentDirectoryPath + '/' + key + '.config.yml';
+    let configFilePath = talentDirectoryPath + '/config.yml';
     let config = await Lavenza.Akechi.readYamlFile(configFilePath).catch(Lavenza.continue);
 
     // If the info is empty, we gotta stop here. They are mandatory.

@@ -7,6 +7,8 @@
 
 // Modules.
 import EventEmitter from 'events';
+import PromptException from "./Exception/PromptException";
+import PromptExceptionTypes from "./Exception/PromptExceptionTypes";
 
 /**
  * Provides a base class for Prompts.
@@ -20,26 +22,34 @@ export default class Prompt {
    *
    * @param {*} user
    *   User that is being prompted.
-   * @param {String} request
-   *   Message that will be sent describing the requested information.
    * @param {*} line
    *   The communication line for this prompt. Basically, where we want the interaction to happen.
    * @param {Lavenza.Resonance|Resonance} resonance
    *   The Resonance tied to this prompt.
+   * @param {int} lifespan
+   *   The lifespan of this Prompt.
+   *   If the bot doesn't receive an answer in time, we cancel the prompt.
+   *   10 seconds is the average time a white boy waits for a reply from a girl he's flirting with after sending her a
+   *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO!
    * @param {*} onResponse
    *   The callback function that runs once a response has been heard.
+   * @param {*} onError
+   *   The callback function that runs once a failure occurs. Failure includes not getting a response.
    * @param {Bot} bot
    *   The Bot this prompt is being created for.
    */
-  constructor(user, request, line, resonance, onResponse, bot) {
-    this.request = request;
+  constructor(user, line, resonance, lifespan, onResponse, onError, bot) {
+    this.user = user;
     this.line = line;
     this.resonance = resonance;
+    this.lifespan = lifespan;
     this.requester = resonance.author;
-    this.user = user;
     this.onResponse = onResponse;
+    this.onError = onError;
     this.bot = bot;
     this.ee = new EventEmitter();
+    this.timer = null;
+    this.resetCount = 0;
   }
 
   /**
@@ -64,13 +74,8 @@ export default class Prompt {
     if (await this.condition(resonance)) {
 
       // Emit the event that will alert the Prompt that it should be resolved.
-      this.ee.emit('prompt-response');
+      await this.ee.emit('prompt-response', resonance);
 
-      // Fire the callback.
-      this.onResponse(resonance, this);
-
-      // Disable this prompt since it's resolved.
-      await this.disable();
     }
   }
 
@@ -80,32 +85,42 @@ export default class Prompt {
    * If the prompt doesn't get resolved by the user within the lifespan, it will
    * cancel itself. Otherwise, after resolution, we clear the awaiting status.
    *
-   * @param {int} seconds
-   *   Amount of time to wait for an answer, in seconds.
-   *
    * @returns {Promise<any>}
    *   Resolution of the prompt, or an error.
    */
-  await(seconds) {
+  await() {
 
     // We manage the Promise here.
     return new Promise((resolve, reject) => {
 
       // Set the bomb. We'll destroy the prompt if it takes too long to execute.
-      let timer = setTimeout(async () => {
+      this.timer = setTimeout(async () => {
 
         // Check if the prompt still exists after the time has elapsed.
         if (this.bot.prompts.includes(this)) {
           // If the lifespan depletes, we remove the prompt.
           await this.disable();
-          reject('Prompt failed to complete in time.');
+          let exception = new PromptException(PromptExceptionTypes.NO_RESPONSE, 'No response was provided in the time given. Firing error handler.');
+          await this.onError(exception);
+          reject();
         }
 
-      }, seconds * 1000);
+      }, this.lifespan * 1000);
 
       // If we get a response, we clear the bomb and return early.
-      this.ee.on('prompt-response', () => {
-        clearTimeout(timer);
+      this.ee.on('prompt-response', async (resonance) => {
+
+        // Clear timeouts and event listeners since we got a response.
+        await this.clearTimer();
+        await this.clearListeners();
+
+        // Fire the callback.
+        await this.onResponse(resonance, this).catch(async (e) => {
+          let exception = new PromptException(PromptExceptionTypes.MISC, e);
+          await this.onError(exception);
+        });
+
+        await this.disable();
         resolve();
       });
 
@@ -114,12 +129,64 @@ export default class Prompt {
   }
 
   /**
+   * Clear the timer attached to this prompt.
+   *
+   * @returns {Promise<void>}
+   */
+  async clearTimer() {
+    await clearTimeout(this.timer);
+  }
+
+  /**
+   * Clear all event listeners in this prompt's event emitter.
+   *
+   * @returns {Promise<void>}
+   */
+  async clearListeners() {
+    await this.ee.removeAllListeners();
+  }
+
+  /**
+   * Resets the prompt to listen for another message.
+   *
+   * This can be useful in situations where you want to try reading the input again.
+   *
+   * @returns {Promise<void>}
+   */
+  async reset({error = ''}) {
+    if (this.resetCount === 2) {
+      await this.error(PromptExceptionTypes.MAX_RESET_EXCEEDED);
+      return;
+    }
+    if (!Lavenza.isEmpty(error)) {
+      await this.error(error);
+    }
+    this.resetCount++;
+    await this.await().catch(Lavenza.pocket);
+  }
+
+  /**
    * Disable this prompt.
    *
    * @returns {Promise<void>}
    */
   async disable() {
+    await this.clearTimer();
+    await this.clearListeners();
     await this.bot.removePrompt(this);
+  }
+
+  /**
+   * Send an error to the error handler for this prompt.
+   *
+   * @param {string} type
+   *   Type of PromptException to fire.
+   *
+   * @returns {Promise<void>}
+   */
+  async error (type) {
+    let exception = new PromptException(type);
+    await this.onError(exception);
   }
 
   /**
@@ -131,14 +198,4 @@ export default class Prompt {
     await Lavenza.throw('This method should not have been called. A Prompt acts differently depending on the client it is created for. Please create a Prompt that applies to the client you are in when calling this.');
   }
 
-  /**
-   * Trigger the prompt message. Read this one as the verb.
-   *
-   * This is an abstract method.
-   *
-   * @returns {Promise<void>}
-   */
-  async prompt() {
-    await Lavenza.throw('This method should not have been called. A Prompt acts differently depending on the client it is created for. Please create a Prompt that applies to the client you are in when calling this.');
-  }
 }

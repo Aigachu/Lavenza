@@ -96,7 +96,7 @@ export default class Command {
   static async getClientConfig(clientType) {
 
     // Determine path to client configuration.
-    let pathToClientConfig = `${this.directory}/${this.id}.${clientType}.yml`;
+    let pathToClientConfig = `${this.directory}/${clientType}.yml`;
 
     // Attempt to fetch client configuration.
     if (!await Lavenza.Akechi.fileExists(pathToClientConfig)){
@@ -145,7 +145,7 @@ export default class Command {
   static async getParameterConfig() {
 
     // Determine path to client configuration.
-    let pathToParameterConfig = `${this.directory}/${this.id}.parameters.yml`;
+    let pathToParameterConfig = `${this.directory}/parameters.yml`;
 
     // Attempt to fetch client configuration.
     if (!await Lavenza.Akechi.fileExists(pathToParameterConfig)){
@@ -192,7 +192,7 @@ export default class Command {
    *   The method to run on the handler. By default, it will run the execute method in the handler class.
    * @returns {Promise<void>}
    */
-  static async handlers(resonance, data, method = 'execute') {
+  static async fireClientHandlers(resonance, data, method = 'execute') {
 
     // If the second provided parameter is a string, this means it's the method we want to run, and data is null.
     if (typeof data === 'string') {

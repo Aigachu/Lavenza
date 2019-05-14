@@ -120,4 +120,15 @@ export default class TwitchResonance extends Resonance {
     return this.message.channel.type === "whisper" ? 'private' : 'public';
   }
 
+  /**
+   * Emulate the bot typing for a given amount of seconds.
+   *
+   * In the case of Twitch, we simply wait for the amount of seconds, as Twitch doesn't have typing notifiers.
+   *
+   * @inheritDoc
+   */
+  async typeFor(seconds, destination = undefined) {
+    return Lavenza.wait(seconds);
+  }
+
 }

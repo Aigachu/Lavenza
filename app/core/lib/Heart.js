@@ -232,6 +232,7 @@ export const Heart = {
   bold: Kawakami.bold,
   italics: Kawakami.italics,
   code: Kawakami.code,
+  personalize: Yoshida.getPersonalization,
 
   // Keys.
   Keys: Keys,

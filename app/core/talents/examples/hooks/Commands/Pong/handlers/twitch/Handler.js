@@ -19,7 +19,7 @@ export default class Handler extends Lavenza.CommandClientHandler {
    */
   async execute(data = {}) {
 
-    // Example of accessing the data that was passed in the this.handlers() function call in the command.
+    // Example of accessing the data that was passed in the this.fireClientHandlers() function call in the command.
     // It'all be found in the data variable.
     // In the case of this example, data.hello should be accessible here.
     // console.log(data);

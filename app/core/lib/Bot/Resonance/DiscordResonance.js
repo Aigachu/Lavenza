@@ -105,4 +105,15 @@ export default class DiscordResonance extends Resonance {
     return this.message.channel.type === "dm" ? 'private' : 'public';
   }
 
+  /**
+   * Emulate the bot typing for a given amount of seconds.
+   *
+   * In the case of Discord, we simply fire the client's typeFor function.
+   *
+   * @inheritDoc
+   */
+  async typeFor(seconds, destination) {
+    return this.client.typeFor(seconds, destination);
+  }
+
 }

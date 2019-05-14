@@ -94,7 +94,7 @@ export default class Sojiro {
         // i.e. __("Hello", 'en')
         // i.e. __("Hello", 'en', 'PING_RESPONSE')
         if (typeof parameters[1] === 'string') {
-          // Tags can't be less than 4 characters. So if the string here is less than 4 characters, it's a locale.
+          // Tags always start with '::'. So if this parameter doesn't start with that, we know a locale is being set.
           if (!parameters[1].startsWith('::')) {
             parsed.locale = parameters[1];
             parsed.tag = parameters[2] || undefined;
@@ -106,14 +106,14 @@ export default class Sojiro {
           }
         }
         // Otherwise, the replacers are most likely set in the second parameter as an object, and the locale in the
-        // third. If there's a tag, it'll be in the fourth.
+        // third. If there's a tag, it'll be in the third or fourth depending on if a locale is entered.
         // i.e. __("Hello {{name}}", {name: 'Kyle'}, 'en')
         // i.e. __("Hello {{name}}", {name: 'Kyle'}, 'en', 'PING_RESPONSE')
         else {
           parsed.replacers = parameters[1];
           if (parameters[2] !== undefined) {
             if (typeof parameters[2] === 'string') {
-              // Tags can't be less than 4 characters. So if the string here is less than 4 characters, it's a locale.
+              // Tags always start with '::'. So if this parameter doesn't start with that, we know a locale is being set.
               if (!parameters[2].startsWith('::')) {
                 parsed.locale = parameters[2];
                 parsed.tag = parameters[3] || undefined;
@@ -166,6 +166,7 @@ export default class Sojiro {
 
     let confirmationWords = [
       'yes',
+      'yas',
       'affirmative',
       'y',
       'yus',
@@ -174,6 +175,10 @@ export default class Sojiro {
       'ok',
       'alright'
     ];
+
+    if (text.startsWith('y')) {
+      return true;
+    }
 
     let splitText = text.split(' ');
 

@@ -91,22 +91,24 @@ export default class Resonance {
    *
    * @param {*} user
    *   User that is being prompted.
-   * @param {String} request
-   *   Message that will be sent describing the requested information.
    * @param {*} line
    *   The communication line for this prompt. Basically, where we want the interaction to happen.
    * @param {int} lifespan
    *   The lifespan of this Prompt.
    *   If the bot doesn't receive an answer in time, we cancel the prompt.
    *   10 seconds is the average time a white boy waits for a reply from a girl he's flirting with after sending her a
-   *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO!
+   *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO! Thank you
+   *   AVION for this wonderful advice!
    * @param {*} onResponse
    *   The callback function that runs once a response has been heard.
+   * @param {*} onError
+   *   The callback function that runs once a failure occurs. Failure includes not getting a response.
    *
    * @returns {Promise<void>}
    */
-  async prompt(user, request, line, lifespan, onResponse) {
-
+  async prompt(user, line, lifespan, onResponse, onError = (e) => { console.log(e); }) {
+    // Simply run this through the bot's prompt function.
+    await this.bot.prompt(user, line, this, lifespan, onResponse, onError);
   }
 
   /**
@@ -177,7 +179,7 @@ export default class Resonance {
 
     // If a personalization tag is set, we want to use Yoshida to get a personalization for this bot.
     if (!Lavenza.isEmpty(personalizationTag)) {
-      content = await Lavenza.Yoshida.getPersonalization(personalizationTag, content, this.bot).catch(Lavenza.stop);
+      content = await Lavenza.personalize(content, personalizationTag, this.bot).catch(Lavenza.stop);
     }
 
     // Depending on the type of client the Destination is from, we want to send using the appropriate methods.
@@ -236,7 +238,7 @@ export default class Resonance {
 
     // If a personalization tag is set, we want to use Yoshida to get a personalization for this bot.
     if (!Lavenza.isEmpty(params.tag)) {
-      params.phrase = await Lavenza.Yoshida.getPersonalization(params.tag, params.phrase, this.bot).catch(Lavenza.stop);
+      params.phrase = await Lavenza.personalize(params.phrase, params.tag, this.bot).catch(Lavenza.stop);
     }
 
     // Now, using the information from the parameters, we fetch necessary translations.
@@ -304,4 +306,18 @@ export default class Resonance {
     Lavenza.throw('Tried to fire abstract method resolvePrivacy(). You must implement a resolvePrivacy() method in the {{class}} class.', {class: this.constructor});
   }
 
+  /**
+   * Emulate the bot typing for a given amount of seconds.
+   *
+   * Each client will have its way of handling this. We just need a proper shortcut function to simplify coding in
+   * commands.
+   *
+   * @param {int} seconds
+   *   The amount of seconds to type or wait for.
+   * @param {*} destination
+   *   Destination to type in, if needed.
+   */
+  async typeFor(seconds, destination = undefined) {
+    Lavenza.throw('Tried to fire abstract method typeFor(). You must implement a typeFor() method in the {{class}} class.', {class: this.constructor});
+  }
 }

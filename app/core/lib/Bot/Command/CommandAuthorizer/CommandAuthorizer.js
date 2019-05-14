@@ -70,42 +70,32 @@ export default class CommandAuthorizer {
     // Check if cooldowns are on for this command.
     // If so, we have to return.
     let cooldownValidation = await this.validateCooldown();
-    if (!cooldownValidation) {
 
+    if (!cooldownValidation) {
       // Depending on the type of client we have, we want to alert the person that tried to use the command differently.
       switch (this.resonance.client.type) {
-
         // On Discord, we send a simple message and delete it later.
         case Lavenza.ClientTypes.Discord: {
-
           // Send a reply alerting the user that the command is on cooldown.
           this.resonance.reply(`That command is on cooldown. :) Please wait!`).then(async message => {
-
             // Delete the message containing the command.
             this.resonance.message.delete().catch(Lavenza.continue);
 
             // After 5 seconds, delete the reply originally sent.
             await Lavenza.wait(5);
             await message.delete().catch(Lavenza.continue);
-
           });
           break;
-
         }
 
         // On Twitch, we whisper a message to the resonance's author. We don't wanna clog the chat.
         case Lavenza.ClientTypes.Twitch: {
-
           // Send a whisper directly to the author.
           await this.resonance.send(this.resonance.author, `That command is on cooldown. :) Please wait!`);
           break;
-
         }
-
       }
-
       return false;
-
     }
 
     // If command arguments aren't valid, we hit the message with a reply explaining the error, and then end.
@@ -163,7 +153,8 @@ export default class CommandAuthorizer {
    * @returns {Boolean}
    *   Returns false if the command is not cooled. True otherwise.
    */
-   async validateCooldown() {
+  async validateCooldown() {
+    // @TODO - If the invoker is an architect or deity, they shouldn't be affected by cooldowns.
 
     // Using the cooldown manager, we check if the command is on cooldown first.
     // Cooldowns are individual per user. So if a user uses a command, it's not on cooldown for everyone.

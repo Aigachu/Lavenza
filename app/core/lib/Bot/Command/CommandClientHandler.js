@@ -40,11 +40,33 @@ export default class CommandClientHandler {
    * @returns {Promise<void>}
    */
   async execute(data = {}) {
-
     // Default execute function. Does nothing right now.
     await Lavenza.warn(`You should probably add an execute function to this handler!`);
     console.log(this.command);
+  }
 
+  /**
+   * Send a basic reply.
+   *
+   * @param {Object} data
+   *   The data containing information on the message to send.
+   *
+   * @returns {Promise<void>}
+   */
+  async basicReply(data = {}) {
+    data.replacers = data.replacers || {};
+
+    // Set up for bolding any replacers.
+    if (!Lavenza.isEmpty(data.bolds)) {
+      await Promise.all(data.bolds.map(async (key) => {
+        if (!data.replacers[key]) {
+          return;
+        }
+        data.replacers[key] = await Lavenza.bold(data.replacers[key]);
+      }));
+    }
+    await this.resonance.typeFor(1, this.resonance.channel);
+    await this.resonance.__reply(data.message, Object.assign({user: this.resonance.author}, data.replacers));
   }
 
 }

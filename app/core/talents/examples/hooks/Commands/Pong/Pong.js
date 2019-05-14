@@ -5,6 +5,8 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+import PromptExceptionTypes from "../../../../../lib/Bot/Prompt/Exception/PromptExceptionTypes";
+
 /**
  * Pong command.
  *
@@ -35,7 +37,7 @@ export default class Pong extends Lavenza.Command {
    * If this is a command that is available in multiple clients, you can make cases surrounding the 'type' property
    * of the resonance's client. A simple way to do this is to implement a switch statement on 'resonance.client.type'.
    *
-   * Available for use is also the this.handlers() function. The best way to understand this is to take a long at this
+   * Available for use is also the this.fireClientHandlers() function. The best way to understand this is to take a long at this
    * command's folder and code!
    *
    * Alternatively, you can adopt any design pattern you want.
@@ -49,14 +51,14 @@ export default class Pong extends Lavenza.Command {
     // Note that this is UNNECESSARY if your command is intended to only work on one client!
     // You determine what client this command runs on in the COMMANDNAME.config.yml file.
     /** @see ./handlers */
-    await this.handlers(resonance, {hello: 'hello'});
+    await this.fireClientHandlers(resonance, {hello: 'hello'});
 
     // Prompts.
     // A cool feature of this framework is the ability to set up prompts. They're a little advanced, so bear with me.
     // First thing's first, the code is the same regardless of which client you're in, so don't worry about that!
     // This example will ask the user if they had a nice day.
     // First, we translate the text of the question.
-    let promptText = await Lavenza.__(`Anyways, did you have a nice day, {{author}}?`, {author: resonance.author.username}, resonance.locale);
+    await resonance.__reply(`Anyways, did you have a nice day, {{author}}?`, {author: resonance.author.username}, resonance.locale);
 
     // Set a variable to track whether the user had a good day.
     let goodDay = undefined;
@@ -66,7 +68,7 @@ export default class Pong extends Lavenza.Command {
     // You set the required parameters, which SHOULD be straightforward. The fourth parameter is the time limit set for
     // the response. If that time is elapsed, you will fall into the catch() block below.
     // The fifth parameter is the callback function for when a response is received.
-    await resonance.bot.prompt(resonance.author, promptText, resonance.channel, resonance, 10, async (responseResonance, prompt) => {
+    await resonance.prompt(resonance.author, resonance.channel, 10, async (responseResonance, prompt) => {
 
       // Check if the user says yes or no.
       if (responseResonance.content === 'yes') {
@@ -86,18 +88,32 @@ export default class Pong extends Lavenza.Command {
         await resonance.__reply(`How unfortunate...I hope you have a better day tomorrow!!`).catch(Lavenza.stop);
 
       } else {
-
         // Explain that this command is just a tutorial.
-        await resonance.__reply(`Hey to be honest I only check for "yes" or "no"...We're just in a tutorial command after all! So I couldn't quite make out your answer. HAHA! Still, I hope you had a great day!`).catch(Lavenza.stop);
-
+        await prompt.reset({error: PromptExceptionTypes.INVALID_RESPONSE});
       }
 
-    }).catch(async error => {
+    }, async (error) => {
+      // Depending on the type of error, you can send different replies.
+      switch (error.type) {
 
-      // You fall into here if the user fails to respond in time. You can decide to send a response, or not do anything. Your call!
-      // If you decide not to do anything and silently end the prompt, you can remove this catch block entirely.
-      await resonance.__reply(`Hey, are you ignoring me? That's rude...I'll remember this. >:(`);
+        // This is ran when no response is provided.
+        case PromptExceptionTypes.NO_RESPONSE: {
+          await resonance.__reply(`Hey, are you ignoring me? That's rude...I'll remember this. >:(`, `::PONG_NO_RESPONSE`);
+          break;
+        }
 
+        // This is ran when the max amount of resets is hit.
+        case PromptExceptionTypes.MAX_RESET_EXCEEDED: {
+          await resonance.__reply(`Oof okay. I don't think you got the message...We can talk later!`, `::PONG_MAX_TRIES`);
+          break;
+        }
+
+        // This is the message sent when no response is provided.
+        case PromptExceptionTypes.INVALID_RESPONSE: {
+          await resonance.__reply(`Hey to be honest I only check for "yes" or "no"...We're just in a tutorial command after all! So I couldn't quite make out your answer. HAHA! Mind trying again?`, `::PONG_INVALID_RESPONSE`);
+          break;
+        }
+      }
     });
 
     // Different actions per client type, but with a custom method invoked through the handler.
@@ -105,7 +121,7 @@ export default class Pong extends Lavenza.Command {
     // Here is an example where you tell the handlers to run a different function.
     // This can become very useful if you wanna do client specific things many times in your command!
     /** @see ./handlers */
-    await this.handlers(resonance, {goodDay: goodDay}, 'myCustomMethod');
+    await this.fireClientHandlers(resonance, {goodDay: goodDay}, 'myCustomMethod');
 
   }
 

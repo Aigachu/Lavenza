@@ -135,7 +135,7 @@ export default class EightBall extends Lavenza.Command {
 
     // Invoke Client Handlers to determine what to do in each client.
     /** @see ./handlers */
-    await this.handlers(resonance, {answer: answerMessage, delay: rand.timeout});
+    await this.fireClientHandlers(resonance, {answer: answerMessage, delay: rand.timeout});
 
   }
 

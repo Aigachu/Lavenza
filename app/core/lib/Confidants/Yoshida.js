@@ -18,16 +18,16 @@ export default class Yoshida {
   /**
    * Get a personalization for a given text from a bot's configurations.
    *
-   * @param {string} tag
-   *   Tag, or key, of the personalization in the configurations.
    * @param {string} defaultText
    *   Default text that should be returned if personalizations don't exist.
+   * @param {string} tag
+   *   Tag, or key, of the personalization in the configurations.
    * @param {Bot} bot
    *   The Bot we should fetch personalizations for.
    *
    * @returns {Promise<*>}
    */
-  static async getPersonalization(tag, defaultText, bot) {
+  static async getPersonalization(defaultText, tag, bot) {
 
     // Check if the tag formatting is permitted.
     // We hard crash if this isn't the case. Tags should always be defined with "::" as the first characters.
@@ -79,6 +79,7 @@ export default class Yoshida {
     // If the text is an array, we fetch a random element from it.
     // This is fun, because you can have varying texts.
     if (Array.isArray(text)) {
+      text.push(defaultText);
       text = Lavenza.getRandomElementFromArray(text);
     }
 

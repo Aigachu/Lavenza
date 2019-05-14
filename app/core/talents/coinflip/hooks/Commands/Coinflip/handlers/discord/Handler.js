@@ -13,27 +13,19 @@
 export default class Handler extends Lavenza.CommandClientHandler {
 
   /**
-   * Execute this handler's tasks.
-   *
    * @inheritDoc
    */
   async execute(data = {}) {
 
-    // Bold the result for emphasis.
-    data.result = await Lavenza.bold(data.result);
+  }
 
-    // Build the final response, with translations.
-    let response = await Lavenza.__(`{{author}} obtained {{result}}!`, {author: this.resonance.message.author, result: data.result}, this.resonance.locale);
-
-    // Send initial message.
-    // We modify it to give it a bit of Markdown flavor.
-    let initialMessage = await Lavenza.italics(data.initialMessage);
-    await this.resonance.__reply(initialMessage);
-
-    // Start typing with the chosen answer's timeout, then send the reply to the user.
-    await this.resonance.client.typeFor(data.delay, this.resonance.channel);
-    await this.resonance.reply(response);
-
+  async getOpponent(data) {
+    let input = data.userInput;
+    input = input.replace('<@', '');
+    input = input.replace('!', '');
+    input = input.replace('>', '');
+    let opponent = this.resonance.guild.members.find(member => member.id === input);
+    return opponent || undefined;
   }
 
 }

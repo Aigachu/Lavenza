@@ -134,7 +134,7 @@ export default class Talent {
 
       // Get the config file for the command.
       // Each command should have a file with the format 'COMMAND_NAME.config.yml'.
-      let configFilePath = directory + '/' + name.toLowerCase() + '.config.yml';
+      let configFilePath = directory + '/config.yml';
       let config = await Lavenza.Akechi.readYamlFile(configFilePath).catch(Lavenza.continue);
 
       // Stop if the configuration is empty or wasn't found.
