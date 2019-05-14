@@ -81,16 +81,16 @@ export default class Coinflip extends Lavenza.Command {
       let result = this.flipACoin();
 
       // Type for a second for some added effect!
-      await this.resonance.typeFor(1, this.resonance.channel);
+      await resonance.typeFor(1, resonance.channel);
 
       // First, we'll send the flip message.
-      await this.resonance.__reply(`Okay {{user}}! Flipping a coin!`, {user: this.resonance.author}, '::COINFLIP-FLIP_MESSAGE');
+      await resonance.__reply(`Okay {{user}}! Flipping a coin!`, {user: resonance.author}, '::COINFLIP-FLIP_MESSAGE');
 
       // Type for 2 seconds.
-      await this.resonance.typeFor(2, this.resonance.channel);
+      await resonance.typeFor(2, resonance.channel);
 
       // Send the result!
-      await this.resonance.__reply(`{{user}}, you obtained {{result}}!`, {user: this.resonance.author, result: await Lavenza.bold(result)}, '::COINFLIP-FLIP_RESULT');
+      await resonance.__reply(`{{user}}, you obtained {{result}}!`, {user: resonance.author, result: await Lavenza.bold(result)}, '::COINFLIP-FLIP_RESULT');
 
       // End execution here.
       return;
@@ -114,17 +114,17 @@ export default class Coinflip extends Lavenza.Command {
 
     // Alternatively, when we have multiple results...
     // Type for a second for some added effect!
-    await this.resonance.client.typeFor(1, this.resonance.channel);
+    await resonance.client.typeFor(1, resonance.channel);
 
     // First, we'll send the flip message.
-    await this.resonance.__reply(`Okay {{user}}! Flipping {{count}} coins. This will only take a moment...`, {user: this.resonance.author, count: await Lavenza.bold(numberOfCoins)}, '::COINFLIP-FLIP_MESSAGE_MULTIPLE');
+    await resonance.__reply(`Okay {{user}}! Flipping {{count}} coins. This will only take a moment...`, {user: resonance.author, count: await Lavenza.bold(numberOfCoins)}, '::COINFLIP-FLIP_MESSAGE_MULTIPLE');
 
     // Type for 2 seconds.
-    await this.resonance.client.typeFor(4, this.resonance.channel);
+    await resonance.client.typeFor(4, resonance.channel);
 
     // Send the result!
-    await this.resonance.__reply(`{{user}}, you obtained the following results:\n\nTails: {{tails}}\nHeads: {{heads}}`, {
-      user: this.resonance.author,
+    await resonance.__reply(`{{user}}, you obtained the following results:\n\nTails: {{tails}}\nHeads: {{heads}}`, {
+      user: resonance.author,
       tails: await Lavenza.bold(results.tails),
       heads: await Lavenza.bold(results.heads)
     }, '::COINFLIP-FLIP_RESULT_MULTIPLE');
