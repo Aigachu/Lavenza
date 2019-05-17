@@ -53,6 +53,7 @@ import Order from './Bot/Order/Order';
 
 // Enums.
 import ClientTypes from './Bot/Client/ClientTypes';
+import PromptExceptionTypes from "./Bot/Prompt/Exception/PromptExceptionTypes";
 
 // Configure colors for console.
 // Set console color themes.
@@ -214,6 +215,7 @@ export const Heart = {
 
   // Enums.
   ClientTypes: ClientTypes,
+  PromptExceptionTypes: PromptExceptionTypes,
 
   // Function shortcuts from Confidants.
   log: Morgana.log,

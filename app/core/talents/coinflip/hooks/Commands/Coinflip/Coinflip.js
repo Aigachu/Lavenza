@@ -70,6 +70,12 @@ export default class Coinflip extends Lavenza.Command {
         return;
       }
 
+      // We'll set a maximum. On va se calmer la...
+      if (providedNumber === 0) {
+        await resonance.__reply(`And how would you expect me to flip 0 coins?`, {user: resonance.author, max: await Lavenza.bold(this.maximumNumberOfCoins)}, '::COINFLIP-FLIP_ZERO_COINS');
+        return;
+      }
+
       // Otherwise, we should be good to adjust the number of coins.
       numberOfCoins = providedNumber;
     }

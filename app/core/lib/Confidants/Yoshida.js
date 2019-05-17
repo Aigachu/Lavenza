@@ -79,7 +79,6 @@ export default class Yoshida {
     // If the text is an array, we fetch a random element from it.
     // This is fun, because you can have varying texts.
     if (Array.isArray(text)) {
-      text.push(defaultText);
       text = Lavenza.getRandomElementFromArray(text);
     }
 

@@ -5,8 +5,6 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import PromptExceptionTypes from "../../../../../../../lib/Bot/Prompt/Exception/PromptExceptionTypes";
-
 /**
  * Argument handler for the 'newgame' argument in the DND command.
  */
@@ -32,7 +30,7 @@ export default class GuessGameArgHandler {
     // First order of business is determining who the user wants to duel.
     // Initialize with a  message that serves as an introduction.
     // Depending on the client, handle the first sending of the message properly.
-    await resonance.__reply(`Oooh {{user}}, a duel?! Haha, that's exciting!`, {
+    await resonance.__reply(`Oooh {{user}}, a guessing game?! Haha, that's exciting!`, {
       user: resonance.author,
     }, '::COINFLIP-GUESS_GAME_INITIAL_MESSAGE');
 
@@ -145,7 +143,7 @@ export default class GuessGameArgHandler {
       }
       // If the guesser provides an invalid guess, we restart the prompt.
       else if (guess !== 'same' && guess !== 'different' && guess !== 'diff') {
-        await prompt.reset({error: PromptExceptionTypes.INVALID_RESPONSE});
+        await prompt.reset({error: Lavenza.PromptExceptionTypes.INVALID_RESPONSE});
       }
       // Otherwise, the prayer wins.
       else {
@@ -157,7 +155,7 @@ export default class GuessGameArgHandler {
       switch (error.type) {
 
         // This is ran when no response is provided.
-        case PromptExceptionTypes.NO_RESPONSE: {
+        case Lavenza.PromptExceptionTypes.NO_RESPONSE: {
           // Failing to reply will simply send a different message.
           await resonance.__reply(`AAAHH {{guesser}}, you failed to respond in time! This is considered a forfeit. As such, the victor is {{victor}}!!! Congratulations!`, {
             victor: prayer,
@@ -166,7 +164,7 @@ export default class GuessGameArgHandler {
         }
 
         // This is ran when the max amount of resets is hit.
-        case PromptExceptionTypes.MAX_RESET_EXCEEDED: {
+        case Lavenza.PromptExceptionTypes.MAX_RESET_EXCEEDED: {
           // Failing to reply will simply send a different message.
           await resonance.__reply(`{{guesser}}, COME ON! It's either **Same** or **Different**!!! WHAT DON'T YOU GET?!\nUgh whatever! The victor is {{victor}}. ENJOY YOUR FREEBIE!`, {
             victor: prayer,
@@ -175,7 +173,7 @@ export default class GuessGameArgHandler {
         }
 
         // This is the message sent when no response is provided.
-        case PromptExceptionTypes.INVALID_RESPONSE: {
+        case Lavenza.PromptExceptionTypes.INVALID_RESPONSE: {
           await resonance.__reply(`That's not a valid answer {{guesser}}! It's either **Same** or **Different**! Try again!`, '::COINFLIP-GUESS_GAME_GUESSER_INVALID_INPUT');
           break;
         }
@@ -245,7 +243,8 @@ export default class GuessGameArgHandler {
     await resonance.prompt(resonance.author, resonance.message.channel, 10, async (responseResonance, prompt) => {
       // Set whatever input the user provided. We'll return it later.
       input = responseResonance.content;
-    }).catch(async error => {
+    }, async (error) => {
+
       // Depending on the client, handle the sending of the message properly.
       await resonance.__reply(`...Since you decided to ignore my question, I'm canceling the game! Feel free to try again later when you're ready, {{user}}!`, {
         user: resonance.author,
@@ -293,7 +292,7 @@ export default class GuessGameArgHandler {
       } else {
         await resonance.__reply(`Aww ok. Maybe another time then!`, '::COINFLIP-GUESS_GAME_DECLINED');
       }
-    }).catch(async error => {
+    }, async (error) => {
       // Failing to reply will simply send a different message.
       await resonance.__reply(`Hmm, looks like they're not available right now. Try again later!`, {
         opponent: opponent,

@@ -142,7 +142,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
       }
 
       // Attempt to find the argument in the configurations.
-      let argConfig = configArgs.find(configArg => configArg.key === arg || configArg['aliases'].includes(arg));
+      let argConfig = configArgs.find(configArg => configArg.key === arg || configArg['aliases'] !== undefined && configArg['aliases'].includes(arg));
 
       if (Lavenza.isEmpty(argConfig)) {
         await Lavenza.throw(`{{arg}} is not a valid argument for this command.`, {arg: arg});
@@ -150,17 +150,17 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
 
       // Validate level 1. Operators.
       if (argConfig['oplevel'] === 1 && !this.operatorsToValidate.includes(this.authorUser.id)) {
-        await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
+        await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       // Validate level 2. Masters.
       if (argConfig['oplevel'] === 2 && !this.mastersToValidate.includes(this.authorUser.id)) {
-        await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
+        await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       // Validate level 3. Deities.
       if (argConfig['oplevel'] === 3 && !this.deities.includes(this.authorUser.id)) {
-        await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. :( You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
+        await Lavenza.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. You may want to talk to Aiga about getting permission!`, {arg: argConfig.key});
       }
 
       return true;
