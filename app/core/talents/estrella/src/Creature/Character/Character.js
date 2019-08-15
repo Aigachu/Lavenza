@@ -6,8 +6,8 @@
  */
 
 // Imports.
-import Creature from '../Creature/Creature';
-import CreatureTypes from "../Creature/CreatureTypes";
+import Creature from '../Creature';
+import CreatureTypes from "../CreatureTypes";
 
 /**
  * Provides a class for Characters.

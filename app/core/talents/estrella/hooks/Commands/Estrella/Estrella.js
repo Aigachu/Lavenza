@@ -16,7 +16,7 @@ import NewGame from './ArgHandlers/NewGame';
  *
  * Users can use this command to register and start their adventure.
  */
-export default class Dnd extends Lavenza.Command {
+export default class Estrella extends Lavenza.Command {
 
   /**
    * @inheritDoc

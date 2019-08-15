@@ -44,7 +44,9 @@ export default class EntityManager {
   /**
    * Get an entity from the manager's repository.
    *
-   * @param id
+   * @param {string} id
+   *   ID of the entity to retrieve from the database.
+   *
    * @returns {Promise<*>}
    */
   static async get(id) {
@@ -57,12 +59,12 @@ export default class EntityManager {
     // Load save data from the database.
     let entity = await this.load(id);
 
-    // If the character save data is empty, we simply return undefined.
+    // If the entity data is empty, we simply return undefined.
     if (Lavenza.isEmpty(entity)) {
       return undefined;
     }
 
-    // If not, we load the data and return the created Character object after setting it in the cache.
+    // If not, we load the data and return the entity object after setting it in the cache.
     this.cache[id] = entity;
     return entity;
 
@@ -73,7 +75,7 @@ export default class EntityManager {
    */
   static async load(id) {
 
-    // Load the data from the database.w
+    // Load the data from the database.
     let data = await Lavenza.Gestalt.get(`${this.repositoryPath}/${id}`);
 
     // If the data is null, we'll return nothing.

@@ -16,7 +16,7 @@ import CreatureManager from './src/Creature/CreatureManager';
  * things take place!
  *
  */
-export default class DnDiscord extends Lavenza.Talent {
+export default class Estrella extends Lavenza.Talent {
 
   /**
    * @inheritDoc
