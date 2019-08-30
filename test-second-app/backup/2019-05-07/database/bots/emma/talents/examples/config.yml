@@ -1,0 +1,9 @@
+name: Examples
+description: >-
+  Provides a collection of examples to base yourself on when coding new
+  features!
+version: 1.0.0
+class: Examples
+dependencies: []
+clients: '*'
+directory: /Users/kserebour/Personal/Lavenza-II/app/core/talents/examples

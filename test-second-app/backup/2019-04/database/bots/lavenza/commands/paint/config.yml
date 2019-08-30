@@ -1,0 +1,15 @@
+name: Paint Command
+description: Add colors to your server and allow users to use them!
+class: Paint
+key: paint
+aliases:
+  - color
+  - col
+cooldown:
+  global: 0
+  user: 0
+clients:
+  - discord
+directory: >-
+  /Users/kserebour/src/Personal/Lavenza-II/app/core/talents/paintjob/hooks/Commands/Paint
+id: paint

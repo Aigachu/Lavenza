@@ -1,0 +1,24 @@
+options:
+  - key: c
+    name: Create
+    expects: Color Hex
+    description: Create a color that can be used by users in this server.
+    oplevel: 1
+  - key: s
+    name: Set
+    expects: Hex/Name/Role
+    description: 'Assign a color to yourself! Make sure the color exists. :)'
+    oplevel: 0
+flags:
+  - key: l
+    name: List
+    description: List the custom colors available in this server.
+    oplevel: 0
+  - key: r
+    name: Remove
+    description: Remove a color from yourself only!
+    oplevel: 0
+  - key: x
+    name: Delete All
+    description: 'Delete all color roles from this server...But that would suck right? :('
+    oplevel: 1

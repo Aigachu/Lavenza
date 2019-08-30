@@ -1,0 +1,7 @@
+name: Minigames Talent
+description: Provides a wide range of fun commands to use.
+version: 1.0.0
+class: Minigames
+dependencies: []
+clients: '*'
+directory: /Users/kserebour/src/Personal/Lavenza-II/app/core/talents/minigames

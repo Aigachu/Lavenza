@@ -5,7 +5,7 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import PromptExceptionTypes from "../../../../../lib/Bot/Prompt/Exception/PromptExceptionTypes";
+import PromptExceptionTypes from "../../../../../lib/Lavenza/Bot/Prompt/Exception/PromptExceptionTypes";
 
 /**
  * Pong command.

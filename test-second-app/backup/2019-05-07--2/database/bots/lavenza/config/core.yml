@@ -1,0 +1,17 @@
+name: Lavenza
+command_prefix: '&'
+locale: en
+talents:
+  - examples
+  - wonderful
+  - gestalt
+  - dndiscord
+  - paintjob
+  - smashbros
+  - i18n
+  - minigames
+  - master
+clients:
+  - discord
+  - twitch
+directory: /home/aigachu/apps/Lavenza-II/app/bots/lavenza

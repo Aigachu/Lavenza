@@ -1,0 +1,14 @@
+name: Colette Brunel
+command_prefix: ':'
+locale: en
+talents:
+  - examples
+  - gestalt
+  - paintjob
+  - smashbros
+  - i18n
+  - minigames
+clients:
+  - discord
+  - twitch
+directory: /Users/kserebour/src/Personal/Lavenza-II/app/bots/colette

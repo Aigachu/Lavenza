@@ -1,0 +1,14 @@
+name: Lavenza Serenade
+command_prefix: ;.
+locale: en
+talents:
+  - examples
+  - gestalt
+  - dndiscord
+  - paintjob
+  - i18n
+  - minigames
+clients:
+  - discord
+  - twitch
+directory: /home/aigachu/apps/Lavenza-II/app/bots/lavenza

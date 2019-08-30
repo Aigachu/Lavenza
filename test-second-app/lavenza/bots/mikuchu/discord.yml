@@ -1,0 +1,35 @@
+# Activity to set to the bot when it's running.
+activity: 'undefined'
+
+# URL to add the bot to other servers.
+# This is here so that the bot can send its own URL to others.
+# If you are configuring a new bot, simply replace the 'client_id' parameter in the url and set your bot's client ID.
+# @see https://discordapp.com/developers/applications
+add_url: 'https://discordapp.com/oauth2/authorize?&client_id=1234567890&scope=bot&permissions=1546959939'
+
+# Command Prefix override for Discord.
+# command_prefix: ';-d'
+
+# Architect
+# The Architect is the maker of the bot. Enter your own ID here.
+# There can only be 1 architect. You have access to all commands and some commands will send certain things to you.
+architect: '77517077325287424'
+
+# Deities
+# Enter the Discord IDs of the users that should have utmost access to all of the bot's features.
+# Deities are the highest authority for the bot and will have access to all commands.
+deities:
+  - '82530619355037696' # Avion
+  - '82530619355037696' # Dango
+  - '81078516870819840' # Aero
+  - '154750117847498752' # Kheops
+
+# Masters
+# Enter the Discord IDs of the users that will have Master status.
+# They are a level under the deities, and will have access to commands with an oplevel of 2 or under.
+masters: []
+
+# Operators are a level below masters.
+# Enter the Discord IDs of the users that will have Operator status.
+# They are a level under the masters, and will have access to commands with an oplevel of 1 or under.
+operators: []

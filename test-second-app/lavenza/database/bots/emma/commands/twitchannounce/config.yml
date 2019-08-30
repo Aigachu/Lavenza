@@ -1,0 +1,16 @@
+name: Twitch Announce Command
+description: Command to set up Twitch announcements in a Discord server!
+class: TwitchAnnounce
+key: twitchannounce
+aliases:
+  - ttvann
+  - twitchann
+  - tann
+cooldown:
+  global: 0
+  user: 0
+clients:
+  - discord
+directory: >-
+  /Users/kserebour/Personal/Lavenza-II/app/core/talents/twitchnotify/hooks/Commands/TwitchAnnounce
+id: twitchannounce

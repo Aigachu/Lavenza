@@ -1,0 +1,12 @@
+authorization:
+  blacklist:
+    channels: []
+    users: []
+  whitelist:
+    channels: []
+    users: []
+  pms: true
+  oplevel: 0
+cooldown:
+  global: 0
+  user: 10

@@ -1,0 +1,14 @@
+name: Coinflip Command
+description: Quite simply flips a coin!
+class: Coinflip
+key: coinflip
+aliases:
+  - coin
+  - flip
+cooldown:
+  global: 0
+  user: 5
+clients: '*'
+directory: >-
+  /Users/kserebour/Personal/Lavenza-II/app/core/talents/coinflip/hooks/Commands/Coinflip
+id: coinflip

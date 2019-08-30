@@ -1,0 +1,7 @@
+name: Gestalt Talent
+description: 'Talent used to communicate with Gestalt, the configuration manager in Lavenza.'
+version: 1.0.0
+class: Gestalt
+dependencies: []
+clients: '*'
+directory: /Users/kserebour/src/Personal/Lavenza-II/app/core/talents/gestalt

@@ -1,0 +1,9 @@
+name: CleverBot
+description: >-
+  Provides a collection of examples to base yourself on when coding new
+  features!
+version: 1.0.0
+class: CleverBot
+dependencies: []
+clients: '*'
+directory: /Users/kserebour/Personal/Lavenza-II/app/core/talents/cleverbot

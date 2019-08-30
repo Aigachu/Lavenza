@@ -1,0 +1,30 @@
+'150507471155232768':
+  ttvann:
+    id: '150507471155232768'
+    enabled: true
+    streams:
+      - aigachu
+      - nairomk
+      - avionds
+      - zyltis
+      - armazcf
+      - solaria75
+      - eternalalexx
+    ann_channel: '293773395365986304'
+    live: []
+'314130398173069312':
+  ttvann:
+    id: '314130398173069312'
+    enabled: true
+    streams:
+      - epicnamebro
+    ann_channel: '398752546987966467'
+    live:
+      - epicnamebro
+'458406206848106518':
+  ttvann:
+    id: '458406206848106518'
+    enabled: false
+    streams: []
+    ann_channel: null
+    live: []

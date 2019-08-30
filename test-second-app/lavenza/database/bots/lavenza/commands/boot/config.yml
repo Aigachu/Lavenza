@@ -1,0 +1,14 @@
+name: Boot Command
+description: Boot a bot part of the codebase.
+class: Boot
+key: boot
+aliases:
+  - summon
+  - activate
+cooldown:
+  global: 0
+  user: 0
+clients: '*'
+directory: >-
+  /Users/kserebour/Personal/Lavenza-II/app/core/talents/master/hooks/Commands/Boot
+id: boot

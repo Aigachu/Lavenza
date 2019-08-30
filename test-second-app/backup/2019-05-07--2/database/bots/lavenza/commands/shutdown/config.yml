@@ -1,0 +1,13 @@
+name: Shutdown Command
+description: Shutdown a bot part of the codebase.
+class: Shutdown
+key: shutdown
+aliases:
+  - sd
+  - shut
+cooldown:
+  global: 0
+  user: 0
+clients: '*'
+directory: /home/aigachu/apps/Lavenza-II/app/core/talents/master/hooks/Commands/Shutdown
+id: shutdown

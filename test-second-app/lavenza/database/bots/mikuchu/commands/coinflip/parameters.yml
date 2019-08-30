@@ -1,0 +1,20 @@
+options:
+  - key: g
+    aliases:
+      - guess
+      - guessgame
+    name: Guess Game
+    expects: '@Opponent'
+    description: >-
+      Play the guessing game against an opponent in the server! You will both
+      flip a coin. One of the contenders is chosen at random to guess Same or
+      Different. If the guesser is right, they win, otherwise the other person
+      wins!
+    oplevel: 0
+  - key: count
+    aliases:
+      - c
+    name: Coins
+    expects: Count
+    description: Flip up to 10 coins to get results on each of them.
+    oplevel: 0

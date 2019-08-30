@@ -1,13 +1,13 @@
 {
-  "name": "lavenza-ii",
-  "version": "2.0.7DEV",
+  "name": "lavenza",
+  "version": "3.0.0DEV",
   "description": "A development framework for chatbots that supports many platforms. The successor to Lavenza, built in NodeJS and written in ES6!",
-  "main": "core/lib/Heart",
+  "main": "core/lib/Lavenza",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=11.0.0"
   },
   "repository": {
     "type": "git",

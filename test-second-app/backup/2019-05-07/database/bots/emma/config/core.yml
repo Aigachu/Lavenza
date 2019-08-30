@@ -1,0 +1,20 @@
+name: Emma
+command_prefix: '-'
+locale: en
+talents:
+  - examples
+  - wonderful
+  - gestalt
+  - i18n
+  - configure
+  - paintjob
+  - minigames
+  - eightball
+  - coinflip
+  - reminder
+  - twitchnotify
+  - cleverbot
+clients:
+  - discord
+  - twitch
+directory: /Users/kserebour/Personal/Lavenza-II/app/bots/emma

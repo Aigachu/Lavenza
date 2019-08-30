@@ -1,0 +1,10 @@
+name: Larxene
+command_prefix: '?12'
+locale: en
+talents:
+  - examples
+  - gestalt
+  - i18n
+clients:
+  - discord
+directory: /Users/kserebour/src/Personal/Lavenza-II/app/bots/larxene

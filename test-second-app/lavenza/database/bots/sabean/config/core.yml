@@ -1,0 +1,10 @@
+name: Sabean
+command_prefix: '!ht'
+locale: en
+talents:
+  - examples
+  - gestalt
+  - i18n
+clients:
+  - discord
+directory: /Users/kserebour/Personal/Lavenza-II/app/bots/sabean

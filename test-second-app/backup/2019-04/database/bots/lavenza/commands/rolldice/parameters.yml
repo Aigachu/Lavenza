@@ -1,0 +1,4 @@
+input:
+  requests:
+    - Dice Faces
+  required: false

@@ -1,0 +1,30 @@
+# Username of the account that the bot will be using.
+username: 'YuriaBot'
+
+# Channels this bot will be connected to.
+# @TODO - Dynamic addition to channels.
+channels:
+  - aigachu
+
+# Command Prefix override for Twitch.
+# command_prefix: ';-t'
+
+# Architect
+# The Architect is the maker of the bot. Enter your own username here.
+# There can only be 1 architect. You have access to all commands and some commands will send certain things to you.
+architect: 'aigachu'
+
+# Deities
+# Enter the Twitch Usernames of the users that will have Deity status.
+# Deities are the highest authority for the bot and will have access to all commands.
+deities: []
+
+# Masters
+# Enter the Twitch Usernames of the users that will have Master status.
+# They are a level under the deities, and will have access to commands with an oplevel of 2 or under.
+masters: []
+
+# Operators are a level below masters.
+# Enter the Twitch Usernames of the users that will have Operator status.
+# They are a level under the masters, and will have access to commands with an oplevel of 1 or under.
+operators: []

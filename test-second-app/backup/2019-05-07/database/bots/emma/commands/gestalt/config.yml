@@ -1,0 +1,16 @@
+name: Gestalt Command
+description: Call certain API protocols from the bot.
+class: Gestalt
+key: gestalt
+aliases:
+  - gstlt
+  - gest
+  - gestlt
+  - gestl
+cooldown:
+  global: 0
+  user: 5
+clients: '*'
+directory: >-
+  /Users/kserebour/Personal/Lavenza-II/app/core/talents/gestalt/hooks/Commands/Gestalt
+id: gestalt

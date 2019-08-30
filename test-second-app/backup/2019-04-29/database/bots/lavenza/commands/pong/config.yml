@@ -1,0 +1,14 @@
+name: Pong Command
+active: true
+description: Command that simply orders the bot to say "Ping!"
+class: Pong
+key: pong
+aliases:
+  - pongu
+  - pongo
+cooldown:
+  global: 0
+  user: 0
+clients: '*'
+directory: /home/aigachu/apps/Lavenza-II/app/core/talents/examples/hooks/Commands/Pong
+id: pong

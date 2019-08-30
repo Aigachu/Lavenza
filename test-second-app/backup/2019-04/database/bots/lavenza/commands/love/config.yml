@@ -1,0 +1,14 @@
+name: Love Command
+description: Measure your percentage of love with...Anything really!
+class: Love
+key: love
+aliases:
+  - <3
+  - lv
+cooldown:
+  global: 0
+  user: 5
+clients: '*'
+directory: >-
+  /Users/kserebour/src/Personal/Lavenza-II/app/core/talents/minigames/hooks/Commands/Love
+id: love

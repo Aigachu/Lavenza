@@ -1,0 +1,10 @@
+name: Demyx
+command_prefix: '?9'
+locale: en
+talents:
+  - examples
+  - gestalt
+  - i18n
+clients:
+  - discord
+directory: /Users/kserebour/src/Personal/Lavenza-II/app/bots/demyx

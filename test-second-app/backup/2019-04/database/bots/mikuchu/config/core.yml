@@ -1,0 +1,16 @@
+name: Mikuchu Serenade
+command_prefix: °
+locale: en
+talents:
+  - examples
+  - gestalt
+  - dndiscord
+  - paintjob
+  - smashbros
+  - i18n
+  - minigames
+  - reminder
+clients:
+  - discord
+  - twitch
+directory: /Users/kserebour/src/Personal/Lavenza-II/app/bots/mikuchu

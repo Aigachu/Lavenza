@@ -1,0 +1,14 @@
+authorization:
+  blacklist:
+    guilds: []
+    channels: []
+    users: []
+  whitelist:
+    guilds: []
+    channels: []
+    users: []
+  pms: false
+  oplevel: 2
+cooldown:
+  global: 0
+  user: 0
