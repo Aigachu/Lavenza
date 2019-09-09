@@ -11,5 +11,5 @@
 !/test-second-app/bots/settings.example.yml
 /test-second-app/lavenza/database/*
 !/test-second-app/lavenza/database/.gitkeep
-/lang/*
-!/lang/.gitkeep
+/test-second-app/lavenza/lang/*
+!/test-second-app/lavenza/lang/.gitkeep

@@ -323,6 +323,7 @@ For now, feel free to take a look at what I have in the build folder so far. If 
 
 ----
 
+# ***- January 03, 2019 -***
 > ...Oh! Hi! Didn't see you there.
 >
 >The name's Aigachu. You may or may not know me. But that's unimportant. 
@@ -347,3 +348,37 @@ and looks to follow clean design patterns as much as possible, despite Javascrip
 tendency to be more procedural...That in itself is a battle, but it's not impossible!
 >
 >In any case...I don't even know why I'm writing a preface. Enjoy the code!
+
+# ***- September 06, 2019 -***
+> ...OH! Hello again!
+>
+> I almost typoed that as 'Hell again'! LOL! Now wouldn't THAT be a mood.
+>
+> So don't ask me why I'm writing another one of these. Maybe I just enjoy talking to myself. BUT HEY. It's fun to have
+a nice record of how I've been feeling along the evolution of Lavenza. :) I'm sure I'll come back and read this in a few
+months and cringe. HAHA. But WHATEVER!
+>
+> Lavenza's still going along strong. It's funny to think back to the original PHP version of it. Heck, it's even funnier
+to reminisce about Colette, my first ever Discord Bot. For the amount of features she had (which funnily enough is not
+far from the amount of features Lavenza has!), the code was ATROCIOUS. All written in ONE file, spanning about 1000 lines.
+But you know what? Colette was working. She was live, in quite a few servers back when Discord was the new hotness and bots
+were just beginning to be developed.
+>
+> Lavenza is quite different from that. It just goes to show how much I've evolved as a developer. I won't say I'm a god.
+Far from that, actually. I'm sure I have a lot to learn still. But I'm quite proud of how things turned out. I'm sure there
+are savants out there that can do what I did in a much cleaner, more efficient way. But I'm just happy to have something I
+can say I made, and be proud of it.
+>
+> Lavenza III is on the horizon! We went from PHP to Javascript, and while it was a nice switch, Javascript just wasn't
+cutting it when I wanted to do some GOOD OOP. I had to wrestle with Javascript to achieve OOP, and to be fair I kind of did
+achieve it. As much as I could really (except when I got impatient!). But it's time for a new step. Typescript baby. The dawn
+of a new era!
+>
+> It's fun to think about where things will head in the next few months or years. Back when I wrote the last preface, and for
+quite some time afterwards, I would always ask myself how I could make Lavenza even cleaner than I already had. Now the doors
+have opened for much more, and in the months to come I feel like I'll find even more ways to improve this project. Maybe we'll
+switch to another programming language AGAIN! Who knows what the future holds!
+>
+> Alright, I think I've written enough. Let's get back to work! :D
+>
+> As always, ENJOY THE CODE! 

@@ -25,10 +25,10 @@
 #    name: 'Text'
 #    expects: 'Custom Text'
 #    description: 'Customize the text of the hello command.'
-#    oplevel: 1
+#    accessEminence: Aficionado
 #
 #flags:
 #  - key: d
 #    name: 'DM'
 #    description: 'Say hello in dms instead.'
-#    oplevel: 0
+#    accessEminence: None

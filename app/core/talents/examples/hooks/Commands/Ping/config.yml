@@ -26,6 +26,14 @@ cooldown:
   global: 0
   user: 0
 
+# Authorization configuration.
+authorization:
+  # Determines whether or not this command can work in direct messages with the bot.
+  enabledInDirectMessages: true
+
+  # Determines the Eminence needed to operate this command.
+  accessEminence: None
+
 # Clients where this command will function.
 # If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.
 # For each enabled client, you should create a 'COMMANDNAME.CLIENTNAME.yml' file in this same directory.

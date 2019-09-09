@@ -1,5 +1,5 @@
 // Testing the Lavenza app.
-console.log('Initializing Test App!');
+console.log('Initializing Test App for Lavenza!');
 
 // Require Lavenza package.
 const Lavenza = require('../app');

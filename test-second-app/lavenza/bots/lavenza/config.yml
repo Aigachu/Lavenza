@@ -10,7 +10,7 @@ name: 'Lavenza'
 
 # Main command prefix.
 # The command prefix can be overridden per client. A default one is necessary, though.
-command_prefix: '&'
+commandPrefix: '&'
 
 # Default Locale.
 # Set the default language the bot will speak in.
@@ -18,27 +18,13 @@ locale: 'en'
 
 # Talents configuration.
 # Set the list of custom talents this bot should have.
-# You must enter the exact name of the directory of the custom talent.
+# You must enter the exact name of the directory of the talent.
 talents:
   # Core Talents
   - examples
-  - wonderful
-  - gestalt
-  - i18n
-  - configure
-  # Utility
-  - paintjob
-  - reminder
-  - twitchnotify
-  # Fun Stuff
-  - minigames
-  - coinflip
-  - eightball
-  # - cleverbot
 
 # Clients
 # Configurations for which clients this bot will access and other details.
 # For each client added, a respective CLIENT_NAME.yml must be found in this directory with the client's configuration.
 clients:
-  - discord
-  - twitch
+  - Discord

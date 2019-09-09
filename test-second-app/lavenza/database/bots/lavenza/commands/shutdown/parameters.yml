@@ -1,4 +1,0 @@
-input:
-  requests:
-    - bot
-  required: true

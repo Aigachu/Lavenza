@@ -7,24 +7,38 @@ channels:
   - aigachu
 
 # Command Prefix override for Twitch.
-# command_prefix: ';-t'
+# commandPrefix: ';-t'
 
-# Architect
-# The Architect is the maker of the bot. Enter your own username here.
-# There can only be 1 architect. You have access to all commands and some commands will send certain things to you.
-architect: 'aigachu'
+# Joker
+# The Joker is the maker of the bot. Enter your own ID here.
+# For Twitch, simply enter your username / display name.
+# There can only be 1 architect. You have access to all commands and some core commands will send some important info
+# to you and you only.
+joker: 'aigachu'
 
-# Deities
-# Enter the Twitch Usernames of the users that will have Deity status.
-# Deities are the highest authority for the bot and will have access to all commands.
-deities: []
-
-# Masters
-# Enter the Twitch Usernames of the users that will have Master status.
-# They are a level under the deities, and will have access to commands with an oplevel of 2 or under.
-masters: []
-
-# Operators are a level below masters.
-# Enter the Twitch Usernames of the users that will have Operator status.
-# They are a level under the masters, and will have access to commands with an oplevel of 1 or under.
-operators: []
+# User Eminences Configuration.
+# Users in Lavenza are managed as a simple hierarchy with 5 different Eminences. Here are the official names of them:
+#
+# None -> Aficionado -> Confidant -> Thief -> Joker
+# As we go up in the chain, higher eminences will have higher permissions. When developing Talents, each Command can
+# have an "Access Eminence" specified, which determines which eminences have access to the Command. A eminence that is
+# above others will be able to access everything the eminences under it can.
+#
+# {None}
+# Simply base level users.
+#
+# {Aficionado}
+# Level 1 users. Usually have access to commands that can edit features in a server, but not add or delete.
+#
+# {Confidant}
+# Level 2 users. Usually have access to commands that can add/delete features in a server.
+#
+# {Thief}
+# Level 3 users. They are the highest authority for the bot and will usually have access to all commands.
+#
+# As in the example below, add entries that take up a TWITCH_USERNAME: EMINENCE_ID format. The entries added here will be
+# the baseline role configuration. Additional role configuration can be customized later on per client.
+userRoles:
+  avionds: Thief # Avion (?)
+  k4kheops: Thief # Dango (?)
+  aerozr: Thief # Aero

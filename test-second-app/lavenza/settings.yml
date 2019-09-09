@@ -1,0 +1,16 @@
+#
+# Project Lavenza II
+# Copyright 2017-2018 Aigachu, All Rights Reserved
+#
+# License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
+#
+
+# Master Bot
+# The master bot is the main bot of the application. From this bot, you can manage other bots.
+master: lavenza
+
+# Auto-Boot
+# By default when running the application, only the Master Bot is booted.
+# You can set up which other bots are booted automatically here.
+autoboot:
+  - mikuchu
