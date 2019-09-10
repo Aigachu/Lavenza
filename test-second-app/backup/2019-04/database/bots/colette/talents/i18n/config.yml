@@ -1,7 +1,0 @@
-name: i18n Talent
-description: Talent to manage internationalization across Lavenza.
-version: 1.0.0
-class: I18n
-dependencies: []
-clients: '*'
-directory: /Users/kserebour/src/Personal/Lavenza-II/app/core/talents/i18n

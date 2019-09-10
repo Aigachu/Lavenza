@@ -1,9 +1,0 @@
-name: Configure
-description: >-
-  Provides tons of useful utility commands for your bot that allows management
-  of configurations.
-version: 1.0.0
-class: Configure
-dependencies: []
-clients: '*'
-directory: /Users/kserebour/Personal/Lavenza-II/app/core/talents/configure

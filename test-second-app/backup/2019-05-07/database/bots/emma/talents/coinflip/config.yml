@@ -1,7 +1,0 @@
-name: Coinflip
-description: Provides basic coinflip functionality!...With some twists!
-version: 1.0.0
-class: Coinflip
-dependencies: []
-clients: '*'
-directory: /Users/kserebour/Personal/Lavenza-II/app/core/talents/coinflip

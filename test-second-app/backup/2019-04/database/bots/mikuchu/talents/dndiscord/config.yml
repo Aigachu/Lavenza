@@ -1,8 +1,0 @@
-name: Dungeons & Discord Talent
-description: The ultimate Dungeons & Discord feature!
-version: 1.0.0
-class: DnDiscord
-dependencies: []
-clients:
-  - discord
-directory: /Users/kserebour/src/Personal/Lavenza-II/app/core/talents/dndiscord

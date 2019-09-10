@@ -1,7 +1,0 @@
-name: Master Talent
-description: Provides a collection utilities only the Master Bot should use.
-version: 1.0.0
-class: Master
-dependencies: []
-clients: '*'
-directory: /home/aigachu/apps/Lavenza-II/app/core/talents/master

@@ -1,8 +1,0 @@
-name: Paint Job Talent
-description: Grant the ability to create color roles and allow users to use them!
-version: 1.0.0
-class: PaintJob
-dependencies: []
-clients:
-  - discord
-directory: /Users/kserebour/src/Personal/Lavenza-II/app/core/talents/paintjob

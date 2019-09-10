@@ -3,7 +3,8 @@
     "allowJs": true,
     "target": "es6",
     "module": "commonjs",
-    "lib": [ "es2018" ]
+    "lib": [ "es2018" ],
+    "skipLibCheck": true
   },
   "include": [
     "./core/**/*"

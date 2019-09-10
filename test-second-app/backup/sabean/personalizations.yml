@@ -1,9 +1,0 @@
-'::PING_RESPONSE':
-  default: 'Pong! Hello there. :)'
-  personalizations:
-    - _dip_
-    - _sip_
-'::PING_RESPONSE_TEA':
-  default: 'Hi {{author}}! Here''s some tea: {{tea}}'
-  personalizations:
-    - 'Hi'

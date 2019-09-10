@@ -60,7 +60,7 @@ const ClientType_1 = require("./Lavenza/Bot/Client/ClientType");
 const PromptExceptionType_1 = require("./Lavenza/Bot/Prompt/Exception/PromptExceptionType");
 // Define the Heart of the module.
 // This is the object that is later set as a global.
-exports.default = {
+const Heart = {
     // Lavenza's core and shortcut to initialization functions.
     Core: Core_1.default,
     init: Core_1.default.init,
@@ -111,3 +111,4 @@ exports.default = {
     code: Kawakami_1.default.code,
     personalize: Yoshida_1.default.getPersonalization,
 };
+module.exports = Heart;

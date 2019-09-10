@@ -1,7 +1,0 @@
-name: Eight Ball
-description: Provides commands to ask the legendary Magic 8-Ball some questions!
-version: 1.0.0
-class: EightBall
-dependencies: []
-clients: '*'
-directory: /Users/kserebour/Personal/Lavenza-II/app/core/talents/eightball

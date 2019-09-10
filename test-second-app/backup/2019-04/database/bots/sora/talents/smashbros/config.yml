@@ -1,7 +1,0 @@
-name: Smashies Talent
-description: Provides fun commands related to Super Smash Bros!
-version: 0.4.0
-class: Smashbros
-dependencies: []
-clients: '*'
-directory: /Users/kserebour/src/Personal/Lavenza-II/app/core/talents/smashbros

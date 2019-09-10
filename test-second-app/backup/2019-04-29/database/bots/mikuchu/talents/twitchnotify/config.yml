@@ -1,8 +1,0 @@
-name: Twitch Notify Talent
-description: Customize notifications for live channels on Twitch.
-version: 1.0.0
-class: TwitchNotify
-dependencies: []
-clients:
-  - discord
-directory: /Users/kserebour/Personal/Lavenza-II/app/core/talents/twitchnotify

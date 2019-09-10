@@ -1,4 +1,0 @@
-input:
-  requests:
-    - Question
-  required: true

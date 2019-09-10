@@ -67,7 +67,7 @@ import PromptExceptionTypes from './Lavenza/Bot/Prompt/Exception/PromptException
 
 // Define the Heart of the module.
 // This is the object that is later set as a global.
-export default {
+const Heart = {
   // Lavenza's core and shortcut to initialization functions.
   Core: Core,
   init: Core.init,
@@ -123,4 +123,6 @@ export default {
   italics: Kawakami.italics,
   code: Kawakami.code,
   personalize: Yoshida.getPersonalization,
-}
+};
+
+module.exports = Heart;
