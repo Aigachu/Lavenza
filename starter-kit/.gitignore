@@ -1,0 +1,3 @@
+# Ignore Sensitive Files.
+.env
+settings.yml
