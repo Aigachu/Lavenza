@@ -1,0 +1,44 @@
+# Username of the account that the bot will be using.
+username: 'Emma'
+
+# Channels this bot will be connected to.
+# @TODO - Dynamic addition to channels.
+channels:
+  - aigachu
+
+# Command Prefix override for Twitch.
+# commandPrefix: ';-t'
+
+# Joker
+# The Joker is the maker of the bot. Enter your own ID here.
+# For Twitch, simply enter your username / display name.
+# There can only be 1 architect. You have access to all commands and some core commands will send some important info
+# to you and you only.
+joker: 'aigachu'
+
+# User Eminences Configuration.
+# Users in Lavenza are managed as a simple hierarchy with 5 different Eminences. Here are the official names of them:
+#
+# None -> Aficionado -> Confidant -> Thief -> Joker
+# As we go up in the chain, higher eminences will have higher permissions. When developing Talents, each Command can
+# have an "Access Eminence" specified, which determines which eminences have access to the Command. A eminence that is
+# above others will be able to access everything the eminences under it can.
+#
+# {None}
+# Simply base level users.
+#
+# {Aficionado}
+# Level 1 users. Usually have access to commands that can edit features in a server, but not add or delete.
+#
+# {Confidant}
+# Level 2 users. Usually have access to commands that can add/delete features in a server.
+#
+# {Thief}
+# Level 3 users. They are the highest authority for the bot and will usually have access to all commands.
+#
+# As in the example below, add entries that take up a TWITCH_USERNAME: EMINENCE_ID format. The entries added here will be
+# the baseline role configuration. Additional role configuration can be customized later on per client.
+userRoles:
+  avionds: Thief # Avion (?)
+  k4kheops: Thief # Dango (?)
+  aerozr: Thief # Aero
