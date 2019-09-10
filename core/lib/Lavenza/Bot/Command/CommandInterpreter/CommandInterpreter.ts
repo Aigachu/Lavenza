@@ -6,7 +6,7 @@
  */
 
 // Modules.
-import minimist from 'minimist';
+import * as minimist from 'minimist';
 
 // Imports.
 import Resonance from "../../Resonance/Resonance";

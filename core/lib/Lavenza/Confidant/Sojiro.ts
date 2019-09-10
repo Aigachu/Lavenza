@@ -6,7 +6,7 @@
  */
 
 // Modules.
-import _ from 'underscore';
+import * as _ from 'underscore';
 
 /**
  * Provides a class that handles input/output to the console & errors.

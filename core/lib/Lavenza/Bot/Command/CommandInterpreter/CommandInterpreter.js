@@ -16,7 +16,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
-const minimist_1 = require("minimist");
+const minimist = require("minimist");
 const Morgana_1 = require("../../../Confidant/Morgana");
 /**
  * Provides an Interpreter for Commands.
@@ -89,7 +89,7 @@ class CommandInterpreter {
                 return undefined;
             }
             // Next, we'll build the arguments as well, using minimist.
-            let args = minimist_1.default(splitContent.slice(2));
+            let args = minimist(splitContent.slice(2));
             // Get the command configuration and build the configuration object for this order.
             // We want to send the bot config and the command config back with the Order.
             let commandConfig = yield command.getActiveConfigForBot(bot);

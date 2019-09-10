@@ -6,7 +6,7 @@
  */
 
 // Load Environment Variables from .env file at the root of the project.
-import DotEnv from 'dotenv';
+import * as DotEnv from 'dotenv';
 DotEnv.load();
 
 // Configure colors for console.

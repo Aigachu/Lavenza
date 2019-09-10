@@ -270,3 +270,7 @@ exports.default = BotManager;
 BotManager.ignoredBots = {
     example: 'example',
 };
+/**
+ * Store a list of all bots in the application.
+ */
+BotManager.bots = {};

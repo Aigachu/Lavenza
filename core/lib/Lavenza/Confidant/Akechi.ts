@@ -7,8 +7,8 @@
 
 // Modules.
 import * as fs from 'fs';
-import fsrfp from 'fs-readfile-promise';
-import yaml from 'js-yaml';
+import * as fsrfp from 'fs-readfile-promise';
+import * as yaml from 'js-yaml';
 import * as path from 'path';
 
 // Imports.

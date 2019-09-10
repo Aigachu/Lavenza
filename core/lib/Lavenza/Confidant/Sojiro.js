@@ -7,7 +7,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
-const underscore_1 = require("underscore");
+const _ = require("underscore");
 /**
  * Provides a class that handles input/output to the console & errors.
  *
@@ -99,7 +99,7 @@ class Sojiro {
             return false;
         }
         // If it's not a function, underscore SHOULD cover the rest of the cases.
-        return underscore_1.default.isEmpty(variable);
+        return _.isEmpty(variable);
     }
     /**
      * Utility function to wait a given amount of time.

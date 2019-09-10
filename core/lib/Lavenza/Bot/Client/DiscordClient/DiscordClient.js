@@ -42,15 +42,31 @@ class DiscordClient extends discord_js_1.Client {
     constructor(config, bot) {
         // Call the constructor of the Discord Client parent Class.
         super();
+        /**
+         * @inheritDoc
+         */
+        this.type = ClientType_1.default.Discord;
         // Assign the bot to the current client.
         this.bot = bot;
-        // Just a utility value to track the client type.
-        this.type = ClientType_1.default.Discord;
         // Assign configurations to the client.
         this.config = config;
         // Event: When the client connects to Discord and is ready.
         this.on('ready', () => __awaiter(this, void 0, void 0, function* () {
             yield Morgana_1.default.success('Discord client successfully connected for {{bot}}!', { bot: this.bot.id });
+            // We start by syncing the guild configurations.
+            let guilds = yield Gestalt_1.default.sync({}, `/bots/${this.bot.id}/clients/${this.type}/guilds`);
+            // Set up initial guild configurations.
+            yield Promise.all(this.guilds.map((guild) => __awaiter(this, void 0, void 0, function* () {
+                let baseGuildConfig = {
+                    name: guild.name,
+                    commandPrefix: yield this.bot.config.commandPrefix,
+                    userEminences: {},
+                };
+                if (!(guild.id in guilds)) {
+                    guilds[guild.id] = baseGuildConfig;
+                }
+                yield Gestalt_1.default.update(`/bots/${this.bot.id}/clients/${this.type}/guilds`, guilds);
+            })));
             // Set game text.
             this.user.setActivity(this.config['activity']).catch(console.error);
         }));
@@ -95,19 +111,6 @@ class DiscordClient extends discord_js_1.Client {
             yield Gestalt_1.default.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/guilds`);
             yield Gestalt_1.default.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/channels`);
             yield Gestalt_1.default.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/users`);
-            // Event: When the client connects to Discord and is ready.
-            this.on('ready', () => __awaiter(this, void 0, void 0, function* () {
-                // We start by syncing the guild configurations.
-                let guilds = yield Gestalt_1.default.sync({}, `/bots/${this.bot.id}/clients/${this.type}/guilds`);
-                // Set up initial guild configurations.
-                let baseConfig;
-                yield Promise.all(this.guilds.map((guild) => __awaiter(this, void 0, void 0, function* () {
-                    if (!(guild.id in guilds)) {
-                        guilds[guild.id] = baseConfig;
-                    }
-                    yield Gestalt_1.default.update(`/bots/${this.bot.id}/clients/${this.type}/guilds`, guilds);
-                })));
-            }));
         });
     }
     // noinspection JSMethodCanBeStatic

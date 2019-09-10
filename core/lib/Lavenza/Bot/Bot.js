@@ -16,7 +16,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
-const dotenv_1 = require("dotenv");
+const DotEnv = require("dotenv");
 // Imports.
 // Holy shit this LIST! LMFAO!
 const TalentManager_1 = require("../Talent/TalentManager");
@@ -30,6 +30,7 @@ const ResonanceFactory_1 = require("./Resonance/ResonanceFactory");
 const CommandListener_1 = require("./Command/CommandListener/CommandListener");
 const ClientType_1 = require("./Client/ClientType");
 const PromptFactory_1 = require("./Prompt/PromptFactory");
+const TwitchUser_1 = require("./Client/TwitchClient/TwitchUser");
 /**
  * Provides a class for Bots.
  *
@@ -48,6 +49,10 @@ class Bot {
      *   Configuration loaded from the bot's 'NAME.config.yml' file.
      */
     constructor(id, config) {
+        /**
+         * Object to store list of Clients the bot has.
+         */
+        this.clients = {};
         /**
          * Stores a list of all talents associated with a bot, through their ID.
          */
@@ -93,7 +98,8 @@ class Bot {
      */
     loadEnvironmentVariables() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.env = dotenv_1.default.parse(`${this.directory}/.env`);
+            let envFileData = yield Akechi_1.default.readFile(`${this.directory}/.env`);
+            this.env = DotEnv.parse(envFileData);
         });
     }
     /**
@@ -201,14 +207,14 @@ class Bot {
                     case ClientType_1.default.Discord: {
                         let config = yield this.getActiveClientConfig(ClientType_1.default.Discord);
                         let client = yield this.getClient(clientKey);
-                        this.joker.discord = client.fetchUser(config.joker);
+                        this.joker.discord = yield client.fetchUser(config.joker);
                         break;
                     }
                     // In Twitch, we build a custom object using only the username.
                     // @TODO - Build a TwitchUser object using the client.
                     case ClientType_1.default.Twitch: {
                         let config = yield this.getActiveClientConfig(ClientType_1.default.Twitch);
-                        this.joker.twitch = { username: config.joker };
+                        this.joker.twitch = new TwitchUser_1.default(config.joker, config.joker, config.joker);
                         break;
                     }
                 }
@@ -337,36 +343,52 @@ class Bot {
                 this.config.talents = Sojiro_1.default.removeFromArray(this.config.talents, 'master');
             }
             // Await the processing of all talents in the bot's config object.
-            yield Promise.all(this.config.talents.map((talentKey) => __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all(this.config.talents.map((talentMachineName) => __awaiter(this, void 0, void 0, function* () {
                 // Then, we'll check if this talent already exists in the Manager.
                 // This happens if another bot already loaded it.
                 // If it exists, we're good.
-                let talent = yield TalentManager_1.default.getTalent(talentKey);
-                if (!talent) {
+                let talent = yield TalentManager_1.default.getTalent(talentMachineName);
+                if (talent) {
+                    // Validate the dependencies for this talent.
+                    yield this.validateTalentDependencies(talentMachineName);
                     return;
                 }
                 // Await the loading of the talent.
                 // If it the load fails, we'll remove the talent from the bot's configuration.
-                yield TalentManager_1.default.loadTalent(talentKey).catch((error) => __awaiter(this, void 0, void 0, function* () {
-                    this.config.talents = Sojiro_1.default.removeFromArray(this.config.talents, talentKey);
+                yield TalentManager_1.default.loadTalent(talentMachineName).then(() => __awaiter(this, void 0, void 0, function* () {
+                    // Validate the dependencies for this talent.
+                    yield this.validateTalentDependencies(talentMachineName);
+                })).catch((error) => __awaiter(this, void 0, void 0, function* () {
+                    // Disable this talent for this bot.
+                    this.config.talents = Sojiro_1.default.removeFromArray(this.config.talents, talentMachineName);
                     // Send a warning message to the console.
-                    yield Morgana_1.default.warn('Error occurred while loading the {{talent}} talent...', { talent: talentKey });
+                    yield Morgana_1.default.warn('Error occurred while loading the {{talent}} talent...', { talent: talentMachineName });
                     yield Morgana_1.default.warn(error.message);
                 }));
-                // Check talent's configuration to see if dependencies are loaded into this bot.
-                yield Promise.all(TalentManager_1.default.talents[talentKey].config.dependencies.map((dependency) => __awaiter(this, void 0, void 0, function* () {
-                    // If the dependency isn't found in th`is bot's config, we shouldn't load this talent.
-                    if (!this.config.talents.includes(dependency)) {
-                        // Send a warning to the console.
-                        yield Morgana_1.default.warn(`The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.`, {
-                            talent: talentKey,
-                            parent: dependency,
-                            bot: this.id
-                        });
-                        // Remove this talent from the bot.
-                        this.config.talents = Sojiro_1.default.removeFromArray(this.config.talents, talentKey);
-                    }
-                })));
+            })));
+        });
+    }
+    /**
+     * Validate that the bot has dependencies this talent requires.
+     *
+     * @param talentMachineName
+     *   Machine name of the talent to check dependencies for.
+     */
+    validateTalentDependencies(talentMachineName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Check talent's configuration to see if dependencies are loaded into this bot.
+            yield Promise.all(TalentManager_1.default.talents[talentMachineName].config.dependencies.map((dependency) => __awaiter(this, void 0, void 0, function* () {
+                // If the dependency isn't found in this bot's config, we shouldn't load this talent.
+                if (!this.config.talents.includes(dependency)) {
+                    // Send a warning to the console.
+                    yield Morgana_1.default.warn(`The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.`, {
+                        talent: talentMachineName,
+                        parent: dependency,
+                        bot: this.id
+                    });
+                    // Remove this talent from the bot.
+                    this.config.talents = Sojiro_1.default.removeFromArray(this.config.talents, talentMachineName);
+                }
             })));
         });
     }
@@ -604,20 +626,20 @@ class Bot {
     initializeClients() {
         return __awaiter(this, void 0, void 0, function* () {
             // Await the processing and initialization of all clients in the configurations.
-            yield Promise.all(this.config.clients.map((clientType) => __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all(this.config.clients.map((clientTypeKey) => __awaiter(this, void 0, void 0, function* () {
                 // Load configuration since it exists.
-                let clientConfig = yield this.getActiveClientConfig(ClientType_1.default[clientType]);
+                let clientConfig = yield this.getActiveClientConfig(ClientType_1.default[clientTypeKey]);
                 if (Sojiro_1.default.isEmpty(clientConfig)) {
                     yield Morgana_1.default.warn('Configuration file could not be loaded for the {{client}} client in {{bot}}. This client will not be instantiated.' +
                         'To create a configuration file, you can copy the ones found in the "example" bot folder.', {
-                        client: clientType,
+                        client: clientTypeKey,
                         bot: this.id
                     });
                     return;
                 }
                 // Uses the ClientFactory to build the appropriate factory given the type.
                 // The client is then set to the bot.
-                this.clients[clientType] = yield ClientFactory_1.default.build(clientType, clientConfig, this);
+                this.clients[ClientType_1.default[clientTypeKey]] = yield ClientFactory_1.default.build(ClientType_1.default[clientTypeKey], clientConfig, this);
             })));
         });
     }
@@ -662,8 +684,8 @@ class Bot {
             let botConfig = yield this.getActiveConfig();
             // Get bot's client configuration.
             let botClientConfig = yield this.getClientConfig(resonance.client.type);
-            // Variable to store retrieved cprefix.
-            let cprefix = undefined;
+            // Variable to store retrieved command prefix.
+            let commandprefix = undefined;
             // Depending on the client type, we'll be checking different types of configurations.
             switch (resonance.client.type) {
                 // In the case of a Discord client, we check to see if there's a custom prefix set for the resonance's guild.
@@ -671,7 +693,7 @@ class Bot {
                     // Get client specific configurations.
                     let clientConfig = yield resonance.client.getActiveConfigurations();
                     if (resonance.message.guild) {
-                        cprefix = clientConfig.guilds[resonance.message.guild.id].commandPrefix || undefined;
+                        commandprefix = clientConfig.guilds[resonance.message.guild.id].commandPrefix || undefined;
                     }
                     break;
                 }
@@ -680,17 +702,17 @@ class Bot {
                     // Get client specific configurations.
                     let clientConfig = yield resonance.client.getActiveConfigurations();
                     if (resonance.message.channel) {
-                        cprefix = clientConfig.channels[resonance.message.channel.id].commandPrefix || undefined;
+                        commandprefix = clientConfig.channels[resonance.message.channel.id].commandPrefix || undefined;
                     }
                     break;
                 }
             }
             // Reset it to undefined if it's empty.
-            if (Sojiro_1.default.isEmpty(cprefix)) {
-                cprefix = undefined;
+            if (Sojiro_1.default.isEmpty(commandprefix)) {
+                commandprefix = undefined;
             }
             // By default, return the following.
-            return cprefix || botClientConfig.commandPrefix || botConfig.commandPrefix;
+            return commandprefix || botClientConfig.commandPrefix || botConfig.commandPrefix;
         });
     }
 }

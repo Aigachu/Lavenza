@@ -16,7 +16,7 @@ import {BotTwitchClientConfig} from "../../BotConfigurations";
 import Morgana from "../../../Confidant/Morgana";
 import Igor from "../../../Confidant/Igor";
 import Gestalt from "../../../Gestalt/Gestalt";
-import {TwitchClientConfigurations} from "../ClientConfigurations";
+import {TwitchClientChannelConfigurations, TwitchClientConfigurations} from "../ClientConfigurations";
 
 // Manually require TMI Client since it doesn't work with imports.
 const TMIClient = require('tmi.js').client;
@@ -38,7 +38,7 @@ export default class TwitchClient extends TMIClient implements ClientInterface {
   /**
    * @inheritDoc
    */
-  public type: ClientType;
+  public type: ClientType = ClientType.Twitch;
 
   /**
    * @inheritDoc
@@ -54,30 +54,42 @@ export default class TwitchClient extends TMIClient implements ClientInterface {
    *   Bot that this client is linked to.
    */
   constructor(config: BotTwitchClientConfig, bot: Bot) {
-    // Build the configuration that the parent TMI client wants.
-    let tmiConfiguration = {
+    // Call the constructor of the Discord Client parent Class.
+    super({
       identity: {
         username: config.username,
         password: bot.env.TWITCH_OAUTH_TOKEN,
       },
       channels: config.channels
-    };
-
-    // Call the constructor of the Discord Client parent Class.
-    super(tmiConfiguration);
+    });
 
     // Assign the bot to the current client.
     this.bot = bot;
-
-    // Just a utility value to track the client type.
-    this.type = ClientType.Twitch;
 
     // Assign configurations to the client.
     this.config = config;
 
     // Event: When the client connects to Twitch and is ready.
     this.on('connected', async () => {
+      // Send a message confirming our connection to Twitch.
       await Morgana.success('Twitch client successfully connected for {{bot}}!', {bot: this.bot.id});
+
+      // We sync the client configurations.
+      let channels = await Gestalt.sync({}, `/bots/${this.bot.id}/clients/${this.type}/channels`);
+
+      // Generate configuration for each channel.
+      await Promise.all(this.config.channels.map(async channel => {
+        // For all guilds, we initialize this default configuration.
+        let baseChannelConfig: TwitchClientChannelConfigurations = {
+          name: channel,
+          commandPrefix: this.bot.config.commandPrefix,
+          userEminences: {},
+        };
+        if (!(channel in channels)) {
+          channels[channel] = baseChannelConfig;
+        }
+        await Gestalt.update(`/bots/${this.bot.id}/clients/${this.type}/channels`, channels)
+      }));
     });
 
     // Event: When the twitch client receives a message.
@@ -95,7 +107,7 @@ export default class TwitchClient extends TMIClient implements ClientInterface {
         ),
         content: message,
         context: context,
-        channel: new TwitchChannel(target.replace('#', ''), context['message-type'])
+        channel: new TwitchChannel(target, target.replace('#', ''), context['message-type'])
       };
 
       this.bot.listen(msgData, this).catch(Igor.stop);
@@ -126,18 +138,6 @@ export default class TwitchClient extends TMIClient implements ClientInterface {
     // Translations are manageable through all of these contexts.
     await Gestalt.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/channels`);
     await Gestalt.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/users`);
-
-    // We start by syncing the permissions configuration.
-    let channels = await Gestalt.sync({}, `/bots/${this.bot.id}/clients/${this.type}/channels`);
-
-    // For all guilds, we initialize this default configuration.
-    let baseConfig: TwitchClientConfigurations;
-    await Promise.all(this.config.channels.map(async channel => {
-      if (!(channel in channels)) {
-        channels[channel] = baseConfig;
-      }
-      await Gestalt.update(`/bots/${this.bot.id}/clients/${this.type}/channels`, channels)
-    }));
   }
 
   /**

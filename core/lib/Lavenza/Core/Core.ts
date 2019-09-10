@@ -7,7 +7,7 @@
  */
 
 // Modules.
-import arp from 'app-root-path';
+import * as arp from 'app-root-path';
 
 // Imports.
 import Gestalt from '../Gestalt/Gestalt';
@@ -19,6 +19,7 @@ import Makoto from '../Confidant/Makoto';
 import Sojiro from '../Confidant/Sojiro';
 import Igor from '../Confidant/Igor';
 import CoreSettings from "./CoreSettings";
+import Yoshida from "../Confidant/Yoshida";
 
 /**
  * Provides class for the Core of the Lavenza application.
@@ -82,6 +83,9 @@ export default class Core {
       },
       database: rootPath + '/database'
     };
+
+    // Initialize Yoshida's translation options since we'll be using them throughout the application.
+    await Yoshida.initializeI18N();
   }
 
   /**

@@ -41,7 +41,7 @@ export default class TalentManager {
   /**
    * Object to store the list of talents in the application.
    */
-  public static talents: AssociativeObject<Talent>;
+  public static talents: AssociativeObject<Talent> = {};
 
   /**
    * This is a static class. The constructor will never be used.
@@ -158,7 +158,7 @@ export default class TalentManager {
     talent = new talent();
 
     // If the talent could not be loaded somehow, we end here.
-    if (Sojiro.isEmpty(talent)) {
+    if (!talent) {
       await Igor.throw("An error occurred when requiring the {{talent}} talent's class. Verify the Talent's info file.", {talent: name});
     }
 

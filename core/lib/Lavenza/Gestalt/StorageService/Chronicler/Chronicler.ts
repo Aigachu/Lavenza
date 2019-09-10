@@ -6,7 +6,7 @@
  */
 
 // Modules.
-import lodash from 'lodash';
+const lodash = require('lodash');
 
 // Imports.
 import Akechi from '../../../Confidant/Akechi';

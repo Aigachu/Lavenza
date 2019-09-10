@@ -45,7 +45,8 @@ class TalentManager {
     /**
      * This is a static class. The constructor will never be used.
      */
-    constructor() { }
+    constructor() {
+    }
     /**
      * Build handler for the TalentManager.
      *
@@ -148,7 +149,7 @@ class TalentManager {
             let talent = require(talentDirectoryPath + '/' + config.class)['default'];
             talent = new talent();
             // If the talent could not be loaded somehow, we end here.
-            if (Sojiro_1.default.isEmpty(talent)) {
+            if (!talent) {
                 yield Igor_1.default.throw("An error occurred when requiring the {{talent}} talent's class. Verify the Talent's info file.", { talent: name });
             }
             // Await building of the talent.
@@ -160,3 +161,7 @@ class TalentManager {
     }
 }
 exports.default = TalentManager;
+/**
+ * Object to store the list of talents in the application.
+ */
+TalentManager.talents = {};

@@ -5,39 +5,42 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Imports.
+import Command from "../../../../../lib/Lavenza/Bot/Command/Command";
+import Sojiro from "../../../../../lib/Lavenza/Confidant/Sojiro";
+import BotManager from "../../../../../lib/Lavenza/Bot/BotManager";
+
 /**
  * Shutdown Command.
  *
  * Handles the 'boot' command, allowing a bot to shutdown other bots in the system.
  */
-export default class Shutdown extends Lavenza.Command {
+export default class Shutdown extends Command {
 
   /**
    * @inheritDoc
    */
-  static async build(config, talent) {
-
+  async build(config, talent) {
     // The build function must always run the parent's build function! Don't remove this line.
     await super.build(config, talent);
-
   }
 
   /**
    * @inheritDoc
    */
-  static async execute(resonance) {
+  async execute(resonance) {
     // The raw content here should be the ID of the bot we want to activate.
-    let botToShutdown = resonance.order.rawContent;
+    let botToShutdown = resonance.instruction.content;
 
     // Now we should check if the bot exists.
-    if (Lavenza.isEmpty(Lavenza.BotManager.bots[botToShutdown])) {
+    if (Sojiro.isEmpty(BotManager.bots[botToShutdown])) {
       await resonance.__reply(`Hmm...That bot doesn't seem to exist in the codebase. Did you make a typo? Make sure to enter the exact ID of the bot for this to work.`);
       return;
     }
 
     // If all is good, we can go ahead and boot the bot.
     await resonance.__reply(`Shutting down {{bot}}...`, {bot: botToShutdown});
-    await Lavenza.BotManager.shutdown(botToShutdown);
+    await BotManager.shutdown(botToShutdown);
   }
 
 }

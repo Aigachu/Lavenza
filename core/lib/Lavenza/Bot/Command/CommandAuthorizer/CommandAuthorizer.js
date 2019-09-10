@@ -39,6 +39,10 @@ class CommandAuthorizer {
      *   The command that was found in the Resonance.
      */
     constructor(resonance, command) {
+        /**
+         * Object to store relevant configurations.
+         */
+        this.configurations = {};
         this.resonance = resonance;
         this.bot = resonance.bot;
         this.type = resonance.client.type;
@@ -83,7 +87,7 @@ class CommandAuthorizer {
             // Now we'll check if the person that invoked the command is the Joker.
             // If so, no access checks are needed.
             // @TODO - Masquerade would be nice to facilitate testing purposes!
-            if (this.resonance.author.id !== this.resonance.bot.joker[this.resonance.client.type].id) {
+            if (this.authorID == this.resonance.bot.joker[this.resonance.client.type].id) {
                 return true;
             }
             // Check if user is allowed to use this command.
@@ -127,12 +131,14 @@ class CommandAuthorizer {
             // If command arguments aren't valid, we hit the message with a reply explaining the error, and then end.
             let argumentsValidation = yield this.validateCommandArguments();
             if (!argumentsValidation) {
+                yield Morgana_1.default.warn('arguments validation failed');
                 return false;
             }
             // Now, well execute the warrant() function, which does checks specific to the client.
             let clientWarrant = yield this.warrant();
             // noinspection RedundantIfStatementJS
             if (!clientWarrant) {
+                yield Morgana_1.default.warn('client warrant validation failed');
                 return false;
             }
             return true;
@@ -200,15 +206,15 @@ class CommandAuthorizer {
     validateEminence(requiredEminence = undefined) {
         return __awaiter(this, void 0, void 0, function* () {
             // Get the role of the author of the message.
-            let eminence = yield this.getAuthorEminence();
+            let authorEminence = yield this.getAuthorEminence();
             // If an eminence is provided in the arguments, we validate that the user has the provided eminence (or above).
             if (requiredEminence) {
-                return eminence >= Eminence_1.default[requiredEminence];
+                return authorEminence >= Eminence_1.default[requiredEminence];
             }
             // First, we determine the role level needed to run this command.
             requiredEminence = Eminence_1.default[this.configurations.command.client.authorization.accessEminence] || Eminence_1.default[this.configurations.command.base.authorization.accessEminence] || Eminence_1.default.None;
             // Then we just make sure that the author's ID can be found where it's needed.
-            return eminence >= requiredEminence;
+            return authorEminence >= requiredEminence;
         });
     }
     /**
@@ -224,6 +230,10 @@ class CommandAuthorizer {
         return __awaiter(this, void 0, void 0, function* () {
             // Get the arguments we need.
             let args = yield this.resonance.getArguments();
+            // If there are no arguments, we have nothing to validate.
+            if (Sojiro_1.default.isEmpty(args['_']) && args.length === 1) {
+                return true;
+            }
             // First, we perform input validations.
             if (this.configurations.command.parameters.input) {
                 if (this.configurations.command.parameters.input.required === true && Sojiro_1.default.isEmpty(args['_'])) {

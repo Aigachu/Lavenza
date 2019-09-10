@@ -17,8 +17,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
 const fs = require("fs");
-const fs_readfile_promise_1 = require("fs-readfile-promise");
-const js_yaml_1 = require("js-yaml");
+const fsrfp = require("fs-readfile-promise");
+const yaml = require("js-yaml");
 const path = require("path");
 // Imports.
 const Igor_1 = require("./Igor");
@@ -91,7 +91,7 @@ class Akechi {
      */
     static readFile(path) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield fs_readfile_promise_1.default(path);
+            return yield fsrfp(path);
         });
     }
     /**
@@ -108,7 +108,7 @@ class Akechi {
             // Read the file data.
             let fileData = yield this.readFile(filePath);
             // Get document, or throw exception on error
-            return js_yaml_1.default.safeLoad(fileData);
+            return yaml.safeLoad(fileData);
         });
     }
     /**
@@ -125,7 +125,7 @@ class Akechi {
             if (!path.endsWith('.yml')) {
                 path += '.yml';
             }
-            fs.writeFile(path, js_yaml_1.default.safeDump(output), function (err) {
+            fs.writeFile(path, yaml.safeDump(output), function (err) {
                 if (err) {
                     Igor_1.default.throw(err).then(() => {
                         // Do nothing.

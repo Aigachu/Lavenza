@@ -81,12 +81,12 @@ class DiscordCommandAuthorizer extends CommandAuthorizer_1.default {
             // First, we'll check if this user's ID is found in the core configuration of the bot for this client.
             // Get the user roles configurations for the Guild where this message took place.
             let clientUserEminences = this.configurations.bot.client.userEminences;
-            if (this.authorID in clientUserEminences) {
+            if (clientUserEminences && clientUserEminences[this.authorID]) {
                 return Eminence_1.default[clientUserEminences[this.authorID]];
             }
             // If the user's ID is not found in the prior config, we'll search the client specific configurations.
             let guildUserEminences = this.configurations.client.guilds[this.resonance.guild.id].userEminences;
-            if (this.authorID in guildUserEminences) {
+            if (guildUserEminences && guildUserEminences[this.authorID]) {
                 return Eminence_1.default[guildUserEminences[this.authorID]];
             }
             // If nothing is found, we'll assume this user's eminence is None.

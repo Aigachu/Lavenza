@@ -16,7 +16,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
-const lodash_1 = require("lodash");
+const lodash = require('lodash');
 // Imports.
 const Akechi_1 = require("../../../Confidant/Akechi");
 const Sojiro_1 = require("../../../Confidant/Sojiro");
@@ -130,7 +130,7 @@ class Chronicler extends StorageService_1.default {
                 data = {};
             }
             // We use lodash to merge the payload containing the updates, with the original data.
-            let updatedData = lodash_1.default.merge(data, payload);
+            let updatedData = lodash.merge(data, payload);
             // Finally, we post the new merged data back to the same endpoint.
             yield this.post(endpoint, updatedData);
             // We return the newly merged data.

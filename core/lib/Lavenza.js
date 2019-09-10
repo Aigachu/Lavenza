@@ -7,8 +7,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 // Load Environment Variables from .env file at the root of the project.
-const dotenv_1 = require("dotenv");
-dotenv_1.default.load();
+const DotEnv = require("dotenv");
+DotEnv.load();
 // Configure colors for console.
 // Set console color themes.
 /** @see https://www.npmjs.com/package/colors */

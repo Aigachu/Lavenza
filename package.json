@@ -4,7 +4,9 @@
   "description": "A development framework for chatbots that supports many platforms. The successor to Lavenza, built in NodeJS and written in ES6!",
   "main": "core/lib/Lavenza.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "tsc",
+    "dev": "docker-compose up --detach --no-recreate && ./node_modules/nodemon/bin/nodemon.js -e ts  --exec \"npm run compile\""
   },
   "engines": {
     "node": ">=6.0.0"
@@ -50,6 +52,7 @@
     "minimist": "^1.2.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
+    "nodemon": "^1.19.2",
     "parse-reminder": "^1.2.0",
     "tmi": "^2.0.0",
     "tmi.js": "^1.4.5",

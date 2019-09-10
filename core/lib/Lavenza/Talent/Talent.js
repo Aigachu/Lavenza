@@ -174,7 +174,13 @@ class Talent {
     loadListeners() {
         return __awaiter(this, void 0, void 0, function* () {
             // The 'Listeners' folder will simply have a collection of Class files. We'll get the list here.
+            // We'll ge the tentative path first.
             let listenerClassesPath = `${this.directory}/hooks/Listeners`;
+            // If this directory doesn't exist, we simply return.
+            if (!(yield Akechi_1.default.isDirectory(listenerClassesPath))) {
+                return;
+            }
+            // Get the list of listener classes at the path.
             let listenerClasses = yield Akechi_1.default.getFilesFrom(listenerClassesPath);
             // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.
             // This error should be caught and handled above.

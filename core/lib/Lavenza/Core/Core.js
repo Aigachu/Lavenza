@@ -17,7 +17,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
-const app_root_path_1 = require("app-root-path");
+const arp = require("app-root-path");
 // Imports.
 const Gestalt_1 = require("../Gestalt/Gestalt");
 const TalentManager_1 = require("../Talent/TalentManager");
@@ -27,6 +27,7 @@ const Morgana_1 = require("../Confidant/Morgana");
 const Makoto_1 = require("../Confidant/Makoto");
 const Sojiro_1 = require("../Confidant/Sojiro");
 const Igor_1 = require("../Confidant/Igor");
+const Yoshida_1 = require("../Confidant/Yoshida");
 /**
  * Provides class for the Core of the Lavenza application.
  *
@@ -58,11 +59,13 @@ class Core {
                 root: rootPath,
                 bots: rootPath + '/bots',
                 talents: {
-                    core: app_root_path_1.default.path + '/core/talents',
+                    core: arp.path + '/core/talents',
                     custom: rootPath + '/talents'
                 },
                 database: rootPath + '/database'
             };
+            // Initialize Yoshida's translation options since we'll be using them throughout the application.
+            yield Yoshida_1.default.initializeI18N();
         });
     }
     /**
@@ -169,4 +172,4 @@ exports.default = Core;
  * Stores Lavenza's version.
  * The version number is obtained from the 'package.json' file at the root of the project.
  */
-Core.version = require(app_root_path_1.default.path + '/package').version;
+Core.version = require(arp.path + '/package').version;

@@ -40,7 +40,7 @@ export default class BotManager {
   /**
    * Store a list of all bots in the application.
    */
-  public static bots: AssociativeObject<Bot>;
+  public static bots: AssociativeObject<Bot> = {};
 
   /**
    * This is a static class. The constructor will never be used.

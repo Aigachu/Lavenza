@@ -221,7 +221,15 @@ export default class Talent {
    */
   async loadListeners() {
     // The 'Listeners' folder will simply have a collection of Class files. We'll get the list here.
+    // We'll ge the tentative path first.
     let listenerClassesPath = `${this.directory}/hooks/Listeners`;
+
+    // If this directory doesn't exist, we simply return.
+    if (!await Akechi.isDirectory(listenerClassesPath)) {
+      return;
+    }
+
+    // Get the list of listener classes at the path.
     let listenerClasses = await Akechi.getFilesFrom(listenerClassesPath);
 
     // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.

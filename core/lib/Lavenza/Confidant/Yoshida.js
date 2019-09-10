@@ -16,33 +16,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
-const app_root_path_1 = require("app-root-path");
+const arp = require("app-root-path");
 const fs = require("fs");
-const i18n_1 = require("i18n");
-i18n_1.default.configure({
-    defaultLocale: process.env.LAVENZA_DEFAULT_LOCALE,
-    directory: app_root_path_1.default.path + '/lang',
-    autoReload: true
-});
+const i18n = require("i18n");
 // Imports the Google Cloud client library
 // Your service account key must be set locally and on the production environment.
 // @see https://cloud.google.com/docs/authentication/getting-started
 const translate_1 = require("@google-cloud/translate");
-// Initialize variable that will house translate client.
-let googleTranslate = undefined;
-// If a project ID is set, we can set up translate.
-if (process.env.LAVENZA_GOOGLE_TRANSLATE_PROJECT_ID) {
-    // Your Google Cloud Platform project ID is fetched from the .env file.
-    const googleTranslateProjectId = process.env.LAVENZA_GOOGLE_TRANSLATE_PROJECT_ID;
-    // Instantiates a translation client.
-    let googleTranslateConfig = {};
-    googleTranslateConfig['projectId'] = googleTranslateProjectId;
-    googleTranslate = new translate_1.Translate(googleTranslateConfig);
-}
 // Imports.
 const Akechi_1 = require("./Akechi");
 const Igor_1 = require("./Igor");
 const Sojiro_1 = require("./Sojiro");
+const Core_1 = require("../Core/Core");
 /**
  * Provides a class that handles Dictionary and Database management, as well as translation.
  *
@@ -52,6 +37,31 @@ const Sojiro_1 = require("./Sojiro");
  * personalization of texts. It will also handle translations.
  */
 class Yoshida {
+    /**
+     * Initialize values needed to use I18N efficiently.
+     */
+    static initializeI18N() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Configure i18n real quick.
+            i18n.configure({
+                defaultLocale: process.env.LAVENZA_DEFAULT_LOCALE,
+                directory: Core_1.default.paths.root + '/lang',
+                autoReload: true
+            });
+            // Initialize variable that will house translate client.
+            let googleTranslate = undefined;
+            // If a project ID is set, we can set up translate.
+            if (process.env.LAVENZA_GOOGLE_TRANSLATE_PROJECT_ID) {
+                // Your Google Cloud Platform project ID is fetched from the .env file.
+                const googleTranslateProjectId = process.env.LAVENZA_GOOGLE_TRANSLATE_PROJECT_ID;
+                // Instantiates a translation client.
+                let googleTranslateConfig = {};
+                googleTranslateConfig['projectId'] = googleTranslateProjectId;
+                googleTranslate = new translate_1.Translate(googleTranslateConfig);
+            }
+            this.googleTranslate = googleTranslate;
+        });
+    }
     /**
      * Function to translate a string, that makes use of i18n's translation function (__).
      *
@@ -80,14 +90,14 @@ class Yoshida {
             // If the locale is undefined, we simply use the default one.
             params.locale = params.locale ? params.locale : process.env.LAVENZA_DEFAULT_LOCALE;
             // Get the translations from i18n.
-            let englishTranslation = i18n_1.default.__({ phrase: params.phrase, locale: 'en' }, params.replacers);
-            let translation = i18n_1.default.__({ phrase: params.phrase, locale: params.locale }, params.replacers);
+            let englishTranslation = i18n.__({ phrase: params.phrase, locale: 'en' }, params.replacers);
+            let translation = i18n.__({ phrase: params.phrase, locale: params.locale }, params.replacers);
             // If the text is untranslated, we'll fallback to google translate if it's enabled.
-            if (process.env.LAVENZA_GOOGLE_TRANSLATE_STATUS === 'enabled' && googleTranslate && params.locale !== 'en' && englishTranslation === translation) {
+            if (process.env.LAVENZA_GOOGLE_TRANSLATE_STATUS === 'enabled' && this.googleTranslate && params.locale !== 'en' && englishTranslation === translation) {
                 // Google Translate doesn't have parsing for replacers.
                 // We want to add a unique identifier to the beginning of each replacer key to prevent translation.
                 params.phrase = yield params.phrase.replace(/{{/g, '{{RPL.');
-                [translation] = yield googleTranslate.translate(params.phrase, params.locale);
+                [translation] = yield this.googleTranslate.translate(params.phrase, params.locale);
                 // Now we can set everything back to normal before they're stored and sent.
                 params.phrase = yield params.phrase.replace(/{{RPL\./g, '{{');
                 translation = yield translation.replace(/{{RPL\./g, '{{');
@@ -95,9 +105,9 @@ class Yoshida {
                 // We'll save Google's translation to our translation file, so we can re-use it later.
                 // This will avoid us constantly translating the same string over and over.
                 // We'll save it right into our i18n instance.
-                let storage = require(`${app_root_path_1.default.path}/lang/${params.locale}.json`);
+                let storage = require(`${arp.path}/lang/${params.locale}.json`);
                 storage[params.phrase] = translation;
-                yield fs.writeFile(`${app_root_path_1.default.path}/lang/${params.locale}.json`, JSON.stringify(storage, null, 2), function (err) {
+                yield fs.writeFile(`${arp.path}/lang/${params.locale}.json`, JSON.stringify(storage, null, 2), function (err) {
                     if (err)
                         return console.log(err);
                 });
@@ -107,6 +117,11 @@ class Yoshida {
                         translation = translation.replace(`{{${replacer}}}`, params.replacers[replacer]);
                     })));
                 }
+            }
+            // If the translation is undefined for whatever reason, we simply return the regular phrase.
+            // We may need to make our own Replacers logic in the future, since we're currently relying on i18n's function.
+            if (!translation) {
+                return params.phrase;
             }
             // Hotfix...
             // FUCKING SPECIAL CHARACTERS MAN.

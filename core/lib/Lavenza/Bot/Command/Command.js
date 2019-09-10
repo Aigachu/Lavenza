@@ -167,11 +167,11 @@ class Command {
             let pathToParameterConfig = `${this.directory}/parameters.yml`;
             // Attempt to fetch client configuration.
             if (!(yield Akechi_1.default.fileExists(pathToParameterConfig))) {
-                return undefined;
+                return {};
             }
             // Load configuration since it exists.
             let config = yield Akechi_1.default.readYamlFile(pathToParameterConfig);
-            return Sojiro_1.default.isEmpty(config) ? undefined : config;
+            return Sojiro_1.default.isEmpty(config) ? {} : config;
         });
     }
     /**

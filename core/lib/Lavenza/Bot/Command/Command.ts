@@ -187,12 +187,12 @@ export default abstract class Command {
 
     // Attempt to fetch client configuration.
     if (!await Akechi.fileExists(pathToParameterConfig)){
-      return undefined;
+      return {} as CommandParameterConfig;
     }
 
     // Load configuration since it exists.
     let config = await Akechi.readYamlFile(pathToParameterConfig);
-    return Sojiro.isEmpty(config) ? undefined : config;
+    return Sojiro.isEmpty(config) ? {} as CommandParameterConfig : config;
   }
 
   /**

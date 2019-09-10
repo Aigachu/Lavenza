@@ -22,7 +22,8 @@ import Morgana from "../../../Confidant/Morgana";
 import Igor from "../../../Confidant/Igor";
 import Sojiro from "../../../Confidant/Sojiro";
 import Gestalt from "../../../Gestalt/Gestalt";
-import {DiscordClientConfigurations} from "../ClientConfigurations";
+import {DiscordClientConfigurations, DiscordClientGuildConfigurations} from "../ClientConfigurations";
+import {AssociativeObject} from "../../../Types";
 
 /**
  * Provides a class for Discord Clients managed in Lavenza.
@@ -42,7 +43,7 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
   /**
    * @inheritDoc
    */
-  public type: ClientType;
+  public type: ClientType = ClientType.Discord;
 
   /**
    * @inheritDoc
@@ -64,15 +65,28 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
     // Assign the bot to the current client.
     this.bot = bot;
 
-    // Just a utility value to track the client type.
-    this.type = ClientType.Discord;
-
     // Assign configurations to the client.
     this.config = config;
 
     // Event: When the client connects to Discord and is ready.
     this.on('ready', async () => {
       await Morgana.success('Discord client successfully connected for {{bot}}!', {bot: this.bot.id});
+
+      // We start by syncing the guild configurations.
+      let guilds = await Gestalt.sync({}, `/bots/${this.bot.id}/clients/${this.type}/guilds`);
+
+      // Set up initial guild configurations.
+      await Promise.all(this.guilds.map(async guild => {
+        let baseGuildConfig: DiscordClientGuildConfigurations = {
+          name: guild.name,
+          commandPrefix: await this.bot.config.commandPrefix,
+          userEminences: {},
+        };
+        if (!(guild.id in guilds)) {
+          guilds[guild.id] = baseGuildConfig;
+        }
+        await Gestalt.update(`/bots/${this.bot.id}/clients/${this.type}/guilds`, guilds)
+      }));
 
       // Set game text.
       this.user.setActivity(this.config['activity']).catch(console.error);
@@ -124,21 +138,6 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
     await Gestalt.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/guilds`);
     await Gestalt.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/channels`);
     await Gestalt.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/users`);
-
-    // Event: When the client connects to Discord and is ready.
-    this.on('ready', async () => {
-      // We start by syncing the guild configurations.
-      let guilds = await Gestalt.sync({}, `/bots/${this.bot.id}/clients/${this.type}/guilds`);
-
-      // Set up initial guild configurations.
-      let baseConfig: DiscordClientConfigurations;
-      await Promise.all(this.guilds.map(async guild => {
-        if (!(guild.id in guilds)) {
-          guilds[guild.id] = baseConfig;
-        }
-        await Gestalt.update(`/bots/${this.bot.id}/clients/${this.type}/guilds`, guilds)
-      }));
-    });
   }
 
   // noinspection JSMethodCanBeStatic

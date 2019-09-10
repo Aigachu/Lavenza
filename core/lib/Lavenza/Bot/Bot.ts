@@ -6,7 +6,7 @@
  */
 
 // Modules.
-import DotEnv from 'dotenv';
+import * as DotEnv from 'dotenv';
 
 // Imports.
 // Holy shit this LIST! LMFAO!
@@ -31,6 +31,7 @@ import {AssociativeObject} from "../Types";
 import DiscordClient from "./Client/DiscordClient/DiscordClient";
 import {DiscordClientConfigurations, TwitchClientConfigurations} from "./Client/ClientConfigurations";
 import BotEnvironmentVariables from "./BotEnvironmentVariables";
+import TwitchUser from "./Client/TwitchClient/TwitchUser";
 
 /**
  * Provides a class for Bots.
@@ -65,7 +66,7 @@ export default class Bot {
   /**
    * Object to store list of Clients the bot has.
    */
-  public clients: AssociativeObject<ClientInterface>;
+  public clients: AssociativeObject<ClientInterface> = {};
 
   /**
    * Stores a list of all talents associated with a bot, through their ID.
@@ -129,7 +130,8 @@ export default class Bot {
    * Load the .env file specific to this bot, and parse its contents.
    */
   async loadEnvironmentVariables() {
-    this.env = DotEnv.parse(`${this.directory}/.env`);
+    let envFileData = await Akechi.readFile(`${this.directory}/.env`);
+    this.env = DotEnv.parse(envFileData) as BotEnvironmentVariables;
   }
 
   /**
@@ -244,14 +246,14 @@ export default class Bot {
   async setJoker() {
     // Await processing of all clients.
     // @TODO - Factory Design Pattern for these.
-    await Promise.all(Object.keys(this.clients).map(async clientKey => {
+    await Promise.all(Object.keys(this.clients).map(async (clientKey: ClientType) => {
       // Depending on the type of client, we act accordingly.
       switch (clientKey) {
         // In Discord, we fetch the architect's user using the ID.
         case ClientType.Discord: {
           let config = await this.getActiveClientConfig(ClientType.Discord) as BotDiscordClientConfig;
           let client = await this.getClient(clientKey) as DiscordClient;
-          this.joker.discord = client.fetchUser(config.joker);
+          this.joker.discord = await client.fetchUser(config.joker);
           break;
         }
 
@@ -259,7 +261,7 @@ export default class Bot {
         // @TODO - Build a TwitchUser object using the client.
         case ClientType.Twitch: {
           let config = await this.getActiveClientConfig(ClientType.Twitch) as BotTwitchClientConfig;
-          this.joker.twitch = {username: config.joker};
+          this.joker.twitch = new TwitchUser(config.joker, config.joker, config.joker);
           break;
         }
       }
@@ -393,40 +395,54 @@ export default class Bot {
     }
 
     // Await the processing of all talents in the bot's config object.
-    await Promise.all(this.config.talents.map(async (talentKey) => {
+    await Promise.all(this.config.talents.map(async (talentMachineName) => {
       // Then, we'll check if this talent already exists in the Manager.
       // This happens if another bot already loaded it.
       // If it exists, we're good.
-      let talent = await TalentManager.getTalent(talentKey);
-      if (!talent) {
+      let talent = await TalentManager.getTalent(talentMachineName);
+      if (talent) {
+        // Validate the dependencies for this talent.
+        await this.validateTalentDependencies(talentMachineName);
         return;
       }
 
       // Await the loading of the talent.
       // If it the load fails, we'll remove the talent from the bot's configuration.
-      await TalentManager.loadTalent(talentKey).catch(async error => {
-        this.config.talents = Sojiro.removeFromArray(this.config.talents, talentKey);
+      await TalentManager.loadTalent(talentMachineName).then(async () => {
+        // Validate the dependencies for this talent.
+        await this.validateTalentDependencies(talentMachineName);
+      }).catch(async error => {
+        // Disable this talent for this bot.
+        this.config.talents = Sojiro.removeFromArray(this.config.talents, talentMachineName);
 
         // Send a warning message to the console.
-        await Morgana.warn('Error occurred while loading the {{talent}} talent...', {talent: talentKey});
+        await Morgana.warn('Error occurred while loading the {{talent}} talent...', {talent: talentMachineName});
         await Morgana.warn(error.message);
       });
+    }));
+  }
 
-      // Check talent's configuration to see if dependencies are loaded into this bot.
-      await Promise.all(TalentManager.talents[talentKey].config.dependencies.map(async (dependency) => {
-        // If the dependency isn't found in th`is bot's config, we shouldn't load this talent.
-        if (!this.config.talents.includes(dependency)) {
-          // Send a warning to the console.
-          await Morgana.warn(`The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.`, {
-            talent: talentKey,
-            parent: dependency,
-            bot: this.id
-          });
+  /**
+   * Validate that the bot has dependencies this talent requires.
+   *
+   * @param talentMachineName
+   *   Machine name of the talent to check dependencies for.
+   */
+  async validateTalentDependencies(talentMachineName: string) {
+    // Check talent's configuration to see if dependencies are loaded into this bot.
+    await Promise.all(TalentManager.talents[talentMachineName].config.dependencies.map(async (dependency) => {
+      // If the dependency isn't found in this bot's config, we shouldn't load this talent.
+      if (!this.config.talents.includes(dependency)) {
+        // Send a warning to the console.
+        await Morgana.warn(`The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.`, {
+          talent: talentMachineName,
+          parent: dependency,
+          bot: this.id
+        });
 
-          // Remove this talent from the bot.
-          this.config.talents = Sojiro.removeFromArray(this.config.talents, talentKey);
-        }
-      }));
+        // Remove this talent from the bot.
+        this.config.talents = Sojiro.removeFromArray(this.config.talents, talentMachineName);
+      }
     }));
   }
 
@@ -613,7 +629,7 @@ export default class Bot {
    * @returns
    *   Given the client type, return the raw content of the message heard.
    */
-  static async decipher(message, client): Promise<string> {
+  static async decipher(message: any, client: ClientInterface): Promise<string> {
     // Depending on the Client Type, decipher the message accordingly.
     switch (client.type) {
       // In the case of Discord, we get the 'content' property of the message object.
@@ -665,14 +681,14 @@ export default class Bot {
    */
   async initializeClients() {
     // Await the processing and initialization of all clients in the configurations.
-    await Promise.all(this.config.clients.map(async (clientType: ClientType) => {
+    await Promise.all(this.config.clients.map(async (clientTypeKey: string) => {
       // Load configuration since it exists.
-      let clientConfig = await this.getActiveClientConfig(ClientType[clientType]);
+      let clientConfig = await this.getActiveClientConfig(ClientType[clientTypeKey]);
 
       if (Sojiro.isEmpty(clientConfig)) {
         await Morgana.warn('Configuration file could not be loaded for the {{client}} client in {{bot}}. This client will not be instantiated.' +
           'To create a configuration file, you can copy the ones found in the "example" bot folder.', {
-          client: clientType,
+          client: clientTypeKey,
           bot: this.id
         });
         return;
@@ -680,7 +696,7 @@ export default class Bot {
 
       // Uses the ClientFactory to build the appropriate factory given the type.
       // The client is then set to the bot.
-      this.clients[clientType] = await ClientFactory.build(clientType, clientConfig, this);
+      this.clients[ClientType[clientTypeKey]] = await ClientFactory.build(ClientType[clientTypeKey], clientConfig, this);
     }));
   }
 
@@ -724,8 +740,8 @@ export default class Bot {
     // Get bot's client configuration.
     let botClientConfig = await this.getClientConfig(resonance.client.type);
 
-    // Variable to store retrieved cprefix.
-    let cprefix = undefined;
+    // Variable to store retrieved command prefix.
+    let commandprefix = undefined;
 
     // Depending on the client type, we'll be checking different types of configurations.
     switch (resonance.client.type) {
@@ -734,7 +750,7 @@ export default class Bot {
         // Get client specific configurations.
         let clientConfig = await resonance.client.getActiveConfigurations() as DiscordClientConfigurations;
         if (resonance.message.guild) {
-          cprefix = clientConfig.guilds[resonance.message.guild.id].commandPrefix || undefined;
+          commandprefix = clientConfig.guilds[resonance.message.guild.id].commandPrefix || undefined;
         }
         break;
       }
@@ -744,19 +760,19 @@ export default class Bot {
         // Get client specific configurations.
         let clientConfig = await resonance.client.getActiveConfigurations() as TwitchClientConfigurations;
         if (resonance.message.channel) {
-          cprefix = clientConfig.channels[resonance.message.channel.id].commandPrefix || undefined;
+          commandprefix = clientConfig.channels[resonance.message.channel.id].commandPrefix || undefined;
         }
         break;
       }
     }
 
     // Reset it to undefined if it's empty.
-    if (Sojiro.isEmpty(cprefix)) {
-      cprefix = undefined;
+    if (Sojiro.isEmpty(commandprefix)) {
+      commandprefix = undefined;
     }
 
     // By default, return the following.
-    return cprefix || botClientConfig.commandPrefix || botConfig.commandPrefix;
+    return commandprefix || botClientConfig.commandPrefix || botConfig.commandPrefix;
   }
 
 }

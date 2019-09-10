@@ -17,10 +17,12 @@ class TwitchChannel {
      *
      * @param id
      *   ID of the channel.
+     * @param username
+     *   Username of the user that controls this channel.
      * @param type @TODO - Make this an enum
      *   The type of channel. Either whisper or channel.
      */
-    constructor(id, type) {
+    constructor(id, username, type) {
         this.id = id;
         this.type = type;
     }
