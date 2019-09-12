@@ -8,7 +8,7 @@ activity: 'Hello world!'
 integrationUrl: 'https://discordapp.com/oauth2/authorize?&client_id=1234567890&scope=bot&permissions=1546959939'
 
 # Command Prefix override for Discord.
-# commandPrefix: ';-d'
+# commandPrefix: '!'
 
 # Joker
 # The Joker is the maker of the bot. Enter your own Discord User ID here.
@@ -16,7 +16,7 @@ integrationUrl: 'https://discordapp.com/oauth2/authorize?&client_id=1234567890&s
 # You will then be able to right-click your avatar (or anyone's avatar) and get their ID with the 'Copy ID' option.
 # There can only be 1 Joker. You have access to all commands and some core commands will send some important info
 # to you and you only.
-joker: '77517077325287424'
+joker: 'YOUR_DISCORD_ID'
 
 # User Eminences Configuration.
 # Users in Lavenza are managed as a simple hierarchy with 5 different Eminences. Here are the official names of them:
@@ -41,7 +41,5 @@ joker: '77517077325287424'
 # As in the example below, add entries that take up a DISCORD_USER_ID: EMINENCE_ID format. The entries added here will be
 # the baseline role configuration. Additional role configuration can be customized later on per client.
 userRoles:
-  82530619355037696: Thief # Avion (?)
-  77577477425201152: Thief # Dango (?)
-  81078516870819840: Thief # Aero
-  154750117847498752: Thief # Kheops
+  DISCORD_USER_ID: Aficionado
+  DISCORD_USER_ID_2: Confidant

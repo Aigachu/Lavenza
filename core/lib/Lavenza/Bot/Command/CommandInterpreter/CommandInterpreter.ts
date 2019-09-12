@@ -69,6 +69,11 @@ export default class CommandInterpreter {
       return undefined;
     }
 
+    // If he message is entirely just the command prefix, we should return.
+    if (content === cprefix) {
+      return undefined;
+    }
+
     // At this point we know it's potentially a command. We'll need to find out which command was called.
     // First, we'll format the string accordingly if needed.
     // If a user enters a command attached to the prefix, we separate them here.
@@ -94,14 +99,6 @@ export default class CommandInterpreter {
 
     // Next, we'll build the arguments as well, using minimist.
     let args = minimist(splitContent.slice(2));
-
-    // Get the command configuration and build the configuration object for this order.
-    // We want to send the bot config and the command config back with the Order.
-    let commandConfig = await command.getActiveConfigForBot(bot);
-    let config = {
-      bot: botConfig,
-      command: commandConfig
-    };
 
     // Return our crafted Order.
     return {

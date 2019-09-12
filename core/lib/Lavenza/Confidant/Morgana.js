@@ -46,6 +46,7 @@ class Morgana {
         return __awaiter(this, void 0, void 0, function* () {
             // Fetch translations of output.
             let output = yield Yoshida_1.default.translate(message, replacers, locale);
+            output = 'Lavenza: ' + output;
             // Depending on the type, we send different types of outputs.
             switch (type) {
                 // Status messages.

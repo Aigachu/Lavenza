@@ -48,9 +48,9 @@ class BotManager {
         return __awaiter(this, void 0, void 0, function* () {
             // Await registration of all bots from the application files.
             // Upon error in registration, stop the application.
-            yield this.registerAllBotsInDirectory();
+            yield BotManager.registerAllBotsInDirectory();
             // We'll run preparation handlers for all bots as this should only be done once.
-            yield this.prepareAllBots();
+            yield BotManager.prepareAllBots();
             // Some more flavor.
             yield Morgana_1.default.success("Bot Manager preparations complete!");
         });
@@ -65,8 +65,8 @@ class BotManager {
             // Creation of the Bots collection.
             yield Gestalt_1.default.createCollection('/bots');
             // Run Gestalt handlers for each Bot.
-            yield Promise.all(Object.keys(this.bots).map((botId) => __awaiter(this, void 0, void 0, function* () {
-                let bot = yield this.getBot(botId);
+            yield Promise.all(Object.keys(BotManager.bots).map((botId) => __awaiter(this, void 0, void 0, function* () {
+                let bot = yield BotManager.getBot(botId);
                 yield bot.gestalt();
             })));
             // Some flavor.
@@ -81,7 +81,7 @@ class BotManager {
      */
     static getBot(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.bots[id];
+            return BotManager.bots[id];
         });
     }
     /**
@@ -92,12 +92,12 @@ class BotManager {
     static run() {
         return __awaiter(this, void 0, void 0, function* () {
             // Boot master bot that will manage all other bots in the codebase.
-            yield this.bootMasterBot();
+            yield BotManager.bootMasterBot();
             // Some more flavor.
             yield Morgana_1.default.success("Booted the master bot, {{bot}}!", { bot: Core_1.default.settings.master });
             // Boot auto-boot bots.
             // Some bots are set up for auto-booting. We'll handle those too.
-            yield this.bootAutoBoots();
+            yield BotManager.bootAutoBoots();
         });
     }
     /**
@@ -106,7 +106,7 @@ class BotManager {
     static bootMasterBot() {
         return __awaiter(this, void 0, void 0, function* () {
             // Await deployment of the master bot.
-            yield this.boot(Core_1.default.settings.master);
+            yield BotManager.boot(Core_1.default.settings.master);
         });
     }
     /**
@@ -121,7 +121,7 @@ class BotManager {
             }
             // Boot all bots set up in autobooting.
             yield Promise.all(Core_1.default.settings.autoboot.map((botId) => __awaiter(this, void 0, void 0, function* () {
-                yield this.boot(botId);
+                yield BotManager.boot(botId);
                 yield Morgana_1.default.success("Successfully Auto-Booted {{bot}}!", { bot: botId });
             })));
         });
@@ -135,12 +135,12 @@ class BotManager {
     static boot(botId) {
         return __awaiter(this, void 0, void 0, function* () {
             // If the bot isn't found, we can't boot it.
-            if (Sojiro_1.default.isEmpty(this.bots[botId])) {
+            if (Sojiro_1.default.isEmpty(BotManager.bots[botId])) {
                 yield Morgana_1.default.warn(`Tried to boot an non-existent bot: {{botId}}. Gracefully continuing the program.`, { botId: botId });
                 return;
             }
             // Await deployment handlers for a single bot.
-            let bot = yield this.getBot(botId);
+            let bot = yield BotManager.getBot(botId);
             yield bot.deploy();
         });
     }
@@ -153,11 +153,11 @@ class BotManager {
     static shutdown(botId) {
         return __awaiter(this, void 0, void 0, function* () {
             // If the bot isn't found, we can't shut it down.
-            if (Sojiro_1.default.isEmpty(this.bots[botId])) {
+            if (Sojiro_1.default.isEmpty(BotManager.bots[botId])) {
                 yield Morgana_1.default.warn(`Tried to shutdown an non-existent bot: {{botId}}. Gracefully continuing the program.`, { botId: botId });
                 return;
             }
-            let bot = yield this.getBot(botId);
+            let bot = yield BotManager.getBot(botId);
             yield bot.shutdown();
         });
     }
@@ -170,7 +170,7 @@ class BotManager {
     static prepareBot(botId) {
         return __awaiter(this, void 0, void 0, function* () {
             // Await preparation handler for a single bot.
-            let bot = yield this.getBot(botId);
+            let bot = yield BotManager.getBot(botId);
             yield bot.prepare();
         });
     }
@@ -180,9 +180,9 @@ class BotManager {
     static prepareAllBots() {
         return __awaiter(this, void 0, void 0, function* () {
             // Await preparation handlers for all bots.
-            yield Promise.all(Object.keys(this.bots).map((botId) => __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all(Object.keys(BotManager.bots).map((botId) => __awaiter(this, void 0, void 0, function* () {
                 // Await preparation handler for a single bot.
-                yield this.prepareBot(botId);
+                yield BotManager.prepareBot(botId);
             })));
         });
     }
@@ -203,7 +203,7 @@ class BotManager {
                 directory = Core_1.default.paths.bots + '/' + botId;
             }
             // If the bot name is part of the ignored bot list, return now.
-            if (botId in this.ignoredBots) {
+            if (botId in BotManager.ignoredBots) {
                 return;
             }
             // Get the config file for the bot.
@@ -227,7 +227,7 @@ class BotManager {
             if (bot.id === Core_1.default.settings.master) {
                 bot.isMaster = true;
             }
-            Object.assign(this.bots, { [botId]: bot });
+            Object.assign(BotManager.bots, { [botId]: bot });
             // Print a success message.
             yield Morgana_1.default.success('The {{bot}} bot has successfully been registered!', { bot: botId });
         });
@@ -253,10 +253,10 @@ class BotManager {
                 // Get the bot name. This is in fact the name of the directory.
                 let name = path.basename(directory);
                 // Register the bot.
-                yield this.registerBot(name);
+                yield BotManager.registerBot(name);
             })));
             // Array does not exist, is not an array, or is empty.
-            if (Sojiro_1.default.isEmpty(this.bots)) {
+            if (Sojiro_1.default.isEmpty(BotManager.bots)) {
                 yield Igor_1.default.throw("No bots were registered after the preparation phase. As a result, there is nothing to run.");
             }
         });

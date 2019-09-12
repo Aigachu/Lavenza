@@ -67,8 +67,8 @@ class TalentManager {
             // Creation of the Talents collection.
             yield Gestalt_1.default.createCollection('/talents');
             // Run Gestalt handlers for each Talent.
-            yield Promise.all(Object.keys(this.talents).map((machineName) => __awaiter(this, void 0, void 0, function* () {
-                let talent = yield this.getTalent(machineName);
+            yield Promise.all(Object.keys(TalentManager.talents).map((machineName) => __awaiter(this, void 0, void 0, function* () {
+                let talent = yield TalentManager.getTalent(machineName);
                 yield talent.gestalt();
             })));
             // Some flavor.
@@ -83,7 +83,7 @@ class TalentManager {
      */
     static getTalent(machineName) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.talents[machineName];
+            return TalentManager.talents[machineName];
         });
     }
     /**
@@ -131,7 +131,7 @@ class TalentManager {
     static loadTalent(name) {
         return __awaiter(this, void 0, void 0, function* () {
             // Check if the talent exists and return the path if it does.
-            let talentDirectoryPath = yield this.getTalentPath(name);
+            let talentDirectoryPath = yield TalentManager.getTalentPath(name);
             // If this directory doesn't exist, we end right off the bat.
             if (!talentDirectoryPath) {
                 yield Igor_1.default.throw("Attempted to load {{talent}} talent, but it does not exist.", { talent: name });
@@ -156,7 +156,7 @@ class TalentManager {
             // Talents have build tasks too that must be done asynchronously. We'll run them here.
             yield talent.build(config);
             // Register the talent to the Manager for future use.
-            this.talents[name] = talent;
+            TalentManager.talents[name] = talent;
         });
     }
 }

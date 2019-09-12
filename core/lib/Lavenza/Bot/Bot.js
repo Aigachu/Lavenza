@@ -363,7 +363,7 @@ class Bot {
                     this.config.talents = Sojiro_1.default.removeFromArray(this.config.talents, talentMachineName);
                     // Send a warning message to the console.
                     yield Morgana_1.default.warn('Error occurred while loading the {{talent}} talent...', { talent: talentMachineName });
-                    yield Morgana_1.default.warn(error.message);
+                    yield Igor_1.default.throw(error);
                 }));
             })));
         });

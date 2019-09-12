@@ -49,7 +49,7 @@ class Gestalt {
             let storageService = new Chronicler_1.default();
             // Await the build process of the storage service and assign it to Gestalt.
             yield storageService.build();
-            this.storageService = storageService;
+            Gestalt.storageService = storageService;
             // Some flavor text.
             yield Morgana_1.default.success("Gestalt preparations complete!");
         });
@@ -63,7 +63,7 @@ class Gestalt {
         return __awaiter(this, void 0, void 0, function* () {
             // Creation of i18n collection.
             // All data pertaining to translations will be saved here.
-            yield this.createCollection('/i18n');
+            yield Gestalt.createCollection('/i18n');
             // Bootstrap Database tables/files for bots.
             yield BotManager_1.default.gestalt();
             // Bootstrap Database tables/files for talents.
@@ -86,14 +86,14 @@ class Gestalt {
     static sync(config, source) {
         return __awaiter(this, void 0, void 0, function* () {
             // Await initial fetch of data that may already exist.
-            let dbConfig = yield this.get(source);
+            let dbConfig = yield Gestalt.get(source);
             // If the configuration already exists, we'll want to sync the provided configuration with the source.
             // We merge both together. This MIGHT NOT be necessary? But it works for now.
             if (!Sojiro_1.default.isEmpty(dbConfig)) {
                 return Object.assign({}, config, dbConfig);
             }
             // Await creation of database entry for the configuration, since it doesn't exist.
-            yield this.post(source, config);
+            yield Gestalt.post(source, config);
             return config;
         });
     }
@@ -111,7 +111,7 @@ class Gestalt {
     static createCollection(endpoint, payload = {}) {
         return __awaiter(this, void 0, void 0, function* () {
             // Each storage service creates collections in their own way. We await this process.
-            yield this.storageService.createCollection(endpoint, payload);
+            yield Gestalt.storageService.createCollection(endpoint, payload);
         });
     }
     /**
@@ -137,7 +137,7 @@ class Gestalt {
     static request({ protocol = '', endpoint = '', payload = {} } = {}) {
         return __awaiter(this, void 0, void 0, function* () {
             // Await the request function call of the storage service.
-            return yield this.storageService.request({
+            return yield Gestalt.storageService.request({
                 protocol: protocol,
                 endpoint: endpoint,
                 payload: payload
@@ -156,7 +156,7 @@ class Gestalt {
     static get(endpoint) {
         return __awaiter(this, void 0, void 0, function* () {
             // Await GET request of the Storage Service.
-            return yield this.request({ protocol: 'get', endpoint: endpoint });
+            return yield Gestalt.request({ protocol: 'get', endpoint: endpoint });
         });
     }
     /**
@@ -173,7 +173,7 @@ class Gestalt {
     static post(endpoint, payload) {
         return __awaiter(this, void 0, void 0, function* () {
             // Await POST request of the Storage Service.
-            return yield this.request({ protocol: 'post', endpoint: endpoint, payload: payload });
+            return yield Gestalt.request({ protocol: 'post', endpoint: endpoint, payload: payload });
         });
     }
     /**
@@ -190,7 +190,7 @@ class Gestalt {
     static update(endpoint, payload) {
         return __awaiter(this, void 0, void 0, function* () {
             // Await UPDATE request of the Storage Service.
-            return yield this.request({ protocol: 'update', endpoint: endpoint, payload: payload });
+            return yield Gestalt.request({ protocol: 'update', endpoint: endpoint, payload: payload });
         });
     }
     /**
@@ -202,7 +202,7 @@ class Gestalt {
     static delete(endpoint) {
         return __awaiter(this, void 0, void 0, function* () {
             // Await DELETE request of the Storage Service.
-            return yield this.request({ protocol: 'delete', endpoint: endpoint });
+            return yield Gestalt.request({ protocol: 'delete', endpoint: endpoint });
         });
     }
 }

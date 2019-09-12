@@ -68,8 +68,8 @@ export default class TalentManager {
     await Gestalt.createCollection('/talents');
 
     // Run Gestalt handlers for each Talent.
-    await Promise.all(Object.keys(this.talents).map(async machineName => {
-      let talent: Talent = await this.getTalent(machineName);
+    await Promise.all(Object.keys(TalentManager.talents).map(async machineName => {
+      let talent: Talent = await TalentManager.getTalent(machineName);
       await talent.gestalt();
     }));
 
@@ -84,7 +84,7 @@ export default class TalentManager {
    *   Machine name of the Talent we want to retrieve.
    */
   static async getTalent(machineName: string): Promise<Talent> {
-    return this.talents[machineName];
+    return TalentManager.talents[machineName];
   }
 
   /**
@@ -134,7 +134,7 @@ export default class TalentManager {
    */
   static async loadTalent(name: string) {
     // Check if the talent exists and return the path if it does.
-    let talentDirectoryPath = await this.getTalentPath(name);
+    let talentDirectoryPath = await TalentManager.getTalentPath(name);
 
     // If this directory doesn't exist, we end right off the bat.
     if (!talentDirectoryPath) {
@@ -167,7 +167,7 @@ export default class TalentManager {
     await talent.build(config);
 
     // Register the talent to the Manager for future use.
-    this.talents[name] = talent;
+    TalentManager.talents[name] = talent;
   }
   
 }

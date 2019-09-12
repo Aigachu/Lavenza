@@ -155,6 +155,12 @@ export default class Talent {
     // Determine the path to this Talent's commands.
     // Each command has its own directory. We'll get the list here.
     let commandDirectoriesPath = `${this.directory}/hooks/Commands`;
+
+    // If this directory doesn't exist, we simply return.
+    if (!await Akechi.directoryExists(commandDirectoriesPath)) {
+      return;
+    }
+
     let commandDirectories = await Akechi.getDirectoriesFrom(commandDirectoriesPath);
 
     // We'll throw an error for this function if the 'Commands' directory doesn't exist or is empty.
@@ -225,12 +231,15 @@ export default class Talent {
     let listenerClassesPath = `${this.directory}/hooks/Listeners`;
 
     // If this directory doesn't exist, we simply return.
-    if (!await Akechi.isDirectory(listenerClassesPath)) {
+    if (!await Akechi.directoryExists(listenerClassesPath)) {
       return;
     }
 
     // Get the list of listener classes at the path.
     let listenerClasses = await Akechi.getFilesFrom(listenerClassesPath);
+
+    // Filter the obtained list to exclude Typescript files.
+    listenerClasses = listenerClasses.filter((path) => !path.endsWith('.ts'));
 
     // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.
     // This error should be caught and handled above.

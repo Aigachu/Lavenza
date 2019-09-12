@@ -1,6 +1,6 @@
-# Lavenza II [![Build Status](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/?branch=master)
+# Lavenza [![Build Status](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/?branch=master)
 
-Lavenza II is a large development project aiming to create powerful, multi-platform chatbots!
+Lavenza is a large development project aiming to create powerful, multi-platform chatbots!
 
 The main focus right now is Discord development, but all code will be written with the idea in mind that
 future clients will be supported (and even communication between clients through a single command).
@@ -10,16 +10,15 @@ future clients will be supported (and even communication between clients through
 - Twitch
 
 ***Future Clients***
-- Slack (V2)
-- Youtube (V3)
+- Slack (V3)
 
 ## Requirements
 
 - [Node.js - Latest LTS Version](https://nodejs.org/en/download/)
 - A good IDE. I recommend Sublime Text 3, or WebStorm if you can get it.
 - A decent command-line utility application (Most of the steps in the README will use the command line)
-- A brain
-- A sense of humour
+- A brain **(very important)**
+- A sense of humour ***(of utmost importance)***
 
 ## Starter Guide
 

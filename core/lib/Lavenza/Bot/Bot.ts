@@ -417,7 +417,7 @@ export default class Bot {
 
         // Send a warning message to the console.
         await Morgana.warn('Error occurred while loading the {{talent}} talent...', {talent: talentMachineName});
-        await Morgana.warn(error.message);
+        await Igor.throw(error);
       });
     }));
   }

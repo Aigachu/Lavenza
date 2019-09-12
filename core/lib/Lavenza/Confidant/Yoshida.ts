@@ -38,6 +38,11 @@ export default class Yoshida {
   private static googleTranslate: any;
 
   /**
+   * Field to hold a boolean value determining whether translation was initialized or not.
+   */
+  private static translationInitialized: boolean = false;
+
+  /**
    * Initialize values needed to use I18N efficiently.
    */
   static async initializeI18N() {
@@ -63,6 +68,7 @@ export default class Yoshida {
     }
 
     this.googleTranslate = googleTranslate;
+    this.translationInitialized = true;
   }
 
   /**
@@ -89,6 +95,11 @@ export default class Yoshida {
   static async translate(...parameters: any): Promise<string|any> {
     // Get our parameters using Sojiro's help.
     let params = await this.parseI18NParams(parameters);
+
+    // If translation isn't initialized, we simply return the regular text.
+    if (!this.translationInitialized) {
+      return params.phrase;
+    }
 
     // If the locale is undefined, we simply use the default one.
     params.locale = params.locale ? params.locale : process.env.LAVENZA_DEFAULT_LOCALE;

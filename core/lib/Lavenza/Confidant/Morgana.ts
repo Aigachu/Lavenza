@@ -37,6 +37,7 @@ export default class Morgana {
   static async log(message: string, replacers: Object = undefined, type: string = 'default', locale: string = process.env.DEFAULT_LOCALE) {
     // Fetch translations of output.
     let output = await Yoshida.translate(message, replacers, locale);
+    output = 'Lavenza: ' + output;
 
     // Depending on the type, we send different types of outputs.
     switch (type) {

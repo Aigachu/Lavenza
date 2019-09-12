@@ -10,9 +10,12 @@ import * as fs from 'fs';
 import * as fsrfp from 'fs-readfile-promise';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
+import * as arp from 'app-root-path';
+import {ncp} from 'ncp';
 
 // Imports.
 import Igor from './Igor';
+import Morgana from "./Morgana";
 
 /**
  * Provides a class that handles searching for files and directories in the app.
@@ -39,6 +42,20 @@ export default class Akechi {
   }
 
   /**
+   * Copy a path recursively using the ncp module.
+   */
+  static copyFiles(source: string, destination: string) {
+    return new Promise((resolve, reject) => {
+      ncp(`${source}/resources/desk`, destination, async (err) => {
+        if (err) {
+          reject();
+        }
+        resolve();
+      });
+    });
+  }
+
+  /**
    * Create a directory at a given path.
    *
    * @param path
@@ -47,13 +64,13 @@ export default class Akechi {
    * @returns
    *   Returns TRUE if the directory exists, FALSE otherwise.
    */
-  // static directoryExists(path: string): boolean {
-  //   if (fs.existsSync(path) && !this.isDirectory(path)){
-  //     return false;
-  //   }
-  //
-  //   return fs.existsSync(path);
-  // }
+  static directoryExists(path: string): boolean {
+    if (fs.existsSync(path) && !this.isDirectory(path)){
+      return false;
+    }
+
+    return fs.existsSync(path);
+  }
 
   /**
    * Create a directory at a given path.

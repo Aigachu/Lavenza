@@ -1,0 +1,98 @@
+#!/usr/bin/env node
+
+// Modules.
+const arp = require('app-root-path');
+const minimist = require('minimist');
+const ncp = require('ncp');
+const colors = require('colors');
+const prompt = require('prompt-async');
+
+// Configure colors.
+colors.setTheme({
+  silly: 'rainbow',
+  input: 'grey',
+  verbose: 'cyan',
+  prompt: 'grey',
+  success: 'cyan',
+  data: 'grey',
+  help: 'cyan',
+  status: 'blue',
+  warning: 'yellow',
+  debug: 'blue',
+  error: 'red'
+});
+
+// Grab provided arguments using minimist.
+const argv = minimist(process.argv.slice(2));
+
+// Process the command!
+processCommand(argv).then(() => {
+  process.exit(1);
+});
+
+/**
+ * Process the 'lavenza' command.
+ *
+ * @param args
+ *   Arguments supplied with the command.
+ */
+async function processCommand(args) {
+  // For now we just want simple management of ONE command.
+  if (argv['_'][0] === 'init-desk') {
+    // Flavor text.
+    console.log(`Lavenza: Commencing initialization.`.success);
+    console.log(`Lavenza: To run Lavenza, a Desk must exist within your project. The Desk is a directory where all configurations specific to Lavenza will reside. Lavenza's Database will also be located here.`);
+
+    // Get the intended destination directory to initiate the Desk at.
+    let deskDestination = args['_'][1];
+
+    // If none was supplied, we prompt the user to tell us where to place it.
+    if (!deskDestination) {
+      await prompt.start();
+      const {inputDeskDestination} = await prompt.get({
+        properties: {
+          inputDeskDestination: {
+            description: `Enter the desired path for Lavenza's Desk in your project`,
+            type: 'string',
+            default: 'tests/desk/desk',
+          }
+        }
+      });
+      deskDestination = inputDeskDestination;
+    }
+
+    // If the destination directory doesn't exist, we want to cancel and shoot an error.
+    // @TODO
+
+    // Copy the base Desk to the provided path.
+    await copyFilesAsync(`${arp.path}/resources/desk`, deskDestination).then(() => {
+      console.log(`Lavenza: Successfully initialized a Desk with the appropriate folder structure at '${deskDestination}'. Refer to the README.md file found in that folder to begin configuring Lavenza!`.success);
+    }).catch((err) => {
+      console.log(err);
+    });
+  }
+}
+
+/**
+ * Copy files to a destination, asynchronously.
+ *
+ * Returns a promise that can be awaited.
+ *
+ * @param {string} source
+ *   Source files to copy.
+ * @param {string} destination
+ *   Destination to copy these files to.
+ */
+function copyFilesAsync(source, destination) {
+  return new Promise((resolve, reject) => {
+    ncp(source, destination, {
+      clobber: false,
+      stopOnErr: true
+    }, async (err) => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+}

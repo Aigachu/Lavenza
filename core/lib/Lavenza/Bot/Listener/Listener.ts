@@ -20,7 +20,7 @@ export default abstract class Listener {
   /**
    * The Talent that declared this listener.
    */
-  private talent: Talent;
+  protected talent: Talent;
 
   /**
    * Perform build tasks.

@@ -2,7 +2,7 @@
 name: 'CleverBot'
 
 # Talent description.
-description: 'Provides a collection of examples to base yourself on when coding new features!'
+description: 'Connect your bot to the CleverBot API!'
 
 # Talent Version.
 version: 1.0.0

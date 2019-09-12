@@ -60,6 +60,7 @@ class Yoshida {
                 googleTranslate = new translate_1.Translate(googleTranslateConfig);
             }
             this.googleTranslate = googleTranslate;
+            this.translationInitialized = true;
         });
     }
     /**
@@ -87,6 +88,10 @@ class Yoshida {
         return __awaiter(this, void 0, void 0, function* () {
             // Get our parameters using Sojiro's help.
             let params = yield this.parseI18NParams(parameters);
+            // If translation isn't initialized, we simply return the regular text.
+            if (!this.translationInitialized) {
+                return params.phrase;
+            }
             // If the locale is undefined, we simply use the default one.
             params.locale = params.locale ? params.locale : process.env.LAVENZA_DEFAULT_LOCALE;
             // Get the translations from i18n.
@@ -332,3 +337,7 @@ class Yoshida {
     }
 }
 exports.default = Yoshida;
+/**
+ * Field to hold a boolean value determining whether translation was initialized or not.
+ */
+Yoshida.translationInitialized = false;

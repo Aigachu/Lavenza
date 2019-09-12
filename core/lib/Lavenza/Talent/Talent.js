@@ -117,6 +117,10 @@ class Talent {
             // Determine the path to this Talent's commands.
             // Each command has its own directory. We'll get the list here.
             let commandDirectoriesPath = `${this.directory}/hooks/Commands`;
+            // If this directory doesn't exist, we simply return.
+            if (!(yield Akechi_1.default.directoryExists(commandDirectoriesPath))) {
+                return;
+            }
             let commandDirectories = yield Akechi_1.default.getDirectoriesFrom(commandDirectoriesPath);
             // We'll throw an error for this function if the 'Commands' directory doesn't exist or is empty.
             // This error should be caught and handled above.
@@ -177,11 +181,13 @@ class Talent {
             // We'll ge the tentative path first.
             let listenerClassesPath = `${this.directory}/hooks/Listeners`;
             // If this directory doesn't exist, we simply return.
-            if (!(yield Akechi_1.default.isDirectory(listenerClassesPath))) {
+            if (!(yield Akechi_1.default.directoryExists(listenerClassesPath))) {
                 return;
             }
             // Get the list of listener classes at the path.
             let listenerClasses = yield Akechi_1.default.getFilesFrom(listenerClassesPath);
+            // Filter the obtained list to exclude Typescript files.
+            listenerClasses = listenerClasses.filter((path) => !path.endsWith('.ts'));
             // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.
             // This error should be caught and handled above.
             if (Sojiro_1.default.isEmpty(listenerClasses)) {

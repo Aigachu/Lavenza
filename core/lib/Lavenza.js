@@ -63,8 +63,8 @@ const PromptExceptionType_1 = require("./Lavenza/Bot/Prompt/Exception/PromptExce
 const Heart = {
     // Lavenza's core and shortcut to initialization functions.
     Core: Core_1.default,
-    init: Core_1.default.init,
-    ignite: Core_1.default.ignite,
+    initialize: Core_1.default.initialize,
+    summon: Core_1.default.summon,
     // Confidants.
     // Re-usable functionality is managed in what I'm calling Confidants for this project. Shoutouts to Persona 5!
     // Each confidant has a specific use. See each of their files for more deets.

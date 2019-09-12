@@ -1,16 +1,9 @@
-#
-# Project Lavenza II
-# Copyright 2017-2018 Aigachu, All Rights Reserved
-#
-# License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
-#
-
 # Reader-Friendly name of the bot.
-name: 'Exampla'
+name: 'Example'
 
 # Main command prefix.
 # The command prefix can be overridden per client. A default one is necessary, though.
-commandPrefix: '°'
+commandPrefix: '!'
 
 # Default Locale.
 # Set the default language the bot will speak in.

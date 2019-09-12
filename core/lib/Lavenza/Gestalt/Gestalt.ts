@@ -49,7 +49,7 @@ export default class Gestalt {
 
     // Await the build process of the storage service and assign it to Gestalt.
     await storageService.build();
-    this.storageService = storageService;
+    Gestalt.storageService = storageService;
 
     // Some flavor text.
     await Morgana.success("Gestalt preparations complete!");
@@ -63,7 +63,7 @@ export default class Gestalt {
   static async bootstrap() {
     // Creation of i18n collection.
     // All data pertaining to translations will be saved here.
-    await this.createCollection('/i18n');
+    await Gestalt.createCollection('/i18n');
 
     // Bootstrap Database tables/files for bots.
     await BotManager.gestalt();
@@ -88,7 +88,7 @@ export default class Gestalt {
    */
   static async sync(config: Object, source: string): Promise<any> {
     // Await initial fetch of data that may already exist.
-    let dbConfig = await this.get(source);
+    let dbConfig = await Gestalt.get(source);
 
     // If the configuration already exists, we'll want to sync the provided configuration with the source.
     // We merge both together. This MIGHT NOT be necessary? But it works for now.
@@ -97,7 +97,7 @@ export default class Gestalt {
     }
 
     // Await creation of database entry for the configuration, since it doesn't exist.
-    await this.post(source, config);
+    await Gestalt.post(source, config);
     return config;
   }
 
@@ -114,7 +114,7 @@ export default class Gestalt {
    */
   static async createCollection(endpoint: string, payload: Object = {}) {
     // Each storage service creates collections in their own way. We await this process.
-    await this.storageService.createCollection(endpoint, payload);
+    await Gestalt.storageService.createCollection(endpoint, payload);
   }
 
   /**
@@ -139,7 +139,7 @@ export default class Gestalt {
    */
   static async request({protocol = '', endpoint = '', payload = {}} = {}): Promise<any> {
     // Await the request function call of the storage service.
-    return await this.storageService.request({
+    return await Gestalt.storageService.request({
       protocol: protocol,
       endpoint: endpoint,
       payload: payload
@@ -157,7 +157,7 @@ export default class Gestalt {
    */
   static async get(endpoint: string): Promise<any> {
     // Await GET request of the Storage Service.
-    return await this.request({protocol: 'get', endpoint: endpoint});
+    return await Gestalt.request({protocol: 'get', endpoint: endpoint});
   }
 
   /**
@@ -173,7 +173,7 @@ export default class Gestalt {
    */
   static async post(endpoint: string, payload: Object): Promise<any|null> {
     // Await POST request of the Storage Service.
-    return await this.request({protocol: 'post', endpoint: endpoint, payload: payload});
+    return await Gestalt.request({protocol: 'post', endpoint: endpoint, payload: payload});
   }
 
   /**
@@ -189,7 +189,7 @@ export default class Gestalt {
    */
   static async update(endpoint: string, payload: Object): Promise<any|null> {
     // Await UPDATE request of the Storage Service.
-    return await this.request({protocol: 'update', endpoint: endpoint, payload: payload});
+    return await Gestalt.request({protocol: 'update', endpoint: endpoint, payload: payload});
   }
 
   /**
@@ -200,7 +200,7 @@ export default class Gestalt {
    */
   static async delete(endpoint: string) {
     // Await DELETE request of the Storage Service.
-    return await this.request({protocol: 'delete', endpoint: endpoint});
+    return await Gestalt.request({protocol: 'delete', endpoint: endpoint});
   }
 
 }

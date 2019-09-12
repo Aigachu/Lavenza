@@ -55,10 +55,10 @@ export default class BotManager {
   static async build() {
     // Await registration of all bots from the application files.
     // Upon error in registration, stop the application.
-    await this.registerAllBotsInDirectory();
+    await BotManager.registerAllBotsInDirectory();
 
     // We'll run preparation handlers for all bots as this should only be done once.
-    await this.prepareAllBots();
+    await BotManager.prepareAllBots();
 
     // Some more flavor.
     await Morgana.success("Bot Manager preparations complete!");
@@ -75,8 +75,8 @@ export default class BotManager {
     await Gestalt.createCollection('/bots');
 
     // Run Gestalt handlers for each Bot.
-    await Promise.all(Object.keys(this.bots).map(async botId => {
-      let bot: Bot = await this.getBot(botId);
+    await Promise.all(Object.keys(BotManager.bots).map(async botId => {
+      let bot: Bot = await BotManager.getBot(botId);
       await bot.gestalt();
     }));
 
@@ -91,7 +91,7 @@ export default class BotManager {
    *   ID of the bot we want to retrieve.
    */
   static async getBot(id: string): Promise<Bot> {
-    return this.bots[id];
+    return BotManager.bots[id];
   }
 
   /**
@@ -101,14 +101,14 @@ export default class BotManager {
    */
   static async run() {
     // Boot master bot that will manage all other bots in the codebase.
-    await this.bootMasterBot();
+    await BotManager.bootMasterBot();
 
     // Some more flavor.
     await Morgana.success("Booted the master bot, {{bot}}!", {bot: Core.settings.master});
 
     // Boot auto-boot bots.
     // Some bots are set up for auto-booting. We'll handle those too.
-    await this.bootAutoBoots();
+    await BotManager.bootAutoBoots();
   }
 
   /**
@@ -116,7 +116,7 @@ export default class BotManager {
    */
   static async bootMasterBot() {
     // Await deployment of the master bot.
-    await this.boot(Core.settings.master);
+    await BotManager.boot(Core.settings.master);
   }
 
   /**
@@ -131,7 +131,7 @@ export default class BotManager {
 
     // Boot all bots set up in autobooting.
     await Promise.all(Core.settings.autoboot.map(async (botId) => {
-      await this.boot(botId);
+      await BotManager.boot(botId);
       await Morgana.success("Successfully Auto-Booted {{bot}}!", {bot: botId});
     }));
   }
@@ -144,13 +144,13 @@ export default class BotManager {
    */
   static async boot(botId: string) {
     // If the bot isn't found, we can't boot it.
-    if (Sojiro.isEmpty(this.bots[botId])) {
+    if (Sojiro.isEmpty(BotManager.bots[botId])) {
       await Morgana.warn(`Tried to boot an non-existent bot: {{botId}}. Gracefully continuing the program.`, {botId: botId});
       return;
     }
 
     // Await deployment handlers for a single bot.
-    let bot: Bot = await this.getBot(botId);
+    let bot: Bot = await BotManager.getBot(botId);
     await bot.deploy();
   }
 
@@ -162,12 +162,12 @@ export default class BotManager {
    */
   static async shutdown(botId: string) {
     // If the bot isn't found, we can't shut it down.
-    if (Sojiro.isEmpty(this.bots[botId])) {
+    if (Sojiro.isEmpty(BotManager.bots[botId])) {
       await Morgana.warn(`Tried to shutdown an non-existent bot: {{botId}}. Gracefully continuing the program.`, {botId: botId});
       return;
     }
 
-    let bot: Bot = await this.getBot(botId);
+    let bot: Bot = await BotManager.getBot(botId);
     await bot.shutdown();
   }
 
@@ -179,7 +179,7 @@ export default class BotManager {
    */
   static async prepareBot(botId: string) {
     // Await preparation handler for a single bot.
-    let bot: Bot = await this.getBot(botId);
+    let bot: Bot = await BotManager.getBot(botId);
     await bot.prepare();
   }
 
@@ -188,9 +188,9 @@ export default class BotManager {
    */
   static async prepareAllBots() {
     // Await preparation handlers for all bots.
-    await Promise.all(Object.keys(this.bots).map(async botId => {
+    await Promise.all(Object.keys(BotManager.bots).map(async botId => {
       // Await preparation handler for a single bot.
-      await this.prepareBot(botId);
+      await BotManager.prepareBot(botId);
     }));
   }
 
@@ -211,7 +211,7 @@ export default class BotManager {
     }
 
     // If the bot name is part of the ignored bot list, return now.
-    if (botId in this.ignoredBots) {
+    if (botId in BotManager.ignoredBots) {
       return;
     }
 
@@ -240,7 +240,7 @@ export default class BotManager {
     if (bot.id === Core.settings.master) {
       bot.isMaster = true;
     }
-    Object.assign(this.bots, {[botId]: bot});
+    Object.assign(BotManager.bots, {[botId]: bot});
 
     // Print a success message.
     await Morgana.success('The {{bot}} bot has successfully been registered!', {bot: botId});
@@ -269,11 +269,11 @@ export default class BotManager {
       let name = path.basename(directory);
 
       // Register the bot.
-      await this.registerBot(name);
+      await BotManager.registerBot(name);
     }));
 
     // Array does not exist, is not an array, or is empty.
-    if (Sojiro.isEmpty(this.bots)) {
+    if (Sojiro.isEmpty(BotManager.bots)) {
       await Igor.throw("No bots were registered after the preparation phase. As a result, there is nothing to run.");
     }
   }

@@ -297,7 +297,7 @@ class DiscordClient extends discord_js_1.Client {
             let token = this.bot.env.DISCORD_TOKEN;
             // If the token isn't found, we throw an error.
             if (token === undefined) {
-                yield Igor_1.default.throw('Discord application token is missing for {{bot}}. Make sure the token is set in the /app/.env file at the root of the project. See /app/.env.example for more details.', { bot: this.bot.id });
+                yield Igor_1.default.throw(`Discord application token is missing for {{bot}}. Make sure the token is set in the .env file in the bot's folder. See the example bot folder for more details.`, { bot: this.bot.id });
             }
             // Await the login in of this client.
             yield _super.login.call(this, token).catch((error) => __awaiter(this, void 0, void 0, function* () {

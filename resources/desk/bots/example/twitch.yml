@@ -1,20 +1,21 @@
 # Username of the account that the bot will be using.
-username: 'LavenzaII'
+username: 'TWITCH_USERNAME'
 
 # Channels this bot will be connected to.
 # @TODO - Dynamic addition to channels.
 channels:
-  - aigachu
+  - YOUR_CHANNEL
+  - ANOTHER_CHANNEL
 
 # Command Prefix override for Twitch.
-# commandPrefix: ';-t'
+# commandPrefix: '!'
 
 # Joker
 # The Joker is the maker of the bot. Enter your own ID here.
 # For Twitch, simply enter your username / display name.
 # There can only be 1 architect. You have access to all commands and some core commands will send some important info
 # to you and you only.
-joker: 'aigachu'
+joker: 'YOUR_TWITCH_USERNAME'
 
 # User Eminences Configuration.
 # Users in Lavenza are managed as a simple hierarchy with 5 different Eminences. Here are the official names of them:
@@ -39,6 +40,5 @@ joker: 'aigachu'
 # As in the example below, add entries that take up a TWITCH_USERNAME: EMINENCE_ID format. The entries added here will be
 # the baseline role configuration. Additional role configuration can be customized later on per client.
 userRoles:
-  avionds: Thief # Avion (?)
-  k4kheops: Thief # Dango (?)
-  aerozr: Thief # Aero
+  TWITCH_USERNAME: Aficionado
+  TWITCH_USERNAME_2: Confidant

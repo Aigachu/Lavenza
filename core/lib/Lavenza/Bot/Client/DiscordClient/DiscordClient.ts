@@ -337,7 +337,7 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
 
     // If the token isn't found, we throw an error.
     if (token === undefined) {
-      await Igor.throw('Discord application token is missing for {{bot}}. Make sure the token is set in the /app/.env file at the root of the project. See /app/.env.example for more details.', {bot: this.bot.id});
+      await Igor.throw(`Discord application token is missing for {{bot}}. Make sure the token is set in the .env file in the bot's folder. See the example bot folder for more details.`, {bot: this.bot.id});
     }
 
     // Await the login in of this client.

@@ -70,8 +70,8 @@ import PromptExceptionTypes from './Lavenza/Bot/Prompt/Exception/PromptException
 const Heart = {
   // Lavenza's core and shortcut to initialization functions.
   Core: Core,
-  init: Core.init,
-  ignite: Core.ignite,
+  initialize: Core.initialize,
+  summon: Core.summon,
 
   // Confidants.
   // Re-usable functionality is managed in what I'm calling Confidants for this project. Shoutouts to Persona 5!

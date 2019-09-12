@@ -20,6 +20,7 @@ const fs = require("fs");
 const fsrfp = require("fs-readfile-promise");
 const yaml = require("js-yaml");
 const path = require("path");
+const ncp_1 = require("ncp");
 // Imports.
 const Igor_1 = require("./Igor");
 /**
@@ -47,6 +48,19 @@ class Akechi {
         });
     }
     /**
+     * Copy a path recursively using the ncp module.
+     */
+    static copyFiles(source, destination) {
+        return new Promise((resolve, reject) => {
+            ncp_1.ncp(`${source}/resources/desk`, destination, (err) => __awaiter(this, void 0, void 0, function* () {
+                if (err) {
+                    reject();
+                }
+                resolve();
+            }));
+        });
+    }
+    /**
      * Create a directory at a given path.
      *
      * @param path
@@ -55,13 +69,12 @@ class Akechi {
      * @returns
      *   Returns TRUE if the directory exists, FALSE otherwise.
      */
-    // static directoryExists(path: string): boolean {
-    //   if (fs.existsSync(path) && !this.isDirectory(path)){
-    //     return false;
-    //   }
-    //
-    //   return fs.existsSync(path);
-    // }
+    static directoryExists(path) {
+        if (fs.existsSync(path) && !this.isDirectory(path)) {
+            return false;
+        }
+        return fs.existsSync(path);
+    }
     /**
      * Create a directory at a given path.
      *
