@@ -154,7 +154,7 @@ class Talent {
                     yield Morgana_1.default.warn('Class could not be loaded for the {{command}} command in the {{talent}} talent.', { command: name, talent: this.machineName });
                     return;
                 }
-                command = new command(id, directory);
+                command = new command(id, config.key, directory);
                 // Now let's successfully register the command to the Talent.
                 // Commands have build tasks too and are also singletons. We'll run them here.
                 yield command.build(config, this);

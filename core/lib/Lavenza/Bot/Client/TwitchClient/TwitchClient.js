@@ -23,6 +23,7 @@ const ClientType_1 = require("../ClientType");
 const Morgana_1 = require("../../../Confidant/Morgana");
 const Igor_1 = require("../../../Confidant/Igor");
 const Gestalt_1 = require("../../../Gestalt/Gestalt");
+const Sojiro_1 = require("../../../Confidant/Sojiro");
 // Manually require TMI Client since it doesn't work with imports.
 const TMIClient = require('tmi.js').client;
 /**
@@ -142,6 +143,20 @@ class TwitchClient extends TMIClient {
             yield Morgana_1.default.warn('Twitch client disconnected for {{bot}}.', { bot: this.bot.id });
         });
     }
+    /**
+     * A little utility function to order the bot to type for a set amount of seconds in a given channel.
+     *
+     * @TODO - Do something about that dumb 'method can be static' message.
+     *
+     * @param seconds
+     *   Amount of seconds to type for.
+     * @param channel
+     *   The Twitch channel to type in.
+     */
+    typeFor(seconds, channel = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Sojiro_1.default.wait(seconds);
+        });
+    }
 }
 exports.default = TwitchClient;
-;

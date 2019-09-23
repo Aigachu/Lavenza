@@ -33,6 +33,12 @@ export default abstract class Command {
   /**
    * The ID of the command.
    */
+  public id: string;
+
+
+  /**
+   * The key of the command.
+   */
   public key: string;
 
   /**
@@ -43,7 +49,7 @@ export default abstract class Command {
   /**
    * The Talent that declared this Command and manages it.
    */
-  public talent: Talent;
+  protected talent: Talent;
 
   /**
    * The configuration of the command.
@@ -53,12 +59,15 @@ export default abstract class Command {
   /**
    * Command constructor.
    *
-   * @param key
+   * @param id
    *   The ID of the command. This will be the name of the Command's directory in lowercase.
+   * @param key
+   *   The key of the command.
    * @param directory
    *   The path to the directory where this command was found.
    */
-  protected constructor(key: string, directory: string) {
+  protected constructor(id: string, key: string, directory: string) {
+    this.id = id;
     this.key = key;
     this.directory = directory;
   }
@@ -92,7 +101,7 @@ export default abstract class Command {
    *   Returns the configuration fetched from the database.
    */
   async getActiveConfigForBot(bot: Bot): Promise<CommandConfigurations> {
-    return await Gestalt.get(`/bots/${bot.id}/commands/${this.config.key}/config`);
+    return await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/config`);
   }
 
   /**
@@ -110,7 +119,7 @@ export default abstract class Command {
    */
   async getActiveClientConfig(clientType: ClientType, bot: Bot): Promise<CommandClientConfig> {
     // Attempt to get the active configuration from the database.
-    let activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.key}/${clientType}`);
+    let activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/${clientType}`);
     if (!Sojiro.isEmpty(activeConfig)) {
       return activeConfig;
     }
@@ -119,7 +128,7 @@ export default abstract class Command {
     let config = await this.getClientConfig(clientType);
 
     // Sync it to the database.
-    await Gestalt.sync(config, `/bots/${bot.id}/commands/${this.key}/${clientType}`);
+    await Gestalt.sync(config, `/bots/${bot.id}/commands/${this.id}/${clientType}`);
 
     // Return the configuration.
     return config;
@@ -160,7 +169,7 @@ export default abstract class Command {
    */
   async getActiveParameterConfig(bot: Bot): Promise<CommandParameterConfig> {
     // Attempt to get the active configuration from the database.
-    let activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.key}/parameters`);
+    let activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/parameters`);
     if (!Sojiro.isEmpty(activeConfig)) {
       return activeConfig;
     }
@@ -169,7 +178,7 @@ export default abstract class Command {
     let config = await this.getParameterConfig();
 
     // Sync it to the database.
-    await Gestalt.sync(config, `/bots/${bot.id}/commands/${this.key}/parameters`);
+    await Gestalt.sync(config, `/bots/${bot.id}/commands/${this.id}/parameters`);
 
     // Return the configuration.
     return config;

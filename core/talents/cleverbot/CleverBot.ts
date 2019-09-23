@@ -10,7 +10,6 @@ import * as CleverBotApi from 'cleverbot';
 import Talent from "../../lib/Lavenza/Talent/Talent";
 import {TalentConfigurations} from "../../lib/Lavenza/Talent/TalentConfigurations";
 import Bot from "../../lib/Lavenza/Bot/Bot";
-import Igor from "../../lib/Lavenza/Confidant/Igor";
 import Morgana from "../../lib/Lavenza/Confidant/Morgana";
 
 /**

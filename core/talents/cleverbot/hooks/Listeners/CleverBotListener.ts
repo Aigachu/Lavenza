@@ -19,7 +19,7 @@ import DiscordClient from "../../../../lib/Lavenza/Bot/Client/DiscordClient/Disc
  *
  * It simply hears a message and has a small chance of querying the CleverBot API and answering!
  */
-export default class CleverListener extends Listener {
+export default class CleverBotListener extends Listener {
 
   /**
    * Declare the Talent.
@@ -69,7 +69,7 @@ export default class CleverListener extends Listener {
           response: response['output'],
         });
       } catch(e) {
-        await Morgana.warn(`Error occurred when querying CleverBot API. This is likely due to special characters being in the message heard in the listener. Must find a solution for this.`);
+        await Morgana.warn(`Error occurred when querying CleverBot API. This is either due to special characters being in the message heard in the listener, or the API not being able to be instantiated.`);
       }
     }
   }

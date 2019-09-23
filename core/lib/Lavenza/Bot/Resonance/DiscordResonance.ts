@@ -9,7 +9,7 @@
 import Resonance from './Resonance';
 import Gestalt from '../../Gestalt/Gestalt';
 import Igor from '../../Confidant/Igor';
-import {Channel, Guild, Message, User} from "discord.js";
+import {Channel, Guild, Message, TextChannel, User} from "discord.js";
 import Bot from "../Bot";
 import ClientInterface from "../Client/ClientInterface";
 import DiscordClient from "../Client/DiscordClient/DiscordClient";
@@ -138,7 +138,7 @@ export default class DiscordResonance extends Resonance {
    *
    * @inheritDoc
    */
-  async typeFor(seconds: number, destination: Channel) {
+  async typeFor(seconds: number, destination: TextChannel) {
     return this.client.typeFor(seconds, destination);
   }
 

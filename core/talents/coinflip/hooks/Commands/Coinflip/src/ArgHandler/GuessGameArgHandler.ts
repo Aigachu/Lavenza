@@ -5,24 +5,31 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Imports.
+import Sojiro from "../../../../../../../lib/Lavenza/Confidant/Sojiro";
+import PromptExceptionType from "../../../../../../../lib/Lavenza/Bot/Prompt/Exception/PromptExceptionType";
+import ClientType from "../../../../../../../lib/Lavenza/Bot/Client/ClientType";
+import Resonance from "../../../../../../../lib/Lavenza/Bot/Resonance/Resonance";
+import Coinflip from "../../Coinflip";
+
 /**
- * Argument handler for the 'newgame' argument in the DND command.
+ * Argument handler for the 'guess' argument in the Coinflip command.
  */
 export default class GuessGameArgHandler {
 
   /**
    * Handle command 'd' & 'duel' options.
    *
-   * @param {*} command
+   * @param command
    *   The command that invoked this argument handler.
-   * @param {Resonance} resonance
+   * @param resonance
    *   Resonance that issued the command.
-   * @param {string} input
+   * @param input
    *   The value of the duel parameter sent by the user.
    */
-  static async handle(command, resonance, input) {
+  static async handle(command: Coinflip, resonance: Resonance, input: any) {
     // @TODO - Twitch support will come later.
-    if (resonance.client.type === Lavenza.ClientTypes.Twitch) {
+    if (resonance.client.type === ClientType.Twitch) {
       await resonance.__reply(`Unfortunately, the Coinflip Guessing Game are not yet supported on Twitch! Give it a try on Discord!`, '::COINFLIP-GUESS_GAME_NO_TWITCH_SUPPORT');
       return;
     }
@@ -97,8 +104,8 @@ export default class GuessGameArgHandler {
 
     // We'll go ahead and send a message, and also flip 2 coins to have the results.
     await resonance.__reply(`Alright. I'm flipping a coin for each of you...`, '::COINFLIP-GUESS_GAME_START_FLIPS');
-    let challengerResult = command.flipACoin();
-    let opponentResult = command.flipACoin();
+    let challengerResult = await Coinflip.flipACoin();
+    let opponentResult = await Coinflip.flipACoin();
 
     // Add some typing suspense.
     await resonance.typeFor(3, resonance.message.channel);
@@ -143,7 +150,7 @@ export default class GuessGameArgHandler {
       }
       // If the guesser provides an invalid guess, we restart the prompt.
       else if (guess !== 'same' && guess !== 'different' && guess !== 'diff') {
-        await prompt.reset({error: Lavenza.PromptExceptionTypes.INVALID_RESPONSE});
+        await prompt.reset({error: PromptExceptionType.INVALID_RESPONSE});
       }
       // Otherwise, the prayer wins.
       else {
@@ -155,7 +162,7 @@ export default class GuessGameArgHandler {
       switch (error.type) {
 
         // This is ran when no response is provided.
-        case Lavenza.PromptExceptionTypes.NO_RESPONSE: {
+        case PromptExceptionType.NO_RESPONSE: {
           // Failing to reply will simply send a different message.
           await resonance.__reply(`AAAHH {{guesser}}, you failed to respond in time! This is considered a forfeit. As such, the victor is {{victor}}!!! Congratulations!`, {
             victor: prayer,
@@ -164,7 +171,7 @@ export default class GuessGameArgHandler {
         }
 
         // This is ran when the max amount of resets is hit.
-        case Lavenza.PromptExceptionTypes.MAX_RESET_EXCEEDED: {
+        case PromptExceptionType.MAX_RESET_EXCEEDED: {
           // Failing to reply will simply send a different message.
           await resonance.__reply(`{{guesser}}, COME ON! It's either **Same** or **Different**!!! WHAT DON'T YOU GET?!\nUgh whatever! The victor is {{victor}}. ENJOY YOUR FREEBIE!`, {
             victor: prayer,
@@ -173,7 +180,7 @@ export default class GuessGameArgHandler {
         }
 
         // This is the message sent when no response is provided.
-        case Lavenza.PromptExceptionTypes.INVALID_RESPONSE: {
+        case PromptExceptionType.INVALID_RESPONSE: {
           await resonance.__reply(`That's not a valid answer {{guesser}}! It's either **Same** or **Different**! Try again!`, '::COINFLIP-GUESS_GAME_GUESSER_INVALID_INPUT');
           break;
         }
@@ -223,14 +230,12 @@ export default class GuessGameArgHandler {
    *
    * This is used when an opponent isn't tagged directly in the command invocation.
    *
-   * @param {*} command
+   * @param command
    *   The command that invoked this argument handler.
-   * @param {Resonance} resonance
+   * @param resonance
    *   Resonance that issued the command.
-   *
-   * @returns {Promise<string>}
    */
-  static async promptForInput(command, resonance) {
+  static async promptForInput(command: Coinflip, resonance: Resonance) {
     // Initialize variable to store input.
     let input = '';
 
@@ -240,7 +245,8 @@ export default class GuessGameArgHandler {
     }, '::COINFLIP-GUESS_GAME_ASK_WHO');
 
     // Activate a prompt waiting for the user to tell us who they want to duel.
-    await resonance.prompt(resonance.author, resonance.message.channel, 10, async (responseResonance, prompt) => {
+    // noinspection JSUnusedLocalSymbols
+    await resonance.prompt(resonance.author, resonance.message.channel, 10, async (responseResonance, prompct) => {
       // Set whatever input the user provided. We'll return it later.
       input = responseResonance.content;
     }, async (error) => {
@@ -261,16 +267,14 @@ export default class GuessGameArgHandler {
    *
    * The opponent will be prompted and the answer will determine whether or not the duel will happen.
    *
-   * @param {*} command
+   * @param command
    *   The command that invoked this argument handler.
-   * @param {Resonance} resonance
+   * @param resonance
    *   Resonance that issued the command.
-   * @param {*} opponent
+   * @param opponent
    *   The opponent determined from the input.
-   *
-   * @returns {Promise<void>}
    */
-  static async confirmWithOpponent(command, resonance, opponent) {
+  static async confirmWithOpponent(command: Coinflip, resonance: Resonance, opponent: any) {
     // Initialize confirmation.
     let confirmation = false;
 
@@ -284,17 +288,18 @@ export default class GuessGameArgHandler {
     }, '::COINFLIP-GUESS_GAME_OPPONENT_CONFIRM');
 
     // Start up a prompt for the opponent's input.
+    // noinspection JSUnusedLocalSymbols
     await resonance.prompt(opponent, resonance.message.channel, 10, async (responseResonance, prompt) => {
       // If the opponent sends a confirmation, we set confirmation to true.
       // Otherwise, send a sad message. :(
-      if (Lavenza.Sojiro.isConfirmation(responseResonance.content)) {
+      if (Sojiro.isConfirmation(responseResonance.content)) {
         confirmation = true;
       } else {
         await resonance.__reply(`Aww ok. Maybe another time then!`, '::COINFLIP-GUESS_GAME_DECLINED');
       }
     }, async (error) => {
-      // Failing to reply will simply send a different message.
-      await resonance.__reply(`Hmm, looks like they're not available right now. Try again later!`, {
+      // Failing to reply will simply send a different message.looks like th
+      await resonance.__reply(`Hmm, they're not available right now. Try again later!`, {
         opponent: opponent,
       }, '::COINFLIP-GUESS_GAME_OPPONENT_FAILED_CONFIRMATION');
     });

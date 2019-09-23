@@ -151,7 +151,7 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
    * @param channel
    *   The Discord channel to type in.
    */
-  async typeFor(seconds, channel) {
+  async typeFor(seconds: number, channel: TextChannel) {
     await channel.stopTyping();
     await channel.startTyping(1);
     await Sojiro.wait(seconds);

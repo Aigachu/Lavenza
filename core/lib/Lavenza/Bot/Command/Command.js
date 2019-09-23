@@ -37,12 +37,15 @@ class Command {
     /**
      * Command constructor.
      *
-     * @param key
+     * @param id
      *   The ID of the command. This will be the name of the Command's directory in lowercase.
+     * @param key
+     *   The key of the command.
      * @param directory
      *   The path to the directory where this command was found.
      */
-    constructor(key, directory) {
+    constructor(id, key, directory) {
+        this.id = id;
         this.key = key;
         this.directory = directory;
     }
@@ -77,7 +80,7 @@ class Command {
      */
     getActiveConfigForBot(bot) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Gestalt_1.default.get(`/bots/${bot.id}/commands/${this.config.key}/config`);
+            return yield Gestalt_1.default.get(`/bots/${bot.id}/commands/${this.id}/config`);
         });
     }
     /**
@@ -96,14 +99,14 @@ class Command {
     getActiveClientConfig(clientType, bot) {
         return __awaiter(this, void 0, void 0, function* () {
             // Attempt to get the active configuration from the database.
-            let activeConfig = yield Gestalt_1.default.get(`/bots/${bot.id}/commands/${this.key}/${clientType}`);
+            let activeConfig = yield Gestalt_1.default.get(`/bots/${bot.id}/commands/${this.id}/${clientType}`);
             if (!Sojiro_1.default.isEmpty(activeConfig)) {
                 return activeConfig;
             }
             // If we don't find any configurations in the database, we'll fetch it normally and then save it.
             let config = yield this.getClientConfig(clientType);
             // Sync it to the database.
-            yield Gestalt_1.default.sync(config, `/bots/${bot.id}/commands/${this.key}/${clientType}`);
+            yield Gestalt_1.default.sync(config, `/bots/${bot.id}/commands/${this.id}/${clientType}`);
             // Return the configuration.
             return config;
         });
@@ -143,14 +146,14 @@ class Command {
     getActiveParameterConfig(bot) {
         return __awaiter(this, void 0, void 0, function* () {
             // Attempt to get the active configuration from the database.
-            let activeConfig = yield Gestalt_1.default.get(`/bots/${bot.id}/commands/${this.key}/parameters`);
+            let activeConfig = yield Gestalt_1.default.get(`/bots/${bot.id}/commands/${this.id}/parameters`);
             if (!Sojiro_1.default.isEmpty(activeConfig)) {
                 return activeConfig;
             }
             // If we don't find any configurations in the database, we'll fetch it normally and then save it.
             let config = yield this.getParameterConfig();
             // Sync it to the database.
-            yield Gestalt_1.default.sync(config, `/bots/${bot.id}/commands/${this.key}/parameters`);
+            yield Gestalt_1.default.sync(config, `/bots/${bot.id}/commands/${this.id}/parameters`);
             // Return the configuration.
             return config;
         });

@@ -25,7 +25,7 @@ export default class Kawakami {
    * @returns
    *   "Boldified" text.
    */
-  static bold(text: string): string {
+  static bold(text: string|number): string {
     return `**${text}**`;
   }
 

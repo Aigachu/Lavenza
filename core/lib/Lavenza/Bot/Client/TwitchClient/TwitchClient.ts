@@ -17,6 +17,8 @@ import Morgana from "../../../Confidant/Morgana";
 import Igor from "../../../Confidant/Igor";
 import Gestalt from "../../../Gestalt/Gestalt";
 import {TwitchClientChannelConfigurations, TwitchClientConfigurations} from "../ClientConfigurations";
+import {TextChannel} from "discord.js";
+import Sojiro from "../../../Confidant/Sojiro";
 
 // Manually require TMI Client since it doesn't work with imports.
 const TMIClient = require('tmi.js').client;
@@ -157,4 +159,18 @@ export default class TwitchClient extends TMIClient implements ClientInterface {
     await Morgana.warn('Twitch client disconnected for {{bot}}.', {bot: this.bot.id});
   }
 
-};
+  /**
+   * A little utility function to order the bot to type for a set amount of seconds in a given channel.
+   *
+   * @TODO - Do something about that dumb 'method can be static' message.
+   *
+   * @param seconds
+   *   Amount of seconds to type for.
+   * @param channel
+   *   The Twitch channel to type in.
+   */
+  async typeFor(seconds: number, channel: any = null) {
+    await Sojiro.wait(seconds);
+  }
+
+}

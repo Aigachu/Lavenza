@@ -139,9 +139,9 @@ class Bot {
                 // Load Command from the Bot.
                 let command = yield this.getCommand(commandKey);
                 // Create a database collection for commands belonging to a Bot.
-                yield Gestalt_1.default.createCollection(`/bots/${this.id}/commands/${command.key}`);
+                yield Gestalt_1.default.createCollection(`/bots/${this.id}/commands/${command.id}`);
                 // Await the synchronization of data between the Command's default configuration and the database configuration.
-                yield Gestalt_1.default.sync(command.config, `/bots/${this.id}/commands/${command.key}/config`);
+                yield Gestalt_1.default.sync(command.config, `/bots/${this.id}/commands/${command.id}/config`);
             })));
             // Create a database collection for the clients belonging to a Bot.
             yield Gestalt_1.default.createCollection(`/bots/${this.id}/clients`);
@@ -315,7 +315,7 @@ class Bot {
         return __awaiter(this, void 0, void 0, function* () {
             // Check if there are talents set in configuration.
             if (Sojiro_1.default.isEmpty(this.config.talents)) {
-                yield Morgana_1.default.warn('Talents configuration missing for {{bot}}. The bot will not have any features!', { bot: this.id });
+                yield Morgana_1.default.warn('Talents configuration missing for {{bot}}. The bot will not have any cool features!', { bot: this.id });
                 return;
             }
             // Await validation of custom talents configured.

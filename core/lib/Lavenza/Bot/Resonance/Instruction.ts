@@ -29,5 +29,5 @@ export default interface Instruction {
   /**
    * Raw content of the message that was deciphered as an order.
    */
-  content: string;
+  content: any;
 }

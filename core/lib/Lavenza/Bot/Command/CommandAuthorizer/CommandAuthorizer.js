@@ -173,11 +173,15 @@ class CommandAuthorizer {
             if (!messageIsPrivate) {
                 return true;
             }
+            // Set it to true by default.
+            let allowedInPrivate = true;
             // At this point we know the message is private. We return whether or not it's allowed.
             // Get the base command configuration.
-            let allowedInPrivate = this.configurations.command.base.authorization.enabledInDirectMessages;
+            if (this.configurations.command.base.authorization && this.configurations.command.base.authorization.hasOwnProperty('enabledInDirectMessages')) {
+                allowedInPrivate = this.configurations.command.base.authorization.enabledInDirectMessages;
+            }
             // If the client configuration has an override, we'll use it.
-            if (this.configurations.command.client.authorization.hasOwnProperty('enabledInDirectMessages')) {
+            if (this.configurations.command.base.authorization && this.configurations.command.client.authorization.hasOwnProperty('enabledInDirectMessages')) {
                 allowedInPrivate = this.configurations.command.client.authorization.enabledInDirectMessages;
             }
             return allowedInPrivate;
@@ -211,8 +215,16 @@ class CommandAuthorizer {
             if (requiredEminence) {
                 return authorEminence >= Eminence_1.default[requiredEminence];
             }
-            // First, we determine the role level needed to run this command.
-            requiredEminence = Eminence_1.default[this.configurations.command.client.authorization.accessEminence] || Eminence_1.default[this.configurations.command.base.authorization.accessEminence] || Eminence_1.default.None;
+            // Set the required Eminence by default to None.
+            requiredEminence = Eminence_1.default.None;
+            // Attempt to get configuration set in the base command configuration.
+            if (this.configurations.command.base.authorization && this.configurations.command.base.authorization.hasOwnProperty('accessEminence')) {
+                requiredEminence = Eminence_1.default[this.configurations.command.base.authorization.accessEminence];
+            }
+            // Attempt to get configuration set in the client command configuration.
+            if (this.configurations.command.client.authorization && this.configurations.command.client.authorization.hasOwnProperty('accessEminence')) {
+                requiredEminence = Eminence_1.default[this.configurations.command.client.authorization.accessEminence];
+            }
             // Then we just make sure that the author's ID can be found where it's needed.
             return authorEminence >= requiredEminence;
         });

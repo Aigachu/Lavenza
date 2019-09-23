@@ -19,12 +19,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Listener_1 = require("../../../../lib/Lavenza/Bot/Listener/Listener");
 const Morgana_1 = require("../../../../lib/Lavenza/Confidant/Morgana");
 const ClientType_1 = require("../../../../lib/Lavenza/Bot/Client/ClientType");
+// noinspection JSUnusedGlobalSymbols
 /**
  * Custom Listener for the CleverBot Talent.
  *
  * It simply hears a message and has a small chance of querying the CleverBot API and answering!
  */
-class CleverListener extends Listener_1.default {
+class CleverBotListener extends Listener_1.default {
     /**
      * This is the function that listens to messages and acts upon them.
      *
@@ -70,10 +71,10 @@ class CleverListener extends Listener_1.default {
                     });
                 }
                 catch (e) {
-                    yield Morgana_1.default.warn(`Error occurred when querying CleverBot API. This is likely due to special characters being in the message heard in the listener. Must find a solution for this.`);
+                    yield Morgana_1.default.warn(`Error occurred when querying CleverBot API. This is either due to special characters being in the message heard in the listener, or the API not being able to be instantiated.`);
                 }
             }
         });
     }
 }
-exports.default = CleverListener;
+exports.default = CleverBotListener;

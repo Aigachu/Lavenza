@@ -44,16 +44,17 @@ export default interface ClientInterface {
 
   /**
    * Authenticate to the client application.
-   *
-   * @inheritDoc
    */
   authenticate();
 
   /**
    * Disconnect from the client application.
-   *
-   * @inheritDoc
    */
   disconnect();
+
+  /**
+   * Type for a specified amount of seconds in a given channel.
+   */
+  typeFor(seconds: any, channel: any);
 
 }

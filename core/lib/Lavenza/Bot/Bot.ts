@@ -181,10 +181,10 @@ export default class Bot {
       let command = await this.getCommand(commandKey);
 
       // Create a database collection for commands belonging to a Bot.
-      await Gestalt.createCollection(`/bots/${this.id}/commands/${command.key}`);
+      await Gestalt.createCollection(`/bots/${this.id}/commands/${command.id}`);
 
       // Await the synchronization of data between the Command's default configuration and the database configuration.
-      await Gestalt.sync(command.config, `/bots/${this.id}/commands/${command.key}/config`);
+      await Gestalt.sync(command.config, `/bots/${this.id}/commands/${command.id}/config`);
     }));
 
     // Create a database collection for the clients belonging to a Bot.
@@ -364,7 +364,7 @@ export default class Bot {
   async grantTalents() {
     // Check if there are talents set in configuration.
     if (Sojiro.isEmpty(this.config.talents)) {
-      await Morgana.warn('Talents configuration missing for {{bot}}. The bot will not have any features!', {bot: this.id});
+      await Morgana.warn('Talents configuration missing for {{bot}}. The bot will not have any cool features!', {bot: this.id});
       return;
     }
 
