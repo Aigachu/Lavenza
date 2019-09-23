@@ -2,7 +2,7 @@
 name: 'Gestalt Talent'
 
 # Talent description.
-description: 'Talent used to communicate with Gestalt, the configuration manager in Lavenza.'
+description: 'Talent used to communicate with Gestalt, the database manager in Lavenza.'
 
 # Talent Version.
 version: 1.0.0

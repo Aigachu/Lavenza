@@ -12,10 +12,12 @@ authorization:
     users: []
 
   # Determines whether or not this command can work in direct messages with the bot.
-  pms: true
+  # The value here will override whatever is placed in the base command configuration.
+  enabledInDirectMessages: true
 
-  # Determines level of operation needed to use this command. A value of 0 means everyone can use it.
-  oplevel: 3
+  # Determines the Eminence needed to operate this command.
+  # The value here will override whatever is placed in the base command configuration.
+  accessEminence: Joker
 
 # Cooldown overrides for Discord, if needed.
 # By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
