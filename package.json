@@ -52,6 +52,7 @@
     "nodemon": "^1.19.2",
     "parse-reminder": "^1.2.0",
     "prompt-async": "^0.9.9",
+    "thesaurus-com": "^1.2.3",
     "tmi.js": "^1.4.5",
     "twitch-api-v5": "^2.0.4",
     "underscore": "^1.9.1"

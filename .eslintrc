@@ -25,6 +25,7 @@
     "no-async-promise-executor": "error",
     "no-await-in-loop": "error",
     "no-extra-parens": "error",
-    "no-misleading-character-class": "error"
+    "no-misleading-character-class": "error",
+
   }
 }

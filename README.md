@@ -1,4 +1,6 @@
-# Lavenza [![Build Status](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Aigachu/Lavenza-II/?branch=master)
+# Lavenza ![License](https://img.shields.io/github/license/Aigachu/Lavenza?color=%233b83f7) ![Node Version Support](https://img.shields.io/node/v/lavenza?color=%233b83f7) [![npm version](https://img.shields.io/npm/v/lavenza?color=%233b83f7)](https://www.npmjs.com/package/lavenza) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/428e13a70e7c4c71a7878e1a66574ccd)](https://www.codacy.com/manual/Aigachu/Lavenza?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Aigachu/Lavenza&amp;utm_campaign=Badge_Grade) [![Build Status](https://img.shields.io/travis/Aigachu/Lavenza?branch=develop)](https://travis-ci.org/Aigachu/Lavenza) [![Dependencies](https://img.shields.io/librariesio/github/Aigachu/Lavenza)](https://libraries.io/github/Aigachu/Lavenza)
+
+[![NPM](https://nodei.co/npm/lavenza.png?compact=true)](https://nodei.co/npm/lavenza/)
 
 Lavenza is a large development project aiming to create powerful, multi-platform chatbots!
 

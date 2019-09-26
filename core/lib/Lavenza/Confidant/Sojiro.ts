@@ -7,6 +7,7 @@
 
 // Modules.
 import * as _ from 'underscore';
+import * as thesaurus from 'thesaurus-com';
 
 /**
  * Provides a class that handles input/output to the console & errors.
@@ -30,37 +31,97 @@ export default class Sojiro {
    * @returns
    *   Returns TRUE if it's considered an approval. Returns FALSE otherwise.
    */
-  static isConfirmation(text: string): boolean {
+  static async isConfirmation(text: string): Promise<boolean> {
     // Clean punctuation.
     text = text.replace('?', '');
     text = text.replace('!', '');
     text = text.replace('.', '');
     text = text.replace(',', '');
 
-    let confirmationWords = [
+    // Make a function to store a confirmation.
+    let confirmation = false;
+
+    // Store an array of all confirmation words we'd like to check for.
+    let confirmations = [
       'yes',
-      'yas',
-      'affirmative',
-      'y',
-      'yus',
       'sure',
       'okay',
-      'ok',
-      'alright'
     ];
 
-    if (text.startsWith('y')) {
+    // Set up Promises for the confirmations check.
+    let confirmationPromises = confirmations.map(async (word) => {
+      return new Promise(async (resolve, reject) => {
+        // Check whether we find a word match.
+        let match = await this.findWordMatch(word, text);
+        if (match) {
+          confirmation = true;
+          // We reject to end Promise.all() early.
+          reject();
+        }
+      });
+    });
+
+    // Store an array of all denial words.
+    let denials = [
+      'no',
+      'deny'
+    ];
+
+    // Set up Promises for the confirmations check.
+    let denialPromises = denials.map(async (word) => {
+      return new Promise(async (resolve, reject) => {
+        // Check whether we find a word match.
+        let match = await this.findWordMatch(word, text);
+        if (match) {
+          confirmation = false;
+          // We reject to end Promise.all() early.
+          reject();
+        }
+      });
+    });
+
+    // For each of these words we'll be making checks to see if they're used, or if synonyms are used.
+    await Promise.all(confirmationPromises.concat(denialPromises)).catch(async (error) => {
+      // Do nothing.
+      // We're expecting rejection here since we don't necessarily want to run all of them if we find a match.
+      // See if Promise.race() worked properly, we could use it here. But it would return a pending promise that never
+      // resolves if we don't find any matches.
+    });
+
+    // Return the confirmation.
+    return confirmation;
+  }
+
+  /**
+   * Attempts to find a word match in a string (haystack).
+   *
+   * This will have an additional check for synonyms of the word as well.
+   *
+   * @param word
+   *   Word to look for.
+   * @param haystack
+   *   The string to search for the word in.
+   */
+  private static async findWordMatch(word: string, haystack: string): Promise<boolean> {
+    // If the haystack is equivalent to the word 'yes', return true.
+    if (haystack === word) {
+      return true
+    }
+
+    // If the haystack contains the word, return true.
+    if (haystack.split(' ').includes(word)) {
       return true;
     }
 
-    let splitText = text.split(' ');
+    // Get the synonyms of the word.
+    let synonyms = await thesaurus.search(word).synonyms;
 
-    for (let word of splitText) {
-      if (confirmationWords.includes(word.toLowerCase())) {
-        return true;
-      }
+    // If we find a synonym of the word in the text, return true.
+    if (!Sojiro.isEmpty(synonyms) && new RegExp(synonyms.join('|')).test(haystack)) {
+      return true;
     }
 
+    // Otherwise, no match was found and we can return false.
     return false;
   }
 

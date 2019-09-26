@@ -5,9 +5,19 @@
  *
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
 const _ = require("underscore");
+const thesaurus = require("thesaurus-com");
 /**
  * Provides a class that handles input/output to the console & errors.
  *
@@ -30,32 +40,89 @@ class Sojiro {
      *   Returns TRUE if it's considered an approval. Returns FALSE otherwise.
      */
     static isConfirmation(text) {
-        // Clean punctuation.
-        text = text.replace('?', '');
-        text = text.replace('!', '');
-        text = text.replace('.', '');
-        text = text.replace(',', '');
-        let confirmationWords = [
-            'yes',
-            'yas',
-            'affirmative',
-            'y',
-            'yus',
-            'sure',
-            'okay',
-            'ok',
-            'alright'
-        ];
-        if (text.startsWith('y')) {
-            return true;
-        }
-        let splitText = text.split(' ');
-        for (let word of splitText) {
-            if (confirmationWords.includes(word.toLowerCase())) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Clean punctuation.
+            text = text.replace('?', '');
+            text = text.replace('!', '');
+            text = text.replace('.', '');
+            text = text.replace(',', '');
+            // Make a function to store a confirmation.
+            let confirmation = false;
+            // Store an array of all confirmation words we'd like to check for.
+            let confirmations = [
+                'yes',
+                'sure',
+                'okay',
+            ];
+            // Set up Promises for the confirmations check.
+            let confirmationPromises = confirmations.map((word) => __awaiter(this, void 0, void 0, function* () {
+                return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                    // Check whether we find a word match.
+                    let match = yield this.findWordMatch(word, text);
+                    if (match) {
+                        confirmation = true;
+                        // We reject to end Promise.all() early.
+                        reject();
+                    }
+                }));
+            }));
+            // Store an array of all denial words.
+            let denials = [
+                'no',
+                'deny'
+            ];
+            // Set up Promises for the confirmations check.
+            let denialPromises = denials.map((word) => __awaiter(this, void 0, void 0, function* () {
+                return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                    // Check whether we find a word match.
+                    let match = yield this.findWordMatch(word, text);
+                    if (match) {
+                        confirmation = false;
+                        // We reject to end Promise.all() early.
+                        reject();
+                    }
+                }));
+            }));
+            // For each of these words we'll be making checks to see if they're used, or if synonyms are used.
+            yield Promise.all(confirmationPromises.concat(denialPromises)).catch((error) => __awaiter(this, void 0, void 0, function* () {
+                // Do nothing.
+                // We're expecting rejection here since we don't necessarily want to run all of them if we find a match.
+                // See if Promise.race() worked properly, we could use it here. But it would return a pending promise that never
+                // resolves if we don't find any matches.
+            }));
+            // Return the confirmation.
+            return confirmation;
+        });
+    }
+    /**
+     * Attempts to find a word match in a string (haystack).
+     *
+     * This will have an additional check for synonyms of the word as well.
+     *
+     * @param word
+     *   Word to look for.
+     * @param haystack
+     *   The string to search for the word in.
+     */
+    static findWordMatch(word, haystack) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // If the haystack is equivalent to the word 'yes', return true.
+            if (haystack === word) {
                 return true;
             }
-        }
-        return false;
+            // If the haystack contains the word, return true.
+            if (haystack.split(' ').includes(word)) {
+                return true;
+            }
+            // Get the synonyms of the word.
+            let synonyms = yield thesaurus.search(word).synonyms;
+            // If we find a synonym of the word in the text, return true.
+            if (!Sojiro.isEmpty(synonyms) && new RegExp(synonyms.join('|')).test(haystack)) {
+                return true;
+            }
+            // Otherwise, no match was found and we can return false.
+            return false;
+        });
     }
     /**
      * Utility function to return a random element from a given array.

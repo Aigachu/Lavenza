@@ -15,6 +15,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// Modules.
+const thesaurus = require("thesaurus-com");
 // Imports.
 const Sojiro_1 = require("../../../../../../../lib/Lavenza/Confidant/Sojiro");
 const PromptExceptionType_1 = require("../../../../../../../lib/Lavenza/Bot/Prompt/Exception/PromptExceptionType");
@@ -121,17 +123,17 @@ class GuessGameArgHandler {
             // Start up a prompt for the guesser's input.
             yield resonance.prompt(guesser, resonance.message.channel, 10, (responseResonance, prompt) => __awaiter(this, void 0, void 0, function* () {
                 // Now we'll try to determine what the guesser said.
-                let guess = responseResonance.content.toLowerCase();
+                let guess = yield GuessGameArgHandler.resolveGuess(responseResonance.content.toLowerCase());
                 // If the guesser says 'same', and the results are in fact the same, then they win.
-                if (guess === 'same' && challengerResult === opponentResult) {
+                if (guess === Guess.Same && challengerResult === opponentResult) {
                     victor = 'guesser';
                 }
                 // If the guesser says 'different', and the results are in fact different, then they win.
-                else if ((guess === 'different' || guess === 'diff') && challengerResult !== opponentResult) {
+                else if (guess === Guess.Different && challengerResult !== opponentResult) {
                     victor = 'guesser';
                 }
                 // If the guesser provides an invalid guess, we restart the prompt.
-                else if (guess !== 'same' && guess !== 'different' && guess !== 'diff') {
+                else if (guess !== Guess.Same && guess !== Guess.Different) {
                     yield prompt.reset({ error: PromptExceptionType_1.default.INVALID_RESPONSE });
                 }
                 // Otherwise, the prayer wins.
@@ -231,6 +233,31 @@ class GuessGameArgHandler {
         });
     }
     /**
+     * Resolve what the user's guess is depending on what is entered by them.
+     *
+     * @param guess
+     *   The text guess said by the user.
+     *
+     * @return
+     *   Return whether the guesser is saying they're the same, or different.
+     */
+    static resolveGuess(guess) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Get synonyms of the word 'same'.
+            let synonymsOfSame = yield thesaurus.search(Guess.Same).synonyms;
+            // @TODO - We can go as far as checking if ANY of the synonyms are in the text...But for now we're fine.
+            if (guess === Guess.Same || guess.split(' ').includes(Guess.Same) || new RegExp(synonymsOfSame.join('|')).test(guess)) {
+                return Guess.Same;
+            }
+            // Get synonyms of the word 'different'.
+            let synonymsOfDifferent = yield thesaurus.search(Guess.Different).synonyms;
+            // @TODO - We can go as far as checking if ANY of the synonyms are in the text...But for now we're fine.
+            if (guess === 'different' || guess === 'diff' || guess.split(' ').includes(Guess.Different) || new RegExp(synonymsOfDifferent.join('|')).test(guess)) {
+                return Guess.Different;
+            }
+        });
+    }
+    /**
      * Attempt to get a confirmation from the opponent that was challenged.
      *
      * The opponent will be prompted and the answer will determine whether or not the duel will happen.
@@ -258,10 +285,8 @@ class GuessGameArgHandler {
             yield resonance.prompt(opponent, resonance.message.channel, 10, (responseResonance, prompt) => __awaiter(this, void 0, void 0, function* () {
                 // If the opponent sends a confirmation, we set confirmation to true.
                 // Otherwise, send a sad message. :(
-                if (Sojiro_1.default.isConfirmation(responseResonance.content)) {
-                    confirmation = true;
-                }
-                else {
+                confirmation = yield Sojiro_1.default.isConfirmation(responseResonance.content);
+                if (!confirmation) {
                     yield resonance.__reply(`Aww ok. Maybe another time then!`, '::COINFLIP-GUESS_GAME_DECLINED');
                 }
             }), (error) => __awaiter(this, void 0, void 0, function* () {
@@ -275,3 +300,11 @@ class GuessGameArgHandler {
     }
 }
 exports.default = GuessGameArgHandler;
+/**
+ * Declare an Enum to organize the different guessing possibilities.
+ */
+var Guess;
+(function (Guess) {
+    Guess["Same"] = "same";
+    Guess["Different"] = "different";
+})(Guess || (Guess = {}));

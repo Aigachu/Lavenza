@@ -75,7 +75,6 @@ class Gestalt extends Command_1.default {
                         return;
                     }
                     // If a Discord Client exists for the bot, we send a message to the Discord architect.
-                    console.log(yield resonance.bot.getClient(ClientType_1.default.Discord));
                     if (!Sojiro_1.default.isEmpty(yield resonance.bot.getClient(ClientType_1.default.Discord))) {
                         let getResultToString = JSON.stringify(getResult, null, '\t');
                         yield resonance.send(resonance.bot.joker.discord, '```\n' + getResultToString + '\n```');
@@ -89,7 +88,7 @@ class Gestalt extends Command_1.default {
                         return;
                     }
                     // If a Discord Client exists for the bot, we send a message to the Discord architect.
-                    if (!Sojiro_1.default.isEmpty(resonance.bot.getClient(ClientType_1.default.Discord))) {
+                    if (!Sojiro_1.default.isEmpty(yield resonance.bot.getClient(ClientType_1.default.Discord))) {
                         let updateResultToString = JSON.stringify(updateResult, null, '\t');
                         yield resonance.send(resonance.bot.joker.discord, '```\n' + updateResultToString + '\n```');
                     }
