@@ -6,9 +6,9 @@
  */
 
 // Imports.
-import Talent from "../../lib/Lavenza/Talent/Talent";
+import {Talent} from "../../lib/Lavenza/Talent/Talent";
 import {TalentConfigurations} from "../../lib/Lavenza/Talent/TalentConfigurations";
-import Bot from "../../lib/Lavenza/Bot/Bot";
+import {Bot} from "../../lib/Lavenza/Bot/Bot";
 
 /**
  * Coinflip Talent.

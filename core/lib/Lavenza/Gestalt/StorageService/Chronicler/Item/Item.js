@@ -39,8 +39,8 @@ class Item {
     values() {
         return __awaiter(this, void 0, void 0, function* () {
             // We expect a yml. We just reach the path.
-            return yield Akechi_1.default.readYamlFile(this.path);
+            return yield Akechi_1.Akechi.readYamlFile(this.path);
         });
     }
 }
-exports.default = Item;
+exports.Item = Item;

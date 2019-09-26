@@ -25,7 +25,7 @@ const ClientType_1 = require("../../../../lib/Lavenza/Bot/Client/ClientType");
  *
  * It simply hears a message and has a small chance of querying the CleverBot API and answering!
  */
-class CleverBotListener extends Listener_1.default {
+class CleverBotListener extends Listener_1.Listener {
     /**
      * This is the function that listens to messages and acts upon them.
      *
@@ -52,14 +52,14 @@ class CleverBotListener extends Listener_1.default {
             // If the API isn't set, we don't do anything.
             if (this.talent.cleverBotApi) {
                 try {
-                    if (resonance.client.type === ClientType_1.default.Discord) {
+                    if (resonance.client.type === ClientType_1.ClientType.Discord) {
                         let client = resonance.client;
                         yield client.typeFor(5, resonance.message.channel);
                     }
                     let response = yield this.talent.cleverBotApi.query(resonance.content);
                     let author = '';
                     // If we're on discord, the author should be a tag. Otherwise, we just get the username.
-                    if (resonance.client.type === ClientType_1.default.Discord) {
+                    if (resonance.client.type === ClientType_1.ClientType.Discord) {
                         author = `<@${resonance.message.author.id}>`;
                     }
                     else {
@@ -71,7 +71,7 @@ class CleverBotListener extends Listener_1.default {
                     });
                 }
                 catch (e) {
-                    yield Morgana_1.default.warn(`Error occurred when querying CleverBot API. This is either due to special characters being in the message heard in the listener, or the API not being able to be instantiated.`);
+                    yield Morgana_1.Morgana.warn(`Error occurred when querying CleverBot API. This is either due to special characters being in the message heard in the listener, or the API not being able to be instantiated.`);
                 }
             }
         });

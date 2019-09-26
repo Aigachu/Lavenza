@@ -39,7 +39,7 @@ class GuessGameArgHandler {
     static handle(command, resonance, input) {
         return __awaiter(this, void 0, void 0, function* () {
             // @TODO - Twitch support will come later.
-            if (resonance.client.type === ClientType_1.default.Twitch) {
+            if (resonance.client.type === ClientType_1.ClientType.Twitch) {
                 yield resonance.__reply(`Unfortunately, the Coinflip Guessing Game are not yet supported on Twitch! Give it a try on Discord!`, '::COINFLIP-GUESS_GAME_NO_TWITCH_SUPPORT');
                 return;
             }
@@ -134,7 +134,7 @@ class GuessGameArgHandler {
                 }
                 // If the guesser provides an invalid guess, we restart the prompt.
                 else if (guess !== Guess.Same && guess !== Guess.Different) {
-                    yield prompt.reset({ error: PromptExceptionType_1.default.INVALID_RESPONSE });
+                    yield prompt.reset({ error: PromptExceptionType_1.PromptExceptionType.INVALID_RESPONSE });
                 }
                 // Otherwise, the prayer wins.
                 else {
@@ -144,7 +144,7 @@ class GuessGameArgHandler {
                 // Depending on the type of error, you can send different replies.
                 switch (error.type) {
                     // This is ran when no response is provided.
-                    case PromptExceptionType_1.default.NO_RESPONSE: {
+                    case PromptExceptionType_1.PromptExceptionType.NO_RESPONSE: {
                         // Failing to reply will simply send a different message.
                         yield resonance.__reply(`AAAHH {{guesser}}, you failed to respond in time! This is considered a forfeit. As such, the victor is {{victor}}!!! Congratulations!`, {
                             victor: prayer,
@@ -152,7 +152,7 @@ class GuessGameArgHandler {
                         break;
                     }
                     // This is ran when the max amount of resets is hit.
-                    case PromptExceptionType_1.default.MAX_RESET_EXCEEDED: {
+                    case PromptExceptionType_1.PromptExceptionType.MAX_RESET_EXCEEDED: {
                         // Failing to reply will simply send a different message.
                         yield resonance.__reply(`{{guesser}}, COME ON! It's either **Same** or **Different**!!! WHAT DON'T YOU GET?!\nUgh whatever! The victor is {{victor}}. ENJOY YOUR FREEBIE!`, {
                             victor: prayer,
@@ -160,7 +160,7 @@ class GuessGameArgHandler {
                         break;
                     }
                     // This is the message sent when no response is provided.
-                    case PromptExceptionType_1.default.INVALID_RESPONSE: {
+                    case PromptExceptionType_1.PromptExceptionType.INVALID_RESPONSE: {
                         yield resonance.__reply(`That's not a valid answer {{guesser}}! It's either **Same** or **Different**! Try again!`, '::COINFLIP-GUESS_GAME_GUESSER_INVALID_INPUT');
                         break;
                     }
@@ -285,7 +285,7 @@ class GuessGameArgHandler {
             yield resonance.prompt(opponent, resonance.message.channel, 10, (responseResonance, prompt) => __awaiter(this, void 0, void 0, function* () {
                 // If the opponent sends a confirmation, we set confirmation to true.
                 // Otherwise, send a sad message. :(
-                confirmation = yield Sojiro_1.default.isConfirmation(responseResonance.content);
+                confirmation = yield Sojiro_1.Sojiro.isConfirmation(responseResonance.content);
                 if (!confirmation) {
                     yield resonance.__reply(`Aww ok. Maybe another time then!`, '::COINFLIP-GUESS_GAME_DECLINED');
                 }

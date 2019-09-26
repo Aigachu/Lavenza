@@ -140,7 +140,7 @@ class Akechi {
             }
             fs.writeFile(path, yaml.safeDump(output), function (err) {
                 if (err) {
-                    Igor_1.default.throw(err).then(() => {
+                    Igor_1.Igor.throw(err).then(() => {
                         // Do nothing.
                     });
                 }
@@ -203,4 +203,4 @@ class Akechi {
         }
     }
 }
-exports.default = Akechi;
+exports.Akechi = Akechi;

@@ -84,7 +84,7 @@ class Sojiro {
                 }));
             }));
             // For each of these words we'll be making checks to see if they're used, or if synonyms are used.
-            yield Promise.all(confirmationPromises.concat(denialPromises)).catch((error) => __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all(confirmationPromises.concat(denialPromises)).catch(() => __awaiter(this, void 0, void 0, function* () {
                 // Do nothing.
                 // We're expecting rejection here since we don't necessarily want to run all of them if we find a match.
                 // See if Promise.race() worked properly, we could use it here. But it would return a pending promise that never
@@ -181,4 +181,4 @@ class Sojiro {
         return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
     }
 }
-exports.default = Sojiro;
+exports.Sojiro = Sojiro;

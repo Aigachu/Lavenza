@@ -6,10 +6,10 @@
  */
 
 // Imports.
-import Command from "./Command";
-import Resonance from "../Resonance/Resonance";
-import Sojiro from "../../Confidant/Sojiro";
-import Kawakami from "../../Confidant/Kawakami";
+import {Command} from "./Command";
+import {Resonance} from "../Resonance/Resonance";
+import {Sojiro} from "../../Confidant/Sojiro";
+import {Kawakami} from "../../Confidant/Kawakami";
 
 /**
  * A simple client handler.
@@ -21,7 +21,7 @@ import Kawakami from "../../Confidant/Kawakami";
  *
  * This class simply executes the tasks for a given command, in the context of a client.
  */
-export default abstract class CommandClientHandler {
+export abstract class CommandClientHandler {
 
   /**
    * Command that this handler is tied to.
@@ -67,7 +67,7 @@ export default abstract class CommandClientHandler {
    * @returns
    *   Can returns any form of data depending on the type of function that was called.
    */
-  abstract async execute(data: any): Promise<any>;
+  public abstract async execute(data: any): Promise<any>;
 
   // noinspection JSUnusedGlobalSymbols
   /**
@@ -81,7 +81,7 @@ export default abstract class CommandClientHandler {
    * @returns
    *   The message that was sent as a reply.
    */
-  async basicReply(data: any): Promise<any> {
+  public async basicReply(data: any): Promise<any> {
     data.replacers = data.replacers || {};
 
     // Set up for "bolding" any replacers.

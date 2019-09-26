@@ -57,7 +57,7 @@ class Igor {
     static continue(error) {
         return __awaiter(this, void 0, void 0, function* () {
             // Sends a warning to the console.
-            yield Morgana_1.default.warn(error.message);
+            yield Morgana_1.Morgana.warn(error.message);
             return true;
         });
     }
@@ -72,7 +72,7 @@ class Igor {
     static stop(error) {
         return __awaiter(this, void 0, void 0, function* () {
             // Output the error with Morgana's color formatting.
-            yield Morgana_1.default.error(error.message);
+            yield Morgana_1.Morgana.error(error.message);
             // Regular outputting of the error.
             console.error(error);
             // Exit the application.
@@ -97,10 +97,10 @@ class Igor {
                 throw error;
             }
             // Get the output's translation.
-            let output = yield Yoshida_1.default.translate(error, replacers, locale);
+            let output = yield Yoshida_1.Yoshida.translate(error, replacers, locale);
             // Throw the error with the built output.
             throw new Error(output);
         });
     }
 }
-exports.default = Igor;
+exports.Igor = Igor;

@@ -11,16 +11,16 @@ import * as arp from 'app-root-path';
 import * as prompt from 'prompt-async';
 
 // Imports.
-import Gestalt from '../Gestalt/Gestalt';
-import TalentManager from '../Talent/TalentManager';
-import BotManager from '../Bot/BotManager';
-import Akechi from '../Confidant/Akechi';
-import Morgana from '../Confidant/Morgana';
-import Makoto from '../Confidant/Makoto';
-import Sojiro from '../Confidant/Sojiro';
-import Igor from '../Confidant/Igor';
-import CoreSettings from "./CoreSettings";
-import Yoshida from "../Confidant/Yoshida";
+import {Gestalt} from '../Gestalt/Gestalt';
+import {TalentManager} from '../Talent/TalentManager';
+import {BotManager} from '../Bot/BotManager';
+import {Akechi} from '../Confidant/Akechi';
+import {Morgana} from '../Confidant/Morgana';
+import {Makoto} from '../Confidant/Makoto';
+import {Sojiro} from '../Confidant/Sojiro';
+import {Igor} from '../Confidant/Igor';
+import {CoreSettings} from './CoreSettings';
+import {Yoshida} from "../Confidant/Yoshida";
 
 /**
  * Provides class for the Core of the Lavenza application.
@@ -31,7 +31,7 @@ import Yoshida from "../Confidant/Yoshida";
  *
  * Lavenza hates dirty code. ;)
  */
-export default class Core {
+export class Core {
 
   /**
    * Stores Lavenza's version.
@@ -59,6 +59,7 @@ export default class Core {
    */
   public static settings: CoreSettings;
 
+  // noinspection JSUnusedLocalSymbols
   /**
    * This is a static class. The constructor will never be used.
    */
@@ -73,7 +74,7 @@ export default class Core {
    * @param rootPath
    *   Path to the directory where Lavenza files are stored.
    */
-  static async initialize(rootPath: string) {
+  public static async initialize(rootPath: string) {
     // Some flavor text for the console.
     await Morgana.warn(`Initializing (v${Core.version})...`);
 
@@ -132,24 +133,6 @@ export default class Core {
   }
 
   /**
-   * Setup paths and assign them to the Core.
-   *
-   * @param rootPath
-   *   The provided root path to base ourselves on.
-   */
-  static async setPaths(rootPath: string) {
-    Core.paths = {
-      root: rootPath,
-      bots: rootPath + '/bots',
-      talents: {
-        core: arp.path + '/core/talents',
-        custom: rootPath + '/talents'
-      },
-      database: rootPath + '/database'
-    };
-  }
-
-  /**
    * PERSONA!
    *
    * This function starts the application. It runs all of the preparations, then runs the application afterwards.
@@ -158,7 +141,7 @@ export default class Core {
    *
    * All tasks done in the EXECUTION phase are in the run() function.
    */
-  static async summon() {
+  public static async summon() {
     // If settings aren't set, it means that initialization was bypassed. We can't allow that.
     if (Sojiro.isEmpty(Core.settings)) {
       return;
@@ -183,7 +166,7 @@ export default class Core {
    * This involves reading and parsing bot files, talent files and command files. Database preparations and instances
    * are also prepared here.
    */
-  static async build() {
+  private static async build() {
     // Some more flavor text.
     await Morgana.status("Commencing preparatory tasks!");
 
@@ -229,13 +212,31 @@ export default class Core {
    *
    * All execution tasks are ran here.
    */
-  static async run() {
+  private static async run() {
     // Some more flavor.
     await Morgana.status("Commencing execution phase!");
 
     // Deploy bots from the BotManager.
     // All bots set to run will be online after this executes.
     await BotManager.run();
+  }
+
+  /**
+   * Setup paths and assign them to the Core.
+   *
+   * @param rootPath
+   *   The provided root path to base ourselves on.
+   */
+  private static async setPaths(rootPath: string) {
+    Core.paths = {
+      root: rootPath,
+      bots: rootPath + '/bots',
+      talents: {
+        core: arp.path + '/core/talents',
+        custom: rootPath + '/talents'
+      },
+      database: rootPath + '/database'
+    };
   }
 
 }

@@ -9,15 +9,15 @@
 import * as path from 'path';
 
 // Imports.
-import Akechi from '../Confidant/Akechi';
-import Morgana from '../Confidant/Morgana';
-import Sojiro from '../Confidant/Sojiro';
-import Igor from '../Confidant/Igor';
-import Bot from './Bot';
-import Core from "../Core/Core";
+import {Akechi} from '../Confidant/Akechi';
+import {Morgana} from '../Confidant/Morgana';
+import {Sojiro} from '../Confidant/Sojiro';
+import {Igor} from '../Confidant/Igor';
+import {Bot} from './Bot';
+import {Core} from "../Core/Core";
 import {BotConfigurations} from "./BotConfigurations";
 import {AssociativeObject} from "../Types";
-import Gestalt from "../Gestalt/Gestalt";
+import {Gestalt} from "../Gestalt/Gestalt";
 
 /**
  * Provides a Manager for Bots.
@@ -27,7 +27,7 @@ import Gestalt from "../Gestalt/Gestalt";
  * Bots are configured in the 'bots' folder at the root of the application.
  *
  */
-export default class BotManager {
+export class BotManager {
 
   /**
    * Store ignored bot names.
@@ -42,6 +42,7 @@ export default class BotManager {
    */
   public static bots: AssociativeObject<Bot> = {};
 
+  // noinspection JSUnusedLocalSymbols
   /**
    * This is a static class. The constructor will never be used.
    */
@@ -52,7 +53,7 @@ export default class BotManager {
    *
    * Registers all bots and fires all of *their* preparation handlers.
    */
-  static async build() {
+  public static async build() {
     // Await registration of all bots from the application files.
     // Upon error in registration, stop the application.
     await BotManager.registerAllBotsInDirectory();
@@ -67,7 +68,7 @@ export default class BotManager {
   /**
    * Perform bootstrapping tasks for Database for all bots.
    */
-  static async gestalt() {
+  public static async gestalt() {
     // Some flavor.
     await Morgana.status("Running Gestalt bootstrap process for the Bot Manager...");
 
@@ -90,7 +91,7 @@ export default class BotManager {
    * @param id
    *   ID of the bot we want to retrieve.
    */
-  static async getBot(id: string): Promise<Bot> {
+  public static async getBot(id: string): Promise<Bot> {
     return BotManager.bots[id];
   }
 
@@ -99,7 +100,7 @@ export default class BotManager {
    *
    * Deploy only the "Master" bot.
    */
-  static async run() {
+  public static async run() {
     // Boot master bot that will manage all other bots in the codebase.
     await BotManager.bootMasterBot();
 
@@ -114,7 +115,7 @@ export default class BotManager {
   /**
    * Activates the Master Bot for your application.
    */
-  static async bootMasterBot() {
+  public static async bootMasterBot() {
     // Await deployment of the master bot.
     await BotManager.boot(Core.settings.master);
   }
@@ -122,7 +123,7 @@ export default class BotManager {
   /**
    * Boots all bots set up in the 'autoboot' array of the settings.
    */
-  static async bootAutoBoots() {
+  private static async bootAutoBoots() {
     // If the autoboot array is empty, we don't do anything here.
     if (Sojiro.isEmpty(Core.settings.autoboot)) {
       await Morgana.warn(`No bots set up for autobooting. Continuing!`);
@@ -142,7 +143,7 @@ export default class BotManager {
    * @param botId
    *    The ID of the bot to deploy.
    */
-  static async boot(botId: string) {
+  public static async boot(botId: string) {
     // If the bot isn't found, we can't boot it.
     if (Sojiro.isEmpty(BotManager.bots[botId])) {
       await Morgana.warn(`Tried to boot an non-existent bot: {{botId}}. Gracefully continuing the program.`, {botId: botId});
@@ -160,7 +161,7 @@ export default class BotManager {
    * @param botId
    *   ID of the Bot to shutdown.
    */
-  static async shutdown(botId: string) {
+  public static async shutdown(botId: string) {
     // If the bot isn't found, we can't shut it down.
     if (Sojiro.isEmpty(BotManager.bots[botId])) {
       await Morgana.warn(`Tried to shutdown an non-existent bot: {{botId}}. Gracefully continuing the program.`, {botId: botId});
@@ -177,7 +178,7 @@ export default class BotManager {
    * @param botId
    *    The ID of the bot to prepare.
    */
-  static async prepareBot(botId: string) {
+  public static async prepareBot(botId: string) {
     // Await preparation handler for a single bot.
     let bot: Bot = await BotManager.getBot(botId);
     await bot.prepare();
@@ -186,7 +187,7 @@ export default class BotManager {
   /**
    * Run preparation handlers for all bots loaded in the Manager.
    */
-  static async prepareAllBots() {
+  public static async prepareAllBots() {
     // Await preparation handlers for all bots.
     await Promise.all(Object.keys(BotManager.bots).map(async botId => {
       // Await preparation handler for a single bot.
@@ -204,7 +205,7 @@ export default class BotManager {
    * @param directory
    *    Path to the directory where this bot's files are located.
    */
-  static async registerBot(botId: string, directory: string = undefined) {
+  private static async registerBot(botId: string, directory: string = undefined) {
     // If the directory isn't provided, we'll get it ourselves.
     if (directory === undefined) {
       directory = Core.paths.bots + '/' + botId;
@@ -254,7 +255,7 @@ export default class BotManager {
    *
    * This function crawls that folder and instantiates the bots with their configuration files.
    */
-  static async registerAllBotsInDirectory() {
+  private static async registerAllBotsInDirectory() {
     // Fetch all bot directories from the 'bots' folder at the root of the application.
     let botDirectories = await Akechi.getDirectoriesFrom(Core.paths.bots);
 

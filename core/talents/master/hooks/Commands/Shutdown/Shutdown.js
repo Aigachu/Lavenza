@@ -24,7 +24,7 @@ const BotManager_1 = require("../../../../../lib/Lavenza/Bot/BotManager");
  *
  * Handles the 'boot' command, allowing a bot to shutdown other bots in the system.
  */
-class Shutdown extends Command_1.default {
+class Shutdown extends Command_1.Command {
     /**
      * @inheritDoc
      */
@@ -45,13 +45,13 @@ class Shutdown extends Command_1.default {
             // The raw content here should be the ID of the bot we want to activate.
             let botToShutdown = resonance.instruction.content;
             // Now we should check if the bot exists.
-            if (Sojiro_1.default.isEmpty(BotManager_1.default.bots[botToShutdown])) {
+            if (Sojiro_1.Sojiro.isEmpty(BotManager_1.BotManager.bots[botToShutdown])) {
                 yield resonance.__reply(`Hmm...That bot doesn't seem to exist in the codebase. Did you make a typo? Make sure to enter the exact ID of the bot for this to work.`);
                 return;
             }
             // If all is good, we can go ahead and boot the bot.
             yield resonance.__reply(`Shutting down {{bot}}...`, { bot: botToShutdown });
-            yield BotManager_1.default.shutdown(botToShutdown);
+            yield BotManager_1.BotManager.shutdown(botToShutdown);
         });
     }
 }

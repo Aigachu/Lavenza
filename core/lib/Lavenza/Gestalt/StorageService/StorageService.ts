@@ -12,14 +12,7 @@
  *
  * Storage services must implement REST methods for manipulation of data.
  */
-export default abstract class StorageService {
-
-  /**
-   * StorageService constructor.
-   */
-  constructor() {
-    // Do nothing for now. :O
-  }
+export abstract class StorageService {
 
   /**
    * Make a request to the database.
@@ -39,7 +32,7 @@ export default abstract class StorageService {
    * @returns
    *   The result of the protocol call, if applicable.
    */
-  async request({protocol = '', endpoint = '', payload = {}} = {}): Promise<any> {
+  public async request({protocol = '', endpoint = '', payload = {}} = {}): Promise<any> {
     // Depending on the protocol, we run different methods.
     switch(protocol) {
       // GET Protocol.
@@ -71,7 +64,7 @@ export default abstract class StorageService {
   /**
    * This function will handle build preparations..
    */
-  abstract async build();
+  public abstract async build();
 
   /**
    * Create a collection in the database.
@@ -83,7 +76,7 @@ export default abstract class StorageService {
    * @param payload
    *   The data of the Collection to create.
    */
-  abstract async createCollection(endpoint: string, payload: Object);
+  public abstract async createCollection(endpoint: string, payload: Object);
 
   /**
    * Process a GET request.
@@ -94,7 +87,7 @@ export default abstract class StorageService {
    * @returns
    *   Data retrieved, if it succeeded.
    */
-  abstract async get(endpoint: string): Promise<any>;
+  public abstract async get(endpoint: string): Promise<any>;
 
   /**
    * Process a POST request.
@@ -107,7 +100,7 @@ export default abstract class StorageService {
    * @returns
    *   Data pushed, if applicable.
    */
-  abstract async post(endpoint: string, payload: Object): Promise<any|null>;
+  public abstract async post(endpoint: string, payload: Object): Promise<any|null>;
 
   /**
    * Process a UPDATE request.
@@ -120,7 +113,7 @@ export default abstract class StorageService {
    * @returns
    *   Data updated, if applicable.
    */
-  abstract async update(endpoint: string, payload: Object): Promise<any|null>;
+  public abstract async update(endpoint: string, payload: Object): Promise<any|null>;
 
   /**
    * Process a DELETE request.
@@ -130,6 +123,6 @@ export default abstract class StorageService {
    * @param endpoint
    *   Path to delete data at.
    */
-  abstract async delete(endpoint: string);
+  public abstract async delete(endpoint: string);
 
 }

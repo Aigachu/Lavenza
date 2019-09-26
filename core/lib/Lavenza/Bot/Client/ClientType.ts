@@ -18,4 +18,4 @@ enum ClientType {
   // Skype = 'a funny joke',
 }
 
-export default ClientType;
+export {ClientType};

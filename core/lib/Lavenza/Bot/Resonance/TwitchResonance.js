@@ -25,7 +25,7 @@ const Sojiro_1 = require("../../Confidant/Sojiro");
 /**
  * Provides specific Resonance properties for messages coming from Discord.
  */
-class TwitchResonance extends Resonance_1.default {
+class TwitchResonance extends Resonance_1.Resonance {
     /**
      * DiscordResonance constructor.
      * @inheritDoc
@@ -54,13 +54,13 @@ class TwitchResonance extends Resonance_1.default {
     getLocale() {
         return __awaiter(this, void 0, void 0, function* () {
             // First, we check if configurations exist for this user.
-            let i18nUserConfig = yield Gestalt_1.default.get(`/i18n/${this.bot.id}/clients/twitch/users`).catch(Igor_1.default.stop);
+            let i18nUserConfig = yield Gestalt_1.Gestalt.get(`/i18n/${this.bot.id}/clients/twitch/users`).catch(Igor_1.Igor.stop);
             // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
             if (i18nUserConfig[this.author.id] && i18nUserConfig[this.author.id].locale && i18nUserConfig[this.author.id].locale !== 'default') {
                 return i18nUserConfig[this.author.id].locale;
             }
             // Second, we check if configurations exist for this channel.
-            let i18nChannelConfig = yield Gestalt_1.default.get(`/i18n/${this.bot.id}/clients/twitch/channels`).catch(Igor_1.default.stop);
+            let i18nChannelConfig = yield Gestalt_1.Gestalt.get(`/i18n/${this.bot.id}/clients/twitch/channels`).catch(Igor_1.Igor.stop);
             // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
             if (i18nChannelConfig[this.author.id] && i18nChannelConfig[this.author.id].locale && i18nChannelConfig[this.author.id].locale !== 'default') {
                 return i18nChannelConfig[this.channel.id].locale;
@@ -78,11 +78,11 @@ class TwitchResonance extends Resonance_1.default {
     doSend(bot, destination, content) {
         return __awaiter(this, void 0, void 0, function* () {
             // If the destination is a channel, and it's a private whisper channel, we use TMI's whisper function instead.
-            if (destination instanceof TwitchChannel_1.default && destination.type === 'whisper') {
+            if (destination instanceof TwitchChannel_1.TwitchChannel && destination.type === 'whisper') {
                 return yield this.client.whisper(destination.id, content);
             }
             // If the destination is a user, then we send a whisper as well.
-            if (destination instanceof TwitchUser_1.default) {
+            if (destination instanceof TwitchUser_1.TwitchUser) {
                 return yield this.client.whisper(destination.username, content);
             }
             // If the destination is a string and doesn't start with '#', we send it through a whisper.
@@ -95,6 +95,18 @@ class TwitchResonance extends Resonance_1.default {
             }
             // Otherwise, we just send it to the destination, assuming it's simply the name of a channel.
             return yield this.client.say(destination.id, content);
+        });
+    }
+    /**
+     * Emulate the bot typing for a given amount of seconds.
+     *
+     * In the case of Twitch, we simply wait for the amount of seconds, as Twitch doesn't have typing notifiers.
+     *
+     * @inheritDoc
+     */
+    typeFor(seconds, destination = undefined) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return Sojiro_1.Sojiro.wait(seconds);
         });
     }
     /**
@@ -121,17 +133,5 @@ class TwitchResonance extends Resonance_1.default {
             return this.message.channel.type === "whisper" ? 'private' : 'public';
         });
     }
-    /**
-     * Emulate the bot typing for a given amount of seconds.
-     *
-     * In the case of Twitch, we simply wait for the amount of seconds, as Twitch doesn't have typing notifiers.
-     *
-     * @inheritDoc
-     */
-    typeFor(seconds, destination = undefined) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return Sojiro_1.default.wait(seconds);
-        });
-    }
 }
-exports.default = TwitchResonance;
+exports.TwitchResonance = TwitchResonance;

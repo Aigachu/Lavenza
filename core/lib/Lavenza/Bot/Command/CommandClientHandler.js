@@ -61,12 +61,12 @@ class CommandClientHandler {
         return __awaiter(this, void 0, void 0, function* () {
             data.replacers = data.replacers || {};
             // Set up for "bolding" any replacers.
-            if (!Sojiro_1.default.isEmpty(data.bolds)) {
+            if (!Sojiro_1.Sojiro.isEmpty(data.bolds)) {
                 yield Promise.all(data.bolds.map((key) => __awaiter(this, void 0, void 0, function* () {
                     if (!data.replacers[key]) {
                         return;
                     }
-                    data.replacers[key] = yield Kawakami_1.default.bold(data.replacers[key]);
+                    data.replacers[key] = yield Kawakami_1.Kawakami.bold(data.replacers[key]);
                 })));
             }
             yield this.resonance.typeFor(1, this.resonance.channel);
@@ -74,4 +74,4 @@ class CommandClientHandler {
         });
     }
 }
-exports.default = CommandClientHandler;
+exports.CommandClientHandler = CommandClientHandler;

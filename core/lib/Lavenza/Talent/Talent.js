@@ -70,7 +70,7 @@ class Talent {
     gestalt() {
         return __awaiter(this, void 0, void 0, function* () {
             // Initialize the database collection for this talent if it doesn't already exist.
-            yield Gestalt_1.default.createCollection(`/talents/${this.machineName}`);
+            yield Gestalt_1.Gestalt.createCollection(`/talents/${this.machineName}`);
         });
     }
     /**
@@ -103,7 +103,7 @@ class Talent {
     getActiveConfigForBot(bot) {
         return __awaiter(this, void 0, void 0, function* () {
             // Await Gestalt's API call to get the configuration from the storage.
-            return yield Gestalt_1.default.get(`/bots/${bot.id}/talents/${this.machineName}/config`);
+            return yield Gestalt_1.Gestalt.get(`/bots/${bot.id}/talents/${this.machineName}/config`);
         });
     }
     /**
@@ -118,13 +118,13 @@ class Talent {
             // Each command has its own directory. We'll get the list here.
             let commandDirectoriesPath = `${this.directory}/hooks/Commands`;
             // If this directory doesn't exist, we simply return.
-            if (!(yield Akechi_1.default.directoryExists(commandDirectoriesPath))) {
+            if (!(yield Akechi_1.Akechi.directoryExists(commandDirectoriesPath))) {
                 return;
             }
-            let commandDirectories = yield Akechi_1.default.getDirectoriesFrom(commandDirectoriesPath);
+            let commandDirectories = yield Akechi_1.Akechi.getDirectoriesFrom(commandDirectoriesPath);
             // We'll throw an error for this function if the 'Commands' directory doesn't exist or is empty.
             // This error should be caught and handled above.
-            if (Sojiro_1.default.isEmpty(commandDirectories)) {
+            if (Sojiro_1.Sojiro.isEmpty(commandDirectories)) {
                 // await Lavenza.warn('No commands were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
                 return;
             }
@@ -137,12 +137,12 @@ class Talent {
                 // Get the config file for the command.
                 // Each command should have a file with the format 'COMMAND_NAME.config.yml'.
                 let configFilePath = `${directory}/config.yml`;
-                let config = yield Akechi_1.default.readYamlFile(configFilePath).catch(Igor_1.default.continue);
+                let config = yield Akechi_1.Akechi.readYamlFile(configFilePath).catch(Igor_1.Igor.continue);
                 // Stop if the configuration is empty or wasn't found.
                 // We can't load the command without configurations.
                 // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
-                if (Sojiro_1.default.isEmpty(config)) {
-                    yield Morgana_1.default.warn('Configuration file could not be loaded for the {{command}} command in the {{talent}} talent.', { command: name, talent: this.machineName });
+                if (Sojiro_1.Sojiro.isEmpty(config)) {
+                    yield Morgana_1.Morgana.warn('Configuration file could not be loaded for the {{command}} command in the {{talent}} talent.', { command: name, talent: this.machineName });
                     return;
                 }
                 // Set directory to the configuration. It's nice to have quick access to the command folder from within the command.
@@ -150,8 +150,8 @@ class Talent {
                 // If the configuration exists, we can process by loading the class of the Command.
                 // If the class doesn't exist (this could be caused by the configuration being wrong), we stop.
                 let command = require(`${directory}/${config.class}`)['default'];
-                if (Sojiro_1.default.isEmpty(command)) {
-                    yield Morgana_1.default.warn('Class could not be loaded for the {{command}} command in the {{talent}} talent.', { command: name, talent: this.machineName });
+                if (Sojiro_1.Sojiro.isEmpty(command)) {
+                    yield Morgana_1.Morgana.warn('Class could not be loaded for the {{command}} command in the {{talent}} talent.', { command: name, talent: this.machineName });
                     return;
                 }
                 command = new command(id, config.key, directory);
@@ -181,16 +181,16 @@ class Talent {
             // We'll ge the tentative path first.
             let listenerClassesPath = `${this.directory}/hooks/Listeners`;
             // If this directory doesn't exist, we simply return.
-            if (!(yield Akechi_1.default.directoryExists(listenerClassesPath))) {
+            if (!(yield Akechi_1.Akechi.directoryExists(listenerClassesPath))) {
                 return;
             }
             // Get the list of listener classes at the path.
-            let listenerClasses = yield Akechi_1.default.getFilesFrom(listenerClassesPath);
+            let listenerClasses = yield Akechi_1.Akechi.getFilesFrom(listenerClassesPath);
             // Filter the obtained list to exclude Typescript files.
             listenerClasses = listenerClasses.filter((path) => !path.endsWith('.ts'));
             // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.
             // This error should be caught and handled above.
-            if (Sojiro_1.default.isEmpty(listenerClasses)) {
+            if (Sojiro_1.Sojiro.isEmpty(listenerClasses)) {
                 // await Lavenza.warn('No listeners were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
                 return;
             }
@@ -203,8 +203,8 @@ class Talent {
                 // We only do this to assign the talent to the listener. That way, the listener can access the Talent.
                 yield listener.build(this);
                 // If the require fails or the result is empty, we stop.
-                if (Sojiro_1.default.isEmpty(listener)) {
-                    yield Morgana_1.default.warn('A Listener class could not be loaded in the {{talent}} talent.', { talent: this.machineName });
+                if (Sojiro_1.Sojiro.isEmpty(listener)) {
+                    yield Morgana_1.Morgana.warn('A Listener class could not be loaded in the {{talent}} talent.', { talent: this.machineName });
                     return;
                 }
                 // If everything goes smoothly, we register the listener to the Talent.
@@ -213,4 +213,4 @@ class Talent {
         });
     }
 }
-exports.default = Talent;
+exports.Talent = Talent;

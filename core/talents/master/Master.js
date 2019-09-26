@@ -14,6 +14,6 @@ const Talent_1 = require("../../lib/Lavenza/Talent/Talent");
  * This Talent is only granted to the "Master" bot, and includes commands that directly affect the
  * behavior of other bots.
  */
-class Master extends Talent_1.default {
+class Master extends Talent_1.Talent {
 }
 exports.default = Master;

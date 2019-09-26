@@ -45,16 +45,16 @@ class DiscordClient extends discord_js_1.Client {
         /**
          * @inheritDoc
          */
-        this.type = ClientType_1.default.Discord;
+        this.type = ClientType_1.ClientType.Discord;
         // Assign the bot to the current client.
         this.bot = bot;
         // Assign configurations to the client.
         this.config = config;
         // Event: When the client connects to Discord and is ready.
         this.on('ready', () => __awaiter(this, void 0, void 0, function* () {
-            yield Morgana_1.default.success('Discord client successfully connected for {{bot}}!', { bot: this.bot.id });
+            yield Morgana_1.Morgana.success('Discord client successfully connected for {{bot}}!', { bot: this.bot.id });
             // We start by syncing the guild configurations.
-            let guilds = yield Gestalt_1.default.sync({}, `/bots/${this.bot.id}/clients/${this.type}/guilds`);
+            let guilds = yield Gestalt_1.Gestalt.sync({}, `/bots/${this.bot.id}/clients/${this.type}/guilds`);
             // Set up initial guild configurations.
             yield Promise.all(this.guilds.map((guild) => __awaiter(this, void 0, void 0, function* () {
                 let baseGuildConfig = {
@@ -65,7 +65,7 @@ class DiscordClient extends discord_js_1.Client {
                 if (!(guild.id in guilds)) {
                     guilds[guild.id] = baseGuildConfig;
                 }
-                yield Gestalt_1.default.update(`/bots/${this.bot.id}/clients/${this.type}/guilds`, guilds);
+                yield Gestalt_1.Gestalt.update(`/bots/${this.bot.id}/clients/${this.type}/guilds`, guilds);
             })));
             // Set game text.
             this.user.setActivity(this.config['activity']).catch(console.error);
@@ -76,15 +76,15 @@ class DiscordClient extends discord_js_1.Client {
             if (message.author.bot === true) {
                 return;
             }
-            this.bot.listen(message, this).catch(Igor_1.default.stop);
+            this.bot.listen(message, this).catch(Igor_1.Igor.stop);
         });
         // Event: When the clients disconnects from Discord.
         this.on('disconnected', () => __awaiter(this, void 0, void 0, function* () {
-            yield Morgana_1.default.status('Discord client for {{bot}} has disconnected.', { bot: this.bot.id });
+            yield Morgana_1.Morgana.status('Discord client for {{bot}} has disconnected.', { bot: this.bot.id });
         }));
         // Event: When the clients disconnects from Discord.
         this.on('error', () => __awaiter(this, void 0, void 0, function* () {
-            yield Morgana_1.default.error("Error has occurred for {{bot}}'s client...", { bot: this.bot.id });
+            yield Morgana_1.Morgana.error("Error has occurred for {{bot}}'s client...", { bot: this.bot.id });
         }));
     }
     /**
@@ -92,7 +92,7 @@ class DiscordClient extends discord_js_1.Client {
      */
     getActiveConfigurations() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Gestalt_1.default.get(`/bots/${this.bot.id}/clients/${this.type}`);
+            return yield Gestalt_1.Gestalt.get(`/bots/${this.bot.id}/clients/${this.type}`);
         });
     }
     /**
@@ -101,16 +101,16 @@ class DiscordClient extends discord_js_1.Client {
     gestalt() {
         return __awaiter(this, void 0, void 0, function* () {
             // Make sure database collection exists for this client for the given bot.
-            yield Gestalt_1.default.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
+            yield Gestalt_1.Gestalt.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
             // Make sure database collection exists for this client's general database.
-            yield Gestalt_1.default.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
+            yield Gestalt_1.Gestalt.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
             // Initialize i18n database collection for this client if it doesn't already exist.
-            yield Gestalt_1.default.createCollection(`/i18n/${this.bot.id}/clients/${this.type}`);
+            yield Gestalt_1.Gestalt.createCollection(`/i18n/${this.bot.id}/clients/${this.type}`);
             // Initialize i18n contexts, creating them if they don't exist.
             // Translations are manageable through all of these contexts.
-            yield Gestalt_1.default.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/guilds`);
-            yield Gestalt_1.default.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/channels`);
-            yield Gestalt_1.default.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/users`);
+            yield Gestalt_1.Gestalt.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/guilds`);
+            yield Gestalt_1.Gestalt.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/channels`);
+            yield Gestalt_1.Gestalt.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/users`);
         });
     }
     // noinspection JSMethodCanBeStatic
@@ -128,7 +128,7 @@ class DiscordClient extends discord_js_1.Client {
         return __awaiter(this, void 0, void 0, function* () {
             yield channel.stopTyping();
             yield channel.startTyping(1);
-            yield Sojiro_1.default.wait(seconds);
+            yield Sojiro_1.Sojiro.wait(seconds);
             yield channel.stopTyping();
         });
     }
@@ -297,11 +297,11 @@ class DiscordClient extends discord_js_1.Client {
             let token = this.bot.env.DISCORD_TOKEN;
             // If the token isn't found, we throw an error.
             if (token === undefined) {
-                yield Igor_1.default.throw(`Discord application token is missing for {{bot}}. Make sure the token is set in the .env file in the bot's folder. See the example bot folder for more details.`, { bot: this.bot.id });
+                yield Igor_1.Igor.throw(`Discord application token is missing for {{bot}}. Make sure the token is set in the .env file in the bot's folder. See the example bot folder for more details.`, { bot: this.bot.id });
             }
             // Await the login in of this client.
-            yield _super.login.call(this, token).catch((error) => __awaiter(this, void 0, void 0, function* () {
-                yield Igor_1.default.throw('Failed to authenticate Discord client for {{bot}}.', { bot: this.bot.id });
+            yield _super.login.call(this, token).catch(() => __awaiter(this, void 0, void 0, function* () {
+                yield Igor_1.Igor.throw('Failed to authenticate Discord client for {{bot}}.', { bot: this.bot.id });
             }));
         });
     }
@@ -314,8 +314,8 @@ class DiscordClient extends discord_js_1.Client {
         return __awaiter(this, void 0, void 0, function* () {
             // Call the destruction function to disconnect the client.
             yield this.destroy();
-            yield Morgana_1.default.warn('Discord client disconnected for {{bot}}.', { bot: this.bot.id });
+            yield Morgana_1.Morgana.warn('Discord client disconnected for {{bot}}.', { bot: this.bot.id });
         });
     }
 }
-exports.default = DiscordClient;
+exports.DiscordClient = DiscordClient;

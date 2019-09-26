@@ -16,11 +16,11 @@ import * as i18n from 'i18n';
 import {Translate, TranslateConfig} from '@google-cloud/translate';
 
 // Imports.
-import Akechi from './Akechi';
-import Igor from './Igor';
-import Sojiro from './Sojiro';
-import Bot from "../Bot/Bot";
-import Core from "../Core/Core";
+import {Akechi} from './Akechi';
+import {Igor} from './Igor';
+import {Sojiro} from './Sojiro';
+import {Bot} from "../Bot/Bot";
+import {Core} from "../Core/Core";
 
 /**
  * Provides a class that handles Dictionary and Database management, as well as translation.
@@ -30,7 +30,7 @@ import Core from "../Core/Core";
  * Yoshida handles speech, and the importance of expressing oneself properly. So this class as such will handle
  * personalization of texts. It will also handle translations.
  */
-export default class Yoshida {
+export class Yoshida {
 
   /**
    * Field to house the google translation service.
@@ -43,9 +43,26 @@ export default class Yoshida {
   private static translationInitialized: boolean = false;
 
   /**
+   * Get a personalization for a given text from a bot's configurations.
+   *
+   * @param defaultText
+   *   Default text that should be returned if personalizations don't exist.
+   * @param tag
+   *   Tag, or key, of the personalization in the configurations.
+   * @param bot
+   *   The Bot we should fetch personalizations for.
+   *
+   * @returns
+   *   The personalized string for the bot fetched in configurations.
+   */
+  public static async personalize(defaultText: string, tag: string, bot: Bot): Promise<string> {
+    return Yoshida.getPersonalization(defaultText, tag, bot);
+  }
+
+  /**
    * Initialize values needed to use I18N efficiently.
    */
-  static async initializeI18N() {
+  public static async initializeI18N() {
     // Configure i18n real quick.
     i18n.configure({
       defaultLocale: process.env.LAVENZA_DEFAULT_LOCALE,
@@ -67,8 +84,8 @@ export default class Yoshida {
       googleTranslate = new Translate(googleTranslateConfig);
     }
 
-    this.googleTranslate = googleTranslate;
-    this.translationInitialized = true;
+    Yoshida.googleTranslate = googleTranslate;
+    Yoshida.translationInitialized = true;
   }
 
   /**
@@ -92,12 +109,12 @@ export default class Yoshida {
    * @returns
    *   Translated text given the many parameters provided.
    */
-  static async translate(...parameters: any): Promise<string|any> {
+  public static async translate(...parameters: any): Promise<string|any> {
     // Get our parameters using Sojiro's help.
-    let params = await this.parseI18NParams(parameters);
+    let params = await Yoshida.parseI18NParams(parameters);
 
     // If translation isn't initialized, we simply return the regular text.
-    if (!this.translationInitialized) {
+    if (!Yoshida.translationInitialized) {
       return params.phrase;
     }
 
@@ -109,12 +126,12 @@ export default class Yoshida {
     let translation = i18n.__({phrase: params.phrase, locale: params.locale}, params.replacers);
 
     // If the text is untranslated, we'll fallback to google translate if it's enabled.
-    if (process.env.LAVENZA_GOOGLE_TRANSLATE_STATUS === 'enabled' && this.googleTranslate && params.locale !== 'en' && englishTranslation === translation) {
+    if (process.env.LAVENZA_GOOGLE_TRANSLATE_STATUS === 'enabled' && Yoshida.googleTranslate && params.locale !== 'en' && englishTranslation === translation) {
 
       // Google Translate doesn't have parsing for replacers.
       // We want to add a unique identifier to the beginning of each replacer key to prevent translation.
       params.phrase = await params.phrase.replace(/{{/g, '{{RPL.');
-      [translation] = await this.googleTranslate.translate(params.phrase, params.locale);
+      [translation] = await Yoshida.googleTranslate.translate(params.phrase, params.locale);
 
       // Now we can set everything back to normal before they're stored and sent.
       params.phrase = await params.phrase.replace(/{{RPL\./g, '{{');
@@ -181,7 +198,7 @@ export default class Yoshida {
    * @return
    *   Object containing all information necessary to translate a string.
    */
-  static async parseI18NParams(parameters: Array<any>): Promise<any> {
+  public static async parseI18NParams(parameters: Array<any>): Promise<any> {
 
     // If for some reason we receive parameters that are already parsed, simply return them.
     // @TODO - Not sure how to feel about this one. We'll most likely refactor this in the future.
@@ -294,7 +311,7 @@ export default class Yoshida {
    * @returns
    *   The personalized string for the bot fetched in configurations.
    */
-  static async getPersonalization(defaultText: string, tag: string, bot: Bot): Promise<string> {
+  private static async getPersonalization(defaultText: string, tag: string, bot: Bot): Promise<string> {
     // Check if the tag formatting is permitted.
     // We hard crash if this isn't the case. Tags should always be defined with "::" as the first characters.
     if (!tag.startsWith('::')) {
@@ -350,23 +367,6 @@ export default class Yoshida {
 
     // Return the text.
     return text;
-  }
-
-  /**
-   * Get a personalization for a given text from a bot's configurations.
-   *
-   * @param defaultText
-   *   Default text that should be returned if personalizations don't exist.
-   * @param tag
-   *   Tag, or key, of the personalization in the configurations.
-   * @param bot
-   *   The Bot we should fetch personalizations for.
-   *
-   * @returns
-   *   The personalized string for the bot fetched in configurations.
-   */
-  static async personalize(defaultText: string, tag: string, bot: Bot): Promise<string> {
-    return this.getPersonalization(defaultText, tag, bot);
   }
 
 }

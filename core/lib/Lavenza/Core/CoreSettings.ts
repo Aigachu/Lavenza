@@ -8,7 +8,7 @@
 /**
  * Declares an interface schema for Core Lavenza settings.
  */
-export default interface CoreSettings {
+export interface CoreSettings {
   master: string;
   autoboot: Array<string>;
 }

@@ -5,17 +5,17 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import Talent from "../../Talent/Talent";
+import {Talent} from "../../Talent/Talent";
 import {CommandClientConfig, CommandConfigurations, CommandParameterConfig} from "./CommandConfigurations";
-import Bot from "../Bot";
-import ClientType from "../Client/ClientType";
-import Gestalt from "../../Gestalt/Gestalt";
-import Sojiro from "../../Confidant/Sojiro";
-import Akechi from "../../Confidant/Akechi";
-import Resonance from "../Resonance/Resonance";
-import Morgana from "../../Confidant/Morgana";
-import Igor from "../../Confidant/Igor";
-import Yoshida from "../../Confidant/Yoshida";
+import {Bot} from "../Bot";
+import {ClientType} from "../Client/ClientType";
+import {Gestalt} from "../../Gestalt/Gestalt";
+import {Sojiro} from "../../Confidant/Sojiro";
+import {Akechi} from "../../Confidant/Akechi";
+import {Resonance} from "../Resonance/Resonance";
+import {Morgana} from "../../Confidant/Morgana";
+import {Igor} from "../../Confidant/Igor";
+import {Yoshida} from "../../Confidant/Yoshida";
 
 /**
  * Provides a base class for Commands.
@@ -28,7 +28,7 @@ import Yoshida from "../../Confidant/Yoshida";
  *
  * This class SHOULD have many helper functions to make this dream come true.
  */
-export default abstract class Command {
+export abstract class Command {
 
   /**
    * The ID of the command.
@@ -83,7 +83,7 @@ export default abstract class Command {
    * @param talent
    *   Talent that this command is a child of.
    */
-  async build(config: CommandConfigurations, talent: Talent) {
+  public async build(config: CommandConfigurations, talent: Talent) {
     this.talent = talent;
     this.config = config;
     this.directory = config.directory;
@@ -100,7 +100,7 @@ export default abstract class Command {
    * @returns
    *   Returns the configuration fetched from the database.
    */
-  async getActiveConfigForBot(bot: Bot): Promise<CommandConfigurations> {
+  public async getActiveConfigForBot(bot: Bot): Promise<CommandConfigurations> {
     return await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/config`);
   }
 
@@ -117,7 +117,7 @@ export default abstract class Command {
    * @returns
    *   The requested client configuration.
    */
-  async getActiveClientConfig(clientType: ClientType, bot: Bot): Promise<CommandClientConfig> {
+  public async getActiveClientConfig(clientType: ClientType, bot: Bot): Promise<CommandClientConfig> {
     // Attempt to get the active configuration from the database.
     let activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/${clientType}`);
     if (!Sojiro.isEmpty(activeConfig)) {
@@ -143,7 +143,7 @@ export default abstract class Command {
    * @returns
    *   The requested client configuration.
    */
-  async getClientConfig(clientType: ClientType): Promise<CommandClientConfig> {
+  public async getClientConfig(clientType: ClientType): Promise<CommandClientConfig> {
     // Determine path to client configuration.
     let pathToClientConfig = `${this.directory}/${clientType}.yml`;
 
@@ -167,7 +167,7 @@ export default abstract class Command {
    * @returns
    *   The requested parameter configuration for the given bot obtained frm the database.
    */
-  async getActiveParameterConfig(bot: Bot): Promise<CommandParameterConfig> {
+  public async getActiveParameterConfig(bot: Bot): Promise<CommandParameterConfig> {
     // Attempt to get the active configuration from the database.
     let activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/parameters`);
     if (!Sojiro.isEmpty(activeConfig)) {
@@ -190,7 +190,7 @@ export default abstract class Command {
    * @returns
    *   The parameter configuration obtained from the core files.
    */
-  async getParameterConfig(): Promise<CommandParameterConfig> {
+  public async getParameterConfig(): Promise<CommandParameterConfig> {
     // Determine path to client configuration.
     let pathToParameterConfig = `${this.directory}/parameters.yml`;
 
@@ -216,7 +216,7 @@ export default abstract class Command {
    * @param resonance
    *   Resonance that invoked this command. All information about the client and message are here.
    */
-  abstract async execute(resonance: Resonance);
+  public abstract async execute(resonance: Resonance);
 
   /**
    * Execute client specific tasks if needed.
@@ -234,7 +234,7 @@ export default abstract class Command {
    * @returns
    *   Anything that should be returned by client handlers.
    */
-  async fireClientHandlers(resonance: Resonance, data: any, method: string = 'execute') {
+  public async fireClientHandlers(resonance: Resonance, data: any, method: string = 'execute') {
     // If the second provided parameter is a string, this means it's the method we want to run, and data is null.
     if (typeof data === 'string') {
       method = data;
@@ -285,7 +285,7 @@ export default abstract class Command {
    * @param resonance
    *   Resonance that invoked this command. All information about the client and message are here.
    */
-  async help(resonance) {
+  public async help(resonance) {
 
     // Get configuration.
     let config = await this.getActiveConfigForBot(resonance.bot);
@@ -383,7 +383,7 @@ export default abstract class Command {
    * @returns
    *   Returns true if the command is allowed to be executed in the client. Returns false otherwise.
    */
-  allowedInClient(clientType: ClientType): boolean {
+  public async allowedInClient(clientType: ClientType): Promise<boolean> {
     let allowedForTalent =
       !Sojiro.isEmpty(this.talent.config.clients) && this.talent.config.clients !== '*' && (this.talent.config.clients.includes(clientType) || this.talent.config.clients === clientType)
     || (Sojiro.isEmpty(this.talent.config.clients) || this.talent.config.clients === '*');

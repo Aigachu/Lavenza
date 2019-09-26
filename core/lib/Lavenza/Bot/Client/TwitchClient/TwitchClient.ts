@@ -7,18 +7,17 @@
 
 // Imports.
 // const TMIClient = require('tmi.js').Client;
-import TwitchUser from './TwitchUser';
-import TwitchChannel from './TwitchChannel';
-import ClientInterface from "../ClientInterface";
-import Bot from "../../Bot";
-import ClientType from "../ClientType";
+import {TwitchUser} from './TwitchUser';
+import {TwitchChannel} from './TwitchChannel';
+import {ClientInterface} from "../ClientInterface";
+import {Bot} from "../../Bot";
+import {ClientType} from "../ClientType";
 import {BotTwitchClientConfig} from "../../BotConfigurations";
-import Morgana from "../../../Confidant/Morgana";
-import Igor from "../../../Confidant/Igor";
-import Gestalt from "../../../Gestalt/Gestalt";
+import {Morgana} from "../../../Confidant/Morgana";
+import {Igor} from "../../../Confidant/Igor";
+import {Gestalt} from "../../../Gestalt/Gestalt";
 import {TwitchClientChannelConfigurations, TwitchClientConfigurations} from "../ClientConfigurations";
-import {TextChannel} from "discord.js";
-import Sojiro from "../../../Confidant/Sojiro";
+import {Sojiro} from "../../../Confidant/Sojiro";
 
 // Manually require TMI Client since it doesn't work with imports.
 const TMIClient = require('tmi.js').client;
@@ -30,7 +29,7 @@ const TMIClient = require('tmi.js').client;
  *
  * @see https://www.npmjs.com/package/twitch
  */
-export default class TwitchClient extends TMIClient implements ClientInterface {
+export class TwitchClient extends TMIClient implements ClientInterface {
 
   /**
    * @inheritDoc
@@ -119,14 +118,14 @@ export default class TwitchClient extends TMIClient implements ClientInterface {
   /**
    * @inheritDoc
    */
-  async getActiveConfigurations(): Promise<TwitchClientConfigurations> {
+  public async getActiveConfigurations(): Promise<TwitchClientConfigurations> {
     return await Gestalt.get(`/bots/${this.bot.id}/clients/${this.type}`);
   }
 
   /**
    * @inheritDoc
    */
-  async gestalt() {
+  public async gestalt() {
     // Make sure database collection exists for this client for the given bot.
     await Gestalt.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
 
@@ -145,7 +144,7 @@ export default class TwitchClient extends TMIClient implements ClientInterface {
   /**
    * Authenticate the client. (Connect to Twitch)
    */
-  async authenticate() {
+  public async authenticate() {
     // Simply call TMI's connect function.
     await this.connect();
   }
@@ -153,7 +152,7 @@ export default class TwitchClient extends TMIClient implements ClientInterface {
   /**
    * Disconnect from Twitch.
    */
-  async disconnect() {
+  public async disconnect() {
     // Simply call TMI's disconnect function.
     await super.disconnect();
     await Morgana.warn('Twitch client disconnected for {{bot}}.', {bot: this.bot.id});
@@ -169,7 +168,7 @@ export default class TwitchClient extends TMIClient implements ClientInterface {
    * @param channel
    *   The Twitch channel to type in.
    */
-  async typeFor(seconds: number, channel: any = null) {
+  public async typeFor(seconds: number, channel: any = null) {
     await Sojiro.wait(seconds);
   }
 

@@ -6,12 +6,12 @@
  */
 
 // Imports.
-import TalentManager from '../Talent/TalentManager';
-import BotManager from '../Bot/BotManager';
-import Morgana from '../Confidant/Morgana';
-import Sojiro from '../Confidant/Sojiro';
-import Chronicler from './StorageService/Chronicler/Chronicler';
-import StorageService from "./StorageService/StorageService";
+import {TalentManager} from '../Talent/TalentManager';
+import {BotManager} from '../Bot/BotManager';
+import {Morgana} from '../Confidant/Morgana';
+import {Sojiro} from '../Confidant/Sojiro';
+import {Chronicler} from './StorageService/Chronicler/Chronicler';
+import {StorageService} from "./StorageService/StorageService";
 
 /**
  * Gestalt manages the storage and retrieval of JSON type data.
@@ -29,7 +29,7 @@ import StorageService from "./StorageService/StorageService";
  * We want to keep things simple and store JSON type data. In the future, we may explore SQL storage and the like.
  * i.e. MongoDB!
  */
-export default class Gestalt {
+export class Gestalt {
 
   /**
    * The storage service that Gestalt will use.
@@ -41,7 +41,7 @@ export default class Gestalt {
   /**
    * Gestalt is a static singleton. This function will handle the preparations.
    */
-  static async build() {
+  public static async build() {
     // The default storage service is the Chronicler.
     /** @see ./StorageService/Chronicler/Chronicler */
     // @TODO - Dynamic selection of StorageService instead of having to save it here. Maybe .env variables? Or a configuration file at the root of the application.
@@ -60,7 +60,7 @@ export default class Gestalt {
    *
    * This creates all database entries needed for the application to function properly.
    */
-  static async bootstrap() {
+  public static async bootstrap() {
     // Creation of i18n collection.
     // All data pertaining to translations will be saved here.
     await Gestalt.createCollection('/i18n');
@@ -86,7 +86,7 @@ export default class Gestalt {
    * @returns
    *   The result of the data being synchronized with the provided source endpoint.
    */
-  static async sync(config: Object, source: string): Promise<any> {
+  public static async sync(config: Object, source: string): Promise<any> {
     // Await initial fetch of data that may already exist.
     let dbConfig = await Gestalt.get(source);
 
@@ -112,7 +112,7 @@ export default class Gestalt {
    * @param payload
    *   The data of the Collection to create.
    */
-  static async createCollection(endpoint: string, payload: Object = {}) {
+  public static async createCollection(endpoint: string, payload: Object = {}) {
     // Each storage service creates collections in their own way. We await this process.
     await Gestalt.storageService.createCollection(endpoint, payload);
   }
@@ -137,7 +137,7 @@ export default class Gestalt {
    * @returns
    *   The result of the protocol call.
    */
-  static async request({protocol = '', endpoint = '', payload = {}} = {}): Promise<any> {
+  public static async request({protocol = '', endpoint = '', payload = {}} = {}): Promise<any> {
     // Await the request function call of the storage service.
     return await Gestalt.storageService.request({
       protocol: protocol,
@@ -155,7 +155,7 @@ export default class Gestalt {
    * @returns
    *   Data retrieved from the given endpoint.
    */
-  static async get(endpoint: string): Promise<any> {
+  public static async get(endpoint: string): Promise<any> {
     // Await GET request of the Storage Service.
     return await Gestalt.request({protocol: 'get', endpoint: endpoint});
   }
@@ -171,7 +171,7 @@ export default class Gestalt {
    * @returns
    *   The data that was posted, if requested.
    */
-  static async post(endpoint: string, payload: Object): Promise<any|null> {
+  public static async post(endpoint: string, payload: Object): Promise<any|null> {
     // Await POST request of the Storage Service.
     return await Gestalt.request({protocol: 'post', endpoint: endpoint, payload: payload});
   }
@@ -187,7 +187,7 @@ export default class Gestalt {
    * @returns
    *   The resulting state of the data that was updated, if applicable.
    */
-  static async update(endpoint: string, payload: Object): Promise<any|null> {
+  public static async update(endpoint: string, payload: Object): Promise<any|null> {
     // Await UPDATE request of the Storage Service.
     return await Gestalt.request({protocol: 'update', endpoint: endpoint, payload: payload});
   }
@@ -198,7 +198,7 @@ export default class Gestalt {
    * @param endpoint
    *   Path to delete data at.
    */
-  static async delete(endpoint: string) {
+  public static async delete(endpoint: string) {
     // Await DELETE request of the Storage Service.
     return await Gestalt.request({protocol: 'delete', endpoint: endpoint});
   }

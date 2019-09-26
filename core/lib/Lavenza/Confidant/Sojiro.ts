@@ -20,7 +20,7 @@ import * as thesaurus from 'thesaurus-com';
  *
  * Thanks Daddy Sojiro!
  */
-export default class Sojiro {
+export class Sojiro {
 
   /**
    * Checks if the given text is considered an approval or confirmation.
@@ -31,7 +31,7 @@ export default class Sojiro {
    * @returns
    *   Returns TRUE if it's considered an approval. Returns FALSE otherwise.
    */
-  static async isConfirmation(text: string): Promise<boolean> {
+  public static async isConfirmation(text: string): Promise<boolean> {
     // Clean punctuation.
     text = text.replace('?', '');
     text = text.replace('!', '');
@@ -81,7 +81,7 @@ export default class Sojiro {
     });
 
     // For each of these words we'll be making checks to see if they're used, or if synonyms are used.
-    await Promise.all(confirmationPromises.concat(denialPromises)).catch(async (error) => {
+    await Promise.all(confirmationPromises.concat(denialPromises)).catch(async () => {
       // Do nothing.
       // We're expecting rejection here since we don't necessarily want to run all of them if we find a match.
       // See if Promise.race() worked properly, we could use it here. But it would return a pending promise that never
@@ -102,7 +102,7 @@ export default class Sojiro {
    * @param haystack
    *   The string to search for the word in.
    */
-  private static async findWordMatch(word: string, haystack: string): Promise<boolean> {
+  public static async findWordMatch(word: string, haystack: string): Promise<boolean> {
     // If the haystack is equivalent to the word 'yes', return true.
     if (haystack === word) {
       return true
@@ -136,7 +136,7 @@ export default class Sojiro {
    * @returns
    *   Returns a random element from the provided array.
    */
-  static getRandomElementFromArray(array: Array<any>): any {
+  public static getRandomElementFromArray(array: Array<any>): any {
     return array[Math.floor(Math.random()*array.length)];
   }
 
@@ -148,7 +148,7 @@ export default class Sojiro {
    * @param element
    *   Element to be removed.
    */
-  static removeFromArray(array: Array<any>, element: any): any {
+  public static removeFromArray(array: Array<any>, element: any): any {
     return array.filter(e => e !== element);
   }
 
@@ -161,7 +161,7 @@ export default class Sojiro {
    * @returns
    *   Returns TRUE if empty, false otherwise.
    */
-  static isEmpty(variable: any): boolean {
+  public static isEmpty(variable: any): boolean {
     // So underscore is cool and all...
     // BUT any FUNCTION passed to its isEmpty() function evaluates to TRUE for...I don't know what reason.
     // Here we handle this case.
@@ -182,7 +182,7 @@ export default class Sojiro {
    * @returns
    *   Returns a Promise you can use to chain code execution.
    */
-  static wait(seconds: number): Promise<any> {
+  public static wait(seconds: number): Promise<any> {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   }
 

@@ -6,13 +6,13 @@
  */
 
 // Imports.
-import Command from "../../../../../lib/Lavenza/Bot/Command/Command";
+import {Command} from "../../../../../lib/Lavenza/Bot/Command/Command";
 import GuessGameArgHandler from "./src/ArgHandler/GuessGameArgHandler";
-import Kawakami from "../../../../../lib/Lavenza/Confidant/Kawakami";
-import Igor from "../../../../../lib/Lavenza/Confidant/Igor";
-import Sojiro from "../../../../../lib/Lavenza/Confidant/Sojiro";
+import {Kawakami} from "../../../../../lib/Lavenza/Confidant/Kawakami";
+import {Igor} from "../../../../../lib/Lavenza/Confidant/Igor";
+import {Sojiro} from "../../../../../lib/Lavenza/Confidant/Sojiro";
 import CoinflipTalent from "../../../Coinflip";
-import Resonance from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
+import {Resonance} from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
 
 // noinspection JSUnusedGlobalSymbols
 /**

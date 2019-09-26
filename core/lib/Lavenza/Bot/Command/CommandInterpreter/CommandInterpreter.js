@@ -59,8 +59,6 @@ class CommandInterpreter {
             // Split content with spaces.
             // i.e. If the input is '! ping hello', then we get ['!', 'ping', 'hello'].
             let splitContent = content.split(' ');
-            // Get the active bot configuration from the database.
-            let botConfig = yield bot.getActiveConfig();
             // Get command prefix.
             // If there is a command prefix override for this client, we will set it. If not, we grab the default.
             let cprefix = yield bot.getCommandPrefix(resonance);
@@ -83,13 +81,14 @@ class CommandInterpreter {
             let command = yield bot.getCommand(splitContent[1].toLowerCase());
             // If the command doesn't exist, we'll stop here.
             if (!command) {
-                yield Morgana_1.default.warn('No command found in message...');
+                yield Morgana_1.Morgana.warn('No command found in message...');
                 return undefined;
             }
             // Now we do one final check to see if this command is allowed to be used in this client.
             // We check the command configuration for this.
-            if (!command.allowedInClient(client.type)) {
-                yield Morgana_1.default.warn('Command found, but not allowed in client. Returning.');
+            let allowedInClient = yield command.allowedInClient(client.type);
+            if (!allowedInClient) {
+                yield Morgana_1.Morgana.warn('Command found, but not allowed in client. Returning.');
                 return undefined;
             }
             // Next, we'll build the arguments as well, using minimist.
@@ -103,4 +102,4 @@ class CommandInterpreter {
         });
     }
 }
-exports.default = CommandInterpreter;
+exports.CommandInterpreter = CommandInterpreter;

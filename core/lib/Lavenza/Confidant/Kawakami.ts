@@ -14,7 +14,7 @@
  *
  * I had no idea who else would fit this task more LOL!
  */
-export default class Kawakami {
+export class Kawakami {
 
   /**
    * Surrounds text in **{TEXT}** to make it bold according to Markdown syntax.
@@ -25,7 +25,7 @@ export default class Kawakami {
    * @returns
    *   "Boldified" text.
    */
-  static bold(text: string|number): string {
+  public static bold(text: string|number): string {
     return `**${text}**`;
   }
 
@@ -38,7 +38,7 @@ export default class Kawakami {
    * @returns
    *   "Italicized" text.
    */
-  static italics(text: string): string {
+  public static italics(text: string): string {
     return `_${text}_`;
   }
 
@@ -53,7 +53,7 @@ export default class Kawakami {
    * @returns
    *   Text surrounded in a code block.
    */
-  static code(text: string, language: string = ''): string {
+  public static code(text: string, language: string = ''): string {
     return `\`\`\`${language}\n${text}\n\`\`\``;
   }
 

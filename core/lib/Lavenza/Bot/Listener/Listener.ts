@@ -5,7 +5,7 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import Talent from "../../Talent/Talent";
+import {Talent} from "../../Talent/Talent";
 
 /**
  * Provides a base class for Listeners.
@@ -15,7 +15,7 @@ import Talent from "../../Talent/Talent";
  * They are basically entry points for extended functionality when wanting to tell a Bot what to do upon hearing
  * a message from any given client.
  */
-export default abstract class Listener {
+export abstract class Listener {
 
   /**
    * The Talent that declared this listener.
@@ -31,7 +31,7 @@ export default abstract class Listener {
    * @param talent
    *   The talent that this listener belongs to, if any. Core listeners most likely won't have a talent.
    */
-  async build(talent: Talent) {
+  public async build(talent: Talent) {
     this.talent = talent;
   }
 
@@ -46,6 +46,6 @@ export default abstract class Listener {
    * @param resonance
    *   The Resonance to listen to.
    */
-   abstract async listen(resonance);
+  public abstract async listen(resonance);
 
 }

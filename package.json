@@ -1,6 +1,6 @@
 {
   "name": "lavenza",
-  "version": "3.0.0-dev.6",
+  "version": "3.0.0-dev.7",
   "description": "A development framework for chatbots that supports many platforms. The successor to Lavenza, built in NodeJS and written in ES6!",
   "main": "core/lib/Lavenza.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "dev": "docker-compose up --detach --no-recreate && ./node_modules/nodemon/bin/nodemon.js -e ts  --exec \"npm run compile\""
   },
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=10.0.0"
   },
   "repository": {
     "type": "git",

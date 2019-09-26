@@ -6,14 +6,14 @@
  */
 
 // Imports.
-import Sojiro from '../../Confidant/Sojiro';
-import Yoshida from '../../Confidant/Yoshida';
-import Igor from '../../Confidant/Igor';
-import Bot from "../Bot";
-import ClientInterface from "../Client/ClientInterface";
-import Instruction from "./Instruction";
+import {Sojiro} from '../../Confidant/Sojiro';
+import {Yoshida} from '../../Confidant/Yoshida';
+import {Igor} from '../../Confidant/Igor';
+import {Bot} from "../Bot";
+import {ClientInterface} from "../Client/ClientInterface";
+import {Instruction} from "./Instruction";
 import {BotConfigurations} from "../BotConfigurations";
-import Command from "../Command/Command";
+import {Command} from "../Command/Command";
 
 /**
  * Provides a model that regroups information about a message received from a client.
@@ -27,7 +27,7 @@ import Command from "../Command/Command";
  * To manage different types of clients, this class also acts as a parent class to child classes that are more
  * client specific. This being said, child classes make good use of functions and properties in this class.
  */
-export default abstract class Resonance {
+export abstract class Resonance {
 
   /**
    * The raw content of the message that was heard.
@@ -108,7 +108,7 @@ export default abstract class Resonance {
    *
    * This function runs shortly after a resonance is constructed. Consider this an asynchronous constructor.
    */
-  async build() {
+  public async build() {
     this.origin = await this.resolveOrigin();
     this.locale = await this.getLocale();
     this.private = await this.resolvePrivacy();
@@ -120,7 +120,7 @@ export default abstract class Resonance {
    * @param instruction
    *   An instruction to set to the Resonance.
    */
-  async setInstruction(instruction: Instruction) {
+  public async setInstruction(instruction: Instruction) {
     this.instruction = instruction;
   }
 
@@ -130,14 +130,14 @@ export default abstract class Resonance {
    * @returns
    *   Returns the command tied to this Resonance, through its instruction.
    */
-  async getCommand(): Promise<Command> {
+  public async getCommand(): Promise<Command> {
     return await this.instruction.command;
   }
 
   /**
    * Return arguments used with the command issued in this Resonance, if any.
    */
-  async getArguments(): Promise<Array<any>> {
+  public async getArguments(): Promise<Array<any>> {
     return await this.instruction.arguments;
   }
 
@@ -148,7 +148,7 @@ export default abstract class Resonance {
    *
    * And order is only built and attached to the resonance if it's found through the CommandInterpreter.
    */
-  async executeCommand() {
+  public async executeCommand() {
     await this.instruction.command.execute(this);
   }
 
@@ -159,7 +159,7 @@ export default abstract class Resonance {
    *
    * And order is only built and attached to the resonance if it's found through the CommandInterpreter.
    */
-  async executeHelp() {
+  public async executeHelp() {
     await this.instruction.command.help(this);
   }
 
@@ -169,7 +169,7 @@ export default abstract class Resonance {
    * @returns
    *   Returns true if the Resonance was heard in a private channel. Returns false otherwise.
    */
-  async isPrivate(): Promise<boolean> {
+  public async isPrivate(): Promise<boolean> {
     return this.private === 'public';
   }
 
@@ -193,7 +193,7 @@ export default abstract class Resonance {
    * @param onError
    *   The callback function that runs once a failure occurs. Failure includes not getting a response.
    */
-  async prompt(user: any, line: any, lifespan: number, onResponse: Function, onError: Function = (e) => { console.log(e); }) {
+  public async prompt(user: any, line: any, lifespan: number, onResponse: Function, onError: Function = (e) => { console.log(e); }) {
     // Simply run this through the bot's prompt function.
     await this.bot.prompt(user, line, this, lifespan, onResponse, onError);
   }
@@ -212,7 +212,7 @@ export default abstract class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  async reply(content: string, personalizationTag: string = ''): Promise<any> {
+  public async reply(content: string, personalizationTag: string = ''): Promise<any> {
     // Basically call the send method, but we already know the destination.
     return await this.send(this.origin, content, personalizationTag);
   }
@@ -232,7 +232,7 @@ export default abstract class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  async __reply(...parameters: any): Promise<any> {
+  public async __reply(...parameters: any): Promise<any> {
     // Parse the parameters obtained.
     let params = await Yoshida.parseI18NParams(parameters);
 
@@ -258,7 +258,7 @@ export default abstract class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed. This is useful for Discord.
    */
-  async send(destination: any, content: string, personalizationTag: string = ''): Promise<any> {
+  public async send(destination: any, content: string, personalizationTag: string = ''): Promise<any> {
     // If a personalization tag is set, we want to use Yoshida to get a personalization for this bot.
     if (!Sojiro.isEmpty(personalizationTag)) {
       content = await Yoshida.personalize(content, personalizationTag, this.bot);
@@ -289,7 +289,7 @@ export default abstract class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  async __send(destination: any, ...parameters: any): Promise<any> {
+  public async __send(destination: any, ...parameters: any): Promise<any> {
     // Parse the parameters obtained.
     let params = await Yoshida.parseI18NParams(parameters);
 
@@ -333,39 +333,7 @@ export default abstract class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  abstract async doSend(bot: Bot, destination: any, content: string): Promise<any>;
-
-  /**
-   * Process parameters through i18n translation specifications for this Resonance.
-   *
-   * This is an abstract method. Each Resonance must manage translations for its cases depending on its client.
-   *
-   * @returns
-   *   The locale of the message that was received.
-   */
-  abstract async getLocale(): Promise<string>;
-
-  /**
-   * Determine the origin of the message.
-   *
-   * Depending on the client, the origin will be determined differently. The goal is to be able to easily send
-   * anything back to the origin, without necessarily having to go get it.
-   *
-   * @return
-   *   Origin of the message. Depending on the client, it could be anything.
-   */
-  abstract async resolveOrigin(): Promise<any>;
-
-  /**
-   * Determine whether or not this resonance was a private message to the bot.
-   *
-   * Depending on the client, the privacy will be determined differently. The goal is to be able to easily send
-   * anything back privately if needed.
-   *
-   * @return
-   *   Privacy of the message. Depending on the client's checks, it will return either 'public' or 'private'.
-   */
-  abstract async resolvePrivacy(): Promise<string>;
+  protected abstract async doSend(bot: Bot, destination: any, content: string): Promise<any>;
 
   /**
    * Emulate the bot typing for a given amount of seconds.
@@ -378,6 +346,38 @@ export default abstract class Resonance {
    * @param destination
    *   Destination to type in, if needed.
    */
-  abstract async typeFor(seconds: number, destination: any);
+  public abstract async typeFor(seconds: number, destination: any);
+
+  /**
+   * Process parameters through i18n translation specifications for this Resonance.
+   *
+   * This is an abstract method. Each Resonance must manage translations for its cases depending on its client.
+   *
+   * @returns
+   *   The locale of the message that was received.
+   */
+  protected abstract async getLocale(): Promise<string>;
+
+  /**
+   * Determine the origin of the message.
+   *
+   * Depending on the client, the origin will be determined differently. The goal is to be able to easily send
+   * anything back to the origin, without necessarily having to go get it.
+   *
+   * @return
+   *   Origin of the message. Depending on the client, it could be anything.
+   */
+  protected abstract async resolveOrigin(): Promise<any>;
+
+  /**
+   * Determine whether or not this resonance was a private message to the bot.
+   *
+   * Depending on the client, the privacy will be determined differently. The goal is to be able to easily send
+   * anything back privately if needed.
+   *
+   * @return
+   *   Privacy of the message. Depending on the client's checks, it will return either 'public' or 'private'.
+   */
+  protected abstract async resolvePrivacy(): Promise<string>;
 
 }

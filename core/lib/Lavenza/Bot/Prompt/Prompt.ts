@@ -7,12 +7,12 @@
 
 // Imports.
 import * as EventEmitter from 'events';
-import PromptException from './Exception/PromptException';
-import PromptExceptionType from './Exception/PromptExceptionType';
-import Sojiro from '../../Confidant/Sojiro';
-import Igor from '../../Confidant/Igor';
-import Resonance from "../Resonance/Resonance";
-import Bot from "../Bot";
+import {PromptException} from './Exception/PromptException';
+import {PromptExceptionType} from './Exception/PromptExceptionType';
+import {Sojiro} from '../../Confidant/Sojiro';
+import {Igor} from '../../Confidant/Igor';
+import {Resonance} from "../Resonance/Resonance";
+import {Bot} from "../Bot";
 import Timeout = NodeJS.Timeout;
 
 /**
@@ -20,7 +20,7 @@ import Timeout = NodeJS.Timeout;
  *
  * Prompts can be set for a bot to await input from a user. Using the received input, it can then act upon it.
  */
-export default abstract class Prompt {
+export abstract class Prompt {
 
   /**
    * The user that is being prompted for a response.
@@ -121,7 +121,7 @@ export default abstract class Prompt {
    * @param resonance
    *   The resonance that was heard by the Prompt.
    */
-  async listen(resonance: Resonance) {
+  public async listen(resonance: Resonance) {
     // If the resonance that was just heard is not from the same client, we do nothing.
     if (resonance.client.type !== this.resonance.client.type) {
       return;
@@ -143,7 +143,7 @@ export default abstract class Prompt {
    * @returns
    *   Resolution of the prompt, or an error.
    */
-  await(): Promise<any> {
+  public await(): Promise<any> {
     // We manage the Promise here.
     return new Promise((resolve, reject) => {
       // Set the bomb. We'll destroy the prompt if it takes too long to execute.
@@ -176,20 +176,6 @@ export default abstract class Prompt {
     });
   }
 
-  /**
-   * Clear the timer attached to this prompt.
-   */
-  async clearTimer() {
-    await clearTimeout(this.timer);
-  }
-
-  /**
-   * Clear all event listeners in this prompt's event emitter.
-   */
-  async clearListeners() {
-    await this.ee.removeAllListeners();
-  }
-
   // noinspection JSUnusedGlobalSymbols
   /**
    * Resets the prompt to listen for another message.
@@ -202,7 +188,7 @@ export default abstract class Prompt {
    * @returns
    *   Resolution of the prompt (newly reset), or an error.
    */
-  async reset({error = ''}): Promise<any> {
+  public async reset({error = ''}): Promise<any> {
     if (this.resetCount === 2) {
       await this.error(PromptExceptionType.MAX_RESET_EXCEEDED);
       return;
@@ -217,7 +203,7 @@ export default abstract class Prompt {
   /**
    * Disable this prompt.
    */
-  async disable() {
+  public async disable() {
     await this.clearTimer();
     await this.clearListeners();
     await this.bot.removePrompt(this);
@@ -229,9 +215,23 @@ export default abstract class Prompt {
    * @param type
    *   Type of PromptException to fire.
    */
-  async error (type) {
+  public async error (type) {
     let exception = new PromptException(type);
     await this.onError(exception);
+  }
+
+  /**
+   * Clear the timer attached to this prompt.
+   */
+  private async clearTimer() {
+    await clearTimeout(this.timer);
+  }
+
+  /**
+   * Clear all event listeners in this prompt's event emitter.
+   */
+  private async clearListeners() {
+    await this.ee.removeAllListeners();
   }
 
   /**
@@ -239,6 +239,6 @@ export default abstract class Prompt {
    *
    * This is an abstract method.
    */
-  abstract async condition(resonance: Resonance): Promise<boolean>;
+  protected abstract async condition(resonance: Resonance): Promise<boolean>;
 
 }

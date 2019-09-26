@@ -6,7 +6,7 @@
  */
 
 // Imports.
-import Yoshida from './Yoshida';
+import {Yoshida} from './Yoshida';
 
 /**
  * Provides a class that handles input/output to the console & errors.
@@ -18,7 +18,7 @@ import Yoshida from './Yoshida';
  *
  * Honestly I just needed an excuse to use their names in my code. And I love it.
  */
-export default class Morgana {
+export class Morgana {
 
   /**
    * Send output to the console.
@@ -34,7 +34,7 @@ export default class Morgana {
    * @param locale
    *   Set the locale to determine the language.
    */
-  static async log(message: string, replacers: Object = undefined, type: string = 'default', locale: string = process.env.DEFAULT_LOCALE) {
+  public static async log(message: string, replacers: Object = undefined, type: string = 'default', locale: string = process.env.DEFAULT_LOCALE) {
     // Fetch translations of output.
     let output = await Yoshida.translate(message, replacers, locale);
     output = 'Lavenza: ' + output;
@@ -78,7 +78,7 @@ export default class Morgana {
    * Shortcut function to send a success message.
    * @inheritDoc
    */
-  static async success(message: string, replacers: Object = undefined) {
+  public static async success(message: string, replacers: Object = undefined) {
     // If the message is not set, we'll fetch the default success message.
     message = message || 'SUCCESS';
     await this.log(message, replacers,'success');
@@ -88,7 +88,7 @@ export default class Morgana {
    * Shortcut function to set a status message.
    * @inheritDoc
    */
-  static async status(message: string, replacers: Object = undefined) {
+  public static async status(message: string, replacers: Object = undefined) {
     await this.log(message, replacers, 'status');
   }
 
@@ -96,7 +96,7 @@ export default class Morgana {
    * Shortcut function to set a warning message.
    * @inheritDoc
    */
-  static async warn(message: string, replacers: Object = undefined) {
+  public static async warn(message: string, replacers: Object = undefined) {
     await this.log(message, replacers, 'warning');
   }
 
@@ -104,7 +104,7 @@ export default class Morgana {
    * Shortcut function to set a error message.
    * @inheritDoc
    */
-  static async error(message: string, replacers: Object = undefined) {
+  public static async error(message: string, replacers: Object = undefined) {
     // If the message is not set, we'll fetch the default error message.
     message = message || 'ERROR';
     await this.log(message, replacers, 'error');

@@ -38,6 +38,24 @@ const Core_1 = require("../Core/Core");
  */
 class Yoshida {
     /**
+     * Get a personalization for a given text from a bot's configurations.
+     *
+     * @param defaultText
+     *   Default text that should be returned if personalizations don't exist.
+     * @param tag
+     *   Tag, or key, of the personalization in the configurations.
+     * @param bot
+     *   The Bot we should fetch personalizations for.
+     *
+     * @returns
+     *   The personalized string for the bot fetched in configurations.
+     */
+    static personalize(defaultText, tag, bot) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return Yoshida.getPersonalization(defaultText, tag, bot);
+        });
+    }
+    /**
      * Initialize values needed to use I18N efficiently.
      */
     static initializeI18N() {
@@ -45,7 +63,7 @@ class Yoshida {
             // Configure i18n real quick.
             i18n.configure({
                 defaultLocale: process.env.LAVENZA_DEFAULT_LOCALE,
-                directory: Core_1.default.paths.root + '/lang',
+                directory: Core_1.Core.paths.root + '/lang',
                 autoReload: true
             });
             // Initialize variable that will house translate client.
@@ -59,8 +77,8 @@ class Yoshida {
                 googleTranslateConfig['projectId'] = googleTranslateProjectId;
                 googleTranslate = new translate_1.Translate(googleTranslateConfig);
             }
-            this.googleTranslate = googleTranslate;
-            this.translationInitialized = true;
+            Yoshida.googleTranslate = googleTranslate;
+            Yoshida.translationInitialized = true;
         });
     }
     /**
@@ -87,9 +105,9 @@ class Yoshida {
     static translate(...parameters) {
         return __awaiter(this, void 0, void 0, function* () {
             // Get our parameters using Sojiro's help.
-            let params = yield this.parseI18NParams(parameters);
+            let params = yield Yoshida.parseI18NParams(parameters);
             // If translation isn't initialized, we simply return the regular text.
-            if (!this.translationInitialized) {
+            if (!Yoshida.translationInitialized) {
                 return params.phrase;
             }
             // If the locale is undefined, we simply use the default one.
@@ -98,11 +116,11 @@ class Yoshida {
             let englishTranslation = i18n.__({ phrase: params.phrase, locale: 'en' }, params.replacers);
             let translation = i18n.__({ phrase: params.phrase, locale: params.locale }, params.replacers);
             // If the text is untranslated, we'll fallback to google translate if it's enabled.
-            if (process.env.LAVENZA_GOOGLE_TRANSLATE_STATUS === 'enabled' && this.googleTranslate && params.locale !== 'en' && englishTranslation === translation) {
+            if (process.env.LAVENZA_GOOGLE_TRANSLATE_STATUS === 'enabled' && Yoshida.googleTranslate && params.locale !== 'en' && englishTranslation === translation) {
                 // Google Translate doesn't have parsing for replacers.
                 // We want to add a unique identifier to the beginning of each replacer key to prevent translation.
                 params.phrase = yield params.phrase.replace(/{{/g, '{{RPL.');
-                [translation] = yield this.googleTranslate.translate(params.phrase, params.locale);
+                [translation] = yield Yoshida.googleTranslate.translate(params.phrase, params.locale);
                 // Now we can set everything back to normal before they're stored and sent.
                 params.phrase = yield params.phrase.replace(/{{RPL\./g, '{{');
                 translation = yield translation.replace(/{{RPL\./g, '{{');
@@ -272,38 +290,38 @@ class Yoshida {
             // Check if the tag formatting is permitted.
             // We hard crash if this isn't the case. Tags should always be defined with "::" as the first characters.
             if (!tag.startsWith('::')) {
-                yield Igor_1.default.throw(`Invalid format for tag '{{tag}}'. All tags should start with "::". Please change your tag in the code.`, { tag: tag });
+                yield Igor_1.Igor.throw(`Invalid format for tag '{{tag}}'. All tags should start with "::". Please change your tag in the code.`, { tag: tag });
             }
             // Determine path to personalizations file.
             let pathToPersonalizations = bot.directory + '/personalizations.yml';
             // If personalizations don't exist, simply return the default text.
-            if (!Akechi_1.default.fileExists(pathToPersonalizations)) {
+            if (!Akechi_1.Akechi.fileExists(pathToPersonalizations)) {
                 let personalizations = {};
                 personalizations[tag] = {
                     'default': defaultText,
                     'personalizations': []
                 };
-                yield Akechi_1.default.writeYamlFile(pathToPersonalizations, personalizations);
+                yield Akechi_1.Akechi.writeYamlFile(pathToPersonalizations, personalizations);
                 return defaultText;
             }
             // Attempt to get the personalizations with Akechi.
-            let personalizations = yield Akechi_1.default.readYamlFile(pathToPersonalizations);
+            let personalizations = yield Akechi_1.Akechi.readYamlFile(pathToPersonalizations);
             // First thing's first, we check the personalizations. If the tag is not set, we return the text 'as is'.
             if (personalizations[tag] === undefined) {
                 personalizations[tag] = {
                     'default': defaultText,
                     'personalizations': []
                 };
-                yield Akechi_1.default.writeYamlFile(pathToPersonalizations, personalizations);
+                yield Akechi_1.Akechi.writeYamlFile(pathToPersonalizations, personalizations);
                 return defaultText;
             }
             // Perform a quick sync. If the personalizations default text is not the same, update it.
             if (personalizations[tag]['default'] !== defaultText) {
                 personalizations[tag]['default'] = defaultText;
-                yield Akechi_1.default.writeYamlFile(pathToPersonalizations, personalizations);
+                yield Akechi_1.Akechi.writeYamlFile(pathToPersonalizations, personalizations);
             }
             // If the personalizations array is empty, return the default text.
-            if (Sojiro_1.default.isEmpty(personalizations[tag]['personalizations'])) {
+            if (Sojiro_1.Sojiro.isEmpty(personalizations[tag]['personalizations'])) {
                 return defaultText;
             }
             // We fetch the text from the personalizations.
@@ -311,32 +329,14 @@ class Yoshida {
             // If the text is an array, we fetch a random element from it.
             // This is fun, because you can have varying texts.
             if (Array.isArray(text)) {
-                text = Sojiro_1.default.getRandomElementFromArray(text);
+                text = Sojiro_1.Sojiro.getRandomElementFromArray(text);
             }
             // Return the text.
             return text;
         });
     }
-    /**
-     * Get a personalization for a given text from a bot's configurations.
-     *
-     * @param defaultText
-     *   Default text that should be returned if personalizations don't exist.
-     * @param tag
-     *   Tag, or key, of the personalization in the configurations.
-     * @param bot
-     *   The Bot we should fetch personalizations for.
-     *
-     * @returns
-     *   The personalized string for the bot fetched in configurations.
-     */
-    static personalize(defaultText, tag, bot) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.getPersonalization(defaultText, tag, bot);
-        });
-    }
 }
-exports.default = Yoshida;
+exports.Yoshida = Yoshida;
 /**
  * Field to hold a boolean value determining whether translation was initialized or not.
  */

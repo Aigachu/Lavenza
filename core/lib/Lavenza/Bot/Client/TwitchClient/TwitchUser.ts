@@ -8,7 +8,7 @@
 /**
  * Provides a model that regroups information about a Twitch User.
  */
-export default class TwitchUser {
+export class TwitchUser {
 
   /**
    * The ID of the twitch user.
@@ -49,7 +49,7 @@ export default class TwitchUser {
    * @returns
    *   Simply returns the display name of the user when used in string context.
    */
-  toString(): string {
+  public toString(): string {
     return this.displayName;
   }
 

@@ -9,13 +9,13 @@
 import * as fs from 'fs';
 
 // Imports.
-import Core from "../Core/Core";
-import Akechi from '../Confidant/Akechi';
-import Sojiro from '../Confidant/Sojiro';
-import Igor from '../Confidant/Igor';
-import Morgana from "../Confidant/Morgana";
-import Gestalt from "../Gestalt/Gestalt";
-import Talent from "./Talent";
+import {Core} from "../Core/Core";
+import {Akechi} from '../Confidant/Akechi';
+import {Sojiro} from '../Confidant/Sojiro';
+import {Igor} from '../Confidant/Igor';
+import {Morgana} from "../Confidant/Morgana";
+import {Gestalt} from "../Gestalt/Gestalt";
+import {Talent} from "./Talent";
 import {TalentConfigurations} from "./TalentConfigurations";
 import {AssociativeObject} from "../Types";
 
@@ -36,13 +36,14 @@ import {AssociativeObject} from "../Types";
  *
  * This Manager will load necessary talents, and make them available in the bots.
  */
-export default class TalentManager {
+export class TalentManager {
 
   /**
    * Object to store the list of talents in the application.
    */
   public static talents: AssociativeObject<Talent> = {};
 
+  // noinspection JSUnusedLocalSymbols
   /**
    * This is a static class. The constructor will never be used.
    */
@@ -53,14 +54,14 @@ export default class TalentManager {
    *
    * This function will run all necessary preparations for this manager before it can be used.
    */
-  static async build() {
+  public static async build() {
     // Do nothing...For now!
   }
 
   /**
    * Perform bootstrapping tasks for Database for all talents.
    */
-  static async gestalt() {
+  public static async gestalt() {
     // Some flavor.
     await Morgana.status("Running Gestalt bootstrap process for the Talent Manager...");
 
@@ -82,45 +83,12 @@ export default class TalentManager {
    *
    * @param machineName
    *   Machine name of the Talent we want to retrieve.
+   *
+   * @return
+   *   The Talent Class of the requested talent.
    */
-  static async getTalent(machineName: string): Promise<Talent> {
+  public static async getTalent(machineName: string): Promise<Talent> {
     return TalentManager.talents[machineName];
-  }
-
-  /**
-   * Get the path to a Talent's folder given a unique key.
-   *
-   * This function will check the core talents directory first, and then check the custom talents directory afterwards.
-   *
-   * @param name
-   *   The name of the talent. This name is the unique identifier of the Talent, and all in lowercase.
-   *   As per standards, it will also be the name of the directory of this Talent.
-   *
-   * @returns
-   *   The path to the talent if found, undefined otherwise.
-   */
-  static async getTalentPath(name: string): Promise<string|undefined> {
-    // Talents can either be provided by the Core framework, or custom-made.
-    // First we check if this talent exists in the core directory.
-    // Compute the path to the talent, should it exist in the core directory.
-    let pathToCoreTalent = Core.paths.talents.core + '/' + name;
-
-    // If this directory exists, we can return with the path to it.
-    if (fs.existsSync(pathToCoreTalent)) {
-      return pathToCoreTalent;
-    }
-
-    // If we reach here, this means the talent was not found in the core directory.
-    // Compute the path to the talent, should it exist in the custom directory.
-    let pathToCustomTalent = Core.paths.talents.custom + '/' + name;
-
-    // If this directory exists, we can return with the path to it.
-    if (fs.existsSync(pathToCustomTalent)) {
-      return pathToCustomTalent;
-    }
-
-    // If the talent was not found, we return undefined.
-    return undefined;
   }
 
   /**
@@ -132,7 +100,7 @@ export default class TalentManager {
    *   The identifier of the talent that we want to load. As per standards, it shares the name of the directory of the
    *   Talent that will be loaded.
    */
-  static async loadTalent(name: string) {
+  public static async loadTalent(name: string) {
     // Check if the talent exists and return the path if it does.
     let talentDirectoryPath = await TalentManager.getTalentPath(name);
 
@@ -168,6 +136,42 @@ export default class TalentManager {
 
     // Register the talent to the Manager for future use.
     TalentManager.talents[name] = talent;
+  }
+
+  /**
+   * Get the path to a Talent's folder given a unique key.
+   *
+   * This function will check the core talents directory first, and then check the custom talents directory afterwards.
+   *
+   * @param name
+   *   The name of the talent. This name is the unique identifier of the Talent, and all in lowercase.
+   *   As per standards, it will also be the name of the directory of this Talent.
+   *
+   * @returns
+   *   The path to the talent if found, undefined otherwise.
+   */
+  private static async getTalentPath(name: string): Promise<string|undefined> {
+    // Talents can either be provided by the Core framework, or custom-made.
+    // First we check if this talent exists in the core directory.
+    // Compute the path to the talent, should it exist in the core directory.
+    let pathToCoreTalent = Core.paths.talents.core + '/' + name;
+
+    // If this directory exists, we can return with the path to it.
+    if (fs.existsSync(pathToCoreTalent)) {
+      return pathToCoreTalent;
+    }
+
+    // If we reach here, this means the talent was not found in the core directory.
+    // Compute the path to the talent, should it exist in the custom directory.
+    let pathToCustomTalent = Core.paths.talents.custom + '/' + name;
+
+    // If this directory exists, we can return with the path to it.
+    if (fs.existsSync(pathToCustomTalent)) {
+      return pathToCustomTalent;
+    }
+
+    // If the talent was not found, we return undefined.
+    return undefined;
   }
   
 }

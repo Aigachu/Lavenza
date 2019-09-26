@@ -101,7 +101,7 @@ class Prompt {
                 if (this.bot.prompts.includes(this)) {
                     // If the lifespan depletes, we remove the prompt.
                     yield this.disable();
-                    let exception = new PromptException_1.default(PromptExceptionType_1.default.NO_RESPONSE, 'No response was provided in the time given. Firing error handler.');
+                    let exception = new PromptException_1.PromptException(PromptExceptionType_1.PromptExceptionType.NO_RESPONSE, 'No response was provided in the time given. Firing error handler.');
                     yield this.onError(exception);
                     reject();
                 }
@@ -113,28 +113,12 @@ class Prompt {
                 yield this.clearListeners();
                 // Fire the callback.
                 yield this.onResponse(resonance, this).catch((e) => __awaiter(this, void 0, void 0, function* () {
-                    let exception = new PromptException_1.default(PromptExceptionType_1.default.MISC, e);
+                    let exception = new PromptException_1.PromptException(PromptExceptionType_1.PromptExceptionType.MISC, e);
                     yield this.onError(exception);
                 }));
                 yield this.disable();
                 resolve();
             }));
-        });
-    }
-    /**
-     * Clear the timer attached to this prompt.
-     */
-    clearTimer() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield clearTimeout(this.timer);
-        });
-    }
-    /**
-     * Clear all event listeners in this prompt's event emitter.
-     */
-    clearListeners() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.ee.removeAllListeners();
         });
     }
     // noinspection JSUnusedGlobalSymbols
@@ -152,14 +136,14 @@ class Prompt {
     reset({ error = '' }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.resetCount === 2) {
-                yield this.error(PromptExceptionType_1.default.MAX_RESET_EXCEEDED);
+                yield this.error(PromptExceptionType_1.PromptExceptionType.MAX_RESET_EXCEEDED);
                 return;
             }
-            if (!Sojiro_1.default.isEmpty(error)) {
+            if (!Sojiro_1.Sojiro.isEmpty(error)) {
                 yield this.error(error);
             }
             this.resetCount++;
-            yield this.await().catch(Igor_1.default.pocket);
+            yield this.await().catch(Igor_1.Igor.pocket);
         });
     }
     /**
@@ -180,9 +164,25 @@ class Prompt {
      */
     error(type) {
         return __awaiter(this, void 0, void 0, function* () {
-            let exception = new PromptException_1.default(type);
+            let exception = new PromptException_1.PromptException(type);
             yield this.onError(exception);
         });
     }
+    /**
+     * Clear the timer attached to this prompt.
+     */
+    clearTimer() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield clearTimeout(this.timer);
+        });
+    }
+    /**
+     * Clear all event listeners in this prompt's event emitter.
+     */
+    clearListeners() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.ee.removeAllListeners();
+        });
+    }
 }
-exports.default = Prompt;
+exports.Prompt = Prompt;

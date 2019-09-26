@@ -25,7 +25,7 @@ const PromptExceptionType_1 = require("../../../../../lib/Lavenza/Bot/Prompt/Exc
  *
  * A great testing command.
  */
-class Pong extends Command_1.default {
+class Pong extends Command_1.Command {
     /**
      * This is the static build function of the command.
      *
@@ -93,23 +93,23 @@ class Pong extends Command_1.default {
                 }
                 else {
                     // Explain that this command is just a tutorial.
-                    yield prompt.reset({ error: PromptExceptionType_1.default.INVALID_RESPONSE });
+                    yield prompt.reset({ error: PromptExceptionType_1.PromptExceptionType.INVALID_RESPONSE });
                 }
             }), (error) => __awaiter(this, void 0, void 0, function* () {
                 // Depending on the type of error, you can send different replies.
                 switch (error.type) {
                     // This is ran when no response is provided.
-                    case PromptExceptionType_1.default.NO_RESPONSE: {
+                    case PromptExceptionType_1.PromptExceptionType.NO_RESPONSE: {
                         yield resonance.__reply(`Hey, are you ignoring me? That's rude...I'll remember this. >:(`, `::PONG_NO_RESPONSE`);
                         break;
                     }
                     // This is ran when the max amount of resets is hit.
-                    case PromptExceptionType_1.default.MAX_RESET_EXCEEDED: {
+                    case PromptExceptionType_1.PromptExceptionType.MAX_RESET_EXCEEDED: {
                         yield resonance.__reply(`Oof okay. I don't think you got the message...We can talk later!`, `::PONG_MAX_TRIES`);
                         break;
                     }
                     // This is the message sent when no response is provided.
-                    case PromptExceptionType_1.default.INVALID_RESPONSE: {
+                    case PromptExceptionType_1.PromptExceptionType.INVALID_RESPONSE: {
                         yield resonance.__reply(`Hey to be honest I only check for "yes" or "no"...We're just in a tutorial command after all! So I couldn't quite make out your answer. HAHA! Mind trying again?`, `::PONG_INVALID_RESPONSE`);
                         break;
                     }

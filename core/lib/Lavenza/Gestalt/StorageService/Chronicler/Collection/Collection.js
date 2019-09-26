@@ -44,8 +44,8 @@ class Collection {
             // Initialize the object that will store all of the data.
             let data = {};
             // Get all files & directories from directory.
-            let directories = yield Akechi_1.default.getDirectoriesFrom(this.path);
-            let files = yield Akechi_1.default.getFilesFrom(this.path);
+            let directories = yield Akechi_1.Akechi.getDirectoriesFrom(this.path);
+            let files = yield Akechi_1.Akechi.getFilesFrom(this.path);
             // Await the processing of all the directories found.
             yield Promise.all(directories.map((directory) => __awaiter(this, void 0, void 0, function* () {
                 // We basically create a collection with the directory and parse it's data, calling this function recursively.
@@ -57,7 +57,7 @@ class Collection {
             yield Promise.all(files.map((file) => __awaiter(this, void 0, void 0, function* () {
                 // We basically create an item with the file and parse it's data, calling this function recursively.
                 let name = path.basename(file).replace('.yml', '');
-                let item = new Item_1.default(file);
+                let item = new Item_1.Item(file);
                 data[name] = yield item.values();
             })));
             // Return all of the formatted data.
@@ -65,4 +65,4 @@ class Collection {
         });
     }
 }
-exports.default = Collection;
+exports.Collection = Collection;

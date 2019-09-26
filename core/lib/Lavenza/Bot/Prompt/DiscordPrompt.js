@@ -20,7 +20,7 @@ const Prompt_1 = require("./Prompt");
 /**
  * Provides a class for Prompts set in Discord.
  */
-class DiscordPrompt extends Prompt_1.default {
+class DiscordPrompt extends Prompt_1.Prompt {
     /**
      * @inheritDoc
      */
@@ -37,4 +37,4 @@ class DiscordPrompt extends Prompt_1.default {
         });
     }
 }
-exports.default = DiscordPrompt;
+exports.DiscordPrompt = DiscordPrompt;

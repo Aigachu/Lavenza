@@ -47,13 +47,13 @@ class ResonanceFactory {
             //  Depending on the client type, build the appropriate CommandAuthorizer.
             switch (client.type) {
                 // For Discord, we create a specific resonance.
-                case ClientType_1.default.Discord: {
-                    resonance = new DiscordResonance_1.default(content, message, bot, client);
+                case ClientType_1.ClientType.Discord: {
+                    resonance = new DiscordResonance_1.DiscordResonance(content, message, bot, client);
                     break;
                 }
                 // For Twitch, we create a specific resonance.
-                case ClientType_1.default.Twitch: {
-                    resonance = new TwitchResonance_1.default(content, message, bot, client);
+                case ClientType_1.ClientType.Twitch: {
+                    resonance = new TwitchResonance_1.TwitchResonance(content, message, bot, client);
                     break;
                 }
                 // For Slack, we create a specific resonance.
@@ -63,8 +63,8 @@ class ResonanceFactory {
                 // }
             }
             // This really shouldn't happen...But yeah...
-            if (Sojiro_1.default.isEmpty(resonance)) {
-                yield Igor_1.default.throw('Resonance could not be built. This should not happen. Fix your shitty code, Aiga!');
+            if (Sojiro_1.Sojiro.isEmpty(resonance)) {
+                yield Igor_1.Igor.throw('Resonance could not be built. This should not happen. Fix your shitty code, Aiga!');
             }
             // Run Resonance async build.
             yield resonance.build();
@@ -73,4 +73,4 @@ class ResonanceFactory {
         });
     }
 }
-exports.default = ResonanceFactory;
+exports.ResonanceFactory = ResonanceFactory;

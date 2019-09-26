@@ -98,7 +98,7 @@ class Bot {
      */
     loadEnvironmentVariables() {
         return __awaiter(this, void 0, void 0, function* () {
-            let envFileData = yield Akechi_1.default.readFile(`${this.directory}/.env`);
+            let envFileData = yield Akechi_1.Akechi.readFile(`${this.directory}/.env`);
             this.env = DotEnv.parse(envFileData);
         });
     }
@@ -112,39 +112,39 @@ class Bot {
     gestalt() {
         return __awaiter(this, void 0, void 0, function* () {
             // Initialize the database collection for this bot if it doesn't already exist.
-            yield Gestalt_1.default.createCollection(`/bots/${this.id}`);
+            yield Gestalt_1.Gestalt.createCollection(`/bots/${this.id}`);
             // Initialize the database collection for this bot's configurations if it doesn't already exist.
-            yield Gestalt_1.default.createCollection(`/bots/${this.id}/config`);
+            yield Gestalt_1.Gestalt.createCollection(`/bots/${this.id}/config`);
             // Sync core bot config to the database.
-            yield Gestalt_1.default.sync(this.config, `/bots/${this.id}/config/core`);
+            yield Gestalt_1.Gestalt.sync(this.config, `/bots/${this.id}/config/core`);
             // Initialize i18n database collection for this bot if it doesn't already exist.
-            yield Gestalt_1.default.createCollection(`/i18n/${this.id}`);
+            yield Gestalt_1.Gestalt.createCollection(`/i18n/${this.id}`);
             // Initialize i18n database collection for this bot's clients configurations if it doesn't already exist.
-            yield Gestalt_1.default.createCollection(`/i18n/${this.id}/clients`);
+            yield Gestalt_1.Gestalt.createCollection(`/i18n/${this.id}/clients`);
             // Create a database collection for the talents granted to a bot.
-            yield Gestalt_1.default.createCollection(`/bots/${this.id}/talents`);
+            yield Gestalt_1.Gestalt.createCollection(`/bots/${this.id}/talents`);
             // Await the bootstrapping of each talent's data.
             yield Promise.all(this.talents.map((talentKey) => __awaiter(this, void 0, void 0, function* () {
                 // Load Talent from the TalentManager.
-                let talent = yield TalentManager_1.default.getTalent(talentKey);
+                let talent = yield TalentManager_1.TalentManager.getTalent(talentKey);
                 // Create a database collection for the talents granted to a Bot.
-                yield Gestalt_1.default.createCollection(`/bots/${this.id}/talents/${talent.machineName}`);
+                yield Gestalt_1.Gestalt.createCollection(`/bots/${this.id}/talents/${talent.machineName}`);
                 // Await the synchronization of data between the Talent's default configuration and the database configuration.
-                yield Gestalt_1.default.sync(talent.config, `/bots/${this.id}/talents/${talent.machineName}/config`);
+                yield Gestalt_1.Gestalt.sync(talent.config, `/bots/${this.id}/talents/${talent.machineName}/config`);
             })));
             // Create a database collection for Commands belonging to a Bot.
-            yield Gestalt_1.default.createCollection(`/bots/${this.id}/commands`);
+            yield Gestalt_1.Gestalt.createCollection(`/bots/${this.id}/commands`);
             // Await the bootstrapping of Commands data.
             yield Promise.all(Object.keys(this.commands).map((commandKey) => __awaiter(this, void 0, void 0, function* () {
                 // Load Command from the Bot.
                 let command = yield this.getCommand(commandKey);
                 // Create a database collection for commands belonging to a Bot.
-                yield Gestalt_1.default.createCollection(`/bots/${this.id}/commands/${command.id}`);
+                yield Gestalt_1.Gestalt.createCollection(`/bots/${this.id}/commands/${command.id}`);
                 // Await the synchronization of data between the Command's default configuration and the database configuration.
-                yield Gestalt_1.default.sync(command.config, `/bots/${this.id}/commands/${command.id}/config`);
+                yield Gestalt_1.Gestalt.sync(command.config, `/bots/${this.id}/commands/${command.id}/config`);
             })));
             // Create a database collection for the clients belonging to a Bot.
-            yield Gestalt_1.default.createCollection(`/bots/${this.id}/clients`);
+            yield Gestalt_1.Gestalt.createCollection(`/bots/${this.id}/clients`);
         });
     }
     /**
@@ -204,17 +204,17 @@ class Bot {
                 // Depending on the type of client, we act accordingly.
                 switch (clientKey) {
                     // In Discord, we fetch the architect's user using the ID.
-                    case ClientType_1.default.Discord: {
-                        let config = yield this.getActiveClientConfig(ClientType_1.default.Discord);
+                    case ClientType_1.ClientType.Discord: {
+                        let config = yield this.getActiveClientConfig(ClientType_1.ClientType.Discord);
                         let client = yield this.getClient(clientKey);
                         this.joker.discord = yield client.fetchUser(config.joker);
                         break;
                     }
                     // In Twitch, we build a custom object using only the username.
                     // @TODO - Build a TwitchUser object using the client.
-                    case ClientType_1.default.Twitch: {
-                        let config = yield this.getActiveClientConfig(ClientType_1.default.Twitch);
-                        this.joker.twitch = new TwitchUser_1.default(config.joker, config.joker, config.joker);
+                    case ClientType_1.ClientType.Twitch: {
+                        let config = yield this.getActiveClientConfig(ClientType_1.ClientType.Twitch);
+                        this.joker.twitch = new TwitchUser_1.TwitchUser(config.joker, config.joker, config.joker);
                         break;
                     }
                 }
@@ -230,12 +230,12 @@ class Bot {
     getActiveConfig() {
         return __awaiter(this, void 0, void 0, function* () {
             // Attempt to get the active configuration from the database.
-            let activeConfig = yield Gestalt_1.default.get(`/bots/${this.id}/config/core`);
-            if (!Sojiro_1.default.isEmpty(activeConfig)) {
+            let activeConfig = yield Gestalt_1.Gestalt.get(`/bots/${this.id}/config/core`);
+            if (!Sojiro_1.Sojiro.isEmpty(activeConfig)) {
                 return activeConfig;
             }
             // Sync it to the database.
-            yield Gestalt_1.default.sync(this.config, `/bots/${this.id}/config/core`);
+            yield Gestalt_1.Gestalt.sync(this.config, `/bots/${this.id}/config/core`);
             // Return the configuration.
             return this.config;
         });
@@ -268,11 +268,11 @@ class Bot {
             // Determine path to client configuration.
             let pathToClientConfig = `${this.directory}/${clientType}.yml`;
             // Attempt to fetch client configuration.
-            if (!(yield Akechi_1.default.fileExists(pathToClientConfig))) {
+            if (!(yield Akechi_1.Akechi.fileExists(pathToClientConfig))) {
                 return undefined;
             }
             // Load configuration since it exists.
-            return yield Akechi_1.default.readYamlFile(pathToClientConfig);
+            return yield Akechi_1.Akechi.readYamlFile(pathToClientConfig);
         });
     }
     /**
@@ -287,14 +287,14 @@ class Bot {
     getActiveClientConfig(clientType) {
         return __awaiter(this, void 0, void 0, function* () {
             // Attempt to get the active configuration from the database.
-            let activeConfig = yield Gestalt_1.default.get(`/bots/${this.id}/config/${clientType}`);
-            if (!Sojiro_1.default.isEmpty(activeConfig)) {
+            let activeConfig = yield Gestalt_1.Gestalt.get(`/bots/${this.id}/config/${clientType}`);
+            if (!Sojiro_1.Sojiro.isEmpty(activeConfig)) {
                 return activeConfig;
             }
             // If we don't find any configurations in the database, we'll fetch it normally and then save it.
             let config = yield this.getClientConfig(clientType);
             // Sync it to the database.
-            yield Gestalt_1.default.sync(config, `/bots/${this.id}/config/${clientType}`);
+            yield Gestalt_1.Gestalt.sync(config, `/bots/${this.id}/config/${clientType}`);
             // Return the configuration.
             return config;
         });
@@ -314,8 +314,8 @@ class Bot {
     grantTalents() {
         return __awaiter(this, void 0, void 0, function* () {
             // Check if there are talents set in configuration.
-            if (Sojiro_1.default.isEmpty(this.config.talents)) {
-                yield Morgana_1.default.warn('Talents configuration missing for {{bot}}. The bot will not have any cool features!', { bot: this.id });
+            if (Sojiro_1.Sojiro.isEmpty(this.config.talents)) {
+                yield Morgana_1.Morgana.warn('Talents configuration missing for {{bot}}. The bot will not have any cool features!', { bot: this.id });
                 return;
             }
             // Await validation of custom talents configured.
@@ -334,20 +334,20 @@ class Bot {
     validateTalents() {
         return __awaiter(this, void 0, void 0, function* () {
             // If this is the Master bot, we will grant the Master talent.
-            if (this.isMaster && Sojiro_1.default.isEmpty(this.talents['master'])) {
+            if (this.isMaster && Sojiro_1.Sojiro.isEmpty(this.talents['master'])) {
                 this.config.talents.push('master');
             }
             // Alternatively, we'll do a quick check to see if someone is trying to set the master talent in config.
             // This talent should not be set here, and instead is automatically assigned to the master bot.
-            if (!Sojiro_1.default.isEmpty(this.config.talents['master']) && !this.isMaster) {
-                this.config.talents = Sojiro_1.default.removeFromArray(this.config.talents, 'master');
+            if (!Sojiro_1.Sojiro.isEmpty(this.config.talents['master']) && !this.isMaster) {
+                this.config.talents = Sojiro_1.Sojiro.removeFromArray(this.config.talents, 'master');
             }
             // Await the processing of all talents in the bot's config object.
             yield Promise.all(this.config.talents.map((talentMachineName) => __awaiter(this, void 0, void 0, function* () {
                 // Then, we'll check if this talent already exists in the Manager.
                 // This happens if another bot already loaded it.
                 // If it exists, we're good.
-                let talent = yield TalentManager_1.default.getTalent(talentMachineName);
+                let talent = yield TalentManager_1.TalentManager.getTalent(talentMachineName);
                 if (talent) {
                     // Validate the dependencies for this talent.
                     yield this.validateTalentDependencies(talentMachineName);
@@ -355,15 +355,15 @@ class Bot {
                 }
                 // Await the loading of the talent.
                 // If it the load fails, we'll remove the talent from the bot's configuration.
-                yield TalentManager_1.default.loadTalent(talentMachineName).then(() => __awaiter(this, void 0, void 0, function* () {
+                yield TalentManager_1.TalentManager.loadTalent(talentMachineName).then(() => __awaiter(this, void 0, void 0, function* () {
                     // Validate the dependencies for this talent.
                     yield this.validateTalentDependencies(talentMachineName);
                 })).catch((error) => __awaiter(this, void 0, void 0, function* () {
                     // Disable this talent for this bot.
-                    this.config.talents = Sojiro_1.default.removeFromArray(this.config.talents, talentMachineName);
+                    this.config.talents = Sojiro_1.Sojiro.removeFromArray(this.config.talents, talentMachineName);
                     // Send a warning message to the console.
-                    yield Morgana_1.default.warn('Error occurred while loading the {{talent}} talent...', { talent: talentMachineName });
-                    yield Igor_1.default.throw(error);
+                    yield Morgana_1.Morgana.warn('Error occurred while loading the {{talent}} talent...', { talent: talentMachineName });
+                    yield Igor_1.Igor.throw(error);
                 }));
             })));
         });
@@ -377,17 +377,17 @@ class Bot {
     validateTalentDependencies(talentMachineName) {
         return __awaiter(this, void 0, void 0, function* () {
             // Check talent's configuration to see if dependencies are loaded into this bot.
-            yield Promise.all(TalentManager_1.default.talents[talentMachineName].config.dependencies.map((dependency) => __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all(TalentManager_1.TalentManager.talents[talentMachineName].config.dependencies.map((dependency) => __awaiter(this, void 0, void 0, function* () {
                 // If the dependency isn't found in this bot's config, we shouldn't load this talent.
                 if (!this.config.talents.includes(dependency)) {
                     // Send a warning to the console.
-                    yield Morgana_1.default.warn(`The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.`, {
+                    yield Morgana_1.Morgana.warn(`The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.`, {
                         talent: talentMachineName,
                         parent: dependency,
                         bot: this.id
                     });
                     // Remove this talent from the bot.
-                    this.config.talents = Sojiro_1.default.removeFromArray(this.config.talents, talentMachineName);
+                    this.config.talents = Sojiro_1.Sojiro.removeFromArray(this.config.talents, talentMachineName);
                 }
             })));
         });
@@ -403,7 +403,7 @@ class Bot {
      */
     getCommand(commandKey) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!Sojiro_1.default.isEmpty(this.commandAliases[commandKey])) {
+            if (!Sojiro_1.Sojiro.isEmpty(this.commandAliases[commandKey])) {
                 return this.commands[this.commandAliases[commandKey]];
             }
             return this.commands[commandKey];
@@ -422,21 +422,21 @@ class Bot {
             // Await the processing of all talents loaded in the bot.
             yield Promise.all(this.talents.map((talentMachineName) => __awaiter(this, void 0, void 0, function* () {
                 // We'll fetch the talent.
-                let talent = yield TalentManager_1.default.getTalent(talentMachineName);
+                let talent = yield TalentManager_1.TalentManager.getTalent(talentMachineName);
                 // First we attempt to see if there is intersection going on with the commands.
                 // This will happen if there are multiple instances of the same commands (or aliases).
                 // The bot will still work, but one command will effectively override the other. Since this information is only
                 // important for developers, we should just throw a warning if this happens.
                 let commandsIntersection = Object.keys(this.commands).filter({}.hasOwnProperty.bind(talent.commands));
                 let aliasesIntersection = Object.keys(this.commandAliases).filter({}.hasOwnProperty.bind(talent.commandAliases));
-                if (!Sojiro_1.default.isEmpty(commandsIntersection)) {
-                    yield Morgana_1.default.warn(`There seems to be duplicate commands in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
+                if (!Sojiro_1.Sojiro.isEmpty(commandsIntersection)) {
+                    yield Morgana_1.Morgana.warn(`There seems to be duplicate commands in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
                         bot: this.id,
                         intersect: JSON.stringify(commandsIntersection)
                     });
                 }
-                if (!Sojiro_1.default.isEmpty(aliasesIntersection)) {
-                    yield Morgana_1.default.warn(`There seems to be duplicate command aliases in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
+                if (!Sojiro_1.Sojiro.isEmpty(aliasesIntersection)) {
+                    yield Morgana_1.Morgana.warn(`There seems to be duplicate command aliases in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
                         bot: this.id,
                         intersect: JSON.stringify(commandsIntersection)
                     });
@@ -458,11 +458,11 @@ class Bot {
     setListeners() {
         return __awaiter(this, void 0, void 0, function* () {
             // Set the core CommandListener.
-            this.listeners.push(new CommandListener_1.default());
+            this.listeners.push(new CommandListener_1.CommandListener());
             // Await the processing of all talents loaded in the bot.
             yield Promise.all(this.talents.map((talentKey) => __awaiter(this, void 0, void 0, function* () {
                 // Merge the bot's listeners with the Talent's listeners.
-                this.listeners = [...this.listeners, ...TalentManager_1.default.talents[talentKey].listeners];
+                this.listeners = [...this.listeners, ...TalentManager_1.TalentManager.talents[talentKey].listeners];
             })));
         });
     }
@@ -498,7 +498,7 @@ class Bot {
             // First we decipher the message we just obtained.
             let content = yield Bot.decipher(message, client);
             // Construct a 'Resonance'.
-            let resonance = yield ResonanceFactory_1.default.build(content, message, this, client);
+            let resonance = yield ResonanceFactory_1.ResonanceFactory.build(content, message, this, client);
             // Fire all of the bot's prompts, if any.
             yield Promise.all(this.prompts.map((prompt) => __awaiter(this, void 0, void 0, function* () {
                 // Fire the listen function.
@@ -541,11 +541,11 @@ class Bot {
     prompt(user, line, resonance, lifespan, onResponse, onError = (e) => { console.log(e); }) {
         return __awaiter(this, void 0, void 0, function* () {
             // Create the new prompt using the factory.
-            let prompt = yield PromptFactory_1.default.build(user, line, resonance, lifespan, onResponse, onError, this);
+            let prompt = yield PromptFactory_1.PromptFactory.build(user, line, resonance, lifespan, onResponse, onError, this);
             // Set the prompt to the bot.
             this.prompts.push(prompt);
             // Await resolution of the prompt.
-            yield prompt.await().catch(Igor_1.default.pocket);
+            yield prompt.await().catch(Igor_1.Igor.pocket);
         });
     }
     /**
@@ -556,7 +556,7 @@ class Bot {
      */
     removePrompt(prompt) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.prompts = Sojiro_1.default.removeFromArray(this.prompts, prompt);
+            this.prompts = Sojiro_1.Sojiro.removeFromArray(this.prompts, prompt);
         });
     }
     /**
@@ -578,12 +578,12 @@ class Bot {
             // Depending on the Client Type, decipher the message accordingly.
             switch (client.type) {
                 // In the case of Discord, we get the 'content' property of the message object.
-                case ClientType_1.default.Discord: {
+                case ClientType_1.ClientType.Discord: {
                     return message.content;
                 }
                 // In the case of Discord, we get the 'content' property of the message object.
                 // For Twitch, the Message object is custom built.
-                case ClientType_1.default.Twitch: {
+                case ClientType_1.ClientType.Twitch: {
                     return message.content;
                 }
                 // case ClientTypes.Slack:
@@ -628,9 +628,9 @@ class Bot {
             // Await the processing and initialization of all clients in the configurations.
             yield Promise.all(this.config.clients.map((clientTypeKey) => __awaiter(this, void 0, void 0, function* () {
                 // Load configuration since it exists.
-                let clientConfig = yield this.getActiveClientConfig(ClientType_1.default[clientTypeKey]);
-                if (Sojiro_1.default.isEmpty(clientConfig)) {
-                    yield Morgana_1.default.warn('Configuration file could not be loaded for the {{client}} client in {{bot}}. This client will not be instantiated.' +
+                let clientConfig = yield this.getActiveClientConfig(ClientType_1.ClientType[clientTypeKey]);
+                if (Sojiro_1.Sojiro.isEmpty(clientConfig)) {
+                    yield Morgana_1.Morgana.warn('Configuration file could not be loaded for the {{client}} client in {{bot}}. This client will not be instantiated.' +
                         'To create a configuration file, you can copy the ones found in the "example" bot folder.', {
                         client: clientTypeKey,
                         bot: this.id
@@ -639,7 +639,7 @@ class Bot {
                 }
                 // Uses the ClientFactory to build the appropriate factory given the type.
                 // The client is then set to the bot.
-                this.clients[ClientType_1.default[clientTypeKey]] = yield ClientFactory_1.default.build(ClientType_1.default[clientTypeKey], clientConfig, this);
+                this.clients[ClientType_1.ClientType[clientTypeKey]] = yield ClientFactory_1.ClientFactory.build(ClientType_1.ClientType[clientTypeKey], clientConfig, this);
             })));
         });
     }
@@ -664,7 +664,7 @@ class Bot {
             // Await the processing of all of this bot's talents.
             yield Promise.all(this.talents.map((talentKey) => __awaiter(this, void 0, void 0, function* () {
                 // Run this talent's initialize function for this bot.
-                let talent = yield TalentManager_1.default.getTalent(talentKey);
+                let talent = yield TalentManager_1.TalentManager.getTalent(talentKey);
                 yield talent.initialize(this);
             })));
         });
@@ -689,7 +689,7 @@ class Bot {
             // Depending on the client type, we'll be checking different types of configurations.
             switch (resonance.client.type) {
                 // In the case of a Discord client, we check to see if there's a custom prefix set for the resonance's guild.
-                case ClientType_1.default.Discord: {
+                case ClientType_1.ClientType.Discord: {
                     // Get client specific configurations.
                     let clientConfig = yield resonance.client.getActiveConfigurations();
                     if (resonance.message.guild) {
@@ -698,7 +698,7 @@ class Bot {
                     break;
                 }
                 // In the case of a Twitch client, we check to see if there's a custom prefix set for the resonance's guild.
-                case ClientType_1.default.Twitch: {
+                case ClientType_1.ClientType.Twitch: {
                     // Get client specific configurations.
                     let clientConfig = yield resonance.client.getActiveConfigurations();
                     if (resonance.message.channel) {
@@ -708,7 +708,7 @@ class Bot {
                 }
             }
             // Reset it to undefined if it's empty.
-            if (Sojiro_1.default.isEmpty(commandprefix)) {
+            if (Sojiro_1.Sojiro.isEmpty(commandprefix)) {
                 commandprefix = undefined;
             }
             // By default, return the following.
@@ -716,4 +716,4 @@ class Bot {
         });
     }
 }
-exports.default = Bot;
+exports.Bot = Bot;

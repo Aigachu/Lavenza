@@ -9,13 +9,13 @@
 import * as path from 'path';
 
 // Imports.
-import Item from '../Item/Item';
-import Akechi from '../../../../Confidant/Akechi';
+import {Item} from '../Item/Item';
+import {Akechi} from '../../../../Confidant/Akechi';
 
 /**
  * Provides a model to manage directories for the Chronicler.
  */
-export default class Collection {
+export class Collection {
 
   /**
    * Path to the files this collection represents.
@@ -38,7 +38,7 @@ export default class Collection {
    * @returns
    *   The formatted data.
    */
-  async values(): Promise<any> {
+  public async values(): Promise<any> {
     // Initialize the object that will store all of the data.
     let data = {};
 

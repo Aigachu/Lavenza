@@ -10,7 +10,7 @@
  *
  * @TODO - Make this an interface. (?)
  */
-export default class TwitchChannel {
+export class TwitchChannel {
 
   /**
    * ID of the channel.

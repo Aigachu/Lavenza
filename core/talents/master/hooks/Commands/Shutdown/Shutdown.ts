@@ -6,9 +6,9 @@
  */
 
 // Imports.
-import Command from "../../../../../lib/Lavenza/Bot/Command/Command";
-import Sojiro from "../../../../../lib/Lavenza/Confidant/Sojiro";
-import BotManager from "../../../../../lib/Lavenza/Bot/BotManager";
+import {Command} from "../../../../../lib/Lavenza/Bot/Command/Command";
+import {Sojiro} from "../../../../../lib/Lavenza/Confidant/Sojiro";
+import {BotManager} from "../../../../../lib/Lavenza/Bot/BotManager";
 
 /**
  * Shutdown Command.

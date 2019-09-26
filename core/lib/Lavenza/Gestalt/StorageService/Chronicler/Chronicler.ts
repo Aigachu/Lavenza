@@ -9,12 +9,12 @@
 const lodash = require('lodash');
 
 // Imports.
-import Akechi from '../../../Confidant/Akechi';
-import Sojiro from '../../../Confidant/Sojiro';
-import StorageService from '../StorageService';
-import Collection from './Collection/Collection';
-import Item from './Item/Item';
-import Core from "../../../Core/Core";
+import {Akechi} from '../../../Confidant/Akechi';
+import {Sojiro} from '../../../Confidant/Sojiro';
+import {StorageService} from '../StorageService';
+import {Collection} from './Collection/Collection';
+import {Item} from './Item/Item';
+import {Core} from "../../../Core/Core";
 
 /**
  * Chronicler is the default Storage Service used by Gestalt & Lavenza.
@@ -23,7 +23,7 @@ import Core from "../../../Core/Core";
  * will be stored in .yml files and read from them as well.
  *
  */
-export default class Chronicler extends StorageService {
+export class Chronicler extends StorageService {
 
   /**
    * Stores the path to the root of the database.
@@ -33,7 +33,7 @@ export default class Chronicler extends StorageService {
   /**
    * @inheritDoc
    */
-  async build() {
+  public async build() {
     this.root = Core.paths.root + '/database'
   }
 
@@ -44,7 +44,7 @@ export default class Chronicler extends StorageService {
    *
    * @inheritDoc
    */
-  async request({protocol = '', endpoint = '', payload = {}} = {}) {
+  public async request({protocol = '', endpoint = '', payload = {}} = {}) {
     // If the endpoint doesn't start with the database root, prepend it to the path.
     if (!endpoint.startsWith(this.root)) {
       endpoint = this.root + endpoint;
@@ -65,7 +65,7 @@ export default class Chronicler extends StorageService {
    *
    * @inheritDoc
    */
-  async createCollection(endpoint, payload = {}) {
+  public async createCollection(endpoint, payload = {}) {
     // Prepend database path to the requested endpoint.
     // We have to do it here since this function doesn't pass through the main request() function.
     let directoryPath = this.root + endpoint;
@@ -79,7 +79,7 @@ export default class Chronicler extends StorageService {
    *
    * @inheritDoc
    */
-  async get(endpoint): Promise<any> {
+  public async get(endpoint): Promise<any> {
     // First we check if the requested path is a file. If it is, we await the returning of its values.
     if (Akechi.fileExists(endpoint + '.yml')) {
       let item = new Item(endpoint + '.yml');
@@ -103,7 +103,7 @@ export default class Chronicler extends StorageService {
    *
    * @inheritDoc
    */
-  async post(endpoint, payload): Promise<any|null> {
+  public async post(endpoint, payload): Promise<any|null> {
     // We simply create a YAML file. We await this process.
     await Akechi.writeYamlFile(endpoint, payload);
   }
@@ -115,7 +115,7 @@ export default class Chronicler extends StorageService {
    *
    * @inheritDoc
    */
-  async update(endpoint, payload): Promise<any|null> {
+  public async update(endpoint, payload): Promise<any|null> {
     // First, we use Chronicler's get method to get the data.
     let data = await this.get(endpoint);
 
@@ -143,7 +143,7 @@ export default class Chronicler extends StorageService {
    *
    * @inheritDoc
    */
-  async delete(endpoint: string): Promise<any> {
+  public async delete(endpoint: string): Promise<any> {
     return undefined;
   }
 

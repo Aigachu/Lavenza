@@ -24,7 +24,7 @@ const Eminence_1 = require("../../Eminence/Eminence");
 /**
  * Provides an Authorizer for commands invoked in Discord.
  */
-class DiscordCommandAuthorizer extends CommandAuthorizer_1.default {
+class DiscordCommandAuthorizer extends CommandAuthorizer_1.CommandAuthorizer {
     /**
      * Since authorizers are static classes, we'll have a build function to make preparations.
      */
@@ -50,13 +50,13 @@ class DiscordCommandAuthorizer extends CommandAuthorizer_1.default {
                 // Validate that the command is allowed to be used in this Guild (Server).
                 let guildValidation = yield this.validateGuild();
                 if (!guildValidation) {
-                    yield Morgana_1.default.warn('guild validation failed');
+                    yield Morgana_1.Morgana.warn('discord guild validation failed');
                     return false;
                 }
                 // Validate that the command is allowed to be used in this Channel.
                 let channelValidation = yield this.validateChannel();
                 if (!channelValidation) {
-                    yield Morgana_1.default.warn('channel validation failed');
+                    yield Morgana_1.Morgana.warn('discord channel validation failed');
                     return false;
                 }
             }
@@ -82,15 +82,15 @@ class DiscordCommandAuthorizer extends CommandAuthorizer_1.default {
             // Get the user roles configurations for the Guild where this message took place.
             let clientUserEminences = this.configurations.bot.client.userEminences;
             if (clientUserEminences && clientUserEminences[this.authorID]) {
-                return Eminence_1.default[clientUserEminences[this.authorID]];
+                return Eminence_1.Eminence[clientUserEminences[this.authorID]];
             }
             // If the user's ID is not found in the prior config, we'll search the client specific configurations.
             let guildUserEminences = this.configurations.client.guilds[this.resonance.guild.id].userEminences;
             if (guildUserEminences && guildUserEminences[this.authorID]) {
-                return Eminence_1.default[guildUserEminences[this.authorID]];
+                return Eminence_1.Eminence[guildUserEminences[this.authorID]];
             }
             // If nothing is found, we'll assume this user's eminence is None.
-            return Eminence_1.default.None;
+            return Eminence_1.Eminence.None;
         });
     }
     /**
@@ -101,10 +101,10 @@ class DiscordCommandAuthorizer extends CommandAuthorizer_1.default {
             // Send a reply alerting the user that the command is on cooldown.
             this.resonance.reply(`That command is on cooldown. :) Please wait!`).then((message) => __awaiter(this, void 0, void 0, function* () {
                 // Delete the message containing the command.
-                this.resonance.message.delete().catch(Igor_1.default.continue);
+                this.resonance.message.delete().catch(Igor_1.Igor.continue);
                 // After 5 seconds, delete the reply originally sent.
-                yield Sojiro_1.default.wait(5);
-                yield message.delete().catch(Igor_1.default.continue);
+                yield Sojiro_1.Sojiro.wait(5);
+                yield message.delete().catch(Igor_1.Igor.continue);
             }));
         });
     }
@@ -116,7 +116,7 @@ class DiscordCommandAuthorizer extends CommandAuthorizer_1.default {
      */
     validateGuild() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (Sojiro_1.default.isEmpty(this.configurations.command.client.authorization.blacklist.guilds)) {
+            if (Sojiro_1.Sojiro.isEmpty(this.configurations.command.client.authorization.blacklist.guilds)) {
                 return true;
             }
             return this.configurations.command.client.authorization.blacklist.guilds.includes(this.resonance.guild.id);
@@ -130,11 +130,11 @@ class DiscordCommandAuthorizer extends CommandAuthorizer_1.default {
      */
     validateChannel() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (Sojiro_1.default.isEmpty(this.configurations.command.client.authorization.blacklist.channels)) {
+            if (Sojiro_1.Sojiro.isEmpty(this.configurations.command.client.authorization.blacklist.channels)) {
                 return true;
             }
             return this.configurations.command.client.authorization.blacklist.channels.includes(this.resonance.channel.id);
         });
     }
 }
-exports.default = DiscordCommandAuthorizer;
+exports.DiscordCommandAuthorizer = DiscordCommandAuthorizer;

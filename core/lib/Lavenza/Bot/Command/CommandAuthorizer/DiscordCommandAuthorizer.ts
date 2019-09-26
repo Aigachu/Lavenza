@@ -6,18 +6,18 @@
  */
 
 // Imports.
-import CommandAuthorizer from './CommandAuthorizer';
-import Sojiro from "../../../Confidant/Sojiro";
-import Morgana from "../../../Confidant/Morgana";
-import Igor from "../../../Confidant/Igor";
-import DiscordResonance from "../../Resonance/DiscordResonance";
-import Eminence from "../../Eminence/Eminence";
+import {CommandAuthorizer} from './CommandAuthorizer';
+import {Sojiro} from "../../../Confidant/Sojiro";
+import {Morgana} from "../../../Confidant/Morgana";
+import {Igor} from "../../../Confidant/Igor";
+import {DiscordResonance} from "../../Resonance/DiscordResonance";
+import {Eminence} from "../../Eminence/Eminence";
 import {DiscordCommandAuthorizerConfigurationsCollection} from "./CommandAuthorizerConfigurations";
 
 /**
  * Provides an Authorizer for commands invoked in Discord.
  */
-export default class DiscordCommandAuthorizer extends CommandAuthorizer {
+export class DiscordCommandAuthorizer extends CommandAuthorizer {
 
   /**
    * The Resonance containing the command that was heard.
@@ -32,7 +32,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
   /**
    * Since authorizers are static classes, we'll have a build function to make preparations.
    */
-  async build(resonance: DiscordResonance) {
+  public async build(resonance: DiscordResonance) {
     // Run parent build function.
     await super.build(resonance);
   }
@@ -42,22 +42,21 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    *
    * Discord specific checks are performed here.
    */
-  async warrant(): Promise<boolean> {
-
+  protected async warrant(): Promise<boolean> {
     // If the message is not a direct message, we assume it is in a server and do additional validations.
     let messageIsPrivate = await this.resonance.isPrivate();
     if (!messageIsPrivate) {
       // Validate that the command is allowed to be used in this Guild (Server).
       let guildValidation = await this.validateGuild();
       if (!guildValidation) {
-        await Morgana.warn('guild validation failed');
+        await Morgana.warn('discord guild validation failed');
         return false;
       }
 
       // Validate that the command is allowed to be used in this Channel.
       let channelValidation = await this.validateChannel();
       if (!channelValidation) {
-        await Morgana.warn('channel validation failed');
+        await Morgana.warn('discord channel validation failed');
         return false;
       }
     }
@@ -69,7 +68,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
   /**
    * @inheritDoc
    */
-  async getAuthorIdentification(): Promise<string> {
+  protected async getAuthorIdentification(): Promise<string> {
     return this.resonance.author.id;
   }
 
@@ -77,7 +76,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    * @inheritDoc
    * @TODO - Explore some cool stuff to do with Discord Roles.
    */
-  async getAuthorEminence(): Promise<Eminence> {
+  protected async getAuthorEminence(): Promise<Eminence> {
     // First, we'll check if this user's ID is found in the core configuration of the bot for this client.
     // Get the user roles configurations for the Guild where this message took place.
     let clientUserEminences = this.configurations.bot.client.userEminences;
@@ -98,7 +97,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
   /**
    * @inheritDoc
    */
-  async sendCooldownNotification() {
+  protected async sendCooldownNotification() {
     // Send a reply alerting the user that the command is on cooldown.
     this.resonance.reply(`That command is on cooldown. :) Please wait!`).then(async message => {
       // Delete the message containing the command.
@@ -116,7 +115,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    * @returns
    *   TRUE if this authorization passes, FALSE otherwise.
    */
-  async validateGuild(): Promise<boolean> {
+  private async validateGuild(): Promise<boolean> {
     if (Sojiro.isEmpty(this.configurations.command.client.authorization.blacklist.guilds)) {
       return true;
     }
@@ -130,7 +129,7 @@ export default class DiscordCommandAuthorizer extends CommandAuthorizer {
    * @returns
    *   TRUE if this authorization passes, FALSE otherwise.
    */
-  async validateChannel(): Promise<boolean> {
+  private async validateChannel(): Promise<boolean> {
     if (Sojiro.isEmpty(this.configurations.command.client.authorization.blacklist.channels)) {
       return true;
     }

@@ -6,7 +6,7 @@
  */
 
 // Imports.
-import CommandClientHandler from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
+import {CommandClientHandler} from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
 
 /**
  * A simple Twitch client handler for the Pong command.

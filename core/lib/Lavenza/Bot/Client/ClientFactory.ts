@@ -6,18 +6,18 @@
  */
 
 // Includes
-import DiscordClient from './DiscordClient/DiscordClient';
-import TwitchClient from './TwitchClient/TwitchClient';
-import ClientType from "./ClientType";
+import {DiscordClient} from './DiscordClient/DiscordClient';
+import {TwitchClient} from './TwitchClient/TwitchClient';
+import {ClientType} from "./ClientType";
 import {BotClientConfig, BotDiscordClientConfig, BotTwitchClientConfig} from "../BotConfigurations";
-import Bot from "../Bot";
-import ClientInterface from "./ClientInterface";
+import {Bot} from "../Bot";
+import {ClientInterface} from "./ClientInterface";
 // import SlackClient from './SlackClient/SlackClient';
 
 /**
  * Provide a factory class that manages the creation of the right client given a type.
  */
-export default class ClientFactory {
+export class ClientFactory {
 
   /**
    * Creates a client instance given a type, bot and configuration.
@@ -35,7 +35,7 @@ export default class ClientFactory {
    * @returns
    *   Client that was instantiated.
    */
-  static async build(type: ClientType, config: BotClientConfig, bot: Bot): Promise<ClientInterface> {
+  public static async build(type: ClientType, config: BotClientConfig, bot: Bot): Promise<ClientInterface> {
 
     // Initialize the object.
     let client: ClientInterface;

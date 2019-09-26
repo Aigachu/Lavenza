@@ -26,7 +26,7 @@ const CommandAuthorizerFactory_1 = require("../CommandAuthorizer/CommandAuthoriz
  *
  * All the logic for commands starts here.
  */
-class CommandListener extends Listener_1.default {
+class CommandListener extends Listener_1.Listener {
     /**
      * @inheritDoc
      */
@@ -34,7 +34,7 @@ class CommandListener extends Listener_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             // Use the CommandInterpreter to find out if there's a command in the resonance.
             // If there's a command, the interpreter will return an instruction that will be assigned to the Resonance we heard.
-            yield CommandInterpreter_1.default.interpret(resonance);
+            yield CommandInterpreter_1.CommandInterpreter.interpret(resonance);
             // If there is no instruction, we do nothing after all.
             if (!resonance.instruction) {
                 return;
@@ -49,7 +49,7 @@ class CommandListener extends Listener_1.default {
             }
             // Now that we know a command has been found, we need to pass it through the right Authorizer.
             // We use a factory to build an appropriate authorizer.
-            let authorizer = yield CommandAuthorizerFactory_1.default.build(resonance, yield resonance.getCommand());
+            let authorizer = yield CommandAuthorizerFactory_1.CommandAuthorizerFactory.build(resonance, yield resonance.getCommand());
             // The CommandAuthorizer checks if the command is authorized in the current context.
             // If for any reason it's unauthorized, we don't do anything with the command.
             let authorized = yield authorizer.authorize();
@@ -65,4 +65,4 @@ class CommandListener extends Listener_1.default {
         });
     }
 }
-exports.default = CommandListener;
+exports.CommandListener = CommandListener;

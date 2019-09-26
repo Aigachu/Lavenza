@@ -27,4 +27,4 @@ class TwitchChannel {
         this.type = type;
     }
 }
-exports.default = TwitchChannel;
+exports.TwitchChannel = TwitchChannel;

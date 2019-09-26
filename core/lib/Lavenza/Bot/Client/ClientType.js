@@ -19,4 +19,4 @@ var ClientType;
     // Youtube = 'youtube',
     // Skype = 'a funny joke',
 })(ClientType || (ClientType = {}));
-exports.default = ClientType;
+exports.ClientType = ClientType;

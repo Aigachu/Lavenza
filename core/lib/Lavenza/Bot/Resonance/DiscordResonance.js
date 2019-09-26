@@ -22,7 +22,7 @@ const Igor_1 = require("../../Confidant/Igor");
 /**
  * Provides specific Resonance properties for messages coming from Discord.
  */
-class DiscordResonance extends Resonance_1.default {
+class DiscordResonance extends Resonance_1.Resonance {
     /**
      * DiscordResonance constructor.
      * @inheritDoc
@@ -52,19 +52,19 @@ class DiscordResonance extends Resonance_1.default {
     getLocale() {
         return __awaiter(this, void 0, void 0, function* () {
             // First, we check if configurations exist for this user.
-            let i18nUserConfig = yield Gestalt_1.default.get(`/i18n/${this.bot.id}/clients/discord/users`).catch(Igor_1.default.stop);
+            let i18nUserConfig = yield Gestalt_1.Gestalt.get(`/i18n/${this.bot.id}/clients/discord/users`).catch(Igor_1.Igor.stop);
             // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
             if (i18nUserConfig[this.author.id] && i18nUserConfig[this.author.id].locale && i18nUserConfig[this.author.id].locale !== 'default') {
                 return i18nUserConfig[this.author.id].locale;
             }
             // Second, we check if configurations exist for this channel.
-            let i18nChannelConfig = yield Gestalt_1.default.get(`/i18n/${this.bot.id}/clients/discord/channels`).catch(Igor_1.default.stop);
+            let i18nChannelConfig = yield Gestalt_1.Gestalt.get(`/i18n/${this.bot.id}/clients/discord/channels`).catch(Igor_1.Igor.stop);
             // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
             if (i18nChannelConfig[this.author.id] && i18nChannelConfig[this.author.id].locale && i18nChannelConfig[this.author.id].locale !== 'default') {
                 return i18nChannelConfig[this.channel.id].locale;
             }
             // First, we check if configurations exist for this guild.
-            let i18nGuildConfig = yield Gestalt_1.default.get(`/i18n/${this.bot.id}/clients/discord/guilds`).catch(Igor_1.default.stop);
+            let i18nGuildConfig = yield Gestalt_1.Gestalt.get(`/i18n/${this.bot.id}/clients/discord/guilds`).catch(Igor_1.Igor.stop);
             // Now, we check if the user has a configured locale. If that's the case, we return with this locale.
             if (i18nGuildConfig[this.author.id] && i18nGuildConfig[this.author.id].locale && i18nGuildConfig[this.author.id].locale !== 'default') {
                 return i18nGuildConfig[this.guild.id].locale;
@@ -81,7 +81,7 @@ class DiscordResonance extends Resonance_1.default {
      */
     doSend(bot, destination, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield destination.send(content).catch(Igor_1.default.stop);
+            return yield destination.send(content).catch(Igor_1.Igor.stop);
         });
     }
     /**
@@ -121,4 +121,4 @@ class DiscordResonance extends Resonance_1.default {
         });
     }
 }
-exports.default = DiscordResonance;
+exports.DiscordResonance = DiscordResonance;

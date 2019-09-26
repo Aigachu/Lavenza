@@ -22,7 +22,7 @@ const Talent_1 = require("../../lib/Lavenza/Talent/Talent");
  *
  * This talent grants the coinflip command and has many additional features included in it!
  */
-class Coinflip extends Talent_1.default {
+class Coinflip extends Talent_1.Talent {
     /**
      * @inheritDoc
      */

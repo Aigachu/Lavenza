@@ -55,4 +55,4 @@ class Kawakami {
         return `\`\`\`${language}\n${text}\n\`\`\``;
     }
 }
-exports.default = Kawakami;
+exports.Kawakami = Kawakami;

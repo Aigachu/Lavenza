@@ -101,4 +101,4 @@ class Makoto {
         return this.cooldowns[bot][type][key].indexOf(scope) > -1;
     }
 }
-exports.default = Makoto;
+exports.Makoto = Makoto;

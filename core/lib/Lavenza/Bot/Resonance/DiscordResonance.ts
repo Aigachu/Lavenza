@@ -6,19 +6,19 @@
  */
 
 // Imports.
-import Resonance from './Resonance';
-import Gestalt from '../../Gestalt/Gestalt';
-import Igor from '../../Confidant/Igor';
+import {Resonance} from './Resonance';
+import {Gestalt} from '../../Gestalt/Gestalt';
+import {Igor} from '../../Confidant/Igor';
 import {Channel, Guild, Message, TextChannel, User} from "discord.js";
-import Bot from "../Bot";
-import ClientInterface from "../Client/ClientInterface";
-import DiscordClient from "../Client/DiscordClient/DiscordClient";
+import {Bot} from "../Bot";
+import {ClientInterface} from "../Client/ClientInterface";
+import {DiscordClient} from "../Client/DiscordClient/DiscordClient";
 import {BotConfigurations} from "../BotConfigurations";
 
 /**
  * Provides specific Resonance properties for messages coming from Discord.
  */
-export default class DiscordResonance extends Resonance {
+export class DiscordResonance extends Resonance {
 
   /**
    * The Message object obtained from the Discord Client.
@@ -68,7 +68,7 @@ export default class DiscordResonance extends Resonance {
    *
    * @inheritDoc
    */
-  async getLocale(): Promise<string> {
+  public async getLocale(): Promise<string> {
 
     // First, we check if configurations exist for this user.
     let i18nUserConfig = await Gestalt.get(`/i18n/${this.bot.id}/clients/discord/users`).catch(Igor.stop);
@@ -105,7 +105,7 @@ export default class DiscordResonance extends Resonance {
    *
    * @inheritDoc
    */
-  async doSend(bot: Bot, destination: any, content: string): Promise<Message> {
+  protected async doSend(bot: Bot, destination: any, content: string): Promise<Message> {
     return await destination.send(content).catch(Igor.stop);
   }
 
@@ -116,7 +116,7 @@ export default class DiscordResonance extends Resonance {
    *
    * @inheritDoc
    */
-  async resolveOrigin(): Promise<Channel> {
+  public async resolveOrigin(): Promise<Channel> {
     return this.message.channel;
   }
 
@@ -127,7 +127,7 @@ export default class DiscordResonance extends Resonance {
    *
    * @inheritDoc
    */
-  async resolvePrivacy(): Promise<string> {
+  public async resolvePrivacy(): Promise<string> {
     return this.message.channel.type === "dm" ? 'private' : 'public';
   }
 
@@ -138,7 +138,7 @@ export default class DiscordResonance extends Resonance {
    *
    * @inheritDoc
    */
-  async typeFor(seconds: number, destination: TextChannel) {
+  public async typeFor(seconds: number, destination: TextChannel) {
     return this.client.typeFor(seconds, destination);
   }
 

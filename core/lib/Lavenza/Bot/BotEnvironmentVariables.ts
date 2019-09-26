@@ -8,7 +8,7 @@
 /**
  * Provides an interface to organize a bot's environment variables
  */
-export default interface BotEnvironmentVariables {
+export interface BotEnvironmentVariables {
   DISCORD_TOKEN: string;
   TWITCH_OAUTH_TOKEN: string;
   TWITCH_CLIENT_ID: string;

@@ -23,7 +23,7 @@ const Eminence_1 = require("../../Eminence/Eminence");
 /**
  * Provides an Authorizer for commands invoked in Discord.
  */
-class TwitchCommandAuthorizer extends CommandAuthorizer_1.default {
+class TwitchCommandAuthorizer extends CommandAuthorizer_1.CommandAuthorizer {
     /**
      * Since authorizers are static classes, we'll have a build function to make preparations.
      */
@@ -43,10 +43,15 @@ class TwitchCommandAuthorizer extends CommandAuthorizer_1.default {
      */
     warrant() {
         return __awaiter(this, void 0, void 0, function* () {
-            // Validate that the command is allowed to be used in this Channel.
-            if (!this.validateChannel()) {
-                yield Morgana_1.default.warn('channel validation failed');
-                return false;
+            // If the message is not a direct message, we assume it is in a server and do additional validations.
+            let messageIsPrivate = yield this.resonance.isPrivate();
+            if (!messageIsPrivate) {
+                // Validate that the command is allowed to be used in this Channel.
+                let channelValidation = yield this.validateChannel();
+                if (!channelValidation) {
+                    yield Morgana_1.Morgana.warn('twitch channel validation failed');
+                    return false;
+                }
             }
             // If all those checks pass through, we can authorize the command.
             return true;
@@ -69,16 +74,16 @@ class TwitchCommandAuthorizer extends CommandAuthorizer_1.default {
             // Get the user roles configurations for the Guild where this message took place.
             let clientUserEminences = this.configurations.bot.client.userEminences;
             if (this.authorID in clientUserEminences) {
-                return Eminence_1.default[clientUserEminences[this.authorID]];
+                return Eminence_1.Eminence[clientUserEminences[this.authorID]];
             }
             // First, we'll check if this user's ID is found in the core configuration of the bot.
             // Get the user roles configurations for the Guild where this message took place.
             let channelUserEminences = this.configurations.client.channels[this.resonance.channel.id].userEminences;
             if (this.authorID in channelUserEminences) {
-                return Eminence_1.default[channelUserEminences[this.authorID]];
+                return Eminence_1.Eminence[channelUserEminences[this.authorID]];
             }
             // If nothing is found, we'll assume this user's eminence is None.
-            return Eminence_1.default.None;
+            return Eminence_1.Eminence.None;
         });
     }
     /**
@@ -97,10 +102,12 @@ class TwitchCommandAuthorizer extends CommandAuthorizer_1.default {
      *   TRUE if this authorization passes, FALSE otherwise.
      */
     validateChannel() {
-        if (Sojiro_1.default.isEmpty(this.configurations.command.client.authorization.blacklist.channels)) {
-            return true;
-        }
-        return this.configurations.command.client.authorization.blacklist.channels.includes(this.resonance.channel.id);
+        return __awaiter(this, void 0, void 0, function* () {
+            if (Sojiro_1.Sojiro.isEmpty(this.configurations.command.client.authorization.blacklist.channels)) {
+                return true;
+            }
+            return this.configurations.command.client.authorization.blacklist.channels.includes(this.resonance.channel.id);
+        });
     }
 }
-exports.default = TwitchCommandAuthorizer;
+exports.TwitchCommandAuthorizer = TwitchCommandAuthorizer;

@@ -9,16 +9,16 @@
 import * as minimist from 'minimist';
 
 // Imports.
-import Resonance from "../../Resonance/Resonance";
-import Instruction from "../../Resonance/Instruction";
-import Morgana from "../../../Confidant/Morgana";
+import {Resonance} from "../../Resonance/Resonance";
+import {Instruction} from "../../Resonance/Instruction";
+import {Morgana} from "../../../Confidant/Morgana";
 
 /**
  * Provides an Interpreter for Commands.
  *
  * This class will determine if a command has been heard by the Bot. It takes a resonance and analyzes it accordingly.
  */
-export default class CommandInterpreter {
+export class CommandInterpreter {
 
   /**
    * Interpret a Resonance, attempting to find a command in the raw content.
@@ -26,7 +26,7 @@ export default class CommandInterpreter {
    * @param resonance
    *   The Resonance that will be interpreted.
    */
-  static async interpret(resonance: Resonance) {
+  public static async interpret(resonance: Resonance) {
     // Fetch an instruction if we can.
     let instruction: Instruction = await this.getInstruction(resonance);
 
@@ -46,7 +46,7 @@ export default class CommandInterpreter {
    * @returns
    *   Returns an Instruction will all relevant information about the command in it.
    */
-  static async getInstruction(resonance: Resonance): Promise<Instruction> {
+  private static async getInstruction(resonance: Resonance): Promise<Instruction> {
     // Initialize some variables.
     let content = resonance.content;
     let bot = resonance.bot;
@@ -55,9 +55,6 @@ export default class CommandInterpreter {
     // Split content with spaces.
     // i.e. If the input is '! ping hello', then we get ['!', 'ping', 'hello'].
     let splitContent = content.split(' ');
-
-    // Get the active bot configuration from the database.
-    let botConfig = await bot.getActiveConfig();
 
     // Get command prefix.
     // If there is a command prefix override for this client, we will set it. If not, we grab the default.
@@ -92,7 +89,8 @@ export default class CommandInterpreter {
 
     // Now we do one final check to see if this command is allowed to be used in this client.
     // We check the command configuration for this.
-    if (!command.allowedInClient(client.type)) {
+    let allowedInClient = await command.allowedInClient(client.type);
+    if (!allowedInClient) {
       await Morgana.warn('Command found, but not allowed in client. Returning.');
       return undefined;
     }

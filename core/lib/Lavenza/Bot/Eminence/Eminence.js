@@ -19,4 +19,4 @@ var Eminence;
     Eminence[Eminence["Thief"] = 3] = "Thief";
     Eminence[Eminence["Joker"] = 4] = "Joker";
 })(Eminence || (Eminence = {}));
-exports.default = Eminence;
+exports.Eminence = Eminence;

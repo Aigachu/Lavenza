@@ -6,17 +6,17 @@
  */
 
 // Imports.
-import DiscordPrompt from './DiscordPrompt';
-import TwitchPrompt from './TwitchPrompt';
-import Resonance from "../Resonance/Resonance";
-import Bot from "../Bot";
-import ClientType from "../Client/ClientType";
-import Prompt from "./Prompt";
+import {DiscordPrompt} from './DiscordPrompt';
+import {TwitchPrompt} from './TwitchPrompt';
+import {Resonance} from "../Resonance/Resonance";
+import {Bot} from "../Bot";
+import {ClientType} from "../Client/ClientType";
+import {Prompt} from "./Prompt";
 
 /**
  * Provide a factory class that manages the creation of the right client given a type.
  */
-export default class PromptFactory {
+export class PromptFactory {
 
   /**
    * Set up a prompt to a specified user.
@@ -41,7 +41,7 @@ export default class PromptFactory {
    * @param bot
    *   The bot that is prompting the user.
    */
-  static async build(user: any, line: any, resonance: Resonance, lifespan: number, onResponse: Function, onError: Function, bot: Bot): Promise<Prompt> {
+  public static async build(user: any, line: any, resonance: Resonance, lifespan: number, onResponse: Function, onError: Function, bot: Bot): Promise<Prompt> {
     // Initialize the object.
     let prompt: Prompt;
 

@@ -46,12 +46,12 @@ class Gestalt {
             // The default storage service is the Chronicler.
             /** @see ./StorageService/Chronicler/Chronicler */
             // @TODO - Dynamic selection of StorageService instead of having to save it here. Maybe .env variables? Or a configuration file at the root of the application.
-            let storageService = new Chronicler_1.default();
+            let storageService = new Chronicler_1.Chronicler();
             // Await the build process of the storage service and assign it to Gestalt.
             yield storageService.build();
             Gestalt.storageService = storageService;
             // Some flavor text.
-            yield Morgana_1.default.success("Gestalt preparations complete!");
+            yield Morgana_1.Morgana.success("Gestalt preparations complete!");
         });
     }
     /**
@@ -65,11 +65,11 @@ class Gestalt {
             // All data pertaining to translations will be saved here.
             yield Gestalt.createCollection('/i18n');
             // Bootstrap Database tables/files for bots.
-            yield BotManager_1.default.gestalt();
+            yield BotManager_1.BotManager.gestalt();
             // Bootstrap Database tables/files for talents.
-            yield TalentManager_1.default.gestalt();
+            yield TalentManager_1.TalentManager.gestalt();
             // Some flavor text for the console.
-            yield Morgana_1.default.success("Gestalt database successfully bootstrapped!");
+            yield Morgana_1.Morgana.success("Gestalt database successfully bootstrapped!");
         });
     }
     /**
@@ -89,7 +89,7 @@ class Gestalt {
             let dbConfig = yield Gestalt.get(source);
             // If the configuration already exists, we'll want to sync the provided configuration with the source.
             // We merge both together. This MIGHT NOT be necessary? But it works for now.
-            if (!Sojiro_1.default.isEmpty(dbConfig)) {
+            if (!Sojiro_1.Sojiro.isEmpty(dbConfig)) {
                 return Object.assign({}, config, dbConfig);
             }
             // Await creation of database entry for the configuration, since it doesn't exist.
@@ -206,4 +206,4 @@ class Gestalt {
         });
     }
 }
-exports.default = Gestalt;
+exports.Gestalt = Gestalt;

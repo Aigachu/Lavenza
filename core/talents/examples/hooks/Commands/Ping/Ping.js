@@ -24,7 +24,7 @@ const Command_1 = require("../../../../../lib/Lavenza/Bot/Command/Command");
  *
  * A great testing command.
  */
-class Ping extends Command_1.default {
+class Ping extends Command_1.Command {
     /**
      * This is the static build function of the command.
      *

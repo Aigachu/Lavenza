@@ -6,8 +6,8 @@
  */
 
 // Imports.
-import Morgana from './Morgana';
-import Yoshida from './Yoshida';
+import {Morgana} from './Morgana';
+import {Yoshida} from './Yoshida';
 
 /**
  * Provides a class that handles errors.
@@ -18,7 +18,7 @@ import Yoshida from './Yoshida';
  *
  * He handles errors in the application.
  */
-export default class Igor {
+export class Igor {
 
   /**
    * Pocket the error, ignoring it and continuing execution without outputting anything to the console.
@@ -28,7 +28,7 @@ export default class Igor {
    * @param error
    *   The error caught.
    */
-  static async pocket(error: Error) {
+  public static async pocket(error: Error) {
     // Do nothing. This quietly ignores the error.
     // Not really advised...Though I had couple of use cases for it. Still, not recommended!
     // console.log('Error pocketed: ' + error.message);
@@ -45,7 +45,7 @@ export default class Igor {
    * @returns
    *   Returns true for cases where it's used in functions that need a return value. @TODO - YOU MIGHT BE ABLE TO REMOVE THE RETURN. TEST IT.
    */
-  static async continue(error: Error): Promise<boolean> {
+  public static async continue(error: Error): Promise<boolean> {
     // Sends a warning to the console.
     await Morgana.warn(error.message);
     return true;
@@ -59,7 +59,7 @@ export default class Igor {
    * @param error
    *   The error caught.
    */
-  static async stop(error: Error) {
+  public static async stop(error: Error) {
     // Output the error with Morgana's color formatting.
     await Morgana.error(error.message);
 
@@ -81,7 +81,7 @@ export default class Igor {
    * @param locale
    *   Locale determining the language to send the error in.
    */
-  static async throw(error: Error|string, replacers: Object = undefined, locale: string = process.env.CONSOLE_LOCALE) {
+  public static async throw(error: Error|string, replacers: Object = undefined, locale: string = process.env.CONSOLE_LOCALE) {
     // If the error is an instance of the error class, simply throw it.
     if (error instanceof Error) {
       throw error;

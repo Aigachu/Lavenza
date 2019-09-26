@@ -23,7 +23,7 @@ const Talent_1 = require("../../lib/Lavenza/Talent/Talent");
  * In case you didn't know, 'Gestalt' is another word for 'configuration'. This Talent will provide commands to allow
  * configuration management while the bot is running.
  */
-class Gestalt extends Talent_1.default {
+class Gestalt extends Talent_1.Talent {
     /**
      * @inheritDoc
      */

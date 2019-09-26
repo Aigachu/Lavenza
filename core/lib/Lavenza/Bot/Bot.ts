@@ -10,28 +10,28 @@ import * as DotEnv from 'dotenv';
 
 // Imports.
 // Holy shit this LIST! LMFAO!
-import TalentManager from '../Talent/TalentManager';
-import Gestalt from '../Gestalt/Gestalt';
-import Akechi from '../Confidant/Akechi';
-import Morgana from '../Confidant/Morgana';
-import Sojiro from '../Confidant/Sojiro';
-import Igor from '../Confidant/Igor';
-import ClientFactory from './Client/ClientFactory';
-import ResonanceFactory from './Resonance/ResonanceFactory';
-import CommandListener from './Command/CommandListener/CommandListener';
-import ClientType from './Client/ClientType';
-import Listener from "./Listener/Listener";
-import Prompt from "./Prompt/Prompt";
-import PromptFactory from './Prompt/PromptFactory';
-import ClientInterface from "./Client/ClientInterface";
-import Command from "./Command/Command";
-import Resonance from "./Resonance/Resonance";
+import {TalentManager} from '../Talent/TalentManager';
+import {Gestalt} from '../Gestalt/Gestalt';
+import {Akechi} from '../Confidant/Akechi';
+import {Morgana} from '../Confidant/Morgana';
+import {Sojiro} from '../Confidant/Sojiro';
+import {Igor} from '../Confidant/Igor';
+import {ClientFactory} from './Client/ClientFactory';
+import {ResonanceFactory} from './Resonance/ResonanceFactory';
+import {CommandListener} from './Command/CommandListener/CommandListener';
+import {ClientType} from './Client/ClientType';
+import {Listener} from "./Listener/Listener";
+import {Prompt} from "./Prompt/Prompt";
+import {PromptFactory} from './Prompt/PromptFactory';
+import {ClientInterface} from "./Client/ClientInterface";
+import {Command} from "./Command/Command";
+import {Resonance} from "./Resonance/Resonance";
 import {BotClientConfig, BotConfigurations, BotDiscordClientConfig, BotTwitchClientConfig} from "./BotConfigurations";
 import {AssociativeObject} from "../Types";
-import DiscordClient from "./Client/DiscordClient/DiscordClient";
+import {DiscordClient} from "./Client/DiscordClient/DiscordClient";
 import {DiscordClientConfigurations, TwitchClientConfigurations} from "./Client/ClientConfigurations";
-import BotEnvironmentVariables from "./BotEnvironmentVariables";
-import TwitchUser from "./Client/TwitchClient/TwitchUser";
+import {BotEnvironmentVariables} from "./BotEnvironmentVariables";
+import {TwitchUser} from "./Client/TwitchClient/TwitchUser";
 
 /**
  * Provides a class for Bots.
@@ -41,7 +41,7 @@ import TwitchUser from "./Client/TwitchClient/TwitchUser";
  * Configuration for bots are managed in a 'config.yml' file found in their folder. From there, functions in here
  * manage the authentication to the bot's clients and what talents the bot has.
  */
-export default class Bot {
+export class Bot {
 
   /**
    * Stores the unique ID of the bot.
@@ -129,7 +129,7 @@ export default class Bot {
   /**
    * Load the .env file specific to this bot, and parse its contents.
    */
-  async loadEnvironmentVariables() {
+  private async loadEnvironmentVariables() {
     let envFileData = await Akechi.readFile(`${this.directory}/.env`);
     this.env = DotEnv.parse(envFileData) as BotEnvironmentVariables;
   }
@@ -141,7 +141,7 @@ export default class Bot {
    *
    * You can see the result of these calls in the database.
    */
-  async gestalt() {
+  public async gestalt() {
     // Initialize the database collection for this bot if it doesn't already exist.
     await Gestalt.createCollection(`/bots/${this.id}`);
 
@@ -196,7 +196,7 @@ export default class Bot {
    *
    * Authenticates the clients and initializes talents.
    */
-  async deploy() {
+  public async deploy() {
     // Await client initialization.
     await this.initializeClients();
 
@@ -214,7 +214,7 @@ export default class Bot {
   /**
    * Shutdown the bot, disconnecting it from all clients.
    */
-  async shutdown() {
+  public async shutdown() {
     // Disconnect the bot from all clients.
     await this.disconnectClients();
   }
@@ -224,7 +224,7 @@ export default class Bot {
    *
    * Initializes clients, talents, commands and listeners.
    */
-  async prepare() {
+  public async prepare() {
     // Load environment variables.
     await this.loadEnvironmentVariables();
 
@@ -243,7 +243,7 @@ export default class Bot {
    *
    * We should be able to access Joker's information from the bot at all times.
    */
-  async setJoker() {
+  private async setJoker() {
     // Await processing of all clients.
     // @TODO - Factory Design Pattern for these.
     await Promise.all(Object.keys(this.clients).map(async (clientKey: ClientType) => {
@@ -274,7 +274,7 @@ export default class Bot {
    * @returns
    *   Returns the configuration fetched from the database.
    */
-  async getActiveConfig(): Promise<BotConfigurations> {
+  public async getActiveConfig(): Promise<BotConfigurations> {
     // Attempt to get the active configuration from the database.
     let activeConfig = await Gestalt.get(`/bots/${this.id}/config/core`);
     if (!Sojiro.isEmpty(activeConfig)) {
@@ -297,7 +297,7 @@ export default class Bot {
    * @returns
    *   The requested client.
    */
-  async getClient(clientType: ClientType): Promise<ClientInterface> {
+  public async getClient(clientType: ClientType): Promise<ClientInterface> {
     return this.clients[clientType];
   }
 
@@ -310,7 +310,7 @@ export default class Bot {
    * @returns
    *   The requested client configuration from the base files.
    */
-  async getClientConfig(clientType: ClientType): Promise<BotClientConfig> {
+  public async getClientConfig(clientType: ClientType): Promise<BotClientConfig> {
     // Determine path to client configuration.
     let pathToClientConfig = `${this.directory}/${clientType}.yml`;
 
@@ -332,7 +332,7 @@ export default class Bot {
    * @returns
    *   The requested client configuration straight from the database.
    */
-  async getActiveClientConfig(clientType: ClientType): Promise<BotClientConfig> {
+  public async getActiveClientConfig(clientType: ClientType): Promise<BotClientConfig> {
     // Attempt to get the active configuration from the database.
     let activeConfig = await Gestalt.get(`/bots/${this.id}/config/${clientType}`);
     if (!Sojiro.isEmpty(activeConfig)) {
@@ -361,7 +361,7 @@ export default class Bot {
    *
    * Talents will always be accessed through the TalentManager itself.
    */
-  async grantTalents() {
+  private async grantTalents() {
     // Check if there are talents set in configuration.
     if (Sojiro.isEmpty(this.config.talents)) {
       await Morgana.warn('Talents configuration missing for {{bot}}. The bot will not have any cool features!', {bot: this.id});
@@ -382,7 +382,7 @@ export default class Bot {
    *
    * If a talent is in the list, but does not exist, it will be removed from the configuration list.
    */
-  async validateTalents() {
+  private async validateTalents() {
     // If this is the Master bot, we will grant the Master talent.
     if (this.isMaster && Sojiro.isEmpty(this.talents['master'])) {
       this.config.talents.push('master');
@@ -428,7 +428,7 @@ export default class Bot {
    * @param talentMachineName
    *   Machine name of the talent to check dependencies for.
    */
-  async validateTalentDependencies(talentMachineName: string) {
+  private async validateTalentDependencies(talentMachineName: string) {
     // Check talent's configuration to see if dependencies are loaded into this bot.
     await Promise.all(TalentManager.talents[talentMachineName].config.dependencies.map(async (dependency) => {
       // If the dependency isn't found in this bot's config, we shouldn't load this talent.
@@ -455,7 +455,7 @@ export default class Bot {
    * @returns
    *   The command object given the key provided.
    */
-  async getCommand(commandKey: string): Promise<Command> {
+  public async getCommand(commandKey: string): Promise<Command> {
     if (!Sojiro.isEmpty(this.commandAliases[commandKey])) {
       return this.commands[this.commandAliases[commandKey]];
     }
@@ -470,7 +470,7 @@ export default class Bot {
    *
    * By the time this function runs, the Bot should already have all of its necessary talents granted.
    */
-  async setCommands() {
+  private async setCommands() {
     // Await the processing of all talents loaded in the bot.
     await Promise.all(this.talents.map(async talentMachineName => {
       // We'll fetch the talent.
@@ -509,7 +509,7 @@ export default class Bot {
    *
    * By the time this function runs, the Bot should already have all of its necessary talents granted.
    */
-  async setListeners() {
+  private async setListeners() {
     // Set the core CommandListener.
     this.listeners.push(new CommandListener());
 
@@ -547,7 +547,7 @@ export default class Bot {
    * @param client
    *   Client where the Message Object was heard from.
    */
-  async listen(message: any, client: ClientInterface) {
+  public async listen(message: any, client: ClientInterface) {
     // First we decipher the message we just obtained.
     let content = await Bot.decipher(message, client);
 
@@ -594,7 +594,7 @@ export default class Bot {
    * @param onError
    *   The callback function that runs once a failure occurs. Failure includes not getting a response.
    */
-  async prompt(user: any, line: any, resonance: Resonance, lifespan: number, onResponse: Function, onError: Function = (e) => { console.log(e) }) {
+  public async prompt(user: any, line: any, resonance: Resonance, lifespan: number, onResponse: Function, onError: Function = (e) => { console.log(e) }) {
     // Create the new prompt using the factory.
     let prompt: Prompt = await PromptFactory.build(user, line, resonance, lifespan, onResponse, onError, this);
 
@@ -611,7 +611,7 @@ export default class Bot {
    * @param prompt
    *   The prompt to remove from this bot.
    */
-  async removePrompt(prompt: Prompt) {
+  public async removePrompt(prompt: Prompt) {
     this.prompts = Sojiro.removeFromArray(this.prompts, prompt);
   }
 
@@ -629,7 +629,7 @@ export default class Bot {
    * @returns
    *   Given the client type, return the raw content of the message heard.
    */
-  static async decipher(message: any, client: ClientInterface): Promise<string> {
+  private static async decipher(message: any, client: ClientInterface): Promise<string> {
     // Depending on the Client Type, decipher the message accordingly.
     switch (client.type) {
       // In the case of Discord, we get the 'content' property of the message object.
@@ -651,7 +651,7 @@ export default class Bot {
   /**
    * Authenticate all of the clients in this bot.
    */
-  async authenticateClients() {
+  private async authenticateClients() {
     // Await the authentication of the clients linked to the bot.
     await Promise.all(Object.keys(this.clients).map(async (clientType: ClientType) => {
       // Await authentication of the bot.
@@ -666,7 +666,7 @@ export default class Bot {
   /**
    * Disconnect all of the clients in this bot.
    */
-  async disconnectClients() {
+  public async disconnectClients() {
     // Await the authentication of the clients linked to the bot.
     await Promise.all(Object.keys(this.clients).map(async (clientType: ClientType) => {
       // Await authentication of the bot.
@@ -679,7 +679,7 @@ export default class Bot {
    *
    * Initialization uses the client configuration to properly create the clients.
    */
-  async initializeClients() {
+  private async initializeClients() {
     // Await the processing and initialization of all clients in the configurations.
     await Promise.all(this.config.clients.map(async (clientTypeKey: string) => {
       // Load configuration since it exists.
@@ -706,7 +706,7 @@ export default class Bot {
    * @param clientType
    *   The client ID to disconnect from.
    */
-  async disconnectClient(clientType: ClientType) {
+  public async disconnectClient(clientType: ClientType) {
     // Simply call the client's disconnect function.
     let client: ClientInterface = await this.getClient(clientType);
     await client.disconnect();
@@ -715,7 +715,7 @@ export default class Bot {
   /**
    * Runs each Talent's initialize() function to run any preparations for the given bot.
    */
-  async initializeTalentsForBot() {
+  private async initializeTalentsForBot() {
     // Await the processing of all of this bot's talents.
     await Promise.all(this.talents.map(async talentKey => {
       // Run this talent's initialize function for this bot.
@@ -733,7 +733,7 @@ export default class Bot {
    * @returns
    *   Returns the command prefix we need to check for.
    */
-  async getCommandPrefix(resonance: Resonance): Promise<string> {
+  public async getCommandPrefix(resonance: Resonance): Promise<string> {
     // Get the configuration.
     let botConfig = await this.getActiveConfig();
 

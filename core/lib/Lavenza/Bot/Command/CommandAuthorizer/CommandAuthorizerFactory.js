@@ -45,12 +45,12 @@ class CommandAuthorizerFactory {
             //  Depending on the client type, build the appropriate CommandAuthorizer.
             switch (resonance.client.type) {
                 // For Discord, we create a specific authorizer.
-                case ClientType_1.default.Discord: {
-                    authorizer = new DiscordCommandAuthorizer_1.default(resonance, command);
+                case ClientType_1.ClientType.Discord: {
+                    authorizer = new DiscordCommandAuthorizer_1.DiscordCommandAuthorizer(resonance, command);
                     break;
                 }
-                case ClientType_1.default.Twitch: {
-                    authorizer = new TwitchCommandAuthorizer_1.default(resonance, command);
+                case ClientType_1.ClientType.Twitch: {
+                    authorizer = new TwitchCommandAuthorizer_1.TwitchCommandAuthorizer(resonance, command);
                     break;
                 }
                 // case ClientTypes.Slack:
@@ -58,8 +58,8 @@ class CommandAuthorizerFactory {
                 //   break;
             }
             // This really shouldn't happen...But yeah...
-            if (Sojiro_1.default.isEmpty(authorizer)) {
-                yield Igor_1.default.throw('Command authorizer could not be built. This should not happen. Fix your shitty code, Aiga!');
+            if (Sojiro_1.Sojiro.isEmpty(authorizer)) {
+                yield Igor_1.Igor.throw('Command authorizer could not be built. This should not happen. Fix your shitty code, Aiga!');
             }
             // Build the authorizer. Then we're good to go. We can send it back to the listener.
             yield authorizer.build(resonance);
@@ -67,4 +67,4 @@ class CommandAuthorizerFactory {
         });
     }
 }
-exports.default = CommandAuthorizerFactory;
+exports.CommandAuthorizerFactory = CommandAuthorizerFactory;

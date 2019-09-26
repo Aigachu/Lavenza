@@ -31,13 +31,13 @@ const Core_1 = require("../../../Core/Core");
  * will be stored in .yml files and read from them as well.
  *
  */
-class Chronicler extends StorageService_1.default {
+class Chronicler extends StorageService_1.StorageService {
     /**
      * @inheritDoc
      */
     build() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.root = Core_1.default.paths.root + '/database';
+            this.root = Core_1.Core.paths.root + '/database';
         });
     }
     /**
@@ -77,7 +77,7 @@ class Chronicler extends StorageService_1.default {
             // We have to do it here since this function doesn't pass through the main request() function.
             let directoryPath = this.root + endpoint;
             // Await creation of a directory at the path.
-            yield Akechi_1.default.createDirectory(directoryPath);
+            yield Akechi_1.Akechi.createDirectory(directoryPath);
         });
     }
     /**
@@ -88,13 +88,13 @@ class Chronicler extends StorageService_1.default {
     get(endpoint) {
         return __awaiter(this, void 0, void 0, function* () {
             // First we check if the requested path is a file. If it is, we await the returning of its values.
-            if (Akechi_1.default.fileExists(endpoint + '.yml')) {
-                let item = new Item_1.default(endpoint + '.yml');
+            if (Akechi_1.Akechi.fileExists(endpoint + '.yml')) {
+                let item = new Item_1.Item(endpoint + '.yml');
                 return yield item.values();
             }
             // If it's not a file, then we'll check if it's a directory. If so, await return of its values.
-            if (Akechi_1.default.isDirectory(endpoint)) {
-                let collection = new Collection_1.default(endpoint);
+            if (Akechi_1.Akechi.isDirectory(endpoint)) {
+                let collection = new Collection_1.Collection(endpoint);
                 return yield collection.values();
             }
             // If nothing was found, return an empty object.
@@ -111,7 +111,7 @@ class Chronicler extends StorageService_1.default {
     post(endpoint, payload) {
         return __awaiter(this, void 0, void 0, function* () {
             // We simply create a YAML file. We await this process.
-            yield Akechi_1.default.writeYamlFile(endpoint, payload);
+            yield Akechi_1.Akechi.writeYamlFile(endpoint, payload);
         });
     }
     /**
@@ -126,7 +126,7 @@ class Chronicler extends StorageService_1.default {
             // First, we use Chronicler's get method to get the data.
             let data = yield this.get(endpoint);
             // If no data was found, make sure the data is an empty object.
-            if (Sojiro_1.default.isEmpty(data)) {
+            if (Sojiro_1.Sojiro.isEmpty(data)) {
                 data = {};
             }
             // We use lodash to merge the payload containing the updates, with the original data.
@@ -152,4 +152,4 @@ class Chronicler extends StorageService_1.default {
         });
     }
 }
-exports.default = Chronicler;
+exports.Chronicler = Chronicler;

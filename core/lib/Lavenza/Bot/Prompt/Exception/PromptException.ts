@@ -6,13 +6,13 @@
  */
 
 // Imports.
-import PromptExceptionType from "./PromptExceptionType";
-import Igor from "../../../Confidant/Igor";
+import {PromptExceptionType} from "./PromptExceptionType";
+import {Igor} from "../../../Confidant/Igor";
 
 /**
  * Provides a base class for Prompt Exceptions.
  */
-export default class PromptException extends Error {
+export class PromptException extends Error {
 
   /**
    * Type of this exception.
@@ -37,7 +37,7 @@ export default class PromptException extends Error {
   /**
    * Override base toString method.
    */
-  toString(): string {
+  public toString(): string {
     return `Prompt error of type '` + this.type + `' has occurred!`;
   }
 

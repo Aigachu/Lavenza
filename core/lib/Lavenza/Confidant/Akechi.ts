@@ -10,12 +10,10 @@ import * as fs from 'fs';
 import * as fsrfp from 'fs-readfile-promise';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
-import * as arp from 'app-root-path';
 import {ncp} from 'ncp';
 
 // Imports.
-import Igor from './Igor';
-import Morgana from "./Morgana";
+import {Igor} from './Igor';
 
 /**
  * Provides a class that handles searching for files and directories in the app.
@@ -27,7 +25,7 @@ import Morgana from "./Morgana";
  *
  * He may have been the villain...But I love the guy.
  */
-export default class Akechi {
+export class Akechi {
 
   /**
    * Create a directory at a given path.
@@ -35,7 +33,7 @@ export default class Akechi {
    * @param path
    *   Path to create directory in.
    */
-  static async createDirectory(path: string) {
+  public static async createDirectory(path: string) {
     if (!fs.existsSync(path)){
       fs.mkdirSync(path);
     }
@@ -44,7 +42,7 @@ export default class Akechi {
   /**
    * Copy a path recursively using the ncp module.
    */
-  static copyFiles(source: string, destination: string) {
+  public static copyFiles(source: string, destination: string) {
     return new Promise((resolve, reject) => {
       ncp(`${source}/resources/desk`, destination, async (err) => {
         if (err) {
@@ -64,7 +62,7 @@ export default class Akechi {
    * @returns
    *   Returns TRUE if the directory exists, FALSE otherwise.
    */
-  static directoryExists(path: string): boolean {
+  public static directoryExists(path: string): boolean {
     if (fs.existsSync(path) && !this.isDirectory(path)){
       return false;
     }
@@ -81,7 +79,7 @@ export default class Akechi {
    * @returns
    *   Returns TRUE if the file exists, FALSE otherwise.
    */
-  static fileExists(path: string): boolean {
+  public static fileExists(path: string): boolean {
     try {
       fs.statSync(path);
       return true;
@@ -100,7 +98,7 @@ export default class Akechi {
    * @returns
    *   File data obtained, if any.
    */
-  static async readFile(path: string): Promise<any> {
+  public static async readFile(path: string): Promise<any> {
     return await fsrfp(path);
   }
 
@@ -113,7 +111,7 @@ export default class Akechi {
    * @returns
    *   Returns yaml data from file if successful.
    */
-  static async readYamlFile(filePath: string): Promise<any> {
+  public static async readYamlFile(filePath: string): Promise<any> {
     // Read the file data.
     let fileData = await this.readFile(filePath);
 
@@ -130,7 +128,7 @@ export default class Akechi {
    * @param output
    *   Output to write to the file.
    */
-  static async writeYamlFile(path: string, output: Object) {
+  public static async writeYamlFile(path: string, output: Object) {
     if (!path.endsWith('.yml')) {
       path += '.yml';
     }
@@ -155,7 +153,7 @@ export default class Akechi {
    * @returns
    *   Return list of directories found at the given path.
    */
-  static async getDirectoriesFrom(path: string): Promise<Array<string>|undefined> {
+  public static async getDirectoriesFrom(path: string): Promise<Array<string>|undefined> {
     // Fetch directories from the requested path.
     return await this.getFilesFrom(path, true);
   }
@@ -171,7 +169,7 @@ export default class Akechi {
    * @returns
    *   List of files (and/or directories) found at a given path.
    */
-  static async getFilesFrom(source: string, dirs = false): Promise<Array<string>|undefined> {
+  public static async getFilesFrom(source: string, dirs = false): Promise<Array<string>|undefined> {
     // Get the list of files.
     let files = fs.readdirSync(source).map(name => path.join(source, name));
 
@@ -191,7 +189,7 @@ export default class Akechi {
    * @returns
    *   Returns true if the source is a directory, returns false otherwise.
    */
-  static isDirectory(source): boolean {
+  public static isDirectory(source): boolean {
     try {
       return fs.lstatSync(source).isDirectory();
     } catch(error) {

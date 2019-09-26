@@ -18,8 +18,8 @@ class PromptException extends Error {
      */
     constructor(type, message = '') {
         super();
-        if (!Object.values(PromptExceptionType_1.default).includes(type)) {
-            Igor_1.default.throw(`Invalid PromptException type '{{type}}' used in constructor. Please use a valid type. See /lib/Bot/Prompt/Exception/PromptExceptionTypes for more details.`, { type: type }).then(() => {
+        if (!Object.values(PromptExceptionType_1.PromptExceptionType).includes(type)) {
+            Igor_1.Igor.throw(`Invalid PromptException type '{{type}}' used in constructor. Please use a valid type. See /lib/Bot/Prompt/Exception/PromptExceptionTypes for more details.`, { type: type }).then(() => {
                 // Do nothing.
             });
         }
@@ -32,4 +32,4 @@ class PromptException extends Error {
         return `Prompt error of type '` + this.type + `' has occurred!`;
     }
 }
-exports.default = PromptException;
+exports.PromptException = PromptException;

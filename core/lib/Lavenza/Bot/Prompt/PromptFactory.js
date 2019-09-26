@@ -53,13 +53,13 @@ class PromptFactory {
             // Depending on the requested type, we build the appropriate client.
             switch (resonance.client.type) {
                 // For Discord clients, we build a Discord Prompt.
-                case ClientType_1.default.Discord: {
-                    prompt = new DiscordPrompt_1.default(user, line, resonance, lifespan, onResponse, onError, bot);
+                case ClientType_1.ClientType.Discord: {
+                    prompt = new DiscordPrompt_1.DiscordPrompt(user, line, resonance, lifespan, onResponse, onError, bot);
                     break;
                 }
                 // For Twitch clients, we build a Twitch Prompt.
-                case ClientType_1.default.Twitch: {
-                    prompt = new TwitchPrompt_1.default(user, line, resonance, lifespan, onResponse, onError, bot);
+                case ClientType_1.ClientType.Twitch: {
+                    prompt = new TwitchPrompt_1.TwitchPrompt(user, line, resonance, lifespan, onResponse, onError, bot);
                     break;
                 }
                 // // For Slack clients, we build a Slack Prompt.
@@ -72,4 +72,4 @@ class PromptFactory {
         });
     }
 }
-exports.default = PromptFactory;
+exports.PromptFactory = PromptFactory;

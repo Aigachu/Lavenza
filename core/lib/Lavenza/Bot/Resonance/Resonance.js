@@ -194,9 +194,9 @@ class Resonance {
     __reply(...parameters) {
         return __awaiter(this, void 0, void 0, function* () {
             // Parse the parameters obtained.
-            let params = yield Yoshida_1.default.parseI18NParams(parameters);
+            let params = yield Yoshida_1.Yoshida.parseI18NParams(parameters);
             // Basically call the send method, but we already know the destination.
-            return yield this.__send(this.origin, { phrase: params.phrase, locale: params.locale, tag: params.tag }, params.replacers, 'PARSED').catch(Igor_1.default.stop);
+            return yield this.__send(this.origin, { phrase: params.phrase, locale: params.locale, tag: params.tag }, params.replacers, 'PARSED').catch(Igor_1.Igor.stop);
         });
     }
     /**
@@ -220,12 +220,12 @@ class Resonance {
     send(destination, content, personalizationTag = '') {
         return __awaiter(this, void 0, void 0, function* () {
             // If a personalization tag is set, we want to use Yoshida to get a personalization for this bot.
-            if (!Sojiro_1.default.isEmpty(personalizationTag)) {
-                content = yield Yoshida_1.default.personalize(content, personalizationTag, this.bot);
+            if (!Sojiro_1.Sojiro.isEmpty(personalizationTag)) {
+                content = yield Yoshida_1.Yoshida.personalize(content, personalizationTag, this.bot);
             }
             // If all fails, we'll simply use this instance's doSend function.
             // Which will currently crash the program.
-            return yield this.doSend(this.bot, destination, content).catch(Igor_1.default.stop);
+            return yield this.doSend(this.bot, destination, content).catch(Igor_1.Igor.stop);
         });
     }
     /**
@@ -251,7 +251,7 @@ class Resonance {
     __send(destination, ...parameters) {
         return __awaiter(this, void 0, void 0, function* () {
             // Parse the parameters obtained.
-            let params = yield Yoshida_1.default.parseI18NParams(parameters);
+            let params = yield Yoshida_1.Yoshida.parseI18NParams(parameters);
             // If a locale is not set in the parameters, we need to determine what it is using the Resonance.
             if (params.locale === undefined) {
                 params.locale = yield this.locale;
@@ -262,14 +262,14 @@ class Resonance {
                 params.locale = config.locale;
             }
             // If a personalization tag is set, we want to use Yoshida to get a personalization for this bot.
-            if (!Sojiro_1.default.isEmpty(params.tag)) {
-                params.phrase = yield Yoshida_1.default.personalize(params.phrase, params.tag, this.bot).catch(Igor_1.default.stop);
+            if (!Sojiro_1.Sojiro.isEmpty(params.tag)) {
+                params.phrase = yield Yoshida_1.Yoshida.personalize(params.phrase, params.tag, this.bot).catch(Igor_1.Igor.stop);
             }
             // Now, using the information from the parameters, we fetch necessary translations.
-            let content = yield Yoshida_1.default.translate({ phrase: params.phrase, locale: params.locale }, params.replacers, 'PARSED');
+            let content = yield Yoshida_1.Yoshida.translate({ phrase: params.phrase, locale: params.locale }, params.replacers, 'PARSED');
             // Invoke the regular send function.
             return yield this.send(destination, content);
         });
     }
 }
-exports.default = Resonance;
+exports.Resonance = Resonance;

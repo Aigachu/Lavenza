@@ -6,8 +6,8 @@
  */
 
 // Imports.
-import CommandClientHandler from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
-import TwitchResonance from "../../../../../../../lib/Lavenza/Bot/Resonance/TwitchResonance";
+import {CommandClientHandler} from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
+import {TwitchResonance} from "../../../../../../../lib/Lavenza/Bot/Resonance/TwitchResonance";
 /**
  * A simple client handler.
  *

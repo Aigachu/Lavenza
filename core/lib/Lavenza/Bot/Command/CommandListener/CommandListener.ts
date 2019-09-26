@@ -6,10 +6,10 @@
  */
 
 // Imports.
-import Listener from '../../Listener/Listener';
-import CommandInterpreter from '../CommandInterpreter/CommandInterpreter';
-import CommandAuthorizerFactory from "../CommandAuthorizer/CommandAuthorizerFactory";
-import Resonance from "../../Resonance/Resonance";
+import {Listener} from '../../Listener/Listener';
+import {CommandInterpreter} from '../CommandInterpreter/CommandInterpreter';
+import {CommandAuthorizerFactory} from "../CommandAuthorizer/CommandAuthorizerFactory";
+import {Resonance} from "../../Resonance/Resonance";
 
 /**
  * Provides a Listener that listens for commands when messages are heard by a Bot.
@@ -18,12 +18,12 @@ import Resonance from "../../Resonance/Resonance";
  *
  * All the logic for commands starts here.
  */
-export default class CommandListener extends Listener {
+export class CommandListener extends Listener {
 
   /**
    * @inheritDoc
    */
-  async listen(resonance: Resonance) {
+  public async listen(resonance: Resonance) {
     // Use the CommandInterpreter to find out if there's a command in the resonance.
     // If there's a command, the interpreter will return an instruction that will be assigned to the Resonance we heard.
     await CommandInterpreter.interpret(resonance);

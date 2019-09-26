@@ -4,19 +4,19 @@
  *
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
-import Sojiro from "../../../Confidant/Sojiro";
-import Morgana from "../../../Confidant/Morgana";
+import {Sojiro} from "../../../Confidant/Sojiro";
+import {Morgana} from "../../../Confidant/Morgana";
 
 // Imports.
-import CommandAuthorizer from './CommandAuthorizer';
-import TwitchResonance from "../../Resonance/TwitchResonance";
-import Eminence from "../../Eminence/Eminence";
+import {CommandAuthorizer} from './CommandAuthorizer';
+import {TwitchResonance} from "../../Resonance/TwitchResonance";
+import {Eminence} from "../../Eminence/Eminence";
 import {TwitchCommandAuthorizerConfigurationsCollection} from "./CommandAuthorizerConfigurations";
 
 /**
  * Provides an Authorizer for commands invoked in Discord.
  */
-export default class TwitchCommandAuthorizer extends CommandAuthorizer {
+export class TwitchCommandAuthorizer extends CommandAuthorizer {
 
   /**
    * The Resonance containing the command that was heard.
@@ -31,7 +31,7 @@ export default class TwitchCommandAuthorizer extends CommandAuthorizer {
   /**
    * Since authorizers are static classes, we'll have a build function to make preparations.
    */
-  async build(resonance: TwitchResonance) {
+  public async build(resonance: TwitchResonance) {
     // Run parent build function.
     await super.build(resonance);
   }
@@ -41,11 +41,16 @@ export default class TwitchCommandAuthorizer extends CommandAuthorizer {
    *
    * Twitch specific checks are performed here.
    */
-  async warrant(): Promise<boolean> {
-    // Validate that the command is allowed to be used in this Channel.
-    if (!this.validateChannel()) {
-      await Morgana.warn('channel validation failed');
-      return false;
+  protected async warrant(): Promise<boolean> {
+    // If the message is not a direct message, we assume it is in a server and do additional validations.
+    let messageIsPrivate = await this.resonance.isPrivate();
+    if (!messageIsPrivate) {
+      // Validate that the command is allowed to be used in this Channel.
+      let channelValidation = await this.validateChannel();
+      if (!channelValidation) {
+        await Morgana.warn('twitch channel validation failed');
+        return false;
+      }
     }
 
     // If all those checks pass through, we can authorize the command.
@@ -55,14 +60,14 @@ export default class TwitchCommandAuthorizer extends CommandAuthorizer {
   /**
    * @inheritDoc
    */
-  async getAuthorIdentification() {
+  protected async getAuthorIdentification() {
     return this.resonance.author.username;
   }
 
   /**
    * @inheritDoc
    */
-  async getAuthorEminence() {
+  protected async getAuthorEminence() {
     // First, we'll check if this user's ID is found in the core configuration of the bot for this client.
     // Get the user roles configurations for the Guild where this message took place.
     let clientUserEminences = this.configurations.bot.client.userEminences;
@@ -84,7 +89,7 @@ export default class TwitchCommandAuthorizer extends CommandAuthorizer {
   /**
    * @inheritDoc
    */
-  async sendCooldownNotification() {
+  protected async sendCooldownNotification() {
     // Send a whisper directly to the author.
     await this.resonance.send(this.resonance.author, `That command is on cooldown. :) Please wait!`);
   }
@@ -95,7 +100,7 @@ export default class TwitchCommandAuthorizer extends CommandAuthorizer {
    * @returns
    *   TRUE if this authorization passes, FALSE otherwise.
    */
-  validateChannel(): boolean {
+  private async validateChannel(): Promise<boolean> {
     if (Sojiro.isEmpty(this.configurations.command.client.authorization.blacklist.channels)) {
       return true;
     }

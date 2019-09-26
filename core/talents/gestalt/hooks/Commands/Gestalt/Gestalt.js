@@ -31,7 +31,7 @@ const Igor_1 = require("../../../../../lib/Lavenza/Confidant/Igor");
  *
  * A great testing command.
  */
-class Gestalt extends Command_1.default {
+class Gestalt extends Command_1.Command {
     constructor() {
         super(...arguments);
         // Store the Gestalt protocols.
@@ -69,26 +69,26 @@ class Gestalt extends Command_1.default {
             let payload = jsonic(resonance.instruction.arguments._.slice(2).join(' ')) || {};
             switch (protocol) {
                 case 'get': {
-                    let getResult = yield Gestalt_1.default.get(endpoint);
-                    if (Sojiro_1.default.isEmpty(getResult)) {
+                    let getResult = yield Gestalt_1.Gestalt.get(endpoint);
+                    if (Sojiro_1.Sojiro.isEmpty(getResult)) {
                         yield resonance.__reply('No data found for that path, sadly. :(');
                         return;
                     }
                     // If a Discord Client exists for the bot, we send a message to the Discord architect.
-                    if (!Sojiro_1.default.isEmpty(yield resonance.bot.getClient(ClientType_1.default.Discord))) {
+                    if (!Sojiro_1.Sojiro.isEmpty(yield resonance.bot.getClient(ClientType_1.ClientType.Discord))) {
                         let getResultToString = JSON.stringify(getResult, null, '\t');
                         yield resonance.send(resonance.bot.joker.discord, '```\n' + getResultToString + '\n```');
                     }
                     break;
                 }
                 case 'update': {
-                    let updateResult = yield Gestalt_1.default.update(endpoint, payload).catch(Igor_1.default.continue);
-                    if (Sojiro_1.default.isEmpty(updateResult)) {
+                    let updateResult = yield Gestalt_1.Gestalt.update(endpoint, payload).catch(Igor_1.Igor.continue);
+                    if (Sojiro_1.Sojiro.isEmpty(updateResult)) {
                         yield resonance.__reply('No data found at that path, sadly. :(');
                         return;
                     }
                     // If a Discord Client exists for the bot, we send a message to the Discord architect.
-                    if (!Sojiro_1.default.isEmpty(yield resonance.bot.getClient(ClientType_1.default.Discord))) {
+                    if (!Sojiro_1.Sojiro.isEmpty(yield resonance.bot.getClient(ClientType_1.ClientType.Discord))) {
                         let updateResultToString = JSON.stringify(updateResult, null, '\t');
                         yield resonance.send(resonance.bot.joker.discord, '```\n' + updateResultToString + '\n```');
                     }

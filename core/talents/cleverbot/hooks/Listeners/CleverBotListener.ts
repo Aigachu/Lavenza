@@ -6,12 +6,12 @@
  */
 
 // Imports.
-import Listener from "../../../../lib/Lavenza/Bot/Listener/Listener";
-import Resonance from "../../../../lib/Lavenza/Bot/Resonance/Resonance";
-import Morgana from "../../../../lib/Lavenza/Confidant/Morgana";
-import ClientType from "../../../../lib/Lavenza/Bot/Client/ClientType";
+import {Listener} from "../../../../lib/Lavenza/Bot/Listener/Listener";
+import {Resonance} from "../../../../lib/Lavenza/Bot/Resonance/Resonance";
+import {Morgana} from "../../../../lib/Lavenza/Confidant/Morgana";
+import {ClientType} from "../../../../lib/Lavenza/Bot/Client/ClientType";
 import CleverBot from "../../CleverBot";
-import DiscordClient from "../../../../lib/Lavenza/Bot/Client/DiscordClient/DiscordClient";
+import {DiscordClient} from "../../../../lib/Lavenza/Bot/Client/DiscordClient/DiscordClient";
 
 // noinspection JSUnusedGlobalSymbols
 /**

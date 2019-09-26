@@ -6,15 +6,15 @@
  */
 
 // Imports.
-import Prompt from './Prompt';
-import DiscordResonance from "../Resonance/DiscordResonance";
-import Bot from "../Bot";
-import Resonance from "../Resonance/Resonance";
+import {Prompt} from './Prompt';
+import {DiscordResonance} from "../Resonance/DiscordResonance";
+import {Bot} from "../Bot";
+import {Resonance} from "../Resonance/Resonance";
 
 /**
  * Provides a class for Prompts set in Discord.
  */
-export default class DiscordPrompt extends Prompt {
+export class DiscordPrompt extends Prompt {
 
   /**
    * @inheritDoc
@@ -31,7 +31,7 @@ export default class DiscordPrompt extends Prompt {
   /**
    * @inheritDoc
    */
-  async condition(resonance: DiscordResonance): Promise<boolean> {
+  protected async condition(resonance: DiscordResonance): Promise<boolean> {
     // In Discord, we wait for the next message that comes from the author, in the configured 'line'.
     return resonance.message.channel.id === this.line.id && resonance.message.author.id === this.user.id;
   }

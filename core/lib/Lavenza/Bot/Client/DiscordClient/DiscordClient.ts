@@ -14,16 +14,15 @@ import {
   Message,
   TextChannel
 } from 'discord.js';
-import ClientInterface from "../ClientInterface";
-import ClientType from "../ClientType";
-import Bot from "../../Bot";
+import {ClientInterface} from "../ClientInterface";
+import {ClientType} from "../ClientType";
+import {Bot} from "../../Bot";
 import {BotDiscordClientConfig} from "../../BotConfigurations";
-import Morgana from "../../../Confidant/Morgana";
-import Igor from "../../../Confidant/Igor";
-import Sojiro from "../../../Confidant/Sojiro";
-import Gestalt from "../../../Gestalt/Gestalt";
+import {Morgana} from "../../../Confidant/Morgana";
+import {Igor} from "../../../Confidant/Igor";
+import {Sojiro} from "../../../Confidant/Sojiro";
+import {Gestalt} from "../../../Gestalt/Gestalt";
 import {DiscordClientConfigurations, DiscordClientGuildConfigurations} from "../ClientConfigurations";
-import {AssociativeObject} from "../../../Types";
 
 /**
  * Provides a class for Discord Clients managed in Lavenza.
@@ -33,7 +32,7 @@ import {AssociativeObject} from "../../../Types";
  *
  * @see https://discord.js.org/#/
  */
-export default class DiscordClient extends DiscordJSClient implements ClientInterface {
+export class DiscordClient extends DiscordJSClient implements ClientInterface {
 
   /**
    * @inheritDoc
@@ -116,14 +115,14 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
   /**
    * @inheritDoc
    */
-  async getActiveConfigurations(): Promise<DiscordClientConfigurations> {
+  public async getActiveConfigurations(): Promise<DiscordClientConfigurations> {
     return await Gestalt.get(`/bots/${this.bot.id}/clients/${this.type}`);
   }
 
   /**
    * @inheritDoc
    */
-  async gestalt() {
+  public async gestalt() {
     // Make sure database collection exists for this client for the given bot.
     await Gestalt.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
 
@@ -151,7 +150,7 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
    * @param channel
    *   The Discord channel to type in.
    */
-  async typeFor(seconds: number, channel: TextChannel) {
+  public async typeFor(seconds: number, channel: TextChannel) {
     await channel.stopTyping();
     await channel.startTyping(1);
     await Sojiro.wait(seconds);
@@ -174,7 +173,7 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
    * @returns
    *   The message that was sent as an error.
    */
-  async sendError(destination: TextChannel | User, {text = '', type = '', code = 404} = {}): Promise<Message> {
+  public async sendError(destination: TextChannel | User, {text = '', type = '', code = 404} = {}): Promise<Message> {
     // Initialize some variables.
     let message = '';
     let color = '';
@@ -258,7 +257,7 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
    * @returns
    *   The message that was sent as an embed.
    */
-  async sendEmbed(destination: TextChannel | User, {title = '', description = '', header = {}, url = '', color = '', image = '', thumbnail = '', fields = [], footer = {}, attachments = [], timestamp = false} = {}): Promise<Message | Message[]> {
+  public async sendEmbed(destination: TextChannel | User, {title = '', description = '', header = {}, url = '', color = '', image = '', thumbnail = '', fields = [], footer = {}, attachments = [], timestamp = false} = {}): Promise<Message | Message[]> {
 
     // Create the embed instance.
     let embed = new Embed();
@@ -331,7 +330,7 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
    *
    * @inheritDoc
    */
-  async authenticate() {
+  public async authenticate() {
     // Get the token.
     let token = this.bot.env.DISCORD_TOKEN;
 
@@ -341,7 +340,7 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
     }
 
     // Await the login in of this client.
-    await super.login(token).catch(async error => {
+    await super.login(token).catch(async () => {
       await Igor.throw('Failed to authenticate Discord client for {{bot}}.', {bot: this.bot.id});
     });
   }
@@ -351,7 +350,7 @@ export default class DiscordClient extends DiscordJSClient implements ClientInte
    *
    * @inheritDoc
    */
-  async disconnect() {
+  public async disconnect() {
     // Call the destruction function to disconnect the client.
     await this.destroy();
 

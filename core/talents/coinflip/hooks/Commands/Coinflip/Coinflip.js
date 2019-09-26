@@ -27,7 +27,7 @@ const Sojiro_1 = require("../../../../../lib/Lavenza/Confidant/Sojiro");
  *
  * Flip a coin!
  */
-class Coinflip extends Command_1.default {
+class Coinflip extends Command_1.Command {
     constructor() {
         super(...arguments);
         /**
@@ -66,14 +66,14 @@ class Coinflip extends Command_1.default {
             // If the 'd' or 'duel' arguments are used, we fire the DuelArgHandler handler.
             if ('g' in args || 'guess' in args || 'guessgame' in args) {
                 let input = args.d || args['guess'] || args['guessgame'];
-                yield GuessGameArgHandler_1.default.handle(this, resonance, input).catch(Igor_1.default.stop);
+                yield GuessGameArgHandler_1.default.handle(this, resonance, input).catch(Igor_1.Igor.stop);
                 return;
             }
             // Here, we go forth with the regular execution of the command.
             // By default, the user is only flipping 1 coin.
             let numberOfCoins = 1;
             // If the 'c' or 'coins' argument is used, we change the number of coins.
-            if ('c' in args || !isNaN(content) && !Sojiro_1.default.isEmpty(content)) {
+            if ('c' in args || !isNaN(content) && !Sojiro_1.Sojiro.isEmpty(content)) {
                 // Determine what we're working with.
                 let providedNumber = args.c || parseInt(content);
                 // If the provided count isn't a number, we can't go through with this.
@@ -83,12 +83,12 @@ class Coinflip extends Command_1.default {
                 }
                 // We'll set a maximum. On va se calmer la...
                 if (providedNumber > this.maximumNumberOfCoins) {
-                    yield resonance.__reply(`Whoa {{user}}! Let's not exaggerate now haha. Maximum of {{max}} coins okay?!`, { user: resonance.author, max: yield Kawakami_1.default.bold(this.maximumNumberOfCoins) }, '::COINFLIP-MAX_COIN_COUNT_SURPASSED');
+                    yield resonance.__reply(`Whoa {{user}}! Let's not exaggerate now haha. Maximum of {{max}} coins okay?!`, { user: resonance.author, max: yield Kawakami_1.Kawakami.bold(this.maximumNumberOfCoins) }, '::COINFLIP-MAX_COIN_COUNT_SURPASSED');
                     return;
                 }
                 // We'll set a maximum. On va se calmer la...
                 if (providedNumber === 0) {
-                    yield resonance.__reply(`And how would you expect me to flip 0 coins?`, { user: resonance.author, max: yield Kawakami_1.default.bold(this.maximumNumberOfCoins) }, '::COINFLIP-FLIP_ZERO_COINS');
+                    yield resonance.__reply(`And how would you expect me to flip 0 coins?`, { user: resonance.author, max: yield Kawakami_1.Kawakami.bold(this.maximumNumberOfCoins) }, '::COINFLIP-FLIP_ZERO_COINS');
                     return;
                 }
                 // Otherwise, we should be good to adjust the number of coins.
@@ -106,7 +106,7 @@ class Coinflip extends Command_1.default {
                 // Type for 2 seconds.
                 yield resonance.typeFor(2, resonance.channel);
                 // Send the result!
-                yield resonance.__reply(`{{user}}, you obtained {{result}}!`, { user: resonance.author, result: yield Kawakami_1.default.bold(result) }, '::COINFLIP-FLIP_RESULT');
+                yield resonance.__reply(`{{user}}, you obtained {{result}}!`, { user: resonance.author, result: yield Kawakami_1.Kawakami.bold(result) }, '::COINFLIP-FLIP_RESULT');
                 // End execution here.
                 return;
             }
@@ -130,14 +130,14 @@ class Coinflip extends Command_1.default {
             // Type for a second for some added effect!
             yield resonance.client.typeFor(1, resonance.channel);
             // First, we'll send the flip message.
-            yield resonance.__reply(`Okay {{user}}! Flipping {{count}} coins. This will only take a moment...`, { user: resonance.author, count: yield Kawakami_1.default.bold(numberOfCoins) }, '::COINFLIP-FLIP_MESSAGE_MULTIPLE');
+            yield resonance.__reply(`Okay {{user}}! Flipping {{count}} coins. This will only take a moment...`, { user: resonance.author, count: yield Kawakami_1.Kawakami.bold(numberOfCoins) }, '::COINFLIP-FLIP_MESSAGE_MULTIPLE');
             // Type for 2 seconds.
             yield resonance.client.typeFor(4, resonance.channel);
             // Send the result!
             yield resonance.__reply(`{{user}}, you obtained the following results:\n\nTails: {{tails}}\nHeads: {{heads}}`, {
                 user: resonance.author,
-                tails: yield Kawakami_1.default.bold(results.tails),
-                heads: yield Kawakami_1.default.bold(results.heads)
+                tails: yield Kawakami_1.Kawakami.bold(results.tails),
+                heads: yield Kawakami_1.Kawakami.bold(results.heads)
             }, '::COINFLIP-FLIP_RESULT_MULTIPLE');
         });
     }

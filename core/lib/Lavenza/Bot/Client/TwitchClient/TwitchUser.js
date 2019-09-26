@@ -35,4 +35,4 @@ class TwitchUser {
         return this.displayName;
     }
 }
-exports.default = TwitchUser;
+exports.TwitchUser = TwitchUser;

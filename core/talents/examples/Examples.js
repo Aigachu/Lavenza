@@ -13,6 +13,6 @@ const Talent_1 = require("../../lib/Lavenza/Talent/Talent");
  *
  * This class can do *anything* or *nothing*. It's an entry point for extended development of features.
  */
-class Examples extends Talent_1.default {
+class Examples extends Talent_1.Talent {
 }
 exports.default = Examples;

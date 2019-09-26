@@ -22,7 +22,7 @@ const CommandClientHandler_1 = require("../../../../../../../lib/Lavenza/Bot/Com
  *
  * This class simply executes the tasks for a given command, in the context of a client.
  */
-class Handler extends CommandClientHandler_1.default {
+class Handler extends CommandClientHandler_1.CommandClientHandler {
     /**
      * Execute this handler's tasks.
      *

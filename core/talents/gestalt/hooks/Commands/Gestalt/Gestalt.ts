@@ -10,14 +10,14 @@ import * as _ from 'underscore';
 import * as jsonic from 'jsonic';
 
 // Imports.
-import GestaltService from '../../../../../lib/Lavenza/Gestalt/Gestalt';
+import {Gestalt as GestaltService} from '../../../../../lib/Lavenza/Gestalt/Gestalt';
 import GestaltTalent from '../../../Gestalt';
-import Command from '../../../../../lib/Lavenza/Bot/Command/Command';
+import {Command} from '../../../../../lib/Lavenza/Bot/Command/Command';
 import {CommandConfigurations} from "../../../../../lib/Lavenza/Bot/Command/CommandConfigurations";
-import Resonance from '../../../../../lib/Lavenza/Bot/Resonance/Resonance';
-import Sojiro from '../../../../../lib/Lavenza/Confidant/Sojiro';
-import ClientType from '../../../../../lib/Lavenza/Bot/Client/ClientType';
-import Igor from '../../../../../lib/Lavenza/Confidant/Igor';
+import {Resonance} from '../../../../../lib/Lavenza/Bot/Resonance/Resonance';
+import {Sojiro} from '../../../../../lib/Lavenza/Confidant/Sojiro';
+import {ClientType} from '../../../../../lib/Lavenza/Bot/Client/ClientType';
+import {Igor} from '../../../../../lib/Lavenza/Confidant/Igor';
 
 /**
  * Hello command.

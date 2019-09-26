@@ -24,12 +24,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 class StorageService {
     /**
-     * StorageService constructor.
-     */
-    constructor() {
-        // Do nothing for now. :O
-    }
-    /**
      * Make a request to the database.
      *
      * @param {string} protocol
@@ -75,4 +69,4 @@ class StorageService {
         });
     }
 }
-exports.default = StorageService;
+exports.StorageService = StorageService;

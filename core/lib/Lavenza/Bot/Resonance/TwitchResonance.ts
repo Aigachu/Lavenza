@@ -6,21 +6,21 @@
  */
 
 // Imports.
-import Resonance from './Resonance';
-import TwitchUser from '../Client/TwitchClient/TwitchUser';
-import TwitchChannel from '../Client/TwitchClient/TwitchChannel';
-import Gestalt from '../../Gestalt/Gestalt';
-import Igor from '../../Confidant/Igor';
-import Sojiro from '../../Confidant/Sojiro';
-import Bot from "../Bot";
-import ClientInterface from "../Client/ClientInterface";
-import TwitchClient from "../Client/TwitchClient/TwitchClient";
+import {Resonance} from './Resonance';
+import {TwitchUser} from '../Client/TwitchClient/TwitchUser';
+import {TwitchChannel} from '../Client/TwitchClient/TwitchChannel';
+import {Gestalt} from '../../Gestalt/Gestalt';
+import {Igor} from '../../Confidant/Igor';
+import {Sojiro} from '../../Confidant/Sojiro';
+import {Bot} from "../Bot";
+import {ClientInterface} from "../Client/ClientInterface";
+import {TwitchClient} from "../Client/TwitchClient/TwitchClient";
 import {BotConfigurations} from "../BotConfigurations";
 
 /**
  * Provides specific Resonance properties for messages coming from Discord.
  */
-export default class TwitchResonance extends Resonance {
+export class TwitchResonance extends Resonance {
 
   /**
    * The Message object obtained from the Discord Client.
@@ -66,7 +66,7 @@ export default class TwitchResonance extends Resonance {
    *
    * @inheritDoc
    */
-  async getLocale(): Promise<string> {
+  public async getLocale(): Promise<string> {
     // First, we check if configurations exist for this user.
     let i18nUserConfig = await Gestalt.get(`/i18n/${this.bot.id}/clients/twitch/users`).catch(Igor.stop);
 
@@ -93,7 +93,7 @@ export default class TwitchResonance extends Resonance {
    *
    * @inheritDoc
    */
-  async doSend(bot: Bot, destination: any, content: string): Promise<any> {
+  protected async doSend(bot: Bot, destination: any, content: string): Promise<any> {
 
     // If the destination is a channel, and it's a private whisper channel, we use TMI's whisper function instead.
     if (destination instanceof TwitchChannel && destination.type === 'whisper') {
@@ -120,13 +120,24 @@ export default class TwitchResonance extends Resonance {
   }
 
   /**
+   * Emulate the bot typing for a given amount of seconds.
+   *
+   * In the case of Twitch, we simply wait for the amount of seconds, as Twitch doesn't have typing notifiers.
+   *
+   * @inheritDoc
+   */
+  public async typeFor(seconds: number, destination: any = undefined) {
+    return Sojiro.wait(seconds);
+  }
+
+  /**
    * Get origin of the resonance.
    *
    * In the case of Discord, we get the channel the message originates from.
    *
    * @inheritDoc
    */
-  async resolveOrigin(): Promise<any> {
+  protected async resolveOrigin(): Promise<any> {
     return this.message.channel;
   }
 
@@ -137,19 +148,8 @@ export default class TwitchResonance extends Resonance {
    *
    * @inheritDoc
    */
-  async resolvePrivacy(): Promise<string> {
+  protected async resolvePrivacy(): Promise<string> {
     return this.message.channel.type === "whisper" ? 'private' : 'public';
-  }
-
-  /**
-   * Emulate the bot typing for a given amount of seconds.
-   *
-   * In the case of Twitch, we simply wait for the amount of seconds, as Twitch doesn't have typing notifiers.
-   *
-   * @inheritDoc
-   */
-  async typeFor(seconds: number, destination: any = undefined) {
-    return Sojiro.wait(seconds);
   }
 
 }

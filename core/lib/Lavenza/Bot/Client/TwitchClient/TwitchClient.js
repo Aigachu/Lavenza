@@ -54,7 +54,7 @@ class TwitchClient extends TMIClient {
         /**
          * @inheritDoc
          */
-        this.type = ClientType_1.default.Twitch;
+        this.type = ClientType_1.ClientType.Twitch;
         // Assign the bot to the current client.
         this.bot = bot;
         // Assign configurations to the client.
@@ -62,9 +62,9 @@ class TwitchClient extends TMIClient {
         // Event: When the client connects to Twitch and is ready.
         this.on('connected', () => __awaiter(this, void 0, void 0, function* () {
             // Send a message confirming our connection to Twitch.
-            yield Morgana_1.default.success('Twitch client successfully connected for {{bot}}!', { bot: this.bot.id });
+            yield Morgana_1.Morgana.success('Twitch client successfully connected for {{bot}}!', { bot: this.bot.id });
             // We sync the client configurations.
-            let channels = yield Gestalt_1.default.sync({}, `/bots/${this.bot.id}/clients/${this.type}/channels`);
+            let channels = yield Gestalt_1.Gestalt.sync({}, `/bots/${this.bot.id}/clients/${this.type}/channels`);
             // Generate configuration for each channel.
             yield Promise.all(this.config.channels.map((channel) => __awaiter(this, void 0, void 0, function* () {
                 // For all guilds, we initialize this default configuration.
@@ -76,7 +76,7 @@ class TwitchClient extends TMIClient {
                 if (!(channel in channels)) {
                     channels[channel] = baseChannelConfig;
                 }
-                yield Gestalt_1.default.update(`/bots/${this.bot.id}/clients/${this.type}/channels`, channels);
+                yield Gestalt_1.Gestalt.update(`/bots/${this.bot.id}/clients/${this.type}/channels`, channels);
             })));
         }));
         // Event: When the twitch client receives a message.
@@ -88,12 +88,12 @@ class TwitchClient extends TMIClient {
             // Relevant information will be built and stored like so.
             // It is built to be organized like Discord.JS organizes it. Seems to be our best bet to keep things clean!
             let msgData = {
-                author: new TwitchUser_1.default(context['username'], context['username'], context['display-name']),
+                author: new TwitchUser_1.TwitchUser(context['username'], context['username'], context['display-name']),
                 content: message,
                 context: context,
-                channel: new TwitchChannel_1.default(target, target.replace('#', ''), context['message-type'])
+                channel: new TwitchChannel_1.TwitchChannel(target, target.replace('#', ''), context['message-type'])
             };
-            this.bot.listen(msgData, this).catch(Igor_1.default.stop);
+            this.bot.listen(msgData, this).catch(Igor_1.Igor.stop);
         });
     }
     /**
@@ -101,7 +101,7 @@ class TwitchClient extends TMIClient {
      */
     getActiveConfigurations() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Gestalt_1.default.get(`/bots/${this.bot.id}/clients/${this.type}`);
+            return yield Gestalt_1.Gestalt.get(`/bots/${this.bot.id}/clients/${this.type}`);
         });
     }
     /**
@@ -110,15 +110,15 @@ class TwitchClient extends TMIClient {
     gestalt() {
         return __awaiter(this, void 0, void 0, function* () {
             // Make sure database collection exists for this client for the given bot.
-            yield Gestalt_1.default.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
+            yield Gestalt_1.Gestalt.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
             // Make sure database collection exists for permissions in this client.
-            yield Gestalt_1.default.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
+            yield Gestalt_1.Gestalt.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
             // Initialize i18n database collection for this client if it doesn't already exist.
-            yield Gestalt_1.default.createCollection(`/i18n/${this.bot.id}/clients/${this.type}`);
+            yield Gestalt_1.Gestalt.createCollection(`/i18n/${this.bot.id}/clients/${this.type}`);
             // Initialize i18n contexts, creating them if they don't exist.
             // Translations are manageable through all of these contexts.
-            yield Gestalt_1.default.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/channels`);
-            yield Gestalt_1.default.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/users`);
+            yield Gestalt_1.Gestalt.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/channels`);
+            yield Gestalt_1.Gestalt.sync({}, `/i18n/${this.bot.id}/clients/${this.type}/users`);
         });
     }
     /**
@@ -140,7 +140,7 @@ class TwitchClient extends TMIClient {
         return __awaiter(this, void 0, void 0, function* () {
             // Simply call TMI's disconnect function.
             yield _super.disconnect.call(this);
-            yield Morgana_1.default.warn('Twitch client disconnected for {{bot}}.', { bot: this.bot.id });
+            yield Morgana_1.Morgana.warn('Twitch client disconnected for {{bot}}.', { bot: this.bot.id });
         });
     }
     /**
@@ -155,8 +155,8 @@ class TwitchClient extends TMIClient {
      */
     typeFor(seconds, channel = null) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Sojiro_1.default.wait(seconds);
+            yield Sojiro_1.Sojiro.wait(seconds);
         });
     }
 }
-exports.default = TwitchClient;
+exports.TwitchClient = TwitchClient;

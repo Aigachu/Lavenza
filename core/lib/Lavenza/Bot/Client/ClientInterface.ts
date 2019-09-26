@@ -4,14 +4,14 @@
  *
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
-import Bot from "../Bot";
-import ClientType from "./ClientType";
+import {Bot} from "../Bot";
+import {ClientType} from "./ClientType";
 import {BotClientConfig} from "../BotConfigurations";
 
 /**
  * Provides an interface for Clients.
  */
-export default interface ClientInterface {
+export interface ClientInterface {
 
   /**
    * Store the Bot this client was initialized for.

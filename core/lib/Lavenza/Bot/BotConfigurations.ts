@@ -6,7 +6,7 @@
  */
 
 import {User} from "discord.js";
-import TwitchUser from "./Client/TwitchClient/TwitchUser";
+import {TwitchUser} from "./Client/TwitchClient/TwitchUser";
 import {AssociativeObject} from "../Types";
 
 /**

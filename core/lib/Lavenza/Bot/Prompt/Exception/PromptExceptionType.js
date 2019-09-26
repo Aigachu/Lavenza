@@ -18,4 +18,4 @@ var PromptExceptionType;
     PromptExceptionType["MISC"] = "miscellaneous";
     PromptExceptionType["MAX_RESET_EXCEEDED"] = "max-reset-exceeded";
 })(PromptExceptionType || (PromptExceptionType = {}));
-exports.default = PromptExceptionType;
+exports.PromptExceptionType = PromptExceptionType;

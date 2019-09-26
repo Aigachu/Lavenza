@@ -30,40 +30,40 @@ Colors.setTheme({
 // Lavenza's core.
 // This class is the main handler of the application.
 // There is a clear defined order as to how things are ran in the application. The Core properly outlines this order.
-import Core from './Lavenza/Core/Core';
+import {Core} from './Lavenza/Core/Core';
 
 // Confidants.
 // They're included up here because we need to access them for helper functions below.
-import Akechi from './Lavenza/Confidant/Akechi';
-import Igor from './Lavenza/Confidant/Igor';
-import Kawakami from './Lavenza/Confidant/Kawakami';
-import Makoto from './Lavenza/Confidant/Makoto';
-import Morgana from './Lavenza/Confidant/Morgana';
-import Sojiro from './Lavenza/Confidant/Sojiro';
-import Yoshida from './Lavenza/Confidant/Yoshida';
+import {Akechi} from './Lavenza/Confidant/Akechi';
+import {Igor} from './Lavenza/Confidant/Igor';
+import {Kawakami} from './Lavenza/Confidant/Kawakami';
+import {Makoto} from './Lavenza/Confidant/Makoto';
+import {Morgana} from './Lavenza/Confidant/Morgana';
+import {Sojiro} from './Lavenza/Confidant/Sojiro';
+import {Yoshida} from './Lavenza/Confidant/Yoshida';
 
 // Managers.
 // These classes will manage big parts of the application that are integral.
-import BotManager from './Lavenza/Bot/BotManager';
-import TalentManager from './Lavenza/Talent/TalentManager';
+import {BotManager} from './Lavenza/Bot/BotManager';
+import {TalentManager} from './Lavenza/Talent/TalentManager';
 
 // Services.
 // Services are similar to Confidants, but are much more intricate.
 // Shoutouts to Nier!
-import Gestalt from './Lavenza/Gestalt/Gestalt';
+import {Gestalt} from './Lavenza/Gestalt/Gestalt';
 
 // Classes & Models.
 // These are classes that are extended or used across the application. We import them here once.
 // They are linked in the global variable for easy access to outside applications.
-import Command from './Lavenza/Bot/Command/Command';
-import CommandClientHandler from './Lavenza/Bot/Command/CommandClientHandler';
-import Talent from './Lavenza/Talent/Talent';
-import Listener from './Lavenza/Bot/Listener/Listener';
-import Resonance from './Lavenza/Bot/Resonance/Resonance';
+import {Command} from './Lavenza/Bot/Command/Command';
+import {CommandClientHandler} from './Lavenza/Bot/Command/CommandClientHandler';
+import {Talent} from './Lavenza/Talent/Talent';
+import {Listener} from './Lavenza/Bot/Listener/Listener';
+import {Resonance} from './Lavenza/Bot/Resonance/Resonance';
 
 // Enums.
-import ClientType from './Lavenza/Bot/Client/ClientType';
-import PromptExceptionTypes from './Lavenza/Bot/Prompt/Exception/PromptExceptionType';
+import {ClientType} from './Lavenza/Bot/Client/ClientType';
+import {PromptExceptionType} from './Lavenza/Bot/Prompt/Exception/PromptExceptionType';
 
 // Define the Heart of the module.
 // This is the object that is later set as a global.
@@ -101,8 +101,8 @@ const Heart = {
   Resonance: Resonance,
 
   // Enums.
-  ClientTypes: ClientType,
-  PromptExceptionTypes: PromptExceptionTypes,
+  ClientType: ClientType,
+  PromptExceptionType: PromptExceptionType,
 
   // Function shortcuts from Confidants.
   __: Yoshida.translate,
@@ -122,7 +122,7 @@ const Heart = {
   bold: Kawakami.bold,
   italics: Kawakami.italics,
   code: Kawakami.code,
-  personalize: Yoshida.getPersonalization,
+  personalize: Yoshida.personalize,
 };
 
 module.exports = Heart;

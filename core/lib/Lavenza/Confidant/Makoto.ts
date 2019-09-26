@@ -10,7 +10,7 @@
  *
  * NEEDS A REVAMP. @TODO
  */
-export default class Makoto {
+export class Makoto {
 
   /**
    * Store cooldowns in an object.
@@ -21,7 +21,7 @@ export default class Makoto {
    * Constructor for the CooldownManager class.
    * Takes the client of the bot as an argument.
    */
-  static async build() {
+  public static async build() {
     // Instantiate the cooldowns object.
     this.cooldowns = {}; // @TODO - Save cooldowns in a database file.
   }
@@ -34,7 +34,7 @@ export default class Makoto {
    * @param {String/Number}   scope    Who does this cooldown restrict? i.e. For a user, it's their ID.
    * @param {Number}          duration Lifetime of the cooldown.
    */
-  static set(bot, type, key, scope, duration) {
+  public static set(bot, type, key, scope, duration) {
     if (!(bot in this.cooldowns)) {
       this.cooldowns[bot] = {};
     }
@@ -70,7 +70,7 @@ export default class Makoto {
    * @param {String}          key      Key of the cooldown being set. i.e. For a command, we'll set the command key.
    * @param {String/Number}  scope    Who does this cooldown restrict? i.e. For a user, it's their ID.
    */
-  static unset(bot, type, key, scope) {
+  public static unset(bot, type, key, scope) {
     // Remove the cooldown.
     this.cooldowns[bot][type][key].splice(this.cooldowns[bot][type][key].indexOf(scope), 1);
   }
@@ -82,7 +82,7 @@ export default class Makoto {
    * @param {String}          key      Key of the cooldown being set. i.e. For a command, we'll set the command key.
    * @param {String/Number}  scope    Who does this cooldown restrict? i.e. For a user, it's their ID.
    */
-  static check(bot, type, key, scope) {
+  public static check(bot, type, key, scope) {
     if (!(bot in this.cooldowns)) {
       return false;
     }

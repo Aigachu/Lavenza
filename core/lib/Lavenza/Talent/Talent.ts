@@ -9,17 +9,18 @@
 import * as path from 'path';
 
 // Imports.
-import Akechi from "../Confidant/Akechi";
-import Gestalt from "../Gestalt/Gestalt";
-import Sojiro from "../Confidant/Sojiro";
-import Morgana from "../Confidant/Morgana";
-import Igor from "../Confidant/Igor";
-import Bot from "../Bot/Bot";
-import Listener from "../Bot/Listener/Listener";
-import Command from "../Bot/Command/Command";
+import {Akechi} from "../Confidant/Akechi";
+import {Gestalt} from "../Gestalt/Gestalt";
+import {Sojiro} from "../Confidant/Sojiro";
+import {Morgana} from "../Confidant/Morgana";
+import {Igor} from "../Confidant/Igor";
+import {Bot} from "../Bot/Bot";
+import {Listener} from "../Bot/Listener/Listener";
+import {Command} from "../Bot/Command/Command";
 import {TalentConfigurations} from "./TalentConfigurations";
 import {AssociativeObject} from "../Types";
 import {CommandConfigurations} from "../Bot/Command/CommandConfigurations";
+
 /**
  * Provides a base class for 'Talents'.
  *
@@ -31,7 +32,7 @@ import {CommandConfigurations} from "../Bot/Command/CommandConfigurations";
  * since talents can be granted to multiple bots, and talents can be tracked in separate repositories if needed. Also,
  * they can easily be toggled on and off. Decoupling the features from the bots seemed like a good move.
  */
-export default class Talent {
+export class Talent {
 
   /**
    * Unique machine name of the talent.
@@ -82,7 +83,7 @@ export default class Talent {
    *
    * @param config The configuration used to build the Talent. Provided from a 'config.yml' file found in the Talent's folder.
    */
-  async build(config: TalentConfigurations) {
+  public async build(config: TalentConfigurations) {
     // Initialize fields.
     this.machineName = path.basename(config.directory); // Here we get the name of the directory and set it as the ID.
     this.config = config;
@@ -109,7 +110,7 @@ export default class Talent {
    *
    * You can see the result of these calls in the database.
    */
-  async gestalt() {
+  public async gestalt() {
     // Initialize the database collection for this talent if it doesn't already exist.
     await Gestalt.createCollection(`/talents/${this.machineName}`);
   }
@@ -121,7 +122,7 @@ export default class Talent {
    *
    * @param bot The bot to perform initializations for.
    */
-  async initialize(bot: Bot) {
+  public async initialize(bot: Bot) {
     // Set the path to the talent's bot specific database.
     this.databases[bot.id] = `/bots/${bot.id}/talents/${this.machineName}`;
   }
@@ -140,7 +141,7 @@ export default class Talent {
    * @returns
    *   The active database configuration for the talent configuration, specific to a given Bot.
    */
-  async getActiveConfigForBot(bot: Bot): Promise<TalentConfigurations> {
+  public async getActiveConfigForBot(bot: Bot): Promise<TalentConfigurations> {
     // Await Gestalt's API call to get the configuration from the storage.
     return await Gestalt.get(`/bots/${bot.id}/talents/${this.machineName}/config`);
   }
@@ -151,7 +152,7 @@ export default class Talent {
    * Commands can't necessarily be added alone. They must be bundled in a Talent. This function fetches them all from
    * the 'Commands' folder.
    */
-  async loadCommands() {
+  private async loadCommands() {
     // Determine the path to this Talent's commands.
     // Each command has its own directory. We'll get the list here.
     let commandDirectoriesPath = `${this.directory}/hooks/Commands`;
@@ -225,7 +226,7 @@ export default class Talent {
    *
    * Each Talent can have Listeners defined as well.
    */
-  async loadListeners() {
+  private async loadListeners() {
     // The 'Listeners' folder will simply have a collection of Class files. We'll get the list here.
     // We'll ge the tentative path first.
     let listenerClassesPath = `${this.directory}/hooks/Listeners`;

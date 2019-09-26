@@ -17,4 +17,4 @@ enum PromptExceptionType {
   MAX_RESET_EXCEEDED = 'max-reset-exceeded'
 }
 
-export default PromptExceptionType;
+export {PromptExceptionType};

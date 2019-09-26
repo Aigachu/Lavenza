@@ -9,10 +9,10 @@
 import * as thesaurus from 'thesaurus-com';
 
 // Imports.
-import Sojiro from "../../../../../../../lib/Lavenza/Confidant/Sojiro";
-import PromptExceptionType from "../../../../../../../lib/Lavenza/Bot/Prompt/Exception/PromptExceptionType";
-import ClientType from "../../../../../../../lib/Lavenza/Bot/Client/ClientType";
-import Resonance from "../../../../../../../lib/Lavenza/Bot/Resonance/Resonance";
+import {Sojiro} from "../../../../../../../lib/Lavenza/Confidant/Sojiro";
+import {PromptExceptionType} from "../../../../../../../lib/Lavenza/Bot/Prompt/Exception/PromptExceptionType";
+import {ClientType} from "../../../../../../../lib/Lavenza/Bot/Client/ClientType";
+import {Resonance} from "../../../../../../../lib/Lavenza/Bot/Resonance/Resonance";
 import Coinflip from "../../Coinflip";
 
 /**

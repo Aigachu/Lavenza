@@ -6,15 +6,15 @@
  */
 
 // Imports.
-import Resonance from "../../Resonance/Resonance";
-import Bot from "../../Bot";
-import ClientType from "../../Client/ClientType";
-import Sojiro from "../../../Confidant/Sojiro";
-import Makoto from "../../../Confidant/Makoto";
-import Command from "../Command";
-import Morgana from "../../../Confidant/Morgana";
-import Igor from "../../../Confidant/Igor";
-import Eminence from "../../Eminence/Eminence";
+import {Resonance} from "../../Resonance/Resonance";
+import {Bot} from "../../Bot";
+import {ClientType} from "../../Client/ClientType";
+import {Sojiro} from "../../../Confidant/Sojiro";
+import {Makoto} from "../../../Confidant/Makoto";
+import {Command} from "../Command";
+import {Morgana} from "../../../Confidant/Morgana";
+import {Igor} from "../../../Confidant/Igor";
+import {Eminence} from "../../Eminence/Eminence";
 import {CommandAuthorizerConfigurationsCollection} from "./CommandAuthorizerConfigurations";
 
 /**
@@ -22,7 +22,7 @@ import {CommandAuthorizerConfigurationsCollection} from "./CommandAuthorizerConf
  *
  * This class will handle the authorization of an already determined order.
  */
-export default abstract class CommandAuthorizer {
+export abstract class CommandAuthorizer {
 
   /**
    * The Resonance containing the command that was heard.
@@ -79,7 +79,7 @@ export default abstract class CommandAuthorizer {
   /**
    * Perform async operations that occur right after building an Authorizer.
    */
-  async build(resonance: Resonance) {
+  public async build(resonance: Resonance) {
     // Set the identity of the author.
     // Depending on the type of client we're in, this will be set differently.
     this.authorID = await this.getAuthorIdentification();
@@ -112,7 +112,7 @@ export default abstract class CommandAuthorizer {
    * @returns
    *   Returns true if the order is authorized. False otherwise.
    */
-  async authorize(): Promise<boolean> {
+  public async authorize(): Promise<boolean> {
     // Now we'll check if the person that invoked the command is the Joker.
     // If so, no access checks are needed.
     // @TODO - Masquerade would be nice to facilitate testing purposes!
@@ -185,14 +185,14 @@ export default abstract class CommandAuthorizer {
   /**
    * Each client will have custom validations. These will be housed in this warrant() function.
    */
-  async abstract warrant();
+  protected async abstract warrant();
 
   /**
    * Identify and return the ID of the author of this command.
    *
    * This is abstract since it will be different in every client.
    */
-  async abstract getAuthorIdentification(): Promise<string>;
+  protected async abstract getAuthorIdentification(): Promise<string>;
 
   /**
    * Get the author's eminence, given the configuration.
@@ -202,7 +202,7 @@ export default abstract class CommandAuthorizer {
    *
    * Because of this, obtaining the user eminence will be done per client basis. This function will be abstract.
    */
-  abstract async getAuthorEminence(): Promise<Eminence>;
+  protected abstract async getAuthorEminence(): Promise<Eminence>;
 
   /**
    * Function to send the notification that the command is on cooldown.
@@ -210,7 +210,7 @@ export default abstract class CommandAuthorizer {
    * This is an abstract function as all Authorizers must implement their own way of alerting the users that the
    * command is on cooldown.
    */
-  async abstract sendCooldownNotification();
+  protected async abstract sendCooldownNotification();
 
   /**
    * Validates whether or not the command is activated.
@@ -220,7 +220,7 @@ export default abstract class CommandAuthorizer {
    * @returns
    *   TRUE if this authorization passes, FALSE otherwise.
    */
-  async validateActivation(): Promise<boolean> {
+  private async validateActivation(): Promise<boolean> {
     if (this.configurations.command.base.active === undefined || this.configurations.command.base.active) {
       return true;
     }
@@ -232,7 +232,7 @@ export default abstract class CommandAuthorizer {
    * @returns
    *   TRUE if this authorization passes, FALSE otherwise.
    */
-  async validatePrivacy(): Promise<boolean> {
+  private async validatePrivacy(): Promise<boolean> {
     // Get the privacy of the resonance.
     let messageIsPrivate = await this.resonance.isPrivate();
 
@@ -264,7 +264,7 @@ export default abstract class CommandAuthorizer {
    * @returns
    *   TRUE if this authorization passes, FALSE otherwise.
    */
-  async validateUser(): Promise<boolean> {
+  private async validateUser(): Promise<boolean> {
     if (Sojiro.isEmpty(this.configurations.command.client.authorization.blacklist.users)) {
       return true;
     }
@@ -278,7 +278,7 @@ export default abstract class CommandAuthorizer {
    * @returns
    *   TRUE if this authorization passes, FALSE otherwise.
    */
-  async validateEminence(requiredEminence: Eminence|string = undefined): Promise<boolean> {
+  private async validateEminence(requiredEminence: Eminence|string = undefined): Promise<boolean> {
     // Get the role of the author of the message.
     let authorEminence = await this.getAuthorEminence();
 
@@ -313,7 +313,7 @@ export default abstract class CommandAuthorizer {
    * @returns
    *   Returns true if the arguments are valid. False otherwise.
    */
-  async validateCommandArguments(): Promise<boolean> {
+  private async validateCommandArguments(): Promise<boolean> {
     // Get the arguments we need.
     let args = await this.resonance.getArguments();
 
@@ -384,7 +384,7 @@ export default abstract class CommandAuthorizer {
    * @returns
    *   Returns true if the command is on cooldown. False otherwise.
    */
-  async commandIsOnCooldown(): Promise<boolean> {
+  private async commandIsOnCooldown(): Promise<boolean> {
     // @TODO - If the invoker is an architect or deity, they shouldn't be affected by cooldowns.
 
     // Using the cooldown manager, we check if the command is on cooldown first.
@@ -404,7 +404,7 @@ export default abstract class CommandAuthorizer {
   /**
    * Puts the command on cooldown using Makoto.
    */
-  async activateCooldownForCommand() {
+  public async activateCooldownForCommand() {
     // Cools the command globally after usage.
     if (this.configurations.command.base.cooldown.global !== 0) {
       Makoto.set(this.bot.id, 'command', this.command.key, 0, this.configurations.command.base.cooldown.global * 1000).then(() => {

@@ -6,21 +6,21 @@
  */
 
 // Imports.
-import DiscordCommandAuthorizer from './DiscordCommandAuthorizer';
-import TwitchCommandAuthorizer from './TwitchCommandAuthorizer';
-import Resonance from "../../Resonance/Resonance";
-import ClientType from "../../Client/ClientType";
-import Sojiro from "../../../Confidant/Sojiro";
-import Igor from "../../../Confidant/Igor";
-import Command from "../Command";
-import CommandAuthorizer from "./CommandAuthorizer";
+import {DiscordCommandAuthorizer} from './DiscordCommandAuthorizer';
+import {TwitchCommandAuthorizer} from './TwitchCommandAuthorizer';
+import {Resonance} from "../../Resonance/Resonance";
+import {ClientType} from "../../Client/ClientType";
+import {Sojiro} from "../../../Confidant/Sojiro";
+import {Igor} from "../../../Confidant/Igor";
+import {Command} from "../Command";
+import {CommandAuthorizer} from "./CommandAuthorizer";
 
 /**
  * Provides a factory to create the appropriate CommandAuthorizer given a client.
  *
  * Each client validates clients in different ways.
  */
-export default class CommandAuthorizerFactory {
+export class CommandAuthorizerFactory {
 
   /**
    * Build the appropriate authorizer given the client.
@@ -33,7 +33,7 @@ export default class CommandAuthorizerFactory {
    * @returns
    *   The appropriate CommandAuthorizer given the received message & command.
    */
-  static async build(resonance: Resonance, command: Command): Promise<CommandAuthorizer> {
+  public static async build(resonance: Resonance, command: Command): Promise<CommandAuthorizer> {
     // Initialize the variable.
     let authorizer = null;
 

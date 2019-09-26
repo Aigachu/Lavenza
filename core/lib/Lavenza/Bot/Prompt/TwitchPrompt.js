@@ -20,7 +20,7 @@ const Prompt_1 = require("./Prompt");
 /**
  * Provides a class for Prompts set in Discord.
  */
-class TwitchPrompt extends Prompt_1.default {
+class TwitchPrompt extends Prompt_1.Prompt {
     /**
      * @inheritDoc
      */
@@ -37,4 +37,4 @@ class TwitchPrompt extends Prompt_1.default {
         });
     }
 }
-exports.default = TwitchPrompt;
+exports.TwitchPrompt = TwitchPrompt;

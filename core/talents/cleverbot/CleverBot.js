@@ -24,7 +24,7 @@ const Morgana_1 = require("../../lib/Lavenza/Confidant/Morgana");
  *
  * Provide CleverBot functionality to an existing Lavenza Bot.
  */
-class CleverBot extends Talent_1.default {
+class CleverBot extends Talent_1.Talent {
     /**
      * @inheritDoc
      */
@@ -51,7 +51,7 @@ class CleverBot extends Talent_1.default {
             let cleverBotApiKey = bot.env.CLEVER_BOT_API_KEY;
             // If the token isn't found, we throw an error.
             if (cleverBotApiKey === undefined) {
-                yield Morgana_1.default.error(`CleverBot API Key is missing for {{bot}}. An entry called CLEVER_BOT_API_KEY must be found in the bot's env file for the CleverBot Talent to work.`, { bot: bot.id });
+                yield Morgana_1.Morgana.error(`CleverBot API Key is missing for {{bot}}. An entry called CLEVER_BOT_API_KEY must be found in the bot's env file for the CleverBot Talent to work.`, { bot: bot.id });
                 return;
             }
             // Initialize variables if all is well.

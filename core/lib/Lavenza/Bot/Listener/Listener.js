@@ -39,4 +39,4 @@ class Listener {
         });
     }
 }
-exports.default = Listener;
+exports.Listener = Listener;

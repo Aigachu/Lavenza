@@ -18,4 +18,4 @@ enum Eminence {
   Joker,
 }
 
-export default Eminence;
+export {Eminence};
