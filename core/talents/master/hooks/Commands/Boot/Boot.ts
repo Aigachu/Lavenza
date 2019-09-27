@@ -15,7 +15,7 @@ import {Command} from "../../../../../lib/Lavenza/Bot/Command/Command";
  *
  * Handles the 'boot' command, allowing a bot to boot other bots in the system.
  */
-export default class Boot extends Command {
+export class Boot extends Command {
 
   /**
    * @inheritDoc

@@ -59,4 +59,4 @@ class CleverBot extends Talent_1.Talent {
         });
     }
 }
-exports.default = CleverBot;
+exports.CleverBot = CleverBot;

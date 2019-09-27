@@ -6,11 +6,11 @@
  */
 
 // Modules.
-import * as path from 'path';
+import * as path from "path";
 
 // Imports.
-import {Item} from '../Item/Item';
-import {Akechi} from '../../../../Confidant/Akechi';
+import { Akechi } from "../../../../Confidant/Akechi";
+import { Item } from "../Item/Item";
 
 /**
  * Provides a model to manage directories for the Chronicler.
@@ -25,11 +25,11 @@ export class Collection {
   /**
    * Collection constructor.
    *
-   * @param path
+   * @param directoryPath
    *   Path to the directory to wrap this collection around.
    */
-  constructor(path: string) {
-    this.path = path;
+  public constructor(directoryPath: string) {
+    this.path = directoryPath;
   }
 
   /**
@@ -38,27 +38,28 @@ export class Collection {
    * @returns
    *   The formatted data.
    */
-  public async values(): Promise<any> {
+  public async values(): Promise<{}> {
     // Initialize the object that will store all of the data.
-    let data = {};
+    const data: {} = {};
 
     // Get all files & directories from directory.
-    let directories = await Akechi.getDirectoriesFrom(this.path);
-    let files = await Akechi.getFilesFrom(this.path);
+    const directories: string[] = await Akechi.getDirectoriesFrom(this.path);
+    const files: string[] = await Akechi.getFilesFrom(this.path);
 
     // Await the processing of all the directories found.
-    await Promise.all(directories.map(async directory => {
+    await Promise.all(directories.map(async (directory: string) => {
       // We basically create a collection with the directory and parse it's data, calling this function recursively.
-      let name = path.basename(directory);
-      let collection = new Collection(directory);
+      const name: string = path.basename(directory);
+      const collection: Collection = new Collection(directory);
       data[name] = await collection.values();
     })) ;
 
     // Await the processing of the all the files found.
-    await Promise.all(files.map(async file => {
+    await Promise.all(files.map(async (file: string) => {
       // We basically create an item with the file and parse it's data, calling this function recursively.
-      let name = path.basename(file).replace('.yml', '');
-      let item = new Item(file);
+      const name: string = path.basename(file)
+        .replace(".yml", "");
+      const item: Item = new Item(file);
       data[name] = await item.values();
     }));
 

@@ -404,7 +404,7 @@ export abstract class CommandAuthorizer {
   /**
    * Puts the command on cooldown using Makoto.
    */
-  public async activateCooldownForCommand() {
+  public async activateCooldownForCommand(): Promise<void> {
     // Cools the command globally after usage.
     if (this.configurations.command.base.cooldown.global !== 0) {
       Makoto.set(this.bot.id, 'command', this.command.key, 0, this.configurations.command.base.cooldown.global * 1000).then(() => {

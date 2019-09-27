@@ -17,7 +17,7 @@ import {Morgana} from "../../lib/Lavenza/Confidant/Morgana";
  *
  * Provide CleverBot functionality to an existing Lavenza Bot.
  */
-export default class CleverBot extends Talent {
+export class CleverBot extends Talent {
 
   /**
    * The CleverBot API connection.

@@ -19,7 +19,7 @@ import {PromptExceptionType} from "../../../../../lib/Lavenza/Bot/Prompt/Excepti
  *
  * A great testing command.
  */
-export default class Pong extends Command {
+export class Pong extends Command {
 
   /**
    * This is the static build function of the command.

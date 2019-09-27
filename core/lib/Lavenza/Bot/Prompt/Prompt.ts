@@ -203,7 +203,7 @@ export abstract class Prompt {
   /**
    * Disable this prompt.
    */
-  public async disable() {
+  public async disable(): Promise<void> {
     await this.clearTimer();
     await this.clearListeners();
     await this.bot.removePrompt(this);
@@ -223,14 +223,14 @@ export abstract class Prompt {
   /**
    * Clear the timer attached to this prompt.
    */
-  private async clearTimer() {
+  private async clearTimer(): Promise<void> {
     await clearTimeout(this.timer);
   }
 
   /**
    * Clear all event listeners in this prompt's event emitter.
    */
-  private async clearListeners() {
+  private async clearListeners(): Promise<void> {
     await this.ee.removeAllListeners();
   }
 

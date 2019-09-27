@@ -26,7 +26,13 @@ import {PromptFactory} from './Prompt/PromptFactory';
 import {ClientInterface} from "./Client/ClientInterface";
 import {Command} from "./Command/Command";
 import {Resonance} from "./Resonance/Resonance";
-import {BotClientConfig, BotConfigurations, BotDiscordClientConfig, BotTwitchClientConfig} from "./BotConfigurations";
+import {
+  BotClientConfig,
+  BotConfigurations,
+  BotDiscordClientConfig,
+  BotTwitchClientConfig,
+  Joker
+} from "./BotConfigurations";
 import {AssociativeObject} from "../Types";
 import {DiscordClient} from "./Client/DiscordClient/DiscordClient";
 import {DiscordClientConfigurations, TwitchClientConfigurations} from "./Client/ClientConfigurations";
@@ -98,7 +104,7 @@ export class Bot {
    * @TODO - More specifications and maybe an interface to define it's properties.
    * @TODO - Normalize the properties.
    */
-  public joker: any = {};
+  public joker: Joker;
 
   /**
    * Boolean to determine whether the bot is set to maintenance mode or not.
@@ -118,20 +124,13 @@ export class Bot {
    * @param config
    *   Configuration loaded from the bot's 'NAME.config.yml' file.
    */
-  constructor(id: string, config: BotConfigurations) {
+  public constructor(id: string, config: BotConfigurations) {
     this.id = id;
     this.config = config;
     this.directory = config.directory;
     this.maintenance = false;
     this.isMaster = false;
-  }
-
-  /**
-   * Load the .env file specific to this bot, and parse its contents.
-   */
-  private async loadEnvironmentVariables() {
-    let envFileData = await Akechi.readFile(`${this.directory}/.env`);
-    this.env = DotEnv.parse(envFileData) as BotEnvironmentVariables;
+    this.joker = {} as unknown as Joker;
   }
 
   /**
@@ -141,7 +140,7 @@ export class Bot {
    *
    * You can see the result of these calls in the database.
    */
-  public async gestalt() {
+  public async gestalt(): Promise<void> {
     // Initialize the database collection for this bot if it doesn't already exist.
     await Gestalt.createCollection(`/bots/${this.id}`);
 
@@ -178,7 +177,7 @@ export class Bot {
     // Await the bootstrapping of Commands data.
     await Promise.all(Object.keys(this.commands).map(async commandKey => {
       // Load Command from the Bot.
-      let command = await this.getCommand(commandKey);
+      const command = await this.getCommand(commandKey);
 
       // Create a database collection for commands belonging to a Bot.
       await Gestalt.createCollection(`/bots/${this.id}/commands/${command.id}`);
@@ -196,7 +195,7 @@ export class Bot {
    *
    * Authenticates the clients and initializes talents.
    */
-  public async deploy() {
+  public async deploy(): Promise<void> {
     // Await client initialization.
     await this.initializeClients();
 
@@ -214,7 +213,7 @@ export class Bot {
   /**
    * Shutdown the bot, disconnecting it from all clients.
    */
-  public async shutdown() {
+  public async shutdown(): Promise<void> {
     // Disconnect the bot from all clients.
     await this.disconnectClients();
   }
@@ -224,7 +223,7 @@ export class Bot {
    *
    * Initializes clients, talents, commands and listeners.
    */
-  public async prepare() {
+  public async prepare(): Promise<void> {
     // Load environment variables.
     await this.loadEnvironmentVariables();
 
@@ -239,36 +238,6 @@ export class Bot {
   }
 
   /**
-   * For each client, we build Joker's identification and data.
-   *
-   * We should be able to access Joker's information from the bot at all times.
-   */
-  private async setJoker() {
-    // Await processing of all clients.
-    // @TODO - Factory Design Pattern for these.
-    await Promise.all(Object.keys(this.clients).map(async (clientKey: ClientType) => {
-      // Depending on the type of client, we act accordingly.
-      switch (clientKey) {
-        // In Discord, we fetch the architect's user using the ID.
-        case ClientType.Discord: {
-          let config = await this.getActiveClientConfig(ClientType.Discord) as BotDiscordClientConfig;
-          let client = await this.getClient(clientKey) as DiscordClient;
-          this.joker.discord = await client.fetchUser(config.joker);
-          break;
-        }
-
-        // In Twitch, we build a custom object using only the username.
-        // @TODO - Build a TwitchUser object using the client.
-        case ClientType.Twitch: {
-          let config = await this.getActiveClientConfig(ClientType.Twitch) as BotTwitchClientConfig;
-          this.joker.twitch = new TwitchUser(config.joker, config.joker, config.joker);
-          break;
-        }
-      }
-    }));
-  }
-
-  /**
    * Get the active configuration from the database for this Bot.
    *
    * @returns
@@ -276,7 +245,7 @@ export class Bot {
    */
   public async getActiveConfig(): Promise<BotConfigurations> {
     // Attempt to get the active configuration from the database.
-    let activeConfig = await Gestalt.get(`/bots/${this.id}/config/core`);
+    const activeConfig = await Gestalt.get(`/bots/${this.id}/config/core`);
     if (!Sojiro.isEmpty(activeConfig)) {
       return activeConfig;
     }
@@ -334,116 +303,19 @@ export class Bot {
    */
   public async getActiveClientConfig(clientType: ClientType): Promise<BotClientConfig> {
     // Attempt to get the active configuration from the database.
-    let activeConfig = await Gestalt.get(`/bots/${this.id}/config/${clientType}`);
+    const activeConfig = await Gestalt.get(`/bots/${this.id}/config/${clientType}`);
     if (!Sojiro.isEmpty(activeConfig)) {
       return activeConfig;
     }
 
     // If we don't find any configurations in the database, we'll fetch it normally and then save it.
-    let config = await this.getClientConfig(clientType);
+    const config = await this.getClientConfig(clientType);
 
     // Sync it to the database.
     await Gestalt.sync(config, `/bots/${this.id}/config/${clientType}`);
 
     // Return the configuration.
     return config;
-  }
-
-  /**
-   * Grants talents to the Bot.
-   *
-   * There is a collection of Core talents that all bots will have.
-   *
-   * Custom Talents are configured in the Bot's configuration file. You must enter the ID (directory name) of
-   * the talent in the bot's config so that it can be loaded here.
-   *
-   * It's important to note that Talent Classes are never stored in the bot. Only the IDs are stored.
-   *
-   * Talents will always be accessed through the TalentManager itself.
-   */
-  private async grantTalents() {
-    // Check if there are talents set in configuration.
-    if (Sojiro.isEmpty(this.config.talents)) {
-      await Morgana.warn('Talents configuration missing for {{bot}}. The bot will not have any cool features!', {bot: this.id});
-      return;
-    }
-
-    // Await validation of custom talents configured.
-    // This basically checks if the talents entered are valid. Invalid ones are removed from the array.
-    await this.validateTalents();
-
-    // After validations are complete, we merge the core talents defined for the bot, with the custom ones.
-    // This completes the list of talents assigned to the bot.
-    this.talents = this.config.talents;
-  }
-
-  /**
-   * Validates the list of custom talents configured in the bot's config file.
-   *
-   * If a talent is in the list, but does not exist, it will be removed from the configuration list.
-   */
-  private async validateTalents() {
-    // If this is the Master bot, we will grant the Master talent.
-    if (this.isMaster && Sojiro.isEmpty(this.talents['master'])) {
-      this.config.talents.push('master');
-    }
-
-    // Alternatively, we'll do a quick check to see if someone is trying to set the master talent in config.
-    // This talent should not be set here, and instead is automatically assigned to the master bot.
-    if (!Sojiro.isEmpty(this.config.talents['master']) && !this.isMaster) {
-      this.config.talents = Sojiro.removeFromArray(this.config.talents, 'master');
-    }
-
-    // Await the processing of all talents in the bot's config object.
-    await Promise.all(this.config.talents.map(async (talentMachineName) => {
-      // Then, we'll check if this talent already exists in the Manager.
-      // This happens if another bot already loaded it.
-      // If it exists, we're good.
-      let talent = await TalentManager.getTalent(talentMachineName);
-      if (talent) {
-        // Validate the dependencies for this talent.
-        await this.validateTalentDependencies(talentMachineName);
-        return;
-      }
-
-      // Await the loading of the talent.
-      // If it the load fails, we'll remove the talent from the bot's configuration.
-      await TalentManager.loadTalent(talentMachineName).then(async () => {
-        // Validate the dependencies for this talent.
-        await this.validateTalentDependencies(talentMachineName);
-      }).catch(async error => {
-        // Disable this talent for this bot.
-        this.config.talents = Sojiro.removeFromArray(this.config.talents, talentMachineName);
-
-        // Send a warning message to the console.
-        await Morgana.warn('Error occurred while loading the {{talent}} talent...', {talent: talentMachineName});
-        await Igor.throw(error);
-      });
-    }));
-  }
-
-  /**
-   * Validate that the bot has dependencies this talent requires.
-   *
-   * @param talentMachineName
-   *   Machine name of the talent to check dependencies for.
-   */
-  private async validateTalentDependencies(talentMachineName: string) {
-    // Check talent's configuration to see if dependencies are loaded into this bot.
-    await Promise.all(TalentManager.talents[talentMachineName].config.dependencies.map(async (dependency) => {
-      // If the dependency isn't found in this bot's config, we shouldn't load this talent.
-      if (!this.config.talents.includes(dependency)) {
-        // Send a warning to the console.
-        await Morgana.warn(`The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.`, {
-          talent: talentMachineName,
-          parent: dependency,
-          bot: this.id
-        });
-
-        // Remove this talent from the bot.
-        this.config.talents = Sojiro.removeFromArray(this.config.talents, talentMachineName);
-      }
-    }));
   }
 
   /**
@@ -460,64 +332,6 @@ export class Bot {
       return this.commands[this.commandAliases[commandKey]];
     }
     return this.commands[commandKey];
-  }
-
-  /**
-   * Set all necessary commands to the Bot.
-   *
-   * Bots inherit their commands from Talents. Here we set all commands that are already loading into talents, into
-   * the bots.
-   *
-   * By the time this function runs, the Bot should already have all of its necessary talents granted.
-   */
-  private async setCommands() {
-    // Await the processing of all talents loaded in the bot.
-    await Promise.all(this.talents.map(async talentMachineName => {
-      // We'll fetch the talent.
-      let talent = await TalentManager.getTalent(talentMachineName);
-      // First we attempt to see if there is intersection going on with the commands.
-      // This will happen if there are multiple instances of the same commands (or aliases).
-      // The bot will still work, but one command will effectively override the other. Since this information is only
-      // important for developers, we should just throw a warning if this happens.
-      let commandsIntersection = Object.keys(this.commands).filter({}.hasOwnProperty.bind(talent.commands));
-      let aliasesIntersection = Object.keys(this.commandAliases).filter({}.hasOwnProperty.bind(talent.commandAliases));
-      if (!Sojiro.isEmpty(commandsIntersection)) {
-        await Morgana.warn(`There seems to be duplicate commands in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
-          bot: this.id,
-          intersect: JSON.stringify(commandsIntersection)
-        });
-      }
-
-      if (!Sojiro.isEmpty(aliasesIntersection)) {
-        await Morgana.warn(`There seems to be duplicate command aliases in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
-          bot: this.id,
-          intersect: JSON.stringify(commandsIntersection)
-        });
-      }
-
-      // Merge the bot's commands with the Talent's commands.
-      this.commands = Object.assign({}, this.commands, talent.commands);
-      this.commandAliases = Object.assign({}, this.commandAliases, talent.commandAliases);
-    }));
-  }
-
-  /**
-   * Set all necessary listeners to the Bot.
-   *
-   * Bots inherit listeners from Talents. Here we set all commands that are already loading into talents, into
-   * the bots.
-   *
-   * By the time this function runs, the Bot should already have all of its necessary talents granted.
-   */
-  private async setListeners() {
-    // Set the core CommandListener.
-    this.listeners.push(new CommandListener());
-
-    // Await the processing of all talents loaded in the bot.
-    await Promise.all(this.talents.map(async talentKey => {
-      // Merge the bot's listeners with the Talent's listeners.
-      this.listeners = [...this.listeners, ...TalentManager.talents[talentKey].listeners]
-    }));
   }
 
   /**
@@ -594,7 +408,9 @@ export class Bot {
    * @param onError
    *   The callback function that runs once a failure occurs. Failure includes not getting a response.
    */
-  public async prompt(user: any, line: any, resonance: Resonance, lifespan: number, onResponse: Function, onError: Function = (e) => { console.log(e) }) {
+  public async prompt(user: any, line: any, resonance: Resonance, lifespan: number, onResponse: Function, onError: Function = (e) => {
+    console.log(e)
+  }) {
     // Create the new prompt using the factory.
     let prompt: Prompt = await PromptFactory.build(user, line, resonance, lifespan, onResponse, onError, this);
 
@@ -616,87 +432,13 @@ export class Bot {
   }
 
   /**
-   * Decipher a message and obtain the raw content.
-   *
-   * Each client will send a message differently. i.e. Discord.JS sends a specific Message Object, whereas Twitch might
-   * send back a string. This function interprets these respectively and sends back the raw content.
-   *
-   * @param message
-   *   Message object sent by the client.
-   * @param client
-   *   The client that sent the message.
-   *
-   * @returns
-   *   Given the client type, return the raw content of the message heard.
-   */
-  private static async decipher(message: any, client: ClientInterface): Promise<string> {
-    // Depending on the Client Type, decipher the message accordingly.
-    switch (client.type) {
-      // In the case of Discord, we get the 'content' property of the message object.
-      case ClientType.Discord: {
-        return message.content;
-      }
-
-      // In the case of Discord, we get the 'content' property of the message object.
-      // For Twitch, the Message object is custom built.
-      case ClientType.Twitch: {
-        return message.content;
-      }
-
-      // case ClientTypes.Slack:
-      //   return message;
-    }
-  }
-
-  /**
-   * Authenticate all of the clients in this bot.
-   */
-  private async authenticateClients() {
-    // Await the authentication of the clients linked to the bot.
-    await Promise.all(Object.keys(this.clients).map(async (clientType: ClientType) => {
-      // Await authentication of the bot.
-      let client = await this.getClient(clientType);
-      await client.authenticate();
-
-      // Run appropriate Gestalt handlers in the clients.
-      await client.gestalt();
-    }));
-  }
-
-  /**
    * Disconnect all of the clients in this bot.
    */
-  public async disconnectClients() {
+  public async disconnectClients(): Promise<void> {
     // Await the authentication of the clients linked to the bot.
     await Promise.all(Object.keys(this.clients).map(async (clientType: ClientType) => {
       // Await authentication of the bot.
       await this.disconnectClient(clientType);
-    }));
-  }
-
-  /**
-   * Initialize all clients for this bot.
-   *
-   * Initialization uses the client configuration to properly create the clients.
-   */
-  private async initializeClients() {
-    // Await the processing and initialization of all clients in the configurations.
-    await Promise.all(this.config.clients.map(async (clientTypeKey: string) => {
-      // Load configuration since it exists.
-      let clientConfig = await this.getActiveClientConfig(ClientType[clientTypeKey]);
-
-      if (Sojiro.isEmpty(clientConfig)) {
-        await Morgana.warn('Configuration file could not be loaded for the {{client}} client in {{bot}}. This client will not be instantiated.' +
-          'To create a configuration file, you can copy the ones found in the "example" bot folder.', {
-          client: clientTypeKey,
-          bot: this.id
-        });
-        return;
-      }
-
-      // Uses the ClientFactory to build the appropriate factory given the type.
-      // The client is then set to the bot.
-      this.clients[ClientType[clientTypeKey]] = await ClientFactory.build(ClientType[clientTypeKey], clientConfig, this);
     }));
   }
 
@@ -710,18 +452,6 @@ export class Bot {
     // Simply call the client's disconnect function.
     let client: ClientInterface = await this.getClient(clientType);
     await client.disconnect();
-  }
-
-  /**
-   * Runs each Talent's initialize() function to run any preparations for the given bot.
-   */
-  private async initializeTalentsForBot() {
-    // Await the processing of all of this bot's talents.
-    await Promise.all(this.talents.map(async talentKey => {
-      // Run this talent's initialize function for this bot.
-      let talent = await TalentManager.getTalent(talentKey);
-      await talent.initialize(this);
-    }));
   }
 
   /**
@@ -773,6 +503,285 @@ export class Bot {
 
     // By default, return the following.
     return commandprefix || botClientConfig.commandPrefix || botConfig.commandPrefix;
+  }
+
+  /**
+   * Load the .env file specific to this bot, and parse its contents.
+   */
+  private async loadEnvironmentVariables(): Promise<void> {
+    const envFileData = await Akechi.readFile(`${this.directory}/.env`);
+    this.env = DotEnv.parse(envFileData) as BotEnvironmentVariables;
+  }
+
+  /**
+   * For each client, we build Joker's identification and data.
+   *
+   * We should be able to access Joker's information from the bot at all times.
+   */
+  private async setJoker(): Promise<void> {
+    // Await processing of all clients.
+    // @TODO - Factory Design Pattern for these.
+    await Promise.all(Object.keys(this.clients).map(async (clientKey: ClientType) => {
+      // Depending on the type of client, we act accordingly.
+      switch (clientKey) {
+        // In Discord, we fetch the architect's user using the ID.
+        case ClientType.Discord: {
+          const config = await this.getActiveClientConfig(ClientType.Discord) as BotDiscordClientConfig;
+          const client = await this.getClient(clientKey) as DiscordClient;
+          this.joker.discord = await client.fetchUser(config.joker);
+          break;
+        }
+
+        // In Twitch, we build a custom object using only the username.
+        // @TODO - Build a TwitchUser object using the client.
+        case ClientType.Twitch: {
+          const config = await this.getActiveClientConfig(ClientType.Twitch) as BotTwitchClientConfig;
+          this.joker.twitch = new TwitchUser(config.joker, config.joker, config.joker);
+          break;
+        }
+      }
+    }));
+  }
+
+  /**
+   * Set all necessary commands to the Bot.
+   *
+   * Bots inherit their commands from Talents. Here we set all commands that are already loading into talents, into
+   * the bots.
+   *
+   * By the time this function runs, the Bot should already have all of its necessary talents granted.
+   */
+  private async setCommands(): Promise<void> {
+    // Await the processing of all talents loaded in the bot.
+    await Promise.all(this.talents.map(async talentMachineName => {
+      // We'll fetch the talent.
+      let talent = await TalentManager.getTalent(talentMachineName);
+      // First we attempt to see if there is intersection going on with the commands.
+      // This will happen if there are multiple instances of the same commands (or aliases).
+      // The bot will still work, but one command will effectively override the other. Since this information is only
+      // important for developers, we should just throw a warning if this happens.
+      let commandsIntersection = Object.keys(this.commands).filter({}.hasOwnProperty.bind(talent.commands));
+      let aliasesIntersection = Object.keys(this.commandAliases).filter({}.hasOwnProperty.bind(talent.commandAliases));
+      if (!Sojiro.isEmpty(commandsIntersection)) {
+        await Morgana.warn(`There seems to be duplicate commands in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
+          bot: this.id,
+          intersect: JSON.stringify(commandsIntersection)
+        });
+      }
+
+      if (!Sojiro.isEmpty(aliasesIntersection)) {
+        await Morgana.warn(`There seems to be duplicate command aliases in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
+          bot: this.id,
+          intersect: JSON.stringify(commandsIntersection)
+        });
+      }
+
+      // Merge the bot's commands with the Talent's commands.
+      this.commands = Object.assign({}, this.commands, talent.commands);
+      this.commandAliases = Object.assign({}, this.commandAliases, talent.commandAliases);
+    }));
+  }
+
+  /**
+   * Set all necessary listeners to the Bot.
+   *
+   * Bots inherit listeners from Talents. Here we set all commands that are already loading into talents, into
+   * the bots.
+   *
+   * By the time this function runs, the Bot should already have all of its necessary talents granted.
+   */
+  private async setListeners(): Promise<void> {
+    // Set the core CommandListener.
+    this.listeners.push(new CommandListener());
+
+    // Await the processing of all talents loaded in the bot.
+    await Promise.all(this.talents.map(async talentKey => {
+      // Merge the bot's listeners with the Talent's listeners.
+      this.listeners = [...this.listeners, ...TalentManager.talents[talentKey].listeners]
+    }));
+  }
+
+  /**
+   * Decipher a message and obtain the raw content.
+   *
+   * Each client will send a message differently. i.e. Discord.JS sends a specific Message Object, whereas Twitch might
+   * send back a string. This function interprets these respectively and sends back the raw content.
+   *
+   * @param message
+   *   Message object sent by the client.
+   * @param client
+   *   The client that sent the message.
+   *
+   * @returns
+   *   Given the client type, return the raw content of the message heard.
+   */
+  private static async decipher(message: any, client: ClientInterface): Promise<string> {
+    // Depending on the Client Type, decipher the message accordingly.
+    switch (client.type) {
+      // In the case of Discord, we get the 'content' property of the message object.
+      case ClientType.Discord: {
+        return message.content;
+      }
+
+      // In the case of Discord, we get the 'content' property of the message object.
+      // For Twitch, the Message object is custom built.
+      case ClientType.Twitch: {
+        return message.content;
+      }
+
+      // case ClientTypes.Slack:
+      //   return message;
+    }
+  }
+
+  /**
+   * Authenticate all of the clients in this bot.
+   */
+  private async authenticateClients(): Promise<void> {
+    // Await the authentication of the clients linked to the bot.
+    await Promise.all(Object.keys(this.clients).map(async (clientType: ClientType) => {
+      // Await authentication of the bot.
+      let client = await this.getClient(clientType);
+      await client.authenticate();
+
+      // Run appropriate Gestalt handlers in the clients.
+      await client.gestalt();
+    }));
+  }
+
+  /**
+   * Initialize all clients for this bot.
+   *
+   * Initialization uses the client configuration to properly create the clients.
+   */
+  private async initializeClients(): Promise<void> {
+    // Await the processing and initialization of all clients in the configurations.
+    await Promise.all(this.config.clients.map(async (clientTypeKey: string) => {
+      // Load configuration since it exists.
+      let clientConfig = await this.getActiveClientConfig(ClientType[clientTypeKey]);
+
+      if (Sojiro.isEmpty(clientConfig)) {
+        await Morgana.warn('Configuration file could not be loaded for the {{client}} client in {{bot}}. This client will not be instantiated.' +
+          'To create a configuration file, you can copy the ones found in the "example" bot folder.', {
+          client: clientTypeKey,
+          bot: this.id
+        });
+        return;
+      }
+
+      // Uses the ClientFactory to build the appropriate factory given the type.
+      // The client is then set to the bot.
+      this.clients[ClientType[clientTypeKey]] = await ClientFactory.build(ClientType[clientTypeKey], clientConfig, this);
+    }));
+  }
+
+  /**
+   * Runs each Talent's initialize() function to run any preparations for the given bot.
+   */
+  private async initializeTalentsForBot() {
+    // Await the processing of all of this bot's talents.
+    await Promise.all(this.talents.map(async talentKey => {
+      // Run this talent's initialize function for this bot.
+      let talent = await TalentManager.getTalent(talentKey);
+      await talent.initialize(this);
+    }));
+  }
+
+  /**
+   * Grants talents to the Bot.
+   *
+   * There is a collection of Core talents that all bots will have.
+   *
+   * Custom Talents are configured in the Bot's configuration file. You must enter the ID (directory name) of
+   * the talent in the bot's config so that it can be loaded here.
+   *
+   * It's important to note that Talent Classes are never stored in the bot. Only the IDs are stored.
+   *
+   * Talents will always be accessed through the TalentManager itself.
+   */
+  private async grantTalents(): Promise<void> {
+    // Check if there are talents set in configuration.
+    if (Sojiro.isEmpty(this.config.talents)) {
+      await Morgana.warn('Talents configuration missing for {{bot}}. The bot will not have any cool features!', {bot: this.id});
+      return;
+    }
+
+    // Await validation of custom talents configured.
+    // This basically checks if the talents entered are valid. Invalid ones are removed from the array.
+    await this.validateTalents();
+
+    // After validations are complete, we merge the core talents defined for the bot, with the custom ones.
+    // This completes the list of talents assigned to the bot.
+    this.talents = this.config.talents;
+  }
+
+  /**
+   * Validates the list of custom talents configured in the bot's config file.
+   *
+   * If a talent is in the list, but does not exist, it will be removed from the configuration list.
+   */
+  private async validateTalents(): Promise<void> {
+    // If this is the Master bot, we will grant the Master talent.
+    if (this.isMaster && Sojiro.isEmpty(this.talents['master'])) {
+      this.config.talents.push('master');
+    }
+
+    // Alternatively, we'll do a quick check to see if someone is trying to set the master talent in config.
+    // This talent should not be set here, and instead is automatically assigned to the master bot.
+    if (!Sojiro.isEmpty(this.config.talents['master']) && !this.isMaster) {
+      this.config.talents = Sojiro.removeFromArray(this.config.talents, 'master');
+    }
+
+    // Await the processing of all talents in the bot's config object.
+    await Promise.all(this.config.talents.map(async (talentMachineName) => {
+      // Then, we'll check if this talent already exists in the Manager.
+      // This happens if another bot already loaded it.
+      // If it exists, we're good.
+      let talent = await TalentManager.getTalent(talentMachineName);
+      if (talent) {
+        // Validate the dependencies for this talent.
+        await this.validateTalentDependencies(talentMachineName);
+        return;
+      }
+
+      // Await the loading of the talent.
+      // If it the load fails, we'll remove the talent from the bot's configuration.
+      await TalentManager.loadTalent(talentMachineName).then(async () => {
+        // Validate the dependencies for this talent.
+        await this.validateTalentDependencies(talentMachineName);
+      }).catch(async error => {
+        // Disable this talent for this bot.
+        this.config.talents = Sojiro.removeFromArray(this.config.talents, talentMachineName);
+
+        // Send a warning message to the console.
+        await Morgana.warn('Error occurred while loading the {{talent}} talent...', {talent: talentMachineName});
+        await Igor.throw(error);
+      });
+    }));
+  }
+
+  /**
+   * Validate that the bot has dependencies this talent requires.
+   *
+   * @param talentMachineName
+   *   Machine name of the talent to check dependencies for.
+   */
+  private async validateTalentDependencies(talentMachineName: string) {
+    // Check talent's configuration to see if dependencies are loaded into this bot.
+    await Promise.all(TalentManager.talents[talentMachineName].config.dependencies.map(async (dependency) => {
+      // If the dependency isn't found in this bot's config, we shouldn't load this talent.
+      if (!this.config.talents.includes(dependency)) {
+        // Send a warning to the console.
+        await Morgana.warn(`The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.`, {
+          talent: talentMachineName,
+          parent: dependency,
+          bot: this.id
+        });
+
+        // Remove this talent from the bot.
+        this.config.talents = Sojiro.removeFromArray(this.config.talents, talentMachineName);
+      }
+    }));
   }
 
 }

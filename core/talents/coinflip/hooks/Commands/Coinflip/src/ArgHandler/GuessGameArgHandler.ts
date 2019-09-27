@@ -18,7 +18,7 @@ import Coinflip from "../../Coinflip";
 /**
  * Argument handler for the 'guess' argument in the Coinflip command.
  */
-export default class GuessGameArgHandler {
+export class GuessGameArgHandler {
 
   /**
    * Handle command 'd' & 'duel' options.

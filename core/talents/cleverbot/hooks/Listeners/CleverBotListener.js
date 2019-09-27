@@ -77,4 +77,4 @@ class CleverBotListener extends Listener_1.Listener {
         });
     }
 }
-exports.default = CleverBotListener;
+exports.CleverBotListener = CleverBotListener;

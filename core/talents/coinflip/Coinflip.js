@@ -48,4 +48,4 @@ class Coinflip extends Talent_1.Talent {
         });
     }
 }
-exports.default = Coinflip;
+exports.Coinflip = Coinflip;

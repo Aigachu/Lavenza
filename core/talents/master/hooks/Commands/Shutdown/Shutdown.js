@@ -55,4 +55,4 @@ class Shutdown extends Command_1.Command {
         });
     }
 }
-exports.default = Shutdown;
+exports.Shutdown = Shutdown;

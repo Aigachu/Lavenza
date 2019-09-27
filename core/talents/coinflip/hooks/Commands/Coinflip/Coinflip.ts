@@ -7,11 +7,11 @@
 
 // Imports.
 import {Command} from "../../../../../lib/Lavenza/Bot/Command/Command";
-import GuessGameArgHandler from "./src/ArgHandler/GuessGameArgHandler";
+import {GuessGameArgHandler} from "./src/ArgHandler/GuessGameArgHandler";
 import {Kawakami} from "../../../../../lib/Lavenza/Confidant/Kawakami";
 import {Igor} from "../../../../../lib/Lavenza/Confidant/Igor";
 import {Sojiro} from "../../../../../lib/Lavenza/Confidant/Sojiro";
-import CoinflipTalent from "../../../Coinflip";
+import {Coinflip as CoinflipTalent} from "../../../Coinflip";
 import {Resonance} from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
 
 // noinspection JSUnusedGlobalSymbols
@@ -20,7 +20,7 @@ import {Resonance} from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
  *
  * Flip a coin!
  */
-export default class Coinflip extends Command {
+export class Coinflip extends Command {
 
   /**
    * Declare the Talent.

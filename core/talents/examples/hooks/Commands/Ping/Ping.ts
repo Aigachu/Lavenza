@@ -18,7 +18,7 @@ import {Resonance} from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
  *
  * A great testing command.
  */
-export default class Ping extends Command {
+export class Ping extends Command {
   /**
    * Example of a field we can set to use across the command.
    */

@@ -124,4 +124,4 @@ class Pong extends Command_1.Command {
         });
     }
 }
-exports.default = Pong;
+exports.Pong = Pong;

@@ -6,7 +6,7 @@
  */
 
 // Imports.
-import {Akechi} from '../../../../Confidant/Akechi';
+import { Akechi } from "../../../../Confidant/Akechi";
 
 /**
  * Provides a model to manage YAML files in the Chronicler.
@@ -24,7 +24,7 @@ export class Item {
    * @param path
    *   Path to the file to wrap this item around.
    */
-  constructor(path: string) {
+  public constructor(path: string) {
     this.path = path;
   }
 
@@ -34,9 +34,9 @@ export class Item {
    * @returns
    *   Returns the data parsed
    */
-  public async values(): Promise<any> {
-    // We expect a yml. We just reach the path.
-    return await Akechi.readYamlFile(this.path);
+  public async values(): Promise<{}> {
+    // We expect a yml. We just read the file at the path.
+    return Akechi.readYamlFile(this.path);
   }
 
 }

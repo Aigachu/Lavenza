@@ -98,4 +98,4 @@ class Gestalt extends Command_1.Command {
         });
     }
 }
-exports.default = Gestalt;
+exports.Gestalt = Gestalt;

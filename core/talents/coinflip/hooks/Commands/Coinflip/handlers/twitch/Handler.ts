@@ -13,7 +13,7 @@ import {TwitchResonance} from "../../../../../../../lib/Lavenza/Bot/Resonance/Tw
  *
  * This class simply executes the tasks for a given command, in the context of a client.
  */
-export default class Handler extends CommandClientHandler {
+export class Handler extends CommandClientHandler {
 
   /**
    * Resonance that triggered the command.

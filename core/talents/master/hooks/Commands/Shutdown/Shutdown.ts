@@ -15,7 +15,7 @@ import {BotManager} from "../../../../../lib/Lavenza/Bot/BotManager";
  *
  * Handles the 'boot' command, allowing a bot to shutdown other bots in the system.
  */
-export default class Shutdown extends Command {
+export class Shutdown extends Command {
 
   /**
    * @inheritDoc

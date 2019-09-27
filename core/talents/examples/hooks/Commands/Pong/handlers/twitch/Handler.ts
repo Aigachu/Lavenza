@@ -13,7 +13,7 @@ import {CommandClientHandler} from "../../../../../../../lib/Lavenza/Bot/Command
  *
  * This class simply executes the tasks for a given command, in the context of a client.
  */
-export default class Handler extends CommandClientHandler {
+export class Handler extends CommandClientHandler {
 
   /**
    * Execute this handler's tasks.

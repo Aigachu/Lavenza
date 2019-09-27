@@ -108,7 +108,7 @@ export abstract class Resonance {
    *
    * This function runs shortly after a resonance is constructed. Consider this an asynchronous constructor.
    */
-  public async build() {
+  public async build(): Promise<void> {
     this.origin = await this.resolveOrigin();
     this.locale = await this.getLocale();
     this.private = await this.resolvePrivacy();
@@ -148,7 +148,7 @@ export abstract class Resonance {
    *
    * And order is only built and attached to the resonance if it's found through the CommandInterpreter.
    */
-  public async executeCommand() {
+  public async executeCommand(): Promise<void> {
     await this.instruction.command.execute(this);
   }
 
@@ -159,7 +159,7 @@ export abstract class Resonance {
    *
    * And order is only built and attached to the resonance if it's found through the CommandInterpreter.
    */
-  public async executeHelp() {
+  public async executeHelp(): Promise<void> {
     await this.instruction.command.help(this);
   }
 

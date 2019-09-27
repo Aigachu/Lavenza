@@ -10,7 +10,7 @@ import {Listener} from "../../../../lib/Lavenza/Bot/Listener/Listener";
 import {Resonance} from "../../../../lib/Lavenza/Bot/Resonance/Resonance";
 import {Morgana} from "../../../../lib/Lavenza/Confidant/Morgana";
 import {ClientType} from "../../../../lib/Lavenza/Bot/Client/ClientType";
-import CleverBot from "../../CleverBot";
+import {CleverBot} from "../../CleverBot";
 import {DiscordClient} from "../../../../lib/Lavenza/Bot/Client/DiscordClient/DiscordClient";
 
 // noinspection JSUnusedGlobalSymbols
@@ -19,7 +19,7 @@ import {DiscordClient} from "../../../../lib/Lavenza/Bot/Client/DiscordClient/Di
  *
  * It simply hears a message and has a small chance of querying the CleverBot API and answering!
  */
-export default class CleverBotListener extends Listener {
+export class CleverBotListener extends Listener {
 
   /**
    * Declare the Talent.

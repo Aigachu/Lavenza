@@ -55,4 +55,4 @@ class Boot extends Command_1.Command {
         });
     }
 }
-exports.default = Boot;
+exports.Boot = Boot;

@@ -14,7 +14,7 @@ import {DiscordResonance} from "../../../../../../../lib/Lavenza/Bot/Resonance/D
  *
  * This class simply executes the tasks for a given command, in the context of a client.
  */
-export default class Handler extends CommandClientHandler {
+export class Handler extends CommandClientHandler {
 
   /**
    * Resonance that triggered the command.

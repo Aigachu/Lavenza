@@ -11,3 +11,11 @@
 export interface AssociativeObject<T> {
   [key: string]: T;
 }
+
+/**
+ * Declare an interface for an abstract associative object.
+ */
+export interface AbstractObject {
+  // tslint:disable-next-line:no-any
+  [key: string]: any;
+}

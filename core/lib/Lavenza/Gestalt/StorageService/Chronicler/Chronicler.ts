@@ -1,3 +1,4 @@
+/* tslint:disable:prefer-function-over-method */
 /**
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
@@ -6,15 +7,17 @@
  */
 
 // Modules.
-const lodash = require('lodash');
+import * as lodash from "lodash";
 
 // Imports.
-import {Akechi} from '../../../Confidant/Akechi';
-import {Sojiro} from '../../../Confidant/Sojiro';
-import {StorageService} from '../StorageService';
-import {Collection} from './Collection/Collection';
-import {Item} from './Item/Item';
-import {Core} from "../../../Core/Core";
+import { Akechi } from "../../../Confidant/Akechi";
+import { Sojiro } from "../../../Confidant/Sojiro";
+import { Core } from "../../../Core/Core";
+import { AbstractObject } from "../../../Types";
+import { StorageService } from "../StorageService";
+
+import { Collection } from "./Collection/Collection";
+import { Item } from "./Item/Item";
 
 /**
  * Chronicler is the default Storage Service used by Gestalt & Lavenza.
@@ -33,29 +36,8 @@ export class Chronicler extends StorageService {
   /**
    * @inheritDoc
    */
-  public async build() {
-    this.root = Core.paths.root + '/database'
-  }
-
-  /**
-   * Chronicler alters the endpoints when requests are made.
-   *
-   * We need to make sure that the root of the database, /database in this app, is prepended to all path requests.
-   *
-   * @inheritDoc
-   */
-  public async request({protocol = '', endpoint = '', payload = {}} = {}) {
-    // If the endpoint doesn't start with the database root, prepend it to the path.
-    if (!endpoint.startsWith(this.root)) {
-      endpoint = this.root + endpoint;
-    }
-
-    // Await the execution of the regular request process.
-    return await super.request({
-      protocol: protocol,
-      endpoint: endpoint,
-      payload: payload,
-    });
+  public async build(): Promise<void> {
+    this.root = `${Core.paths.root}/database`;
   }
 
   /**
@@ -65,13 +47,24 @@ export class Chronicler extends StorageService {
    *
    * @inheritDoc
    */
-  public async createCollection(endpoint, payload = {}) {
+  public async createCollection(endpoint: string, payload: {} = {}): Promise<void> {
     // Prepend database path to the requested endpoint.
     // We have to do it here since this function doesn't pass through the main request() function.
-    let directoryPath = this.root + endpoint;
+    const directoryPath: string = this.root + endpoint;
 
     // Await creation of a directory at the path.
     await Akechi.createDirectory(directoryPath);
+  }
+
+  /**
+   * Delete file at the path.
+   *
+   * @TODO - Finish this.
+   *
+   * @inheritDoc
+   */
+  public async delete(endpoint: string): Promise<void> {
+    console.error("Oh...Delete isn't ready yet haha. AIGACHU. FINISH YOUR WORK.");
   }
 
   /**
@@ -79,17 +72,19 @@ export class Chronicler extends StorageService {
    *
    * @inheritDoc
    */
-  public async get(endpoint): Promise<any> {
+  public async get(endpoint: string): Promise<{}> {
     // First we check if the requested path is a file. If it is, we await the returning of its values.
-    if (Akechi.fileExists(endpoint + '.yml')) {
-      let item = new Item(endpoint + '.yml');
-      return await item.values();
+    if (Akechi.fileExists(`${endpoint}.yml`)) {
+      const item: Item = new Item(`${endpoint}.yml`);
+
+      return item.values();
     }
 
     // If it's not a file, then we'll check if it's a directory. If so, await return of its values.
     if (Akechi.isDirectory(endpoint)) {
-      let collection = new Collection(endpoint);
-      return await collection.values();
+      const collection: Collection = new Collection(endpoint);
+
+      return collection.values();
     }
 
     // If nothing was found, return an empty object.
@@ -103,9 +98,32 @@ export class Chronicler extends StorageService {
    *
    * @inheritDoc
    */
-  public async post(endpoint, payload): Promise<any|null> {
+  public async post(endpoint: string, payload: {}): Promise<{} | undefined> {
     // We simply create a YAML file. We await this process.
     await Akechi.writeYamlFile(endpoint, payload);
+
+    return undefined;
+  }
+
+  /**
+   * Chronicler alters the endpoints when requests are made.
+   *
+   * We need to make sure that the root of the database, /database in this app, is prepended to all path requests.
+   *
+   * @inheritDoc
+   */
+  public async request({protocol = "", endpoint = "", payload = {}}: AbstractObject = {})
+    : Promise<{} | undefined> {
+    // Variable to store the actual endpoint.
+    let realEndpoint: string = endpoint;
+
+    // If the endpoint doesn't start with the database root, prepend it to the path.
+    if (!realEndpoint.startsWith(this.root)) {
+      realEndpoint = this.root + realEndpoint;
+    }
+
+    // Await the execution of the regular request process.
+    return super.request({protocol, realEndpoint, payload});
   }
 
   /**
@@ -115,9 +133,9 @@ export class Chronicler extends StorageService {
    *
    * @inheritDoc
    */
-  public async update(endpoint, payload): Promise<any|null> {
+  public async update(endpoint: string, payload: {}): Promise<{} | undefined> {
     // First, we use Chronicler's get method to get the data.
-    let data = await this.get(endpoint);
+    let data: AbstractObject = await this.get(endpoint);
 
     // If no data was found, make sure the data is an empty object.
     if (Sojiro.isEmpty(data)) {
@@ -125,7 +143,7 @@ export class Chronicler extends StorageService {
     }
 
     // We use lodash to merge the payload containing the updates, with the original data.
-    let updatedData = lodash.merge(data, payload);
+    const updatedData: AbstractObject = lodash.merge(data, payload);
 
     // Finally, we post the new merged data back to the same endpoint.
     await this.post(endpoint, updatedData);
@@ -133,18 +151,7 @@ export class Chronicler extends StorageService {
     // We return the newly merged data.
     // We do another request here. The idea is we want to make sure the data in the file is right.
     // Might change this in the future since the update request actually does 3 requests...But eh.
-    return await this.get(endpoint);
-  }
-
-  /**
-   * Delete file at the path.
-   *
-   * @TODO - Finish this.
-   *
-   * @inheritDoc
-   */
-  public async delete(endpoint: string): Promise<any> {
-    return undefined;
+    return this.get(endpoint);
   }
 
 }

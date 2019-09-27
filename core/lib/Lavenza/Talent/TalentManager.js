@@ -18,11 +18,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
 const fs = require("fs");
 // Imports.
-const Core_1 = require("../Core/Core");
 const Akechi_1 = require("../Confidant/Akechi");
-const Sojiro_1 = require("../Confidant/Sojiro");
 const Igor_1 = require("../Confidant/Igor");
 const Morgana_1 = require("../Confidant/Morgana");
+const Sojiro_1 = require("../Confidant/Sojiro");
+const Core_1 = require("../Core/Core");
 const Gestalt_1 = require("../Gestalt/Gestalt");
 /**
  * Provides a Manager for Talents.
@@ -42,17 +42,13 @@ const Gestalt_1 = require("../Gestalt/Gestalt");
  * This Manager will load necessary talents, and make them available in the bots.
  */
 class TalentManager {
-    // noinspection JSUnusedLocalSymbols
-    /**
-     * This is a static class. The constructor will never be used.
-     */
-    constructor() {
-    }
     /**
      * Build handler for the TalentManager.
      *
      * This function will run all necessary preparations for this manager before it can be used.
      */
+    // @TODO - Following Can be be removed if we add something to this build function and use it.
+    // tslint:disable-next-line:no-async-without-await
     static build() {
         return __awaiter(this, void 0, void 0, function* () {
             // Do nothing...For now!
@@ -66,10 +62,11 @@ class TalentManager {
             // Some flavor.
             yield Morgana_1.Morgana.status("Running Gestalt bootstrap process for the Talent Manager...");
             // Creation of the Talents collection.
-            yield Gestalt_1.Gestalt.createCollection('/talents');
+            yield Gestalt_1.Gestalt.createCollection("/talents");
             // Run Gestalt handlers for each Talent.
-            yield Promise.all(Object.keys(TalentManager.talents).map((machineName) => __awaiter(this, void 0, void 0, function* () {
-                let talent = yield TalentManager.getTalent(machineName);
+            yield Promise.all(Object.keys(TalentManager.talents)
+                .map((machineName) => __awaiter(this, void 0, void 0, function* () {
+                const talent = yield TalentManager.getTalent(machineName);
                 yield talent.gestalt();
             })));
             // Some flavor.
@@ -102,23 +99,24 @@ class TalentManager {
     static loadTalent(name) {
         return __awaiter(this, void 0, void 0, function* () {
             // Check if the talent exists and return the path if it does.
-            let talentDirectoryPath = yield TalentManager.getTalentPath(name);
+            const talentDirectoryPath = yield TalentManager.getTalentPath(name);
             // If this directory doesn't exist, we end right off the bat.
             if (!talentDirectoryPath) {
                 yield Igor_1.Igor.throw("Attempted to load {{talent}} talent, but it does not exist.", { talent: name });
             }
             // Get the info file for the talent.
-            let configFilePath = talentDirectoryPath + '/config.yml';
-            let config = yield Akechi_1.Akechi.readYamlFile(configFilePath).catch(Igor_1.Igor.continue);
+            const configFilePath = `${talentDirectoryPath}/config.yml`;
+            const config = yield Akechi_1.Akechi.readYamlFile(configFilePath)
+                .catch(Igor_1.Igor.continue);
             // If the info is empty, we gotta stop here. They are mandatory.
             if (Sojiro_1.Sojiro.isEmpty(config)) {
-                yield Igor_1.Igor.throw('Configuration file could not be located for the {{talent}} talent.', { talent: name });
+                yield Igor_1.Igor.throw("Configuration file could not be located for the {{talent}} talent.", { talent: name });
             }
             // Set the directory to the info. It's useful information to have in the Talent itself!
             config.directory = talentDirectoryPath;
             // Require the class and instantiate the Talent.
-            let talent = require(talentDirectoryPath + '/' + config.class)['default'];
-            talent = new talent();
+            let talent = yield Promise.resolve().then(() => require(`${talentDirectoryPath}/${config.class}`));
+            talent = new talent[config.class]();
             // If the talent could not be loaded somehow, we end here.
             if (!talent) {
                 yield Igor_1.Igor.throw("An error occurred when requiring the {{talent}} talent's class. Verify the Talent's info file.", { talent: name });
@@ -147,14 +145,14 @@ class TalentManager {
             // Talents can either be provided by the Core framework, or custom-made.
             // First we check if this talent exists in the core directory.
             // Compute the path to the talent, should it exist in the core directory.
-            let pathToCoreTalent = Core_1.Core.paths.talents.core + '/' + name;
+            const pathToCoreTalent = `${Core_1.Core.paths.talents.core}/${name}`;
             // If this directory exists, we can return with the path to it.
             if (fs.existsSync(pathToCoreTalent)) {
                 return pathToCoreTalent;
             }
             // If we reach here, this means the talent was not found in the core directory.
             // Compute the path to the talent, should it exist in the custom directory.
-            let pathToCustomTalent = Core_1.Core.paths.talents.custom + '/' + name;
+            const pathToCustomTalent = `${Core_1.Core.paths.talents.custom}/${name}`;
             // If this directory exists, we can return with the path to it.
             if (fs.existsSync(pathToCustomTalent)) {
                 return pathToCustomTalent;

@@ -66,7 +66,7 @@ class Coinflip extends Command_1.Command {
             // If the 'd' or 'duel' arguments are used, we fire the DuelArgHandler handler.
             if ('g' in args || 'guess' in args || 'guessgame' in args) {
                 let input = args.d || args['guess'] || args['guessgame'];
-                yield GuessGameArgHandler_1.default.handle(this, resonance, input).catch(Igor_1.Igor.stop);
+                yield GuessGameArgHandler_1.GuessGameArgHandler.handle(this, resonance, input).catch(Igor_1.Igor.stop);
                 return;
             }
             // Here, we go forth with the regular execution of the command.
@@ -142,4 +142,4 @@ class Coinflip extends Command_1.Command {
         });
     }
 }
-exports.default = Coinflip;
+exports.Coinflip = Coinflip;

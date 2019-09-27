@@ -14,6 +14,6 @@ import {Talent} from "../../lib/Lavenza/Talent/Talent";
  * This Talent is only granted to the "Master" bot, and includes commands that directly affect the
  * behavior of other bots.
  */
-export default class Master extends Talent {
+export class Master extends Talent {
 
 }

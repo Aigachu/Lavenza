@@ -25,7 +25,7 @@ export class Kawakami {
    * @returns
    *   "Boldified" text.
    */
-  public static bold(text: string|number): string {
+  public static bold(text: string | number): string {
     return `**${text}**`;
   }
 
@@ -53,7 +53,7 @@ export class Kawakami {
    * @returns
    *   Text surrounded in a code block.
    */
-  public static code(text: string, language: string = ''): string {
+  public static code(text: string, language: string = ""): string {
     return `\`\`\`${language}\n${text}\n\`\`\``;
   }
 

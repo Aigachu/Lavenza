@@ -125,7 +125,7 @@ export class TwitchClient extends TMIClient implements ClientInterface {
   /**
    * @inheritDoc
    */
-  public async gestalt() {
+  public async gestalt(): Promise<void> {
     // Make sure database collection exists for this client for the given bot.
     await Gestalt.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
 
@@ -144,7 +144,7 @@ export class TwitchClient extends TMIClient implements ClientInterface {
   /**
    * Authenticate the client. (Connect to Twitch)
    */
-  public async authenticate() {
+  public async authenticate(): Promise<void> {
     // Simply call TMI's connect function.
     await this.connect();
   }
@@ -152,7 +152,7 @@ export class TwitchClient extends TMIClient implements ClientInterface {
   /**
    * Disconnect from Twitch.
    */
-  public async disconnect() {
+  public async disconnect(): Promise<void> {
     // Simply call TMI's disconnect function.
     await super.disconnect();
     await Morgana.warn('Twitch client disconnected for {{bot}}.', {bot: this.bot.id});

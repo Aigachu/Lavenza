@@ -15,7 +15,7 @@ import {Bot} from "../../lib/Lavenza/Bot/Bot";
  *
  * This talent grants the coinflip command and has many additional features included in it!
  */
-export default class Coinflip extends Talent {
+export class Coinflip extends Talent {
   /**
    * @inheritDoc
    */

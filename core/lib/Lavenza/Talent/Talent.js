@@ -17,12 +17,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
 const path = require("path");
-// Imports.
 const Akechi_1 = require("../Confidant/Akechi");
-const Gestalt_1 = require("../Gestalt/Gestalt");
-const Sojiro_1 = require("../Confidant/Sojiro");
-const Morgana_1 = require("../Confidant/Morgana");
 const Igor_1 = require("../Confidant/Igor");
+const Morgana_1 = require("../Confidant/Morgana");
+const Sojiro_1 = require("../Confidant/Sojiro");
+const Gestalt_1 = require("../Gestalt/Gestalt");
 /**
  * Provides a base class for 'Talents'.
  *
@@ -30,9 +29,10 @@ const Igor_1 = require("../Confidant/Igor");
  *
  * Think of talents as..."Plugins" from Wordpress, or "Modules" from Drupal, or "Packages" from Laravel.
  *
- * The idea here is that bot features are coded in their own folders and contexts. The power here comes from the flexibility we have
- * since talents can be granted to multiple bots, and talents can be tracked in separate repositories if needed. Also,
- * they can easily be toggled on and off. Decoupling the features from the bots seemed like a good move.
+ * The idea here is that bot features are coded in their own folders and contexts. The power here comes from the
+ * flexibility we have since talents can be granted to multiple bots, and talents can be tracked in separate
+ * repositories if needed. Also, they can easily be toggled on and off. Decoupling the features from the bots
+ * seemed like a good move.
  */
 class Talent {
     /**
@@ -40,7 +40,8 @@ class Talent {
      *
      * Each talent will call this function once to set their properties.
      *
-     * @param config The configuration used to build the Talent. Provided from a 'config.yml' file found in the Talent's folder.
+     * @param config
+     *   The configuration used to build the Talent. Provided from a 'config.yml' file found in the Talent's folder.
      */
     build(config) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -73,19 +74,7 @@ class Talent {
             yield Gestalt_1.Gestalt.createCollection(`/talents/${this.machineName}`);
         });
     }
-    /**
-     * Perform any initialization tasks for the Talent, in the context of a given bot.
-     *
-     * These initialization tasks happen after clients are loaded and authenticated for the bot.
-     *
-     * @param bot The bot to perform initializations for.
-     */
-    initialize(bot) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Set the path to the talent's bot specific database.
-            this.databases[bot.id] = `/bots/${bot.id}/talents/${this.machineName}`;
-        });
-    }
+    // tslint:disable-next-line:comment-format
     // noinspection JSUnusedGlobalSymbols
     /**
      * Get the active configuration from the database for this Talent, in the context of a Bot.
@@ -103,7 +92,20 @@ class Talent {
     getActiveConfigForBot(bot) {
         return __awaiter(this, void 0, void 0, function* () {
             // Await Gestalt's API call to get the configuration from the storage.
-            return yield Gestalt_1.Gestalt.get(`/bots/${bot.id}/talents/${this.machineName}/config`);
+            return Gestalt_1.Gestalt.get(`/bots/${bot.id}/talents/${this.machineName}/config`);
+        });
+    }
+    /**
+     * Perform any initialization tasks for the Talent, in the context of a given bot.
+     *
+     * These initialization tasks happen after clients are loaded and authenticated for the bot.
+     *
+     * @param bot The bot to perform initializations for.
+     */
+    initialize(bot) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Set the path to the talent's bot specific database.
+            this.databases[bot.id] = `/bots/${bot.id}/talents/${this.machineName}`;
         });
     }
     /**
@@ -116,52 +118,54 @@ class Talent {
         return __awaiter(this, void 0, void 0, function* () {
             // Determine the path to this Talent's commands.
             // Each command has its own directory. We'll get the list here.
-            let commandDirectoriesPath = `${this.directory}/hooks/Commands`;
+            const commandDirectoriesPath = `${this.directory}/hooks/Commands`;
             // If this directory doesn't exist, we simply return.
             if (!(yield Akechi_1.Akechi.directoryExists(commandDirectoriesPath))) {
                 return;
             }
-            let commandDirectories = yield Akechi_1.Akechi.getDirectoriesFrom(commandDirectoriesPath);
+            const commandDirectories = yield Akechi_1.Akechi.getDirectoriesFrom(commandDirectoriesPath);
             // We'll throw an error for this function if the 'Commands' directory doesn't exist or is empty.
             // This error should be caught and handled above.
             if (Sojiro_1.Sojiro.isEmpty(commandDirectories)) {
-                // await Lavenza.warn('No commands were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
+                yield Morgana_1.Morgana.warn("No commands were found for the {{talent}} talent. Proceeding!", { talent: this.machineName });
                 return;
             }
             // We'll now act on each command directory found.
             yield Promise.all(commandDirectories.map((directory) => __awaiter(this, void 0, void 0, function* () {
                 // The name of the command will be the directory name.
-                let name = path.basename(directory);
+                const name = path.basename(directory);
                 // The ID of the command will be its name in lowercase.
-                let id = name.toLowerCase();
+                const id = name.toLowerCase();
                 // Get the config file for the command.
                 // Each command should have a file with the format 'COMMAND_NAME.config.yml'.
-                let configFilePath = `${directory}/config.yml`;
-                let config = yield Akechi_1.Akechi.readYamlFile(configFilePath).catch(Igor_1.Igor.continue);
+                const configFilePath = `${directory}/config.yml`;
+                const config = yield Akechi_1.Akechi.readYamlFile(configFilePath)
+                    .catch(Igor_1.Igor.continue);
                 // Stop if the configuration is empty or wasn't found.
                 // We can't load the command without configurations.
                 // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
                 if (Sojiro_1.Sojiro.isEmpty(config)) {
-                    yield Morgana_1.Morgana.warn('Configuration file could not be loaded for the {{command}} command in the {{talent}} talent.', { command: name, talent: this.machineName });
+                    yield Morgana_1.Morgana.warn("Configuration file could not be loaded for the {{command}} command in the {{talent}} talent.", { command: name, talent: this.machineName });
                     return;
                 }
-                // Set directory to the configuration. It's nice to have quick access to the command folder from within the command.
+                // Set directory to the configuration.
+                // It's nice to have quick access to the command folder from within the command.
                 config.directory = directory;
                 // If the configuration exists, we can process by loading the class of the Command.
                 // If the class doesn't exist (this could be caused by the configuration being wrong), we stop.
-                let command = require(`${directory}/${config.class}`)['default'];
+                let command = yield Promise.resolve().then(() => require(`${directory}/${config.class}`));
                 if (Sojiro_1.Sojiro.isEmpty(command)) {
-                    yield Morgana_1.Morgana.warn('Class could not be loaded for the {{command}} command in the {{talent}} talent.', { command: name, talent: this.machineName });
+                    yield Morgana_1.Morgana.warn("Class could not be loaded for the {{command}} command in the {{talent}} talent.", { command: name, talent: this.machineName });
                     return;
                 }
-                command = new command(id, config.key, directory);
+                command = new command[config.class](id, config.key, directory);
                 // Now let's successfully register the command to the Talent.
                 // Commands have build tasks too and are also singletons. We'll run them here.
                 yield command.build(config, this);
                 // Set the command to this Talent.
                 this.commands[config.key] = command;
                 // Set command aliases.
-                config['aliases'].forEach(alias => {
+                config.aliases.forEach((alias) => {
                     this.commandAliases[alias] = command.config.key;
                 });
             })));
@@ -179,7 +183,7 @@ class Talent {
         return __awaiter(this, void 0, void 0, function* () {
             // The 'Listeners' folder will simply have a collection of Class files. We'll get the list here.
             // We'll ge the tentative path first.
-            let listenerClassesPath = `${this.directory}/hooks/Listeners`;
+            const listenerClassesPath = `${this.directory}/hooks/Listeners`;
             // If this directory doesn't exist, we simply return.
             if (!(yield Akechi_1.Akechi.directoryExists(listenerClassesPath))) {
                 return;
@@ -187,24 +191,24 @@ class Talent {
             // Get the list of listener classes at the path.
             let listenerClasses = yield Akechi_1.Akechi.getFilesFrom(listenerClassesPath);
             // Filter the obtained list to exclude Typescript files.
-            listenerClasses = listenerClasses.filter((path) => !path.endsWith('.ts'));
+            listenerClasses = listenerClasses.filter((listenerPath) => !listenerPath.endsWith(".ts"));
             // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.
             // This error should be caught and handled above.
             if (Sojiro_1.Sojiro.isEmpty(listenerClasses)) {
-                // await Lavenza.warn('No listeners were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
+                yield Morgana_1.Morgana.warn("No listeners were found for the {{talent}} talent. Proceeding!", { talent: this.machineName });
                 return;
             }
             // Await the loading of all listener classes.
             yield Promise.all(listenerClasses.map((listenerClass) => __awaiter(this, void 0, void 0, function* () {
                 // We will simply require the file here.
-                let listener = require(listenerClass)['default'];
-                listener = new listener();
+                let listener = yield Promise.resolve().then(() => require(listenerClass));
+                listener = new listener[path.basename(listenerClass, ".js")]();
                 // Run listener build tasks.
                 // We only do this to assign the talent to the listener. That way, the listener can access the Talent.
                 yield listener.build(this);
                 // If the require fails or the result is empty, we stop.
                 if (Sojiro_1.Sojiro.isEmpty(listener)) {
-                    yield Morgana_1.Morgana.warn('A Listener class could not be loaded in the {{talent}} talent.', { talent: this.machineName });
+                    yield Morgana_1.Morgana.warn("A Listener class could not be loaded in the {{talent}} talent.", { talent: this.machineName });
                     return;
                 }
                 // If everything goes smoothly, we register the listener to the Talent.

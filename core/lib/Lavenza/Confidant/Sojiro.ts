@@ -6,8 +6,8 @@
  */
 
 // Modules.
-import * as _ from 'underscore';
-import * as thesaurus from 'thesaurus-com';
+import * as thesaurus from "thesaurus-com";
+import * as _ from "underscore";
 
 /**
  * Provides a class that handles input/output to the console & errors.
@@ -32,60 +32,62 @@ export class Sojiro {
    *   Returns TRUE if it's considered an approval. Returns FALSE otherwise.
    */
   public static async isConfirmation(text: string): Promise<boolean> {
+    // Variable to store clean text.
+    let cleanText: string = text;
+
     // Clean punctuation.
-    text = text.replace('?', '');
-    text = text.replace('!', '');
-    text = text.replace('.', '');
-    text = text.replace(',', '');
+    cleanText = cleanText.replace("?", "");
+    cleanText = cleanText.replace("!", "");
+    cleanText = cleanText.replace(".", "");
+    cleanText = cleanText.replace(",", "");
 
     // Make a function to store a confirmation.
-    let confirmation = false;
+    let confirmation: boolean = false;
 
     // Store an array of all confirmation words we'd like to check for.
-    let confirmations = [
-      'yes',
-      'sure',
-      'okay',
+    const confirmations: string[] = [
+      "yes",
+      "sure",
+      "okay",
     ];
 
     // Set up Promises for the confirmations check.
-    let confirmationPromises = confirmations.map(async (word) => {
-      return new Promise(async (resolve, reject) => {
+    const confirmationPromises = confirmations.map(async (word) =>
+      new Promise(async (resolve, reject) => {
         // Check whether we find a word match.
-        let match = await this.findWordMatch(word, text);
+        const match: boolean = await Sojiro.findWordMatch(word, cleanText);
         if (match) {
           confirmation = true;
           // We reject to end Promise.all() early.
           reject();
         }
-      });
-    });
+      }));
 
     // Store an array of all denial words.
-    let denials = [
-      'no',
-      'deny'
+    const denials: string[] = [
+      "no",
+      "deny",
     ];
 
     // Set up Promises for the confirmations check.
-    let denialPromises = denials.map(async (word) => {
-      return new Promise(async (resolve, reject) => {
+    const denialPromises = denials.map(async (word) =>
+      new Promise(async (resolve, reject) => {
         // Check whether we find a word match.
-        let match = await this.findWordMatch(word, text);
+        const match: boolean = await Sojiro.findWordMatch(word, cleanText);
         if (match) {
           confirmation = false;
           // We reject to end Promise.all() early.
           reject();
         }
-      });
-    });
+      }));
 
     // For each of these words we'll be making checks to see if they're used, or if synonyms are used.
-    await Promise.all(confirmationPromises.concat(denialPromises)).catch(async () => {
+    await Promise.all(confirmationPromises.concat(denialPromises))
+      .catch(async () => {
       // Do nothing.
       // We're expecting rejection here since we don't necessarily want to run all of them if we find a match.
       // See if Promise.race() worked properly, we could use it here. But it would return a pending promise that never
-      // resolves if we don't find any matches.
+      // Resolves if we don't find any matches.
     });
 
     // Return the confirmation.
@@ -105,19 +107,20 @@ export class Sojiro {
   public static async findWordMatch(word: string, haystack: string): Promise<boolean> {
     // If the haystack is equivalent to the word 'yes', return true.
     if (haystack === word) {
-      return true
+      return true;
     }
 
     // If the haystack contains the word, return true.
-    if (haystack.split(' ').includes(word)) {
+    if (haystack.split(" ")
+      .includes(word)) {
       return true;
     }
 
     // Get the synonyms of the word.
-    let synonyms = await thesaurus.search(word).synonyms;
+    const synonyms: string[] = await thesaurus.search(word).synonyms;
 
     // If we find a synonym of the word in the text, return true.
-    if (!Sojiro.isEmpty(synonyms) && new RegExp(synonyms.join('|')).test(haystack)) {
+    if (!Sojiro.isEmpty(synonyms) && new RegExp(synonyms.join("|")).test(haystack)) {
       return true;
     }
 
@@ -136,8 +139,8 @@ export class Sojiro {
    * @returns
    *   Returns a random element from the provided array.
    */
-  public static getRandomElementFromArray(array: Array<any>): any {
-    return array[Math.floor(Math.random()*array.length)];
+  public static getRandomElementFromArray(array: unknown[]): unknown {
+    return array[Math.floor(Math.random() * array.length)];
   }
 
   /**
@@ -148,8 +151,8 @@ export class Sojiro {
    * @param element
    *   Element to be removed.
    */
-  public static removeFromArray(array: Array<any>, element: any): any {
-    return array.filter(e => e !== element);
+  public static removeFromArray(array: unknown[], element: unknown): unknown {
+    return array.filter((e: unknown) => e !== element);
   }
 
   /**
@@ -161,11 +164,11 @@ export class Sojiro {
    * @returns
    *   Returns TRUE if empty, false otherwise.
    */
-  public static isEmpty(variable: any): boolean {
+  public static isEmpty(variable: unknown): boolean {
     // So underscore is cool and all...
     // BUT any FUNCTION passed to its isEmpty() function evaluates to TRUE for...I don't know what reason.
     // Here we handle this case.
-    if (typeof variable === 'function') {
+    if (typeof variable === "function") {
       return false;
     }
 
@@ -182,7 +185,7 @@ export class Sojiro {
    * @returns
    *   Returns a Promise you can use to chain code execution.
    */
-  public static wait(seconds: number): Promise<any> {
+  public static wait(seconds: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   }
 

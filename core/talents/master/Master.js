@@ -16,4 +16,4 @@ const Talent_1 = require("../../lib/Lavenza/Talent/Talent");
  */
 class Master extends Talent_1.Talent {
 }
-exports.default = Master;
+exports.Master = Master;

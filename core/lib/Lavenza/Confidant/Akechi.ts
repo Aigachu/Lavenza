@@ -6,14 +6,14 @@
  */
 
 // Modules.
-import * as fs from 'fs';
-import * as fsrfp from 'fs-readfile-promise';
-import * as yaml from 'js-yaml';
-import * as path from 'path';
-import {ncp} from 'ncp';
+import * as fs from "fs";
+import * as fsrfp from "fs-readfile-promise";
+import * as yaml from "js-yaml";
+import { ncp } from "ncp";
+import * as path from "path";
 
 // Imports.
-import {Igor} from './Igor';
+import { Igor } from "./Igor";
 
 /**
  * Provides a class that handles searching for files and directories in the app.
@@ -30,19 +30,19 @@ export class Akechi {
   /**
    * Create a directory at a given path.
    *
-   * @param path
+   * @param directoryPath
    *   Path to create directory in.
    */
-  public static async createDirectory(path: string) {
-    if (!fs.existsSync(path)){
-      fs.mkdirSync(path);
+  public static async createDirectory(directoryPath: string): Promise<void> {
+    if (!fs.existsSync(directoryPath)) {
+      fs.mkdirSync(directoryPath);
     }
   }
 
   /**
    * Copy a path recursively using the ncp module.
    */
-  public static copyFiles(source: string, destination: string) {
+  public static copyFiles(source: string, destination: string): Promise<void> {
     return new Promise((resolve, reject) => {
       ncp(`${source}/resources/desk`, destination, async (err) => {
         if (err) {
@@ -56,35 +56,35 @@ export class Akechi {
   /**
    * Create a directory at a given path.
    *
-   * @param path
+   * @param directoryPath
    *   Path to create directory in.
    *
    * @returns
    *   Returns TRUE if the directory exists, FALSE otherwise.
    */
-  public static directoryExists(path: string): boolean {
-    if (fs.existsSync(path) && !this.isDirectory(path)){
+  public static directoryExists(directoryPath: string): boolean {
+    if (fs.existsSync(directoryPath) && !Akechi.isDirectory(directoryPath)) {
       return false;
     }
 
-    return fs.existsSync(path);
+    return fs.existsSync(directoryPath);
   }
 
   /**
    * Create a directory at a given path.
    *
-   * @param path
+   * @param filePath
    *   Path to create directory in.
    *
    * @returns
    *   Returns TRUE if the file exists, FALSE otherwise.
    */
-  public static fileExists(path: string): boolean {
+  public static fileExists(filePath: string): boolean {
     try {
-      fs.statSync(path);
+      fs.statSync(filePath);
+
       return true;
-    }
-    catch (err) {
+    } catch (err) {
       return false;
     }
   }
@@ -92,14 +92,14 @@ export class Akechi {
   /**
    * Simply read a file from a given path.
    *
-   * @param path
+   * @param filePath
    *   Path to the file to read.
    *
    * @returns
    *   File data obtained, if any.
    */
-  public static async readFile(path: string): Promise<any> {
-    return await fsrfp(path);
+  public static async readFile(filePath: string): Promise<Buffer> {
+    return fsrfp(filePath);
   }
 
   /**
@@ -111,9 +111,9 @@ export class Akechi {
    * @returns
    *   Returns yaml data from file if successful.
    */
-  public static async readYamlFile(filePath: string): Promise<any> {
+  public static async readYamlFile(filePath: string): Promise<{}> {
     // Read the file data.
-    let fileData = await this.readFile(filePath);
+    const fileData: Buffer = await Akechi.readFile(filePath);
 
     // Get document, or throw exception on error
     return yaml.safeLoad(fileData);
@@ -122,20 +122,22 @@ export class Akechi {
   /**
    * Write a .yml file a return an object with the contents.
    *
-   * @param path
+   * @param filePath
    *   Path to write the file to.
-   *
    * @param output
    *   Output to write to the file.
    */
-  public static async writeYamlFile(path: string, output: Object) {
-    if (!path.endsWith('.yml')) {
-      path += '.yml';
+  public static async writeYamlFile(filePath: string, output: {}): Promise<void> {
+    // Variable to store true file path.
+    let realFilePath: string = filePath;
+    if (!realFilePath.endsWith(".yml")) {
+      realFilePath += ".yml";
     }
 
-    fs.writeFile(path, yaml.safeDump(output), function(err) {
+    fs.writeFile(realFilePath, yaml.safeDump(output), (err: Error) => {
       if (err) {
-        Igor.throw(err).then(() => {
+        Igor.throw(err)
+          .then(() => {
           // Do nothing.
         });
       }
@@ -147,15 +149,15 @@ export class Akechi {
    *
    * @ref https://stackoverflow.com/questions/18112204/get-all-directories-within-directory-nodejs
    *
-   * @param path
+   * @param directoryPath
    *   The source directory to search in.
    *
    * @returns
    *   Return list of directories found at the given path.
    */
-  public static async getDirectoriesFrom(path: string): Promise<Array<string>|undefined> {
+  public static async getDirectoriesFrom(directoryPath: string): Promise<string[] | undefined> {
     // Fetch directories from the requested path.
-    return await this.getFilesFrom(path, true);
+    return Akechi.getFilesFrom(directoryPath, true);
   }
 
   /**
@@ -169,16 +171,17 @@ export class Akechi {
    * @returns
    *   List of files (and/or directories) found at a given path.
    */
-  public static async getFilesFrom(source: string, dirs = false): Promise<Array<string>|undefined> {
+  public static async getFilesFrom(source: string, dirs: boolean = false): Promise<string[] | undefined> {
     // Get the list of files.
-    let files = fs.readdirSync(source).map(name => path.join(source, name));
+    const files: string[] = fs.readdirSync(source)
+      .map((name: string) => path.join(source, name));
 
     // Return directories if the flag is set.
     if (dirs === true) {
-      return files.filter(path => this.isDirectory(path) === true);
+      return files.filter((dirPath: string) => Akechi.isDirectory(dirPath) === true);
     }
 
-    return files.filter(path => this.isDirectory(path) === false);
+    return files.filter((filePath: string) => Akechi.isDirectory(filePath) === false);
   }
 
   /**
@@ -189,10 +192,11 @@ export class Akechi {
    * @returns
    *   Returns true if the source is a directory, returns false otherwise.
    */
-  public static isDirectory(source): boolean {
+  public static isDirectory(source: string): boolean {
     try {
-      return fs.lstatSync(source).isDirectory();
-    } catch(error) {
+      return fs.lstatSync(source)
+        .isDirectory();
+    } catch (error) {
       return false;
     }
   }

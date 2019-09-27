@@ -6,12 +6,14 @@
  */
 
 // Imports.
-import {TalentManager} from '../Talent/TalentManager';
-import {BotManager} from '../Bot/BotManager';
-import {Morgana} from '../Confidant/Morgana';
-import {Sojiro} from '../Confidant/Sojiro';
-import {Chronicler} from './StorageService/Chronicler/Chronicler';
-import {StorageService} from "./StorageService/StorageService";
+import { BotManager } from "../Bot/BotManager";
+import { Morgana } from "../Confidant/Morgana";
+import { Sojiro } from "../Confidant/Sojiro";
+import { TalentManager } from "../Talent/TalentManager";
+import { AbstractObject } from "../Types";
+
+import { Chronicler } from "./StorageService/Chronicler/Chronicler";
+import { StorageService } from "./StorageService/StorageService";
 
 /**
  * Gestalt manages the storage and retrieval of JSON type data.
@@ -39,31 +41,14 @@ export class Gestalt {
   private static storageService: StorageService;
 
   /**
-   * Gestalt is a static singleton. This function will handle the preparations.
-   */
-  public static async build() {
-    // The default storage service is the Chronicler.
-    /** @see ./StorageService/Chronicler/Chronicler */
-    // @TODO - Dynamic selection of StorageService instead of having to save it here. Maybe .env variables? Or a configuration file at the root of the application.
-    let storageService = new Chronicler();
-
-    // Await the build process of the storage service and assign it to Gestalt.
-    await storageService.build();
-    Gestalt.storageService = storageService;
-
-    // Some flavor text.
-    await Morgana.success("Gestalt preparations complete!");
-  }
-
-  /**
    * Bootstrap the database.
    *
    * This creates all database entries needed for the application to function properly.
    */
-  public static async bootstrap() {
+  public static async bootstrap(): Promise<void> {
     // Creation of i18n collection.
     // All data pertaining to translations will be saved here.
-    await Gestalt.createCollection('/i18n');
+    await Gestalt.createCollection("/i18n");
 
     // Bootstrap Database tables/files for bots.
     await BotManager.gestalt();
@@ -76,29 +61,21 @@ export class Gestalt {
   }
 
   /**
-   * Synchronize data between the active storage service and the defaults in the code.
-   *
-   * @param config
-   *   Configuration to sync to the selected source.
-   * @param source
-   *   The source that needs to be synced.
-   *
-   * @returns
-   *   The result of the data being synchronized with the provided source endpoint.
+   * Gestalt is a static singleton. This function will handle the preparations.
    */
-  public static async sync(config: Object, source: string): Promise<any> {
-    // Await initial fetch of data that may already exist.
-    let dbConfig = await Gestalt.get(source);
+  public static async build(): Promise<void> {
+    // The default storage service is the Chronicler.
+    /** @see ./StorageService/Chronicler/Chronicler */
+    // @TODO - Dynamic selection of StorageService instead of having to save it here.
+      //  Maybe .env variables? Or a configuration file at the root of the application.
+    const storageService: StorageService = new Chronicler();
 
-    // If the configuration already exists, we'll want to sync the provided configuration with the source.
-    // We merge both together. This MIGHT NOT be necessary? But it works for now.
-    if (!Sojiro.isEmpty(dbConfig)) {
-      return Object.assign({}, config, dbConfig);
-    }
+    // Await the build process of the storage service and assign it to Gestalt.
+    await storageService.build();
+    Gestalt.storageService = storageService;
 
-    // Await creation of database entry for the configuration, since it doesn't exist.
-    await Gestalt.post(source, config);
-    return config;
+    // Some flavor text.
+    await Morgana.success("Gestalt preparations complete!");
   }
 
   /**
@@ -112,38 +89,20 @@ export class Gestalt {
    * @param payload
    *   The data of the Collection to create.
    */
-  public static async createCollection(endpoint: string, payload: Object = {}) {
+  public static async createCollection(endpoint: string, payload: {} = {}): Promise<void> {
     // Each storage service creates collections in their own way. We await this process.
     await Gestalt.storageService.createCollection(endpoint, payload);
   }
 
   /**
-   * Make a request using the storage service.
+   * Process a DELETE request using the storage service.
    *
-   * The linked storage service implements it's own methods of storing and accessing data. Gestalt simply calls those.
-   *
-   * @param {string} protocol
-   *   The protocol we want to use.
-   *   The are four: GET, POST, UPDATE, DELETE.
-   *    - GET: Fetch and retrieve data from a path/endpoint.
-   *    - POST: Create data at a path/endpoint.
-   *    - UPDATE: Adjust data at a path/endpoint.
-   *    - DELETE: Remove data at a path/endpoint.
-   * @param {string} endpoint
-   *   The string path/endpoint of where to apply the protocol.
-   * @param {Object} payload
-   *   The data, if needed, to apply the protocol. GET/DELETE will not need a payload.
-   *
-   * @returns
-   *   The result of the protocol call.
+   * @param endpoint
+   *   Path to delete data at.
    */
-  public static async request({protocol = '', endpoint = '', payload = {}} = {}): Promise<any> {
-    // Await the request function call of the storage service.
-    return await Gestalt.storageService.request({
-      protocol: protocol,
-      endpoint: endpoint,
-      payload: payload
-    });
+  public static async delete(endpoint: string): Promise<void> {
+    // Await DELETE request of the Storage Service.
+    await Gestalt.request({protocol: "delete", endpoint});
   }
 
   /**
@@ -155,9 +114,9 @@ export class Gestalt {
    * @returns
    *   Data retrieved from the given endpoint.
    */
-  public static async get(endpoint: string): Promise<any> {
+  public static async get(endpoint: string): Promise<{}> {
     // Await GET request of the Storage Service.
-    return await Gestalt.request({protocol: 'get', endpoint: endpoint});
+    return Gestalt.request({protocol: "get", endpoint});
   }
 
   /**
@@ -171,9 +130,62 @@ export class Gestalt {
    * @returns
    *   The data that was posted, if requested.
    */
-  public static async post(endpoint: string, payload: Object): Promise<any|null> {
+  public static async post(endpoint: string, payload: {}): Promise<{} | undefined> {
     // Await POST request of the Storage Service.
-    return await Gestalt.request({protocol: 'post', endpoint: endpoint, payload: payload});
+    return Gestalt.request({protocol: "post", endpoint, payload});
+  }
+
+  /**
+   * Make a request using the storage service.
+   *
+   * The linked storage service implements it's own methods of storing and accessing data. Gestalt simply calls those.
+   *
+   * @param protocol
+   *   The protocol we want to use.
+   *   The are four: GET, POST, UPDATE, DELETE.
+   *    - GET: Fetch and retrieve data from a path/endpoint.
+   *    - POST: Create data at a path/endpoint.
+   *    - UPDATE: Adjust data at a path/endpoint.
+   *    - DELETE: Remove data at a path/endpoint.
+   * @param endpoint
+   *   The string path/endpoint of where to apply the protocol.
+   * @param payload
+   *   The data, if needed, to apply the protocol. GET/DELETE will not need a payload.
+   *
+   * @returns
+   *   The result of the protocol call.
+   */
+  public static async request({protocol = "", endpoint = "", payload = {}}: AbstractObject = {})
+    : Promise<{} | undefined> {
+    // Await the request function call of the storage service.
+    return Gestalt.storageService.request({endpoint, protocol, payload});
+  }
+
+  /**
+   * Synchronize data between the active storage service and the defaults in the code.
+   *
+   * @param config
+   *   Configuration to sync to the selected source.
+   * @param source
+   *   The source that needs to be synced.
+   *
+   * @returns
+   *   The result of the data being synchronized with the provided source endpoint.
+   */
+  public static async sync(config: {}, source: string): Promise<{}> {
+    // Await initial fetch of data that may already exist.
+    const dbConfig: {} = await Gestalt.get(source);
+
+    // If the configuration already exists, we'll want to sync the provided configuration with the source.
+    // We merge both together. This MIGHT NOT be necessary? But it works for now.
+    if (!Sojiro.isEmpty(dbConfig)) {
+      return {...config, ...dbConfig};
+    }
+
+    // Await creation of database entry for the configuration, since it doesn't exist.
+    await Gestalt.post(source, config);
+
+    return config;
   }
 
   /**
@@ -187,20 +199,9 @@ export class Gestalt {
    * @returns
    *   The resulting state of the data that was updated, if applicable.
    */
-  public static async update(endpoint: string, payload: Object): Promise<any|null> {
+  public static async update(endpoint: string, payload: {}): Promise<{} | undefined> {
     // Await UPDATE request of the Storage Service.
-    return await Gestalt.request({protocol: 'update', endpoint: endpoint, payload: payload});
-  }
-
-  /**
-   * Process a DELETE request using the storage service.
-   *
-   * @param endpoint
-   *   Path to delete data at.
-   */
-  public static async delete(endpoint: string) {
-    // Await DELETE request of the Storage Service.
-    return await Gestalt.request({protocol: 'delete', endpoint: endpoint});
+    return Gestalt.request({protocol: "update", endpoint, payload});
   }
 
 }

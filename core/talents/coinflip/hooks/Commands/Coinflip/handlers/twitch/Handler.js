@@ -31,4 +31,4 @@ class Handler extends CommandClientHandler_1.CommandClientHandler {
         });
     }
 }
-exports.default = Handler;
+exports.Handler = Handler;

@@ -6,8 +6,8 @@
  */
 
 // Imports.
-import {Morgana} from './Morgana';
-import {Yoshida} from './Yoshida';
+import { Morgana } from "./Morgana";
+import { Yoshida } from "./Yoshida";
 
 /**
  * Provides a class that handles errors.
@@ -28,10 +28,10 @@ export class Igor {
    * @param error
    *   The error caught.
    */
-  public static async pocket(error: Error) {
+  public static async pocket(error: Error): Promise<void> {
     // Do nothing. This quietly ignores the error.
     // Not really advised...Though I had couple of use cases for it. Still, not recommended!
-    // console.log('Error pocketed: ' + error.message);
+    // Console.log('Error pocketed: ' + error.message);
   }
 
   /**
@@ -43,11 +43,13 @@ export class Igor {
    *   The error caught.
    *
    * @returns
-   *   Returns true for cases where it's used in functions that need a return value. @TODO - YOU MIGHT BE ABLE TO REMOVE THE RETURN. TEST IT.
+   *   Returns true for cases where it's used in functions that need a return value.
    */
   public static async continue(error: Error): Promise<boolean> {
     // Sends a warning to the console.
     await Morgana.warn(error.message);
+
+    // @TODO - YOU MIGHT BE ABLE TO REMOVE THE RETURN. TEST IT.
     return true;
   }
 
@@ -59,7 +61,7 @@ export class Igor {
    * @param error
    *   The error caught.
    */
-  public static async stop(error: Error) {
+  public static async stop(error: Error): Promise<void> {
     // Output the error with Morgana's color formatting.
     await Morgana.error(error.message);
 
@@ -81,14 +83,19 @@ export class Igor {
    * @param locale
    *   Locale determining the language to send the error in.
    */
-  public static async throw(error: Error|string, replacers: Object = undefined, locale: string = process.env.CONSOLE_LOCALE) {
+  public static async throw(
+    error: Error | string,
+    // tslint:disable-next-line:no-unnecessary-initializer
+    replacers: {} = undefined,
+    locale: string = process.env.CONSOLE_LOCALE,
+  ): Promise<void> {
     // If the error is an instance of the error class, simply throw it.
     if (error instanceof Error) {
       throw error;
     }
 
     // Get the output's translation.
-    let output = await Yoshida.translate(error, replacers, locale);
+    const output: string = await Yoshida.translate(error, replacers, locale);
 
     // Throw the error with the built output.
     throw new Error(output);

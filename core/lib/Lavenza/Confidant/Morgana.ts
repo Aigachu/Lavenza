@@ -1,3 +1,4 @@
+/* tslint:disable:no-unnecessary-initializer */
 /**
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
@@ -6,7 +7,7 @@
  */
 
 // Imports.
-import {Yoshida} from './Yoshida';
+import { Yoshida } from "./Yoshida";
 
 /**
  * Provides a class that handles input/output to the console & errors.
@@ -34,33 +35,40 @@ export class Morgana {
    * @param locale
    *   Set the locale to determine the language.
    */
-  public static async log(message: string, replacers: Object = undefined, type: string = 'default', locale: string = process.env.DEFAULT_LOCALE) {
+  public static async log(
+    message: string,
+    replacers: {} = undefined,
+    type: string = "default",
+    locale: string = process.env.DEFAULT_LOCALE,
+  ): Promise<void> {
     // Fetch translations of output.
-    let output = await Yoshida.translate(message, replacers, locale);
-    output = 'Lavenza: ' + output;
+    // Setting 'any' since we're using the 'colors' module here but TS can't tell.
+    // tslint:disable-next-line:no-any
+    let output: any = await Yoshida.translate(message, replacers, locale);
+    output = `Lavenza: ${output}`;
 
     // Depending on the type, we send different types of outputs.
     switch (type) {
       // Status messages.
-      case 'status': {
+      case "status": {
         console.log(output.status);
         break;
       }
 
       // Warning messages.
-      case 'warning': {
+      case "warning": {
         console.log(output.warning);
         break;
       }
 
       // Success messages.
-      case 'success': {
+      case "success": {
         console.log(output.success);
         break;
       }
 
       // Error messages.
-      case 'error': {
+      case "error": {
         // Send default error message.
         console.log(output.error);
         break;
@@ -69,7 +77,6 @@ export class Morgana {
       // By default, do a regular log.
       default: {
         console.log(output);
-        break;
       }
     }
   }
@@ -78,36 +85,36 @@ export class Morgana {
    * Shortcut function to send a success message.
    * @inheritDoc
    */
-  public static async success(message: string, replacers: Object = undefined) {
+  public static async success(message: string, replacers: {} = undefined): Promise<void> {
     // If the message is not set, we'll fetch the default success message.
-    message = message || 'SUCCESS';
-    await this.log(message, replacers,'success');
+    const messageToSend: string = message || "SUCCESS";
+    await Morgana.log(messageToSend, replacers, "success");
   }
 
   /**
    * Shortcut function to set a status message.
    * @inheritDoc
    */
-  public static async status(message: string, replacers: Object = undefined) {
-    await this.log(message, replacers, 'status');
+  public static async status(message: string, replacers: {} = undefined): Promise<void>  {
+    await Morgana.log(message, replacers, "status");
   }
 
   /**
    * Shortcut function to set a warning message.
    * @inheritDoc
    */
-  public static async warn(message: string, replacers: Object = undefined) {
-    await this.log(message, replacers, 'warning');
+  public static async warn(message: string, replacers: {} = undefined): Promise<void>  {
+    await Morgana.log(message, replacers, "warning");
   }
 
   /**
    * Shortcut function to set a error message.
    * @inheritDoc
    */
-  public static async error(message: string, replacers: Object = undefined) {
+  public static async error(message: string, replacers: {} = undefined): Promise<void>  {
     // If the message is not set, we'll fetch the default error message.
-    message = message || 'ERROR';
-    await this.log(message, replacers, 'error');
+    const messageToSend: string = message || "ERROR";
+    await Morgana.log(messageToSend, replacers, "error");
   }
 
 }

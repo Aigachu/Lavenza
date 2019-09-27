@@ -16,7 +16,7 @@ import {Bot} from "../../lib/Lavenza/Bot/Bot";
  * In case you didn't know, 'Gestalt' is another word for 'configuration'. This Talent will provide commands to allow
  * configuration management while the bot is running.
  */
-export default class Gestalt extends Talent {
+export class Gestalt extends Talent {
   /**
    * @inheritDoc
    */

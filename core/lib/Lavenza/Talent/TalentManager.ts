@@ -6,18 +6,19 @@
  */
 
 // Modules.
-import * as fs from 'fs';
+import * as fs from "fs";
 
 // Imports.
-import {Core} from "../Core/Core";
-import {Akechi} from '../Confidant/Akechi';
-import {Sojiro} from '../Confidant/Sojiro';
-import {Igor} from '../Confidant/Igor';
-import {Morgana} from "../Confidant/Morgana";
-import {Gestalt} from "../Gestalt/Gestalt";
-import {Talent} from "./Talent";
-import {TalentConfigurations} from "./TalentConfigurations";
-import {AssociativeObject} from "../Types";
+import { Akechi } from "../Confidant/Akechi";
+import { Igor } from "../Confidant/Igor";
+import { Morgana } from "../Confidant/Morgana";
+import { Sojiro } from "../Confidant/Sojiro";
+import { Core } from "../Core/Core";
+import { Gestalt } from "../Gestalt/Gestalt";
+import { AssociativeObject } from "../Types";
+
+import { Talent } from "./Talent";
+import { TalentConfigurations } from "./TalentConfigurations";
 
 /**
  * Provides a Manager for Talents.
@@ -43,35 +44,32 @@ export class TalentManager {
    */
   public static talents: AssociativeObject<Talent> = {};
 
-  // noinspection JSUnusedLocalSymbols
-  /**
-   * This is a static class. The constructor will never be used.
-   */
-  private constructor() {}
-
   /**
    * Build handler for the TalentManager.
    *
    * This function will run all necessary preparations for this manager before it can be used.
    */
-  public static async build() {
+  // @TODO - Following Can be be removed if we add something to this build function and use it.
+  // tslint:disable-next-line:no-async-without-await
+  public static async build(): Promise<void> {
     // Do nothing...For now!
   }
 
   /**
    * Perform bootstrapping tasks for Database for all talents.
    */
-  public static async gestalt() {
+  public static async gestalt(): Promise<void> {
     // Some flavor.
     await Morgana.status("Running Gestalt bootstrap process for the Talent Manager...");
 
     // Creation of the Talents collection.
-    await Gestalt.createCollection('/talents');
+    await Gestalt.createCollection("/talents");
 
     // Run Gestalt handlers for each Talent.
-    await Promise.all(Object.keys(TalentManager.talents).map(async machineName => {
-      let talent: Talent = await TalentManager.getTalent(machineName);
-      await talent.gestalt();
+    await Promise.all(Object.keys(TalentManager.talents)
+      .map(async (machineName: string) => {
+        const talent: Talent = await TalentManager.getTalent(machineName);
+        await talent.gestalt();
     }));
 
     // Some flavor.
@@ -100,9 +98,9 @@ export class TalentManager {
    *   The identifier of the talent that we want to load. As per standards, it shares the name of the directory of the
    *   Talent that will be loaded.
    */
-  public static async loadTalent(name: string) {
+  public static async loadTalent(name: string): Promise<void> {
     // Check if the talent exists and return the path if it does.
-    let talentDirectoryPath = await TalentManager.getTalentPath(name);
+    const talentDirectoryPath: string = await TalentManager.getTalentPath(name);
 
     // If this directory doesn't exist, we end right off the bat.
     if (!talentDirectoryPath) {
@@ -110,24 +108,28 @@ export class TalentManager {
     }
 
     // Get the info file for the talent.
-    let configFilePath = talentDirectoryPath + '/config.yml';
-    let config: TalentConfigurations = await Akechi.readYamlFile(configFilePath).catch(Igor.continue);
+    const configFilePath = `${talentDirectoryPath}/config.yml`;
+    const config = await Akechi.readYamlFile(configFilePath)
+      .catch(Igor.continue) as TalentConfigurations;
 
     // If the info is empty, we gotta stop here. They are mandatory.
     if (Sojiro.isEmpty(config)) {
-      await Igor.throw('Configuration file could not be located for the {{talent}} talent.', {talent: name});
+      await Igor.throw("Configuration file could not be located for the {{talent}} talent.", {talent: name});
     }
 
     // Set the directory to the info. It's useful information to have in the Talent itself!
     config.directory = talentDirectoryPath;
 
     // Require the class and instantiate the Talent.
-    let talent = require(talentDirectoryPath + '/' + config.class)['default'];
-    talent = new talent();
+    let talent: Talent = await import(`${talentDirectoryPath}/${config.class}`);
+    talent = new talent[config.class]();
 
     // If the talent could not be loaded somehow, we end here.
     if (!talent) {
-      await Igor.throw("An error occurred when requiring the {{talent}} talent's class. Verify the Talent's info file.", {talent: name});
+      await Igor.throw(
+        "An error occurred when requiring the {{talent}} talent's class. Verify the Talent's info file.",
+        {talent: name},
+      );
     }
 
     // Await building of the talent.
@@ -150,11 +152,11 @@ export class TalentManager {
    * @returns
    *   The path to the talent if found, undefined otherwise.
    */
-  private static async getTalentPath(name: string): Promise<string|undefined> {
+  private static async getTalentPath(name: string): Promise<string | undefined> {
     // Talents can either be provided by the Core framework, or custom-made.
     // First we check if this talent exists in the core directory.
     // Compute the path to the talent, should it exist in the core directory.
-    let pathToCoreTalent = Core.paths.talents.core + '/' + name;
+    const pathToCoreTalent = `${Core.paths.talents.core}/${name}`;
 
     // If this directory exists, we can return with the path to it.
     if (fs.existsSync(pathToCoreTalent)) {
@@ -163,7 +165,7 @@ export class TalentManager {
 
     // If we reach here, this means the talent was not found in the core directory.
     // Compute the path to the talent, should it exist in the custom directory.
-    let pathToCustomTalent = Core.paths.talents.custom + '/' + name;
+    const pathToCustomTalent = `${Core.paths.talents.custom}/${name}`;
 
     // If this directory exists, we can return with the path to it.
     if (fs.existsSync(pathToCustomTalent)) {
@@ -173,5 +175,5 @@ export class TalentManager {
     // If the talent was not found, we return undefined.
     return undefined;
   }
-  
+
 }

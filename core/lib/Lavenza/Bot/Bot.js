@@ -74,12 +74,6 @@ class Bot {
          */
         this.prompts = [];
         /**
-         * Object to store data about the bot's master user.
-         * @TODO - More specifications and maybe an interface to define it's properties.
-         * @TODO - Normalize the properties.
-         */
-        this.joker = {};
-        /**
          * Boolean to determine whether the bot is set to maintenance mode or not.
          */
         this.maintenance = false;
@@ -92,15 +86,6 @@ class Bot {
         this.directory = config.directory;
         this.maintenance = false;
         this.isMaster = false;
-    }
-    /**
-     * Load the .env file specific to this bot, and parse its contents.
-     */
-    loadEnvironmentVariables() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let envFileData = yield Akechi_1.Akechi.readFile(`${this.directory}/.env`);
-            this.env = DotEnv.parse(envFileData);
-        });
     }
     /**
      * The Gestalt function is used to setup database tables for a given object.
@@ -137,7 +122,7 @@ class Bot {
             // Await the bootstrapping of Commands data.
             yield Promise.all(Object.keys(this.commands).map((commandKey) => __awaiter(this, void 0, void 0, function* () {
                 // Load Command from the Bot.
-                let command = yield this.getCommand(commandKey);
+                const command = yield this.getCommand(commandKey);
                 // Create a database collection for commands belonging to a Bot.
                 yield Gestalt_1.Gestalt.createCollection(`/bots/${this.id}/commands/${command.id}`);
                 // Await the synchronization of data between the Command's default configuration and the database configuration.
@@ -192,36 +177,6 @@ class Bot {
         });
     }
     /**
-     * For each client, we build Joker's identification and data.
-     *
-     * We should be able to access Joker's information from the bot at all times.
-     */
-    setJoker() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Await processing of all clients.
-            // @TODO - Factory Design Pattern for these.
-            yield Promise.all(Object.keys(this.clients).map((clientKey) => __awaiter(this, void 0, void 0, function* () {
-                // Depending on the type of client, we act accordingly.
-                switch (clientKey) {
-                    // In Discord, we fetch the architect's user using the ID.
-                    case ClientType_1.ClientType.Discord: {
-                        let config = yield this.getActiveClientConfig(ClientType_1.ClientType.Discord);
-                        let client = yield this.getClient(clientKey);
-                        this.joker.discord = yield client.fetchUser(config.joker);
-                        break;
-                    }
-                    // In Twitch, we build a custom object using only the username.
-                    // @TODO - Build a TwitchUser object using the client.
-                    case ClientType_1.ClientType.Twitch: {
-                        let config = yield this.getActiveClientConfig(ClientType_1.ClientType.Twitch);
-                        this.joker.twitch = new TwitchUser_1.TwitchUser(config.joker, config.joker, config.joker);
-                        break;
-                    }
-                }
-            })));
-        });
-    }
-    /**
      * Get the active configuration from the database for this Bot.
      *
      * @returns
@@ -230,7 +185,7 @@ class Bot {
     getActiveConfig() {
         return __awaiter(this, void 0, void 0, function* () {
             // Attempt to get the active configuration from the database.
-            let activeConfig = yield Gestalt_1.Gestalt.get(`/bots/${this.id}/config/core`);
+            const activeConfig = yield Gestalt_1.Gestalt.get(`/bots/${this.id}/config/core`);
             if (!Sojiro_1.Sojiro.isEmpty(activeConfig)) {
                 return activeConfig;
             }
@@ -287,16 +242,380 @@ class Bot {
     getActiveClientConfig(clientType) {
         return __awaiter(this, void 0, void 0, function* () {
             // Attempt to get the active configuration from the database.
-            let activeConfig = yield Gestalt_1.Gestalt.get(`/bots/${this.id}/config/${clientType}`);
+            const activeConfig = yield Gestalt_1.Gestalt.get(`/bots/${this.id}/config/${clientType}`);
             if (!Sojiro_1.Sojiro.isEmpty(activeConfig)) {
                 return activeConfig;
             }
             // If we don't find any configurations in the database, we'll fetch it normally and then save it.
-            let config = yield this.getClientConfig(clientType);
+            const config = yield this.getClientConfig(clientType);
             // Sync it to the database.
             yield Gestalt_1.Gestalt.sync(config, `/bots/${this.id}/config/${clientType}`);
             // Return the configuration.
             return config;
+        });
+    }
+    /**
+     * Attempt to get a command from the list of commands in this Bot.
+     *
+     * @param commandKey
+     *   The key of the command to search for.
+     *
+     * @returns
+     *   The command object given the key provided.
+     */
+    getCommand(commandKey) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!Sojiro_1.Sojiro.isEmpty(this.commandAliases[commandKey])) {
+                return this.commands[this.commandAliases[commandKey]];
+            }
+            return this.commands[commandKey];
+        });
+    }
+    /**
+     * Listen to a message heard in a client.
+     *
+     * Now, explanations.
+     *
+     * This function will be used in clients to send a 'communication' back to the bot. This happens whenever a message
+     * is 'heard', meaning that the bot is in a chat room and a message was sent by someone (or another bot).
+     *
+     * When this function is ran, we fetch the raw content of the message sent, and we build a Resonance object with it.
+     * This is a fancy name for an object that stores information about a received communication. Then, we send off the
+     * Resonance to the listeners that are on the bot with all the information needed to act upon the message that was
+     * heard.
+     *
+     * Listeners will receive the Resonance, and then they react to them. Perfect example is the CommandListener, that
+     * will receive a Resonance and determine whether a command was issued to the Bot. Custom Listeners defined in Talents
+     * can do whatever they want when they hear a message!
+     *
+     * This function will also have logic pertaining to Prompts, but this can be explained elsewhere. :)
+     *
+     * @see ./Listener/Listener
+     * @see ./Resonance/Resonance
+     *
+     * @param message
+     *   Message object heard from a client.
+     * @param client
+     *   Client where the Message Object was heard from.
+     */
+    listen(message, client) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // First we decipher the message we just obtained.
+            let content = yield Bot.decipher(message, client);
+            // Construct a 'Resonance'.
+            let resonance = yield ResonanceFactory_1.ResonanceFactory.build(content, message, this, client);
+            // Fire all of the bot's prompts, if any.
+            yield Promise.all(this.prompts.map((prompt) => __awaiter(this, void 0, void 0, function* () {
+                // Fire the listen function.
+                yield prompt.listen(resonance);
+            })));
+            // Fire all of the bot's listeners.
+            yield Promise.all(this.listeners.map((listener) => __awaiter(this, void 0, void 0, function* () {
+                // Fire the listen function.
+                yield listener.listen(resonance);
+            })));
+        });
+    }
+    /**
+     * Set up a prompt to a specified user.
+     *
+     * Prompts are interactive ways to query information from a user in a seamless conversational way.
+     *
+     * Commands can issue prompts to expect input from the user in their next messages. For example, is a user uses the
+     * '!ping' command, in the code we can use Prompts to prompt the user for information afterwards. The prompt can send
+     * a message along the lines of "Pong! How are you?" and act upon the next reply the person that initially called the
+     * command writes (Or act upon any future message really).
+     *
+     * @param user
+     *   User that is being prompted.
+     * @param line
+     *   The communication line for this prompt. Basically, where we want the interaction to happen.
+     * @param resonance
+     *   The Resonance tied to this prompt.
+     * @param lifespan
+     *   The lifespan of this Prompt.
+     *   If the bot doesn't receive an answer in time, we cancel the prompt.
+     *   10 seconds is the average time a white boy waits for a reply from a girl he's flirting with after sending her a
+     *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO! Thank you
+     *   AVION for this wonderful advice!
+     * @param onResponse
+     *   The callback function that runs once a response has been heard.
+     * @param onError
+     *   The callback function that runs once a failure occurs. Failure includes not getting a response.
+     */
+    prompt(user, line, resonance, lifespan, onResponse, onError = (e) => {
+        console.log(e);
+    }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Create the new prompt using the factory.
+            let prompt = yield PromptFactory_1.PromptFactory.build(user, line, resonance, lifespan, onResponse, onError, this);
+            // Set the prompt to the bot.
+            this.prompts.push(prompt);
+            // Await resolution of the prompt.
+            yield prompt.await().catch(Igor_1.Igor.pocket);
+        });
+    }
+    /**
+     * Remove a prompt from the current bot.
+     *
+     * @param prompt
+     *   The prompt to remove from this bot.
+     */
+    removePrompt(prompt) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.prompts = Sojiro_1.Sojiro.removeFromArray(this.prompts, prompt);
+        });
+    }
+    /**
+     * Disconnect all of the clients in this bot.
+     */
+    disconnectClients() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Await the authentication of the clients linked to the bot.
+            yield Promise.all(Object.keys(this.clients).map((clientType) => __awaiter(this, void 0, void 0, function* () {
+                // Await authentication of the bot.
+                yield this.disconnectClient(clientType);
+            })));
+        });
+    }
+    /**
+     * Disconnect from a determined client on this bot.
+     *
+     * @param clientType
+     *   The client ID to disconnect from.
+     */
+    disconnectClient(clientType) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Simply call the client's disconnect function.
+            let client = yield this.getClient(clientType);
+            yield client.disconnect();
+        });
+    }
+    /**
+     * Get the command prefix, after a couple of checks.
+     *
+     * @param resonance
+     *   The Resonance we're taking a look at.
+     *
+     * @returns
+     *   Returns the command prefix we need to check for.
+     */
+    getCommandPrefix(resonance) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Get the configuration.
+            let botConfig = yield this.getActiveConfig();
+            // Get bot's client configuration.
+            let botClientConfig = yield this.getClientConfig(resonance.client.type);
+            // Variable to store retrieved command prefix.
+            let commandprefix = undefined;
+            // Depending on the client type, we'll be checking different types of configurations.
+            switch (resonance.client.type) {
+                // In the case of a Discord client, we check to see if there's a custom prefix set for the resonance's guild.
+                case ClientType_1.ClientType.Discord: {
+                    // Get client specific configurations.
+                    let clientConfig = yield resonance.client.getActiveConfigurations();
+                    if (resonance.message.guild) {
+                        commandprefix = clientConfig.guilds[resonance.message.guild.id].commandPrefix || undefined;
+                    }
+                    break;
+                }
+                // In the case of a Twitch client, we check to see if there's a custom prefix set for the resonance's guild.
+                case ClientType_1.ClientType.Twitch: {
+                    // Get client specific configurations.
+                    let clientConfig = yield resonance.client.getActiveConfigurations();
+                    if (resonance.message.channel) {
+                        commandprefix = clientConfig.channels[resonance.message.channel.id].commandPrefix || undefined;
+                    }
+                    break;
+                }
+            }
+            // Reset it to undefined if it's empty.
+            if (Sojiro_1.Sojiro.isEmpty(commandprefix)) {
+                commandprefix = undefined;
+            }
+            // By default, return the following.
+            return commandprefix || botClientConfig.commandPrefix || botConfig.commandPrefix;
+        });
+    }
+    /**
+     * Load the .env file specific to this bot, and parse its contents.
+     */
+    loadEnvironmentVariables() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const envFileData = yield Akechi_1.Akechi.readFile(`${this.directory}/.env`);
+            this.env = DotEnv.parse(envFileData);
+        });
+    }
+    /**
+     * For each client, we build Joker's identification and data.
+     *
+     * We should be able to access Joker's information from the bot at all times.
+     */
+    setJoker() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Await processing of all clients.
+            // @TODO - Factory Design Pattern for these.
+            yield Promise.all(Object.keys(this.clients).map((clientKey) => __awaiter(this, void 0, void 0, function* () {
+                // Depending on the type of client, we act accordingly.
+                switch (clientKey) {
+                    // In Discord, we fetch the architect's user using the ID.
+                    case ClientType_1.ClientType.Discord: {
+                        const config = yield this.getActiveClientConfig(ClientType_1.ClientType.Discord);
+                        const client = yield this.getClient(clientKey);
+                        this.joker.discord = yield client.fetchUser(config.joker);
+                        break;
+                    }
+                    // In Twitch, we build a custom object using only the username.
+                    // @TODO - Build a TwitchUser object using the client.
+                    case ClientType_1.ClientType.Twitch: {
+                        const config = yield this.getActiveClientConfig(ClientType_1.ClientType.Twitch);
+                        this.joker.twitch = new TwitchUser_1.TwitchUser(config.joker, config.joker, config.joker);
+                        break;
+                    }
+                }
+            })));
+        });
+    }
+    /**
+     * Set all necessary commands to the Bot.
+     *
+     * Bots inherit their commands from Talents. Here we set all commands that are already loading into talents, into
+     * the bots.
+     *
+     * By the time this function runs, the Bot should already have all of its necessary talents granted.
+     */
+    setCommands() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Await the processing of all talents loaded in the bot.
+            yield Promise.all(this.talents.map((talentMachineName) => __awaiter(this, void 0, void 0, function* () {
+                // We'll fetch the talent.
+                let talent = yield TalentManager_1.TalentManager.getTalent(talentMachineName);
+                // First we attempt to see if there is intersection going on with the commands.
+                // This will happen if there are multiple instances of the same commands (or aliases).
+                // The bot will still work, but one command will effectively override the other. Since this information is only
+                // important for developers, we should just throw a warning if this happens.
+                let commandsIntersection = Object.keys(this.commands).filter({}.hasOwnProperty.bind(talent.commands));
+                let aliasesIntersection = Object.keys(this.commandAliases).filter({}.hasOwnProperty.bind(talent.commandAliases));
+                if (!Sojiro_1.Sojiro.isEmpty(commandsIntersection)) {
+                    yield Morgana_1.Morgana.warn(`There seems to be duplicate commands in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
+                        bot: this.id,
+                        intersect: JSON.stringify(commandsIntersection)
+                    });
+                }
+                if (!Sojiro_1.Sojiro.isEmpty(aliasesIntersection)) {
+                    yield Morgana_1.Morgana.warn(`There seems to be duplicate command aliases in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
+                        bot: this.id,
+                        intersect: JSON.stringify(commandsIntersection)
+                    });
+                }
+                // Merge the bot's commands with the Talent's commands.
+                this.commands = Object.assign({}, this.commands, talent.commands);
+                this.commandAliases = Object.assign({}, this.commandAliases, talent.commandAliases);
+            })));
+        });
+    }
+    /**
+     * Set all necessary listeners to the Bot.
+     *
+     * Bots inherit listeners from Talents. Here we set all commands that are already loading into talents, into
+     * the bots.
+     *
+     * By the time this function runs, the Bot should already have all of its necessary talents granted.
+     */
+    setListeners() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Set the core CommandListener.
+            this.listeners.push(new CommandListener_1.CommandListener());
+            // Await the processing of all talents loaded in the bot.
+            yield Promise.all(this.talents.map((talentKey) => __awaiter(this, void 0, void 0, function* () {
+                // Merge the bot's listeners with the Talent's listeners.
+                this.listeners = [...this.listeners, ...TalentManager_1.TalentManager.talents[talentKey].listeners];
+            })));
+        });
+    }
+    /**
+     * Decipher a message and obtain the raw content.
+     *
+     * Each client will send a message differently. i.e. Discord.JS sends a specific Message Object, whereas Twitch might
+     * send back a string. This function interprets these respectively and sends back the raw content.
+     *
+     * @param message
+     *   Message object sent by the client.
+     * @param client
+     *   The client that sent the message.
+     *
+     * @returns
+     *   Given the client type, return the raw content of the message heard.
+     */
+    static decipher(message, client) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Depending on the Client Type, decipher the message accordingly.
+            switch (client.type) {
+                // In the case of Discord, we get the 'content' property of the message object.
+                case ClientType_1.ClientType.Discord: {
+                    return message.content;
+                }
+                // In the case of Discord, we get the 'content' property of the message object.
+                // For Twitch, the Message object is custom built.
+                case ClientType_1.ClientType.Twitch: {
+                    return message.content;
+                }
+                // case ClientTypes.Slack:
+                //   return message;
+            }
+        });
+    }
+    /**
+     * Authenticate all of the clients in this bot.
+     */
+    authenticateClients() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Await the authentication of the clients linked to the bot.
+            yield Promise.all(Object.keys(this.clients).map((clientType) => __awaiter(this, void 0, void 0, function* () {
+                // Await authentication of the bot.
+                let client = yield this.getClient(clientType);
+                yield client.authenticate();
+                // Run appropriate Gestalt handlers in the clients.
+                yield client.gestalt();
+            })));
+        });
+    }
+    /**
+     * Initialize all clients for this bot.
+     *
+     * Initialization uses the client configuration to properly create the clients.
+     */
+    initializeClients() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Await the processing and initialization of all clients in the configurations.
+            yield Promise.all(this.config.clients.map((clientTypeKey) => __awaiter(this, void 0, void 0, function* () {
+                // Load configuration since it exists.
+                let clientConfig = yield this.getActiveClientConfig(ClientType_1.ClientType[clientTypeKey]);
+                if (Sojiro_1.Sojiro.isEmpty(clientConfig)) {
+                    yield Morgana_1.Morgana.warn('Configuration file could not be loaded for the {{client}} client in {{bot}}. This client will not be instantiated.' +
+                        'To create a configuration file, you can copy the ones found in the "example" bot folder.', {
+                        client: clientTypeKey,
+                        bot: this.id
+                    });
+                    return;
+                }
+                // Uses the ClientFactory to build the appropriate factory given the type.
+                // The client is then set to the bot.
+                this.clients[ClientType_1.ClientType[clientTypeKey]] = yield ClientFactory_1.ClientFactory.build(ClientType_1.ClientType[clientTypeKey], clientConfig, this);
+            })));
+        });
+    }
+    /**
+     * Runs each Talent's initialize() function to run any preparations for the given bot.
+     */
+    initializeTalentsForBot() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Await the processing of all of this bot's talents.
+            yield Promise.all(this.talents.map((talentKey) => __awaiter(this, void 0, void 0, function* () {
+                // Run this talent's initialize function for this bot.
+                let talent = yield TalentManager_1.TalentManager.getTalent(talentKey);
+                yield talent.initialize(this);
+            })));
         });
     }
     /**
@@ -390,329 +709,6 @@ class Bot {
                     this.config.talents = Sojiro_1.Sojiro.removeFromArray(this.config.talents, talentMachineName);
                 }
             })));
-        });
-    }
-    /**
-     * Attempt to get a command from the list of commands in this Bot.
-     *
-     * @param commandKey
-     *   The key of the command to search for.
-     *
-     * @returns
-     *   The command object given the key provided.
-     */
-    getCommand(commandKey) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!Sojiro_1.Sojiro.isEmpty(this.commandAliases[commandKey])) {
-                return this.commands[this.commandAliases[commandKey]];
-            }
-            return this.commands[commandKey];
-        });
-    }
-    /**
-     * Set all necessary commands to the Bot.
-     *
-     * Bots inherit their commands from Talents. Here we set all commands that are already loading into talents, into
-     * the bots.
-     *
-     * By the time this function runs, the Bot should already have all of its necessary talents granted.
-     */
-    setCommands() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Await the processing of all talents loaded in the bot.
-            yield Promise.all(this.talents.map((talentMachineName) => __awaiter(this, void 0, void 0, function* () {
-                // We'll fetch the talent.
-                let talent = yield TalentManager_1.TalentManager.getTalent(talentMachineName);
-                // First we attempt to see if there is intersection going on with the commands.
-                // This will happen if there are multiple instances of the same commands (or aliases).
-                // The bot will still work, but one command will effectively override the other. Since this information is only
-                // important for developers, we should just throw a warning if this happens.
-                let commandsIntersection = Object.keys(this.commands).filter({}.hasOwnProperty.bind(talent.commands));
-                let aliasesIntersection = Object.keys(this.commandAliases).filter({}.hasOwnProperty.bind(talent.commandAliases));
-                if (!Sojiro_1.Sojiro.isEmpty(commandsIntersection)) {
-                    yield Morgana_1.Morgana.warn(`There seems to be duplicate commands in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
-                        bot: this.id,
-                        intersect: JSON.stringify(commandsIntersection)
-                    });
-                }
-                if (!Sojiro_1.Sojiro.isEmpty(aliasesIntersection)) {
-                    yield Morgana_1.Morgana.warn(`There seems to be duplicate command aliases in {{bot}}'s code: {{intersect}}. This can cause unwanted overrides. Try to adjust the command keys to fix this. A workaround will be developed in the future.`, {
-                        bot: this.id,
-                        intersect: JSON.stringify(commandsIntersection)
-                    });
-                }
-                // Merge the bot's commands with the Talent's commands.
-                this.commands = Object.assign({}, this.commands, talent.commands);
-                this.commandAliases = Object.assign({}, this.commandAliases, talent.commandAliases);
-            })));
-        });
-    }
-    /**
-     * Set all necessary listeners to the Bot.
-     *
-     * Bots inherit listeners from Talents. Here we set all commands that are already loading into talents, into
-     * the bots.
-     *
-     * By the time this function runs, the Bot should already have all of its necessary talents granted.
-     */
-    setListeners() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Set the core CommandListener.
-            this.listeners.push(new CommandListener_1.CommandListener());
-            // Await the processing of all talents loaded in the bot.
-            yield Promise.all(this.talents.map((talentKey) => __awaiter(this, void 0, void 0, function* () {
-                // Merge the bot's listeners with the Talent's listeners.
-                this.listeners = [...this.listeners, ...TalentManager_1.TalentManager.talents[talentKey].listeners];
-            })));
-        });
-    }
-    /**
-     * Listen to a message heard in a client.
-     *
-     * Now, explanations.
-     *
-     * This function will be used in clients to send a 'communication' back to the bot. This happens whenever a message
-     * is 'heard', meaning that the bot is in a chat room and a message was sent by someone (or another bot).
-     *
-     * When this function is ran, we fetch the raw content of the message sent, and we build a Resonance object with it.
-     * This is a fancy name for an object that stores information about a received communication. Then, we send off the
-     * Resonance to the listeners that are on the bot with all the information needed to act upon the message that was
-     * heard.
-     *
-     * Listeners will receive the Resonance, and then they react to them. Perfect example is the CommandListener, that
-     * will receive a Resonance and determine whether a command was issued to the Bot. Custom Listeners defined in Talents
-     * can do whatever they want when they hear a message!
-     *
-     * This function will also have logic pertaining to Prompts, but this can be explained elsewhere. :)
-     *
-     * @see ./Listener/Listener
-     * @see ./Resonance/Resonance
-     *
-     * @param message
-     *   Message object heard from a client.
-     * @param client
-     *   Client where the Message Object was heard from.
-     */
-    listen(message, client) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // First we decipher the message we just obtained.
-            let content = yield Bot.decipher(message, client);
-            // Construct a 'Resonance'.
-            let resonance = yield ResonanceFactory_1.ResonanceFactory.build(content, message, this, client);
-            // Fire all of the bot's prompts, if any.
-            yield Promise.all(this.prompts.map((prompt) => __awaiter(this, void 0, void 0, function* () {
-                // Fire the listen function.
-                yield prompt.listen(resonance);
-            })));
-            // Fire all of the bot's listeners.
-            yield Promise.all(this.listeners.map((listener) => __awaiter(this, void 0, void 0, function* () {
-                // Fire the listen function.
-                yield listener.listen(resonance);
-            })));
-        });
-    }
-    /**
-     * Set up a prompt to a specified user.
-     *
-     * Prompts are interactive ways to query information from a user in a seamless conversational way.
-     *
-     * Commands can issue prompts to expect input from the user in their next messages. For example, is a user uses the
-     * '!ping' command, in the code we can use Prompts to prompt the user for information afterwards. The prompt can send
-     * a message along the lines of "Pong! How are you?" and act upon the next reply the person that initially called the
-     * command writes (Or act upon any future message really).
-     *
-     * @param user
-     *   User that is being prompted.
-     * @param line
-     *   The communication line for this prompt. Basically, where we want the interaction to happen.
-     * @param resonance
-     *   The Resonance tied to this prompt.
-     * @param lifespan
-     *   The lifespan of this Prompt.
-     *   If the bot doesn't receive an answer in time, we cancel the prompt.
-     *   10 seconds is the average time a white boy waits for a reply from a girl he's flirting with after sending her a
-     *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO! Thank you
-     *   AVION for this wonderful advice!
-     * @param onResponse
-     *   The callback function that runs once a response has been heard.
-     * @param onError
-     *   The callback function that runs once a failure occurs. Failure includes not getting a response.
-     */
-    prompt(user, line, resonance, lifespan, onResponse, onError = (e) => { console.log(e); }) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Create the new prompt using the factory.
-            let prompt = yield PromptFactory_1.PromptFactory.build(user, line, resonance, lifespan, onResponse, onError, this);
-            // Set the prompt to the bot.
-            this.prompts.push(prompt);
-            // Await resolution of the prompt.
-            yield prompt.await().catch(Igor_1.Igor.pocket);
-        });
-    }
-    /**
-     * Remove a prompt from the current bot.
-     *
-     * @param prompt
-     *   The prompt to remove from this bot.
-     */
-    removePrompt(prompt) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.prompts = Sojiro_1.Sojiro.removeFromArray(this.prompts, prompt);
-        });
-    }
-    /**
-     * Decipher a message and obtain the raw content.
-     *
-     * Each client will send a message differently. i.e. Discord.JS sends a specific Message Object, whereas Twitch might
-     * send back a string. This function interprets these respectively and sends back the raw content.
-     *
-     * @param message
-     *   Message object sent by the client.
-     * @param client
-     *   The client that sent the message.
-     *
-     * @returns
-     *   Given the client type, return the raw content of the message heard.
-     */
-    static decipher(message, client) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Depending on the Client Type, decipher the message accordingly.
-            switch (client.type) {
-                // In the case of Discord, we get the 'content' property of the message object.
-                case ClientType_1.ClientType.Discord: {
-                    return message.content;
-                }
-                // In the case of Discord, we get the 'content' property of the message object.
-                // For Twitch, the Message object is custom built.
-                case ClientType_1.ClientType.Twitch: {
-                    return message.content;
-                }
-                // case ClientTypes.Slack:
-                //   return message;
-            }
-        });
-    }
-    /**
-     * Authenticate all of the clients in this bot.
-     */
-    authenticateClients() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Await the authentication of the clients linked to the bot.
-            yield Promise.all(Object.keys(this.clients).map((clientType) => __awaiter(this, void 0, void 0, function* () {
-                // Await authentication of the bot.
-                let client = yield this.getClient(clientType);
-                yield client.authenticate();
-                // Run appropriate Gestalt handlers in the clients.
-                yield client.gestalt();
-            })));
-        });
-    }
-    /**
-     * Disconnect all of the clients in this bot.
-     */
-    disconnectClients() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Await the authentication of the clients linked to the bot.
-            yield Promise.all(Object.keys(this.clients).map((clientType) => __awaiter(this, void 0, void 0, function* () {
-                // Await authentication of the bot.
-                yield this.disconnectClient(clientType);
-            })));
-        });
-    }
-    /**
-     * Initialize all clients for this bot.
-     *
-     * Initialization uses the client configuration to properly create the clients.
-     */
-    initializeClients() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Await the processing and initialization of all clients in the configurations.
-            yield Promise.all(this.config.clients.map((clientTypeKey) => __awaiter(this, void 0, void 0, function* () {
-                // Load configuration since it exists.
-                let clientConfig = yield this.getActiveClientConfig(ClientType_1.ClientType[clientTypeKey]);
-                if (Sojiro_1.Sojiro.isEmpty(clientConfig)) {
-                    yield Morgana_1.Morgana.warn('Configuration file could not be loaded for the {{client}} client in {{bot}}. This client will not be instantiated.' +
-                        'To create a configuration file, you can copy the ones found in the "example" bot folder.', {
-                        client: clientTypeKey,
-                        bot: this.id
-                    });
-                    return;
-                }
-                // Uses the ClientFactory to build the appropriate factory given the type.
-                // The client is then set to the bot.
-                this.clients[ClientType_1.ClientType[clientTypeKey]] = yield ClientFactory_1.ClientFactory.build(ClientType_1.ClientType[clientTypeKey], clientConfig, this);
-            })));
-        });
-    }
-    /**
-     * Disconnect from a determined client on this bot.
-     *
-     * @param clientType
-     *   The client ID to disconnect from.
-     */
-    disconnectClient(clientType) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Simply call the client's disconnect function.
-            let client = yield this.getClient(clientType);
-            yield client.disconnect();
-        });
-    }
-    /**
-     * Runs each Talent's initialize() function to run any preparations for the given bot.
-     */
-    initializeTalentsForBot() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Await the processing of all of this bot's talents.
-            yield Promise.all(this.talents.map((talentKey) => __awaiter(this, void 0, void 0, function* () {
-                // Run this talent's initialize function for this bot.
-                let talent = yield TalentManager_1.TalentManager.getTalent(talentKey);
-                yield talent.initialize(this);
-            })));
-        });
-    }
-    /**
-     * Get the command prefix, after a couple of checks.
-     *
-     * @param resonance
-     *   The Resonance we're taking a look at.
-     *
-     * @returns
-     *   Returns the command prefix we need to check for.
-     */
-    getCommandPrefix(resonance) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Get the configuration.
-            let botConfig = yield this.getActiveConfig();
-            // Get bot's client configuration.
-            let botClientConfig = yield this.getClientConfig(resonance.client.type);
-            // Variable to store retrieved command prefix.
-            let commandprefix = undefined;
-            // Depending on the client type, we'll be checking different types of configurations.
-            switch (resonance.client.type) {
-                // In the case of a Discord client, we check to see if there's a custom prefix set for the resonance's guild.
-                case ClientType_1.ClientType.Discord: {
-                    // Get client specific configurations.
-                    let clientConfig = yield resonance.client.getActiveConfigurations();
-                    if (resonance.message.guild) {
-                        commandprefix = clientConfig.guilds[resonance.message.guild.id].commandPrefix || undefined;
-                    }
-                    break;
-                }
-                // In the case of a Twitch client, we check to see if there's a custom prefix set for the resonance's guild.
-                case ClientType_1.ClientType.Twitch: {
-                    // Get client specific configurations.
-                    let clientConfig = yield resonance.client.getActiveConfigurations();
-                    if (resonance.message.channel) {
-                        commandprefix = clientConfig.channels[resonance.message.channel.id].commandPrefix || undefined;
-                    }
-                    break;
-                }
-            }
-            // Reset it to undefined if it's empty.
-            if (Sojiro_1.Sojiro.isEmpty(commandprefix)) {
-                commandprefix = undefined;
-            }
-            // By default, return the following.
-            return commandprefix || botClientConfig.commandPrefix || botConfig.commandPrefix;
         });
     }
 }

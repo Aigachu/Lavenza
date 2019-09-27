@@ -97,7 +97,7 @@ export class DiscordCommandAuthorizer extends CommandAuthorizer {
   /**
    * @inheritDoc
    */
-  protected async sendCooldownNotification() {
+  protected async sendCooldownNotification(): Promise<void> {
     // Send a reply alerting the user that the command is on cooldown.
     this.resonance.reply(`That command is on cooldown. :) Please wait!`).then(async message => {
       // Delete the message containing the command.

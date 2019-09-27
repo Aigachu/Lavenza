@@ -15,4 +15,4 @@ const Talent_1 = require("../../lib/Lavenza/Talent/Talent");
  */
 class Examples extends Talent_1.Talent {
 }
-exports.default = Examples;
+exports.Examples = Examples;

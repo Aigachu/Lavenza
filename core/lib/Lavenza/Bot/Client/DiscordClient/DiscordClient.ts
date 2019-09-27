@@ -122,7 +122,7 @@ export class DiscordClient extends DiscordJSClient implements ClientInterface {
   /**
    * @inheritDoc
    */
-  public async gestalt() {
+  public async gestalt(): Promise<void> {
     // Make sure database collection exists for this client for the given bot.
     await Gestalt.createCollection(`/bots/${this.bot.id}/clients/${this.type}`);
 
@@ -330,7 +330,7 @@ export class DiscordClient extends DiscordJSClient implements ClientInterface {
    *
    * @inheritDoc
    */
-  public async authenticate() {
+  public async authenticate(): Promise<void> {
     // Get the token.
     let token = this.bot.env.DISCORD_TOKEN;
 
@@ -350,7 +350,7 @@ export class DiscordClient extends DiscordJSClient implements ClientInterface {
    *
    * @inheritDoc
    */
-  public async disconnect() {
+  public async disconnect(): Promise<void> {
     // Call the destruction function to disconnect the client.
     await this.destroy();
 

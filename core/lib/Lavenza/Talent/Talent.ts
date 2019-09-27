@@ -6,20 +6,21 @@
  */
 
 // Modules.
-import * as path from 'path';
+import * as path from "path";
 
 // Imports.
-import {Akechi} from "../Confidant/Akechi";
-import {Gestalt} from "../Gestalt/Gestalt";
-import {Sojiro} from "../Confidant/Sojiro";
-import {Morgana} from "../Confidant/Morgana";
-import {Igor} from "../Confidant/Igor";
-import {Bot} from "../Bot/Bot";
-import {Listener} from "../Bot/Listener/Listener";
-import {Command} from "../Bot/Command/Command";
-import {TalentConfigurations} from "./TalentConfigurations";
-import {AssociativeObject} from "../Types";
-import {CommandConfigurations} from "../Bot/Command/CommandConfigurations";
+import { Bot } from "../Bot/Bot";
+import { Command } from "../Bot/Command/Command";
+import { CommandConfigurations } from "../Bot/Command/CommandConfigurations";
+import { Listener } from "../Bot/Listener/Listener";
+import { Akechi } from "../Confidant/Akechi";
+import { Igor } from "../Confidant/Igor";
+import { Morgana } from "../Confidant/Morgana";
+import { Sojiro } from "../Confidant/Sojiro";
+import { Gestalt } from "../Gestalt/Gestalt";
+import { AssociativeObject } from "../Types";
+
+import { TalentConfigurations } from "./TalentConfigurations";
 
 /**
  * Provides a base class for 'Talents'.
@@ -28,11 +29,46 @@ import {CommandConfigurations} from "../Bot/Command/CommandConfigurations";
  *
  * Think of talents as..."Plugins" from Wordpress, or "Modules" from Drupal, or "Packages" from Laravel.
  *
- * The idea here is that bot features are coded in their own folders and contexts. The power here comes from the flexibility we have
- * since talents can be granted to multiple bots, and talents can be tracked in separate repositories if needed. Also,
- * they can easily be toggled on and off. Decoupling the features from the bots seemed like a good move.
+ * The idea here is that bot features are coded in their own folders and contexts. The power here comes from the
+ * flexibility we have since talents can be granted to multiple bots, and talents can be tracked in separate
+ * repositories if needed. Also, they can easily be toggled on and off. Decoupling the features from the bots
+ * seemed like a good move.
  */
 export class Talent {
+
+  /**
+   * Object to store this Talent's command aliases.
+   */
+  public commandAliases: AssociativeObject<string>;
+
+  /**
+   * Object to store this Talent's commands.
+   */
+  public commands: AssociativeObject<Command>;
+
+  /**
+   * Talent configuration.
+   */
+  public config: TalentConfigurations;
+
+  /**
+   * Object to store relevant paths to the Talent's database entries.
+   *
+   * Contains paths to Gestalt databases for this Talent.
+   *  - databases.global    - Path to global database. i.e. /talents/{TALENT_NAME}
+   *  - databases.{BOT_ID}  - Path to bot specific database for this talent. i.e. /bots/{YOUR_BOT}/talents/{TALENT_NAME}
+   */
+  public databases: AssociativeObject<string>;
+
+  /**
+   * Path to the directory of the Talent.
+   */
+  public directory: string;
+
+  /**
+   * Object to store this Talent's listeners.
+   */
+  public listeners: Listener[];
 
   /**
    * Unique machine name of the talent.
@@ -43,47 +79,14 @@ export class Talent {
   public machineName: string;
 
   /**
-   * Talent configuration.
-   */
-  public config: TalentConfigurations;
-
-  /**
-   * Path to the directory of the Talent.
-   */
-  public directory: string;
-
-  /**
-   * Object to store relevant paths to the Talent's database entries.
-   *
-   * Contains paths to Gestalt databases for this Talent.
-   *    - databases.global    - Path to global database. i.e. /talents/{TALENT_NAME}
-   *    - databases.{BOT_ID}  - Path to bot specific database for this talent. i.e. /bots/{YOUR_BOT}/talents/{TALENT_NAME}
-   */
-  public databases: AssociativeObject<string>;
-
-  /**
-   * Object to store this Talent's commands.
-   */
-  public commands: AssociativeObject<Command>;
-
-  /**
-   * Object to store this Talent's command aliases.
-   */
-  public commandAliases: AssociativeObject<string>;
-
-  /**
-   * Object to store this Talent's listeners.
-   */
-  public listeners: Array<Listener>;
-
-  /**
    * Perform build tasks.
    *
    * Each talent will call this function once to set their properties.
    *
-   * @param config The configuration used to build the Talent. Provided from a 'config.yml' file found in the Talent's folder.
+   * @param config
+   *   The configuration used to build the Talent. Provided from a 'config.yml' file found in the Talent's folder.
    */
-  public async build(config: TalentConfigurations) {
+  public async build(config: TalentConfigurations): Promise<void> {
     // Initialize fields.
     this.machineName = path.basename(config.directory); // Here we get the name of the directory and set it as the ID.
     this.config = config;
@@ -110,23 +113,12 @@ export class Talent {
    *
    * You can see the result of these calls in the database.
    */
-  public async gestalt() {
+  public async gestalt(): Promise<void> {
     // Initialize the database collection for this talent if it doesn't already exist.
     await Gestalt.createCollection(`/talents/${this.machineName}`);
   }
 
-  /**
-   * Perform any initialization tasks for the Talent, in the context of a given bot.
-   *
-   * These initialization tasks happen after clients are loaded and authenticated for the bot.
-   *
-   * @param bot The bot to perform initializations for.
-   */
-  public async initialize(bot: Bot) {
-    // Set the path to the talent's bot specific database.
-    this.databases[bot.id] = `/bots/${bot.id}/talents/${this.machineName}`;
-  }
-
+  // tslint:disable-next-line:comment-format
   // noinspection JSUnusedGlobalSymbols
   /**
    * Get the active configuration from the database for this Talent, in the context of a Bot.
@@ -143,7 +135,19 @@ export class Talent {
    */
   public async getActiveConfigForBot(bot: Bot): Promise<TalentConfigurations> {
     // Await Gestalt's API call to get the configuration from the storage.
-    return await Gestalt.get(`/bots/${bot.id}/talents/${this.machineName}/config`);
+    return await Gestalt.get(`/bots/${bot.id}/talents/${this.machineName}/config`) as TalentConfigurations;
+  }
+
+  /**
+   * Perform any initialization tasks for the Talent, in the context of a given bot.
+   *
+   * These initialization tasks happen after clients are loaded and authenticated for the bot.
+   *
+   * @param bot The bot to perform initializations for.
+   */
+  public async initialize(bot: Bot): Promise<void> {
+    // Set the path to the talent's bot specific database.
+    this.databases[bot.id] = `/bots/${bot.id}/talents/${this.machineName}`;
   }
 
   /**
@@ -152,57 +156,68 @@ export class Talent {
    * Commands can't necessarily be added alone. They must be bundled in a Talent. This function fetches them all from
    * the 'Commands' folder.
    */
-  private async loadCommands() {
+  private async loadCommands(): Promise<void> {
     // Determine the path to this Talent's commands.
     // Each command has its own directory. We'll get the list here.
-    let commandDirectoriesPath = `${this.directory}/hooks/Commands`;
+    const commandDirectoriesPath = `${this.directory}/hooks/Commands`;
 
     // If this directory doesn't exist, we simply return.
     if (!await Akechi.directoryExists(commandDirectoriesPath)) {
       return;
     }
 
-    let commandDirectories = await Akechi.getDirectoriesFrom(commandDirectoriesPath);
+    const commandDirectories: string[] = await Akechi.getDirectoriesFrom(commandDirectoriesPath);
 
     // We'll throw an error for this function if the 'Commands' directory doesn't exist or is empty.
     // This error should be caught and handled above.
     if (Sojiro.isEmpty(commandDirectories)) {
-      // await Lavenza.warn('No commands were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
+      await Morgana.warn(
+        "No commands were found for the {{talent}} talent. Proceeding!",
+        {talent: this.machineName},
+      );
+
       return;
     }
 
     // We'll now act on each command directory found.
-    await Promise.all(commandDirectories.map(async directory => {
+    await Promise.all(commandDirectories.map(async (directory) => {
       // The name of the command will be the directory name.
-      let name = path.basename(directory);
+      const name: string = path.basename(directory);
 
       // The ID of the command will be its name in lowercase.
-      let id = name.toLowerCase();
+      const id: string = name.toLowerCase();
 
       // Get the config file for the command.
       // Each command should have a file with the format 'COMMAND_NAME.config.yml'.
-      let configFilePath = `${directory}/config.yml`;
-      let config: CommandConfigurations = await Akechi.readYamlFile(configFilePath).catch(Igor.continue);
+      const configFilePath = `${directory}/config.yml`;
+      const config = await Akechi.readYamlFile(configFilePath)
+        .catch(Igor.continue) as CommandConfigurations;
 
       // Stop if the configuration is empty or wasn't found.
       // We can't load the command without configurations.
       // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
       if (Sojiro.isEmpty(config)) {
-        await Morgana.warn('Configuration file could not be loaded for the {{command}} command in the {{talent}} talent.', {command: name, talent: this.machineName});
+        await Morgana.warn("Configuration file could not be loaded for the {{command}} command in the {{talent}} talent.", {command: name, talent: this.machineName});
+
         return;
       }
 
-      // Set directory to the configuration. It's nice to have quick access to the command folder from within the command.
+      // Set directory to the configuration.
+      // It's nice to have quick access to the command folder from within the command.
       config.directory = directory;
 
       // If the configuration exists, we can process by loading the class of the Command.
       // If the class doesn't exist (this could be caused by the configuration being wrong), we stop.
-      let command = require(`${directory}/${config.class}`)['default'];
+      let command: Command = await import(`${directory}/${config.class}`);
       if (Sojiro.isEmpty(command)) {
-        await Morgana.warn('Class could not be loaded for the {{command}} command in the {{talent}} talent.', {command: name, talent: this.machineName});
+        await Morgana.warn(
+          "Class could not be loaded for the {{command}} command in the {{talent}} talent.",
+          {command: name, talent: this.machineName},
+          );
+
         return;
       }
-      command = new command(id, config.key, directory);
+      command = new command[config.class](id, config.key, directory);
 
       // Now let's successfully register the command to the Talent.
       // Commands have build tasks too and are also singletons. We'll run them here.
@@ -212,7 +227,7 @@ export class Talent {
       this.commands[config.key] = command;
 
       // Set command aliases.
-      config['aliases'].forEach(alias => {
+      config.aliases.forEach((alias) => {
         this.commandAliases[alias] = command.config.key;
       });
     }));
@@ -226,10 +241,10 @@ export class Talent {
    *
    * Each Talent can have Listeners defined as well.
    */
-  private async loadListeners() {
+  private async loadListeners(): Promise<void> {
     // The 'Listeners' folder will simply have a collection of Class files. We'll get the list here.
     // We'll ge the tentative path first.
-    let listenerClassesPath = `${this.directory}/hooks/Listeners`;
+    const listenerClassesPath = `${this.directory}/hooks/Listeners`;
 
     // If this directory doesn't exist, we simply return.
     if (!await Akechi.directoryExists(listenerClassesPath)) {
@@ -237,23 +252,26 @@ export class Talent {
     }
 
     // Get the list of listener classes at the path.
-    let listenerClasses = await Akechi.getFilesFrom(listenerClassesPath);
+    let listenerClasses: string[] = await Akechi.getFilesFrom(listenerClassesPath);
 
     // Filter the obtained list to exclude Typescript files.
-    listenerClasses = listenerClasses.filter((path) => !path.endsWith('.ts'));
+    listenerClasses = listenerClasses.filter((listenerPath) => !listenerPath.endsWith(".ts"));
 
     // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.
     // This error should be caught and handled above.
     if (Sojiro.isEmpty(listenerClasses)) {
-      // await Lavenza.warn('No listeners were found for the {{talent}} talent. This might not be normal!', {talent: this.id});
+      await Morgana.warn("No listeners were found for the {{talent}} talent. Proceeding!",
+                         {talent: this.machineName},
+                         );
+
       return;
     }
 
     // Await the loading of all listener classes.
-    await Promise.all(listenerClasses.map(async listenerClass => {
+    await Promise.all(listenerClasses.map(async (listenerClass) => {
       // We will simply require the file here.
-      let listener = require(listenerClass)['default'];
-      listener = new listener();
+      let listener: Listener = await import(listenerClass);
+      listener = new listener[path.basename(listenerClass, ".js")]();
 
       // Run listener build tasks.
       // We only do this to assign the talent to the listener. That way, the listener can access the Talent.
@@ -261,7 +279,11 @@ export class Talent {
 
       // If the require fails or the result is empty, we stop.
       if (Sojiro.isEmpty(listener)) {
-        await Morgana.warn('A Listener class could not be loaded in the {{talent}} talent.', {talent: this.machineName});
+        await Morgana.warn(
+          "A Listener class could not be loaded in the {{talent}} talent.",
+          {talent: this.machineName},
+          );
+
         return;
       }
 

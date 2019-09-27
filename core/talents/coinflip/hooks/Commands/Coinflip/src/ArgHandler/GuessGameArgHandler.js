@@ -299,7 +299,7 @@ class GuessGameArgHandler {
         });
     }
 }
-exports.default = GuessGameArgHandler;
+exports.GuessGameArgHandler = GuessGameArgHandler;
 /**
  * Declare an Enum to organize the different guessing possibilities.
  */

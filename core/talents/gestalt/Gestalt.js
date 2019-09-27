@@ -49,4 +49,4 @@ class Gestalt extends Talent_1.Talent {
         });
     }
 }
-exports.default = Gestalt;
+exports.Gestalt = Gestalt;

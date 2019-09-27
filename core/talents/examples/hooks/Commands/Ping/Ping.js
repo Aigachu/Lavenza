@@ -73,4 +73,4 @@ class Ping extends Command_1.Command {
         });
     }
 }
-exports.default = Ping;
+exports.Ping = Ping;

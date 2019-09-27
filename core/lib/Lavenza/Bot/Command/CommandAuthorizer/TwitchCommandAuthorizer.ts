@@ -60,14 +60,14 @@ export class TwitchCommandAuthorizer extends CommandAuthorizer {
   /**
    * @inheritDoc
    */
-  protected async getAuthorIdentification() {
+  protected async getAuthorIdentification(): Promise<void> {
     return this.resonance.author.username;
   }
 
   /**
    * @inheritDoc
    */
-  protected async getAuthorEminence() {
+  protected async getAuthorEminence(): Promise<void> {
     // First, we'll check if this user's ID is found in the core configuration of the bot for this client.
     // Get the user roles configurations for the Guild where this message took place.
     let clientUserEminences = this.configurations.bot.client.userEminences;
@@ -89,7 +89,7 @@ export class TwitchCommandAuthorizer extends CommandAuthorizer {
   /**
    * @inheritDoc
    */
-  protected async sendCooldownNotification() {
+  protected async sendCooldownNotification(): Promise<void> {
     // Send a whisper directly to the author.
     await this.resonance.send(this.resonance.author, `That command is on cooldown. :) Please wait!`);
   }

@@ -11,7 +11,7 @@ import * as jsonic from 'jsonic';
 
 // Imports.
 import {Gestalt as GestaltService} from '../../../../../lib/Lavenza/Gestalt/Gestalt';
-import GestaltTalent from '../../../Gestalt';
+import {Gestalt as GestaltTalent} from '../../../Gestalt';
 import {Command} from '../../../../../lib/Lavenza/Bot/Command/Command';
 import {CommandConfigurations} from "../../../../../lib/Lavenza/Bot/Command/CommandConfigurations";
 import {Resonance} from '../../../../../lib/Lavenza/Bot/Resonance/Resonance';
@@ -26,7 +26,7 @@ import {Igor} from '../../../../../lib/Lavenza/Confidant/Igor';
  *
  * A great testing command.
  */
-export default class Gestalt extends Command {
+export class Gestalt extends Command {
   // Store the Gestalt protocols.
   private protocols: string[] = [
     'get',
