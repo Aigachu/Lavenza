@@ -1,0 +1,71 @@
+{
+  // Call us crazy. We're extending ALL of the rules.
+  // We'll disable some of them below, and adjust others as needed. We don't wanna disable too many though!
+  "extends": "tslint:all",
+  "rules": {
+    // === Disabled Rules ===
+    // We want consecutive blank lines sometimes! (Rarely though!)
+    "no-consecutive-blank-lines": false,
+
+    // This was conflicting with another rule (type-def).
+    // Still make it a habit to not use type definitions when the type can be inferred from the assignment call.
+    "no-inferrable-types": false,
+
+    // We like to use async everywhere as good practice...I think?!
+    "no-async-without-await": false,
+
+    // Not necessary imo. Will re-evaluate in the future.
+    "switch-default": false,
+
+    // We know we document a lot, and this doesn't let us use @inheritDoc from JSDoc!
+    // Don't use this as a way to avoid documentation! We'll look into a way to properly re-enable this in the future.
+    "completed-docs": false,
+
+    // We like numbers. :)
+    // No really, it got annoying. It shouldn't be too bad to keep this off!
+    "no-magic-numbers": false,
+
+    // === Adjusted Rules ===
+    // We don't want type definitions everywhere as it causes needless noise. Here we specify this.
+    "typedef": {
+      "options": ["call-signature", "parameter", "property-declaration", "member-variable-declaration"]
+    },
+
+    // We want Fields First member ordering since we're used to it.
+    // Like, who wants a class's fields at the BOTTOM of the file?!
+    "member-ordering": {
+      "options": {
+        "order": "fields-first"
+      }
+    },
+
+    // OOP Environment, we'll be using PascalCase for all of our files here.
+    "file-name-casing": {
+      "options": "pascal-case"
+    },
+
+    // We won't prefix our interfaces with I. They will have quite similar names though.
+    // Interfaces will ended end with "Interface", "Configurations", "Schema" or "Settings" for the most part.
+    "interface-name": {
+      "options": "never-prefix"
+    },
+
+    // We have static classes in our framework so we'll allow them in this case.
+    "no-unnecessary-class": {
+      "options": "allow-static-only"
+    },
+
+    // Max line length at 120 for consistency and ease of reading.
+    "max-line-length": {
+      "options": {
+        "limit": 120
+      }
+    },
+
+    // Preventing most console functions for production code.
+    "no-console": {
+      "severity": "warning",
+      "options": ["debug", "info", "time", "timeEnd", "trace"]
+    }
+  }
+}
