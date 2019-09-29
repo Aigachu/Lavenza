@@ -17,7 +17,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
 const translate_1 = require("@google-cloud/translate");
-const arp = require("app-root-path");
 const fs = require("fs");
 const i18n = require("i18n");
 const Core_1 = require("../Core/Core");
@@ -238,9 +237,9 @@ class Yoshida {
                 // We'll save Google's translation to our translation file, so we can re-use it later.
                 // This will avoid us constantly translating the same string over and over.
                 // We'll save it right into our i18n instance.
-                const storage = require(`${arp.path}/lang/${params.locale}.json`);
+                const storage = require(`${Core_1.Core.paths.root}/lang/${params.locale}.json`);
                 storage[params.phrase] = translation;
-                yield fs.writeFile(`${arp.path}/lang/${params.locale}.json`, JSON.stringify(storage, undefined, 2), (err) => {
+                yield fs.writeFile(`${Core_1.Core.paths.root}/lang/${params.locale}.json`, JSON.stringify(storage, undefined, 2), (err) => {
                     if (err) {
                         return console.error(err);
                     }

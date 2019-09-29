@@ -7,7 +7,6 @@
 
 // Modules.
 import { Translate, TranslateConfig } from "@google-cloud/translate";
-import * as arp from "app-root-path";
 import * as fs from "fs";
 import * as i18n from "i18n";
 
@@ -259,11 +258,11 @@ export class Yoshida {
       // We'll save Google's translation to our translation file, so we can re-use it later.
       // This will avoid us constantly translating the same string over and over.
       // We'll save it right into our i18n instance.
-      const storage: {} = require(`${arp.path}/lang/${params.locale}.json`);
+      const storage: {} = require(`${Core.paths.root}/lang/${params.locale}.json`);
       storage[params.phrase] = translation;
 
       await fs.writeFile(
-        `${arp.path}/lang/${params.locale}.json`,
+        `${Core.paths.root}/lang/${params.locale}.json`,
         JSON.stringify(storage, undefined, 2),
         (err: Error) => {
           if (err) { return console.error(err); }
