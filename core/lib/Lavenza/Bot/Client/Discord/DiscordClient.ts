@@ -109,6 +109,23 @@ export class DiscordClient extends Client {
         .catch(console.error);
     });
 
+    // Event: When the discord client connects to a new guild.
+    this.connector.on("guildCreate", async (guild) => {
+      // We start by syncing the guild configurations.
+      const guilds = await Gestalt.sync({}, `/bots/${this.bot.id}/clients/${this.type}/guilds`);
+
+      const baseGuildConfig: DiscordClientGuildConfigurations = {
+        commandPrefix: await this.bot.config.commandPrefix,
+        name: guild.name,
+        userEminences: {},
+      };
+
+      if (!(guild.id in guilds)) {
+        guilds[guild.id] = baseGuildConfig;
+      }
+      await Gestalt.update(`/bots/${this.bot.id}/clients/${this.type}/guilds`, guilds);
+    });
+
     // Event: When the discord client receives a message.
     this.connector.on("message", (message) => {
       // We ignore messages from any bot.
@@ -325,7 +342,7 @@ export class DiscordClient extends Client {
   }
 
   /**
-   * Get command prefix, taking into consideration that Discord context.
+   * Get command prefix, taking into consideration the Discord context.
    *
    * A custom command prefix can be set per Guild.
    *
@@ -334,7 +351,7 @@ export class DiscordClient extends Client {
   public async getCommandPrefix(resonance: DiscordResonance): Promise<string> {
     // Get client specific configurations.
     const clientConfig = await this.getActiveConfigurations();
-    if (resonance.message.guild) {
+    if (resonance.message.guild && clientConfig.guilds[resonance.message.guild.id]) {
       return clientConfig.guilds[resonance.message.guild.id].commandPrefix || undefined;
     }
   }

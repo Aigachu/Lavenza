@@ -241,7 +241,7 @@ export class TwitchClient extends Client {
   public async getCommandPrefix(resonance: TwitchResonance): Promise<string> {
     // Get client specific configurations.
     const clientConfig = await this.getActiveConfigurations();
-    if (resonance.message.channel) {
+    if (resonance.message.channel && clientConfig.channels[resonance.message.channel.id]) {
       return clientConfig.channels[resonance.message.channel.id].commandPrefix || undefined;
     }
   }

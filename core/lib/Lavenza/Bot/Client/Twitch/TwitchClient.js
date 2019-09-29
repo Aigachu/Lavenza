@@ -215,7 +215,7 @@ class TwitchClient extends Client_1.Client {
         return __awaiter(this, void 0, void 0, function* () {
             // Get client specific configurations.
             const clientConfig = yield this.getActiveConfigurations();
-            if (resonance.message.channel) {
+            if (resonance.message.channel && clientConfig.channels[resonance.message.channel.id]) {
                 return clientConfig.channels[resonance.message.channel.id].commandPrefix || undefined;
             }
         });
