@@ -40,6 +40,7 @@ async function processCommand(args) {
   // For now we just want simple management of ONE command.
   if (argv['_'][0] === 'init-desk') {
     // Flavor text.
+    // @ts-ignore
     console.log(`Lavenza: Commencing initialization.`.success);
     console.log(`Lavenza: To run Lavenza, a Desk must exist within your project. The Desk is a directory where all configurations specific to Lavenza will reside. Lavenza's Database will also be located here.`);
 
@@ -66,6 +67,7 @@ async function processCommand(args) {
 
     // Copy the base Desk to the provided path.
     await copyFilesAsync(`${arp.path}/resources/desk`, deskDestination).then(() => {
+      // @ts-ignore
       console.log(`Lavenza: Successfully initialized a Desk with the appropriate folder structure at '${deskDestination}'. Refer to the README.md file found in that folder to begin configuring Lavenza!`.success);
     }).catch((err) => {
       console.log(err);
