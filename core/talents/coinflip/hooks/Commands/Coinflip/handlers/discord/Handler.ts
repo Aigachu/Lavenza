@@ -6,8 +6,10 @@
  */
 
 // Imports.
-import {CommandClientHandler} from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
-import {DiscordResonance} from "../../../../../../../lib/Lavenza/Bot/Resonance/DiscordResonance";
+import { ClientUser } from "../../../../../../../lib/Lavenza/Bot/Client/ClientUser";
+import { DiscordResonance } from "../../../../../../../lib/Lavenza/Bot/Client/Discord/DiscordResonance";
+import { CommandClientHandler } from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
+import { AbstractObject } from "../../../../../../../lib/Lavenza/Types";
 
 /**
  * A simple client handler.
@@ -22,9 +24,11 @@ export class Handler extends CommandClientHandler {
   public resonance: DiscordResonance;
 
   /**
+   * Execute handler tasks.
+   *
    * @inheritDoc
    */
-  async execute(data: any = {}) {
+  public async execute(data: AbstractObject = {}): Promise<void> {
     // Do nothing.
   }
 
@@ -34,13 +38,14 @@ export class Handler extends CommandClientHandler {
    * @param data
    *   Data being sent to this handler.
    */
-  async getOpponent(data: any) {
+  public async getOpponent(data: AbstractObject): Promise<ClientUser> {
     let input = data.userInput;
-    input = input.replace('<@', '');
-    input = input.replace('!', '');
-    input = input.replace('>', '');
-    let opponent = this.resonance.guild.members.find(member => member.id === input);
-    return opponent || undefined;
+    input = input.replace("<@", "");
+    input = input.replace("!", "");
+    input = input.replace(">", "");
+    const opponent = this.resonance.guild.members.find((member) => member.id === input);
+
+    return opponent.user || undefined;
   }
 
 }

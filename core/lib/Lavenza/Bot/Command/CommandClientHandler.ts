@@ -6,10 +6,9 @@
  */
 
 // Imports.
-import {Command} from "./Command";
-import {Resonance} from "../Resonance/Resonance";
-import {Sojiro} from "../../Confidant/Sojiro";
-import {Kawakami} from "../../Confidant/Kawakami";
+import { Resonance } from "../Resonance/Resonance";
+
+import { Command } from "./Command";
 
 /**
  * A simple client handler.
@@ -67,34 +66,6 @@ export abstract class CommandClientHandler {
    * @returns
    *   Can returns any form of data depending on the type of function that was called.
    */
-  public abstract async execute(data: any): Promise<any>;
-
-  // noinspection JSUnusedGlobalSymbols
-  /**
-   * Send a basic reply.
-   *
-   * A wrapper function that can send a quick reply to a message.
-   *
-   * @param data
-   *   The data containing information on the message to send.
-   *
-   * @returns
-   *   The message that was sent as a reply.
-   */
-  public async basicReply(data: any): Promise<any> {
-    data.replacers = data.replacers || {};
-
-    // Set up for "bolding" any replacers.
-    if (!Sojiro.isEmpty(data.bolds)) {
-      await Promise.all(data.bolds.map(async (key) => {
-        if (!data.replacers[key]) {
-          return;
-        }
-        data.replacers[key] = await Kawakami.bold(data.replacers[key]);
-      }));
-    }
-    await this.resonance.typeFor(1, this.resonance.channel);
-    await this.resonance.__reply(data.message, Object.assign({user: this.resonance.author}, data.replacers));
-  }
+  public abstract async execute(data: unknown): Promise<unknown>;
 
 }

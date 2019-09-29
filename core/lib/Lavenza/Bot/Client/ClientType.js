@@ -18,5 +18,8 @@ var ClientType;
     // Slack = 'slack'
     // Youtube = 'youtube',
     // Skype = 'a funny joke',
+    // Whatsapp = 'oh really?',
+    // Messenger = 'LOL! This one will be fun...',
+    // WeChat = 'CHINESE TRANSLATIONS?!',
 })(ClientType || (ClientType = {}));
 exports.ClientType = ClientType;

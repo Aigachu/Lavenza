@@ -19,12 +19,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 // Imports.
 const Akechi_1 = require("../Confidant/Akechi");
+const Igor_1 = require("../Confidant/Igor");
 const Morgana_1 = require("../Confidant/Morgana");
 const Sojiro_1 = require("../Confidant/Sojiro");
-const Igor_1 = require("../Confidant/Igor");
-const Bot_1 = require("./Bot");
 const Core_1 = require("../Core/Core");
 const Gestalt_1 = require("../Gestalt/Gestalt");
+const Bot_1 = require("./Bot");
 /**
  * Provides a Manager for Bots.
  *
@@ -34,12 +34,6 @@ const Gestalt_1 = require("../Gestalt/Gestalt");
  *
  */
 class BotManager {
-    // noinspection JSUnusedLocalSymbols
-    /**
-     * This is a static class. The constructor will never be used.
-     */
-    constructor() {
-    }
     /**
      * Preparation handler for the BotManager.
      *
@@ -64,10 +58,11 @@ class BotManager {
             // Some flavor.
             yield Morgana_1.Morgana.status("Running Gestalt bootstrap process for the Bot Manager...");
             // Creation of the Bots collection.
-            yield Gestalt_1.Gestalt.createCollection('/bots');
+            yield Gestalt_1.Gestalt.createCollection("/bots");
             // Run Gestalt handlers for each Bot.
-            yield Promise.all(Object.keys(BotManager.bots).map((botId) => __awaiter(this, void 0, void 0, function* () {
-                let bot = yield BotManager.getBot(botId);
+            yield Promise.all(Object.keys(BotManager.bots)
+                .map((botId) => __awaiter(this, void 0, void 0, function* () {
+                const bot = yield BotManager.getBot(botId);
                 yield bot.gestalt();
             })));
             // Some flavor.
@@ -111,23 +106,6 @@ class BotManager {
         });
     }
     /**
-     * Boots all bots set up in the 'autoboot' array of the settings.
-     */
-    static bootAutoBoots() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // If the autoboot array is empty, we don't do anything here.
-            if (Sojiro_1.Sojiro.isEmpty(Core_1.Core.settings.autoboot)) {
-                yield Morgana_1.Morgana.warn(`No bots set up for autobooting. Continuing!`);
-                return;
-            }
-            // Boot all bots set up in autobooting.
-            yield Promise.all(Core_1.Core.settings.autoboot.map((botId) => __awaiter(this, void 0, void 0, function* () {
-                yield BotManager.boot(botId);
-                yield Morgana_1.Morgana.success("Successfully Auto-Booted {{bot}}!", { bot: botId });
-            })));
-        });
-    }
-    /**
      * Run deployment handlers for all bots loaded in the Manager.
      *
      * @param botId
@@ -137,11 +115,11 @@ class BotManager {
         return __awaiter(this, void 0, void 0, function* () {
             // If the bot isn't found, we can't boot it.
             if (Sojiro_1.Sojiro.isEmpty(BotManager.bots[botId])) {
-                yield Morgana_1.Morgana.warn(`Tried to boot an non-existent bot: {{botId}}. Gracefully continuing the program.`, { botId: botId });
+                yield Morgana_1.Morgana.warn("Tried to boot an non-existent bot: {{botId}}. Gracefully continuing the program.", { botId });
                 return;
             }
             // Await deployment handlers for a single bot.
-            let bot = yield BotManager.getBot(botId);
+            const bot = yield BotManager.getBot(botId);
             yield bot.deploy();
         });
     }
@@ -155,10 +133,10 @@ class BotManager {
         return __awaiter(this, void 0, void 0, function* () {
             // If the bot isn't found, we can't shut it down.
             if (Sojiro_1.Sojiro.isEmpty(BotManager.bots[botId])) {
-                yield Morgana_1.Morgana.warn(`Tried to shutdown an non-existent bot: {{botId}}. Gracefully continuing the program.`, { botId: botId });
+                yield Morgana_1.Morgana.warn("Tried to shutdown an non-existent bot: {{botId}}. Gracefully continuing the program.", { botId });
                 return;
             }
-            let bot = yield BotManager.getBot(botId);
+            const bot = yield BotManager.getBot(botId);
             yield bot.shutdown();
         });
     }
@@ -171,7 +149,7 @@ class BotManager {
     static prepareBot(botId) {
         return __awaiter(this, void 0, void 0, function* () {
             // Await preparation handler for a single bot.
-            let bot = yield BotManager.getBot(botId);
+            const bot = yield BotManager.getBot(botId);
             yield bot.prepare();
         });
     }
@@ -181,9 +159,27 @@ class BotManager {
     static prepareAllBots() {
         return __awaiter(this, void 0, void 0, function* () {
             // Await preparation handlers for all bots.
-            yield Promise.all(Object.keys(BotManager.bots).map((botId) => __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all(Object.keys(BotManager.bots)
+                .map((botId) => __awaiter(this, void 0, void 0, function* () {
                 // Await preparation handler for a single bot.
                 yield BotManager.prepareBot(botId);
+            })));
+        });
+    }
+    /**
+     * Boots all bots set up in the 'autoboot' array of the settings.
+     */
+    static bootAutoBoots() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // If the autoboot array is empty, we don't do anything here.
+            if (Sojiro_1.Sojiro.isEmpty(Core_1.Core.settings.autoboot)) {
+                yield Morgana_1.Morgana.warn("No bots set up for autobooting. Continuing!");
+                return;
+            }
+            // Boot all bots set up in autobooting.
+            yield Promise.all(Core_1.Core.settings.autoboot.map((botId) => __awaiter(this, void 0, void 0, function* () {
+                yield BotManager.boot(botId);
+                yield Morgana_1.Morgana.success("Successfully Auto-Booted {{bot}}!", { bot: botId });
             })));
         });
     }
@@ -197,40 +193,41 @@ class BotManager {
      * @param directory
      *    Path to the directory where this bot's files are located.
      */
-    static registerBot(botId, directory = undefined) {
+    static registerBot(botId, directory) {
         return __awaiter(this, void 0, void 0, function* () {
+            // Variable to store actual path to the bot's directory.
+            let botDirectoryPath = "";
             // If the directory isn't provided, we'll get it ourselves.
             if (directory === undefined) {
-                directory = Core_1.Core.paths.bots + '/' + botId;
+                botDirectoryPath = `${Core_1.Core.paths.bots}/${botId}`;
             }
             // If the bot name is part of the ignored bot list, return now.
             if (botId in BotManager.ignoredBots) {
                 return;
             }
             // Get the config file for the bot.
-            let configFilePath = directory + '/' + 'config.yml';
-            let config = yield Akechi_1.Akechi.readYamlFile(configFilePath).catch(Igor_1.Igor.continue);
+            const configFilePath = `${botDirectoryPath}/config.yml`;
+            const config = yield Akechi_1.Akechi.readYamlFile(configFilePath)
+                .catch(Igor_1.Igor.continue);
             // If the configuration is empty, stop here.
             // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
             if (Sojiro_1.Sojiro.isEmpty(config)) {
-                yield Morgana_1.Morgana.warn('Configuration file could not be loaded for following bot: {{bot}}', { bot: botId });
+                yield Morgana_1.Morgana.warn("Configuration file could not be loaded for following bot: {{bot}}", { bot: botId });
                 return;
             }
-            // Set directory to the configuration. It's nice to have quick access to the bot folder from within the bot.
-            config.directory = directory;
             // If the 'active' flag of the config is set and is not 'true', we don't activate this bot.
             if (config.active !== undefined && config.active === false) {
-                yield Morgana_1.Morgana.warn('The {{bot}} bot has been set to inactive. It will not be registered.', { bot: botId });
+                yield Morgana_1.Morgana.warn("The {{bot}} bot has been set to inactive. It will not be registered.", { bot: botId });
                 return;
             }
             // Instantiate and set the bot to the collection.
-            let bot = new Bot_1.Bot(botId, config);
+            const bot = new Bot_1.Bot(botId, config, botDirectoryPath);
             if (bot.id === Core_1.Core.settings.master) {
                 bot.isMaster = true;
             }
             Object.assign(BotManager.bots, { [botId]: bot });
             // Print a success message.
-            yield Morgana_1.Morgana.success('The {{bot}} bot has successfully been registered!', { bot: botId });
+            yield Morgana_1.Morgana.success("The {{bot}} bot has successfully been registered!", { bot: botId });
         });
     }
     /**
@@ -244,7 +241,7 @@ class BotManager {
     static registerAllBotsInDirectory() {
         return __awaiter(this, void 0, void 0, function* () {
             // Fetch all bot directories from the 'bots' folder at the root of the application.
-            let botDirectories = yield Akechi_1.Akechi.getDirectoriesFrom(Core_1.Core.paths.bots);
+            const botDirectories = yield Akechi_1.Akechi.getDirectoriesFrom(Core_1.Core.paths.bots);
             // If for some reason, bot directories could not be loaded, we stop the app.
             if (botDirectories === undefined) {
                 yield Igor_1.Igor.throw("Other than the 'example' folder, no bot folders seem to exist in /app/bots. The whole point of this app is to run bots, so create one!");
@@ -252,7 +249,7 @@ class BotManager {
             // Loop through all directories we need to.
             yield Promise.all(botDirectories.map((directory) => __awaiter(this, void 0, void 0, function* () {
                 // Get the bot name. This is in fact the name of the directory.
-                let name = path.basename(directory);
+                const name = path.basename(directory);
                 // Register the bot.
                 yield BotManager.registerBot(name);
             })));
@@ -265,13 +262,13 @@ class BotManager {
 }
 exports.BotManager = BotManager;
 /**
+ * Store a list of all bots in the application.
+ */
+BotManager.bots = {};
+/**
  * Store ignored bot names.
  * We use this to prevent loading unneeded bot folders, like the example one.
  */
 BotManager.ignoredBots = {
-    example: 'example',
+    example: "example",
 };
-/**
- * Store a list of all bots in the application.
- */
-BotManager.bots = {};

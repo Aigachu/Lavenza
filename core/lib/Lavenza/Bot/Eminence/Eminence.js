@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 var Eminence;
 (function (Eminence) {
+    // tslint:disable-next-line:comment-format
     // noinspection JSUnusedGlobalSymbols
     Eminence[Eminence["None"] = 0] = "None";
     Eminence[Eminence["Aficionado"] = 1] = "Aficionado";

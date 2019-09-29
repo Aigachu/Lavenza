@@ -17,10 +17,6 @@
     // Not necessary imo. Will re-evaluate in the future.
     "switch-default": false,
 
-    // We know we document a lot, and this doesn't let us use @inheritDoc from JSDoc!
-    // Don't use this as a way to avoid documentation! We'll look into a way to properly re-enable this in the future.
-    "completed-docs": false,
-
     // We like numbers. :)
     // No really, it got annoying. It shouldn't be too bad to keep this off!
     "no-magic-numbers": false,
@@ -53,6 +49,11 @@
     // We have static classes in our framework so we'll allow them in this case.
     "no-unnecessary-class": {
       "options": "allow-static-only"
+    },
+
+    // Allow public class methods to not use 'this'.
+    "prefer-function-over-method": {
+      "options": ["allow-public", "allow-protected"]
     },
 
     // Max line length at 120 for consistency and ease of reading.

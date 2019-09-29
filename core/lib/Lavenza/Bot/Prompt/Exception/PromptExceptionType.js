@@ -13,9 +13,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 var PromptExceptionType;
 (function (PromptExceptionType) {
+    /**
+     * When a prompt doesn't receive a response before it's lifespan, fire this error.
+     */
     PromptExceptionType["NO_RESPONSE"] = "no-response";
+    /**
+     * When a prompt doesn't receive a valid response, fire this error.
+     */
     PromptExceptionType["INVALID_RESPONSE"] = "invalid-response";
+    /**
+     * Fire this error for miscellaneous failures.
+     */
     PromptExceptionType["MISC"] = "miscellaneous";
+    /**
+     * When a prompt reaches it's maximum reset allowance, fire this error.
+     */
     PromptExceptionType["MAX_RESET_EXCEEDED"] = "max-reset-exceeded";
 })(PromptExceptionType || (PromptExceptionType = {}));
 exports.PromptExceptionType = PromptExceptionType;

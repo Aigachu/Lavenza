@@ -18,7 +18,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Imports.
 const Listener_1 = require("../../Listener/Listener");
 const CommandInterpreter_1 = require("../CommandInterpreter/CommandInterpreter");
-const CommandAuthorizerFactory_1 = require("../CommandAuthorizer/CommandAuthorizerFactory");
 /**
  * Provides a Listener that listens for commands when messages are heard by a Bot.
  *
@@ -28,6 +27,8 @@ const CommandAuthorizerFactory_1 = require("../CommandAuthorizer/CommandAuthoriz
  */
 class CommandListener extends Listener_1.Listener {
     /**
+     * Listen to a resonance and act upon it.
+     *
      * @inheritDoc
      */
     listen(resonance) {
@@ -40,28 +41,25 @@ class CommandListener extends Listener_1.Listener {
                 return;
             }
             // If the help option is used, we fire the help function of the command and return.
-            let args = yield resonance.getArguments();
-            if (args['_'].includes('help') || 'help' in args) {
-                resonance.executeHelp().then(() => {
+            const args = yield resonance.getArguments();
+            if (args._.includes("help") || "help" in args) {
+                resonance.executeHelp()
+                    .then(() => {
                     // Do nothing.
                 });
                 return;
             }
             // Now that we know a command has been found, we need to pass it through the right Authorizer.
             // We use a factory to build an appropriate authorizer.
-            let authorizer = yield CommandAuthorizerFactory_1.CommandAuthorizerFactory.build(resonance, yield resonance.getCommand());
-            // The CommandAuthorizer checks if the command is authorized in the current context.
-            // If for any reason it's unauthorized, we don't do anything with the command.
-            let authorized = yield authorizer.authorize();
+            const authorized = yield resonance.client.authorize(yield resonance.getCommand(), resonance);
             if (!authorized) {
                 return;
             }
-            // If an order was found, execute it.
-            resonance.executeCommand().then(() => {
+            // If a command was found and authorized, execute it.
+            resonance.executeCommand()
+                .then(() => {
                 // Do nothing.
             });
-            // And at the same time we set the cooldown for the command.
-            yield authorizer.activateCooldownForCommand();
         });
     }
 }

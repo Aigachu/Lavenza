@@ -15,10 +15,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Sojiro_1 = require("../../../Confidant/Sojiro");
-const Makoto_1 = require("../../../Confidant/Makoto");
-const Morgana_1 = require("../../../Confidant/Morgana");
+// Imports.
 const Igor_1 = require("../../../Confidant/Igor");
+const Morgana_1 = require("../../../Confidant/Morgana");
+const Sojiro_1 = require("../../../Confidant/Sojiro");
 const Eminence_1 = require("../../Eminence/Eminence");
 /**
  * Provides a base class for Command Authorizers.
@@ -33,12 +33,12 @@ class CommandAuthorizer {
      *
      * @TODO - Holy shit...We need to make sure a prompt isn't in progress my guy. LOL.
      *
-     * @param resonance
-     *   The resonance that we are trying to locate a command in.
      * @param command
      *   The command that was found in the Resonance.
+     * @param resonance
+     *   The resonance that we are trying to locate a command in.
      */
-    constructor(resonance, command) {
+    constructor(command, resonance) {
         /**
          * Object to store relevant configurations.
          */
@@ -51,7 +51,7 @@ class CommandAuthorizer {
     /**
      * Perform async operations that occur right after building an Authorizer.
      */
-    build(resonance) {
+    build() {
         return __awaiter(this, void 0, void 0, function* () {
             // Set the identity of the author.
             // Depending on the type of client we're in, this will be set differently.
@@ -87,19 +87,19 @@ class CommandAuthorizer {
             // Now we'll check if the person that invoked the command is the Joker.
             // If so, no access checks are needed.
             // @TODO - Masquerade would be nice to facilitate testing purposes!
-            if (this.authorID == this.resonance.bot.joker[this.resonance.client.type].id) {
+            if (this.authorID === this.resonance.bot.joker[this.resonance.client.type].id) {
                 return true;
             }
             // Check if user is allowed to use this command.
-            let activationValidation = yield this.validateActivation();
+            const activationValidation = yield this.validateActivation();
             if (!activationValidation) {
-                yield Morgana_1.Morgana.warn('command activation failed');
+                yield Morgana_1.Morgana.warn("command activation failed");
                 return false;
             }
             // Validate that the command isn't on cooldown.
             // Check if cooldowns are on for this command.
             // If so, we have to return.
-            let commandIsOnCooldown = yield this.commandIsOnCooldown();
+            const commandIsOnCooldown = yield this.validateCooldown();
             if (commandIsOnCooldown) {
                 // Send the cooldown notification.
                 yield this.sendCooldownNotification();
@@ -107,38 +107,38 @@ class CommandAuthorizer {
             }
             // At this point, if the configuration is empty, we have no checks to make, so we let it pass.
             if (Sojiro_1.Sojiro.isEmpty(this.configurations.command.client)) {
-                // await Lavenza.warn('No configurations were found for this command...Is this normal?...');
+                // Await Lavenza.warn('No configurations were found for this command...Is this normal?...');
                 return true;
             }
             // Check if the privacy is good here. Some commands can't be used in direct messages.
-            let privacyValidation = yield this.validatePrivacy();
+            const privacyValidation = yield this.validatePrivacy();
             if (!privacyValidation) {
-                yield Morgana_1.Morgana.warn('privacy validation failed');
+                yield Morgana_1.Morgana.warn("privacy validation failed");
                 return false;
             }
             // Check if user is allowed to use this command.
-            let userValidation = yield this.validateUser();
+            const userValidation = yield this.validateUser();
             if (!userValidation) {
-                yield Morgana_1.Morgana.warn('user validation failed');
+                yield Morgana_1.Morgana.warn("user validation failed");
                 return false;
             }
             // Check if the user has the necessary eminence to execute the command.
-            let eminenceValidation = yield this.validateEminence();
+            const eminenceValidation = yield this.validateEminence();
             if (!eminenceValidation) {
-                yield Morgana_1.Morgana.warn('eminence validation failed');
+                yield Morgana_1.Morgana.warn("eminence validation failed");
                 return false;
             }
             // If command arguments aren't valid, we hit the message with a reply explaining the error, and then end.
-            let argumentsValidation = yield this.validateCommandArguments();
+            const argumentsValidation = yield this.validateCommandArguments();
             if (!argumentsValidation) {
-                yield Morgana_1.Morgana.warn('arguments validation failed');
+                yield Morgana_1.Morgana.warn("arguments validation failed");
                 return false;
             }
             // Now, well execute the warrant() function, which does checks specific to the client.
-            let clientWarrant = yield this.warrant();
-            // noinspection RedundantIfStatementJS
+            const clientWarrant = yield this.warrant();
+            // Noinspection RedundantIfStatementJS
             if (!clientWarrant) {
-                yield Morgana_1.Morgana.warn('client warrant validation failed');
+                yield Morgana_1.Morgana.warn("client warrant validation failed");
                 return false;
             }
             return true;
@@ -168,7 +168,7 @@ class CommandAuthorizer {
     validatePrivacy() {
         return __awaiter(this, void 0, void 0, function* () {
             // Get the privacy of the resonance.
-            let messageIsPrivate = yield this.resonance.isPrivate();
+            const messageIsPrivate = yield this.resonance.isPrivate();
             // If the message if not private, we have no checks to make.
             if (!messageIsPrivate) {
                 return true;
@@ -177,11 +177,13 @@ class CommandAuthorizer {
             let allowedInPrivate = true;
             // At this point we know the message is private. We return whether or not it's allowed.
             // Get the base command configuration.
-            if (this.configurations.command.base.authorization && this.configurations.command.base.authorization.hasOwnProperty('enabledInDirectMessages')) {
+            if (this.configurations.command.base.authorization
+                && this.configurations.command.base.authorization.hasOwnProperty("enabledInDirectMessages")) {
                 allowedInPrivate = this.configurations.command.base.authorization.enabledInDirectMessages;
             }
             // If the client configuration has an override, we'll use it.
-            if (this.configurations.command.base.authorization && this.configurations.command.client.authorization.hasOwnProperty('enabledInDirectMessages')) {
+            if (this.configurations.command.base.authorization
+                && this.configurations.command.client.authorization.hasOwnProperty("enabledInDirectMessages")) {
                 allowedInPrivate = this.configurations.command.client.authorization.enabledInDirectMessages;
             }
             return allowedInPrivate;
@@ -207,22 +209,24 @@ class CommandAuthorizer {
      * @returns
      *   TRUE if this authorization passes, FALSE otherwise.
      */
-    validateEminence(requiredEminence = undefined) {
+    validateEminence(requiredEminenceKey) {
         return __awaiter(this, void 0, void 0, function* () {
             // Get the role of the author of the message.
-            let authorEminence = yield this.getAuthorEminence();
+            const authorEminence = yield this.getAuthorEminence();
             // If an eminence is provided in the arguments, we validate that the user has the provided eminence (or above).
-            if (requiredEminence) {
-                return authorEminence >= Eminence_1.Eminence[requiredEminence];
+            if (requiredEminenceKey) {
+                return authorEminence >= Eminence_1.Eminence[requiredEminenceKey];
             }
             // Set the required Eminence by default to None.
-            requiredEminence = Eminence_1.Eminence.None;
+            let requiredEminence = Eminence_1.Eminence.None;
             // Attempt to get configuration set in the base command configuration.
-            if (this.configurations.command.base.authorization && this.configurations.command.base.authorization.hasOwnProperty('accessEminence')) {
+            if (this.configurations.command.base.authorization
+                && this.configurations.command.base.authorization.hasOwnProperty("accessEminence")) {
                 requiredEminence = Eminence_1.Eminence[this.configurations.command.base.authorization.accessEminence];
             }
             // Attempt to get configuration set in the client command configuration.
-            if (this.configurations.command.client.authorization && this.configurations.command.client.authorization.hasOwnProperty('accessEminence')) {
+            if (this.configurations.command.client.authorization
+                && this.configurations.command.client.authorization.hasOwnProperty("accessEminence")) {
                 requiredEminence = Eminence_1.Eminence[this.configurations.command.client.authorization.accessEminence];
             }
             // Then we just make sure that the author's ID can be found where it's needed.
@@ -241,44 +245,48 @@ class CommandAuthorizer {
     validateCommandArguments() {
         return __awaiter(this, void 0, void 0, function* () {
             // Get the arguments we need.
-            let args = yield this.resonance.getArguments();
+            const args = yield this.resonance.getArguments();
             // If there are no arguments, we have nothing to validate.
-            if (Sojiro_1.Sojiro.isEmpty(args['_']) && args.length === 1) {
+            if (Sojiro_1.Sojiro.isEmpty(args._) && args.length === 1) {
                 return true;
             }
             // First, we perform input validations.
             if (this.configurations.command.parameters.input) {
-                if (this.configurations.command.parameters.input.required === true && Sojiro_1.Sojiro.isEmpty(args['_'])) {
+                if (this.configurations.command.parameters.input.required === true && Sojiro_1.Sojiro.isEmpty(args._)) {
                     return false;
                 }
             }
             // We'll merge the options and flags together for easier comparisons.
-            let configOptions = this.configurations.command.parameters.options || [];
-            let configFlags = this.configurations.command.parameters.flags || [];
-            let configArgs = [...configOptions, ...configFlags];
+            const configOptions = this.configurations.command.parameters.options || [];
+            const configFlags = this.configurations.command.parameters.flags || [];
+            const configArgs = [...configOptions, ...configFlags];
             // If args is empty, we don't have any validations to do.
             if (Sojiro_1.Sojiro.isEmpty(configArgs)) {
                 return true;
             }
             // If any arguments were given, we'll validate them here.
-            let validations = yield Promise.all(Object.keys(args).map((arg) => __awaiter(this, void 0, void 0, function* () {
+            const validations = yield Promise.all(Object.keys(args)
+                .map((arg) => __awaiter(this, void 0, void 0, function* () {
                 // If there are no arguments, we don't need to validate anything.
-                if (arg === '_') {
+                if (arg === "_") {
                     return true;
                 }
                 // Attempt to find the argument in the configurations.
-                let argConfig = configArgs.find(configArg => configArg.key === arg || configArg['aliases'] !== undefined && configArg['aliases'].includes(arg));
+                const argConfig = configArgs.find((configArg) => configArg.key === arg
+                    || configArg.aliases !== undefined
+                        && configArg.aliases.includes(arg));
                 // If this argument is not in the configuration, then it's an invalid argument.
                 if (Sojiro_1.Sojiro.isEmpty(argConfig)) {
-                    yield Igor_1.Igor.throw(`{{arg}} is not a valid argument for this command.`, { arg: arg });
+                    yield Igor_1.Igor.throw("{{arg}} is not a valid argument for this command.", { arg });
                 }
                 // Next we validate that the user has the appropriate eminence to use the argument.
-                let validateAccessEminence = yield this.validateEminence(Eminence_1.Eminence[argConfig.accessEminence]);
+                const validateAccessEminence = yield this.validateEminence(Eminence_1.Eminence[argConfig.accessEminence]);
                 if (!validateAccessEminence) {
-                    yield Igor_1.Igor.throw(`You do not have the necessary permissions to use the {{arg}} argument. Sorry. You may want to talk to Aiga about getting permission!`, { arg: argConfig.key });
+                    yield Igor_1.Igor.throw("You do not have the necessary permissions to use the {{arg}} argument. Sorry. You may want to talk to Aiga about getting permission!", { arg: argConfig.key });
                 }
                 return true;
-            }))).catch(error => {
+            })))
+                .catch((error) => {
                 console.error(error);
                 return false;
             });
@@ -290,6 +298,8 @@ class CommandAuthorizer {
             return true;
         });
     }
+    // tslint:disable-next-line:comment-format
+    // noinspection JSMethodCanBeStatic
     /**
      * Validates that the command is not on cooldown.
      *
@@ -298,38 +308,11 @@ class CommandAuthorizer {
      * @returns
      *   Returns true if the command is on cooldown. False otherwise.
      */
-    commandIsOnCooldown() {
+    // tslint:disable-next-line:prefer-function-over-method
+    validateCooldown() {
         return __awaiter(this, void 0, void 0, function* () {
-            // @TODO - If the invoker is an architect or deity, they shouldn't be affected by cooldowns.
-            // Using the cooldown manager, we check if the command is on cooldown first.
-            // Cooldowns are individual per user. So if a user uses a command, it's not on cooldown for everyone.
-            if (Makoto_1.Makoto.check(this.bot.id, 'command', this.command.key, 0)) {
-                return true;
-            }
-            // noinspection RedundantIfStatementJS
-            if (Makoto_1.Makoto.check(this.bot.id, 'command', this.command.key, this.resonance.author.id)) {
-                return true;
-            }
+            // @TODO - Refactor all of this.
             return false;
-        });
-    }
-    /**
-     * Puts the command on cooldown using Makoto.
-     */
-    activateCooldownForCommand() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Cools the command globally after usage.
-            if (this.configurations.command.base.cooldown.global !== 0) {
-                Makoto_1.Makoto.set(this.bot.id, 'command', this.command.key, 0, this.configurations.command.base.cooldown.global * 1000).then(() => {
-                    // Do nothing.
-                });
-            }
-            // Cools the command after usage for the user.
-            if (this.configurations.command.base.cooldown.user !== 0) {
-                Makoto_1.Makoto.set(this.bot.id, 'command', this.command.key, this.resonance.author.id, this.configurations.command.base.cooldown.user * 1000).then(() => {
-                    // Do nothing.
-                });
-            }
         });
     }
 }

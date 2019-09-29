@@ -5,14 +5,19 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Modules.
+import * as EventEmitter from "events";
+
 // Imports.
-import * as EventEmitter from 'events';
-import {PromptException} from './Exception/PromptException';
-import {PromptExceptionType} from './Exception/PromptExceptionType';
-import {Sojiro} from '../../Confidant/Sojiro';
-import {Igor} from '../../Confidant/Igor';
-import {Resonance} from "../Resonance/Resonance";
-import {Bot} from "../Bot";
+import { Igor } from "../../Confidant/Igor";
+import { Sojiro } from "../../Confidant/Sojiro";
+import { AbstractObject } from "../../Types";
+import { Bot } from "../Bot";
+import { ClientUser } from "../Client/ClientUser";
+import { Resonance } from "../Resonance/Resonance";
+
+import { PromptException } from "./Exception/PromptException";
+import { PromptExceptionType } from "./Exception/PromptExceptionType";
 import Timeout = NodeJS.Timeout;
 
 /**
@@ -25,12 +30,12 @@ export abstract class Prompt {
   /**
    * The user that is being prompted for a response.
    */
-  public user: any;
+  public user: ClientUser;
 
   /**
    * The communication line for this prompt.
    */
-  public line: any;
+  public line: unknown;
 
   /**
    * The resonance containing the message tied to this prompt.
@@ -45,17 +50,17 @@ export abstract class Prompt {
   /**
    * The user that sent the message invoking this prompt.
    */
-  public requester: any;
+  public requester: unknown;
 
   /**
    * Function containing actions to undertake when the prompt is answered.
    */
-  public onResponse: Function;
+  public onResponse: (resonance: Resonance, prompt: Prompt) => Promise<void>;
 
   /**
    * Function containing actions to undertake if an invalid answer is given for the prompt.
    */
-  public onError: Function;
+  public onError: (error: Error) => Promise<void>;
 
   /**
    * The Bot handling all of this.
@@ -98,7 +103,15 @@ export abstract class Prompt {
    * @param bot
    *   The Bot this prompt is being created for.
    */
-  protected constructor(user: any, line: any, resonance: Resonance, lifespan: number, onResponse: Function, onError: Function, bot: Bot) {
+  protected constructor(
+    user: ClientUser,
+    line: unknown,
+    resonance: Resonance,
+    lifespan: number,
+    onResponse: (resonance: Resonance, prompt: Prompt) => Promise<void>,
+    onError: (error: PromptException) => Promise<void>,
+    bot: Bot,
+  ) {
     this.user = user;
     this.line = line;
     this.resonance = resonance;
@@ -108,7 +121,7 @@ export abstract class Prompt {
     this.onError = onError;
     this.bot = bot;
     this.ee = new EventEmitter();
-    this.timer = null;
+    this.timer = undefined;
     this.resetCount = 0;
   }
 
@@ -121,7 +134,7 @@ export abstract class Prompt {
    * @param resonance
    *   The resonance that was heard by the Prompt.
    */
-  public async listen(resonance: Resonance) {
+  public async listen(resonance: Resonance): Promise<void> {
     // If the resonance that was just heard is not from the same client, we do nothing.
     if (resonance.client.type !== this.resonance.client.type) {
       return;
@@ -130,7 +143,7 @@ export abstract class Prompt {
     // We check the condition defined in this prompt. If it passes, we resolve it.
     if (await this.condition(resonance)) {
       // Emit the event that will alert the Prompt that it should be resolved.
-      await this.ee.emit('prompt-response', resonance);
+      await this.ee.emit("prompt-response", resonance);
     }
   }
 
@@ -143,7 +156,7 @@ export abstract class Prompt {
    * @returns
    *   Resolution of the prompt, or an error.
    */
-  public await(): Promise<any> {
+  public await(): Promise<void> {
     // We manage the Promise here.
     return new Promise((resolve, reject) => {
       // Set the bomb. We'll destroy the prompt if it takes too long to execute.
@@ -152,23 +165,24 @@ export abstract class Prompt {
         if (this.bot.prompts.includes(this)) {
           // If the lifespan depletes, we remove the prompt.
           await this.disable();
-          let exception = new PromptException(PromptExceptionType.NO_RESPONSE, 'No response was provided in the time given. Firing error handler.');
+          const exception = new PromptException(PromptExceptionType.NO_RESPONSE, "No response was provided in the time given. Firing error handler.");
           await this.onError(exception);
           reject();
         }
-      }, this.lifespan * 1000);
+      },                      this.lifespan * 1000);
 
       // If we get a response, we clear the bomb and return early.
-      this.ee.on('prompt-response', async (resonance) => {
+      this.ee.on("prompt-response", async (resonance) => {
         // Clear timeouts and event listeners since we got a response.
         await this.clearTimer();
         await this.clearListeners();
 
         // Fire the callback.
-        await this.onResponse(resonance, this).catch(async (e) => {
-          let exception = new PromptException(PromptExceptionType.MISC, e);
-          await this.onError(exception);
-        });
+        await this.onResponse(resonance, this)
+          .catch(async (e) => {
+            const exception = new PromptException(PromptExceptionType.MISC, e);
+            await this.onError(exception);
+          });
 
         await this.disable();
         resolve();
@@ -176,28 +190,31 @@ export abstract class Prompt {
     });
   }
 
+  // tslint:disable-next-line:comment-format
   // noinspection JSUnusedGlobalSymbols
   /**
    * Resets the prompt to listen for another message.
    *
    * This can be useful in situations where you want to try reading the input again.
    *
-   * @param {string} error
+   * @param error
    *   Details of the error that occurred causing the prompt to reset.
    *
    * @returns
    *   Resolution of the prompt (newly reset), or an error.
    */
-  public async reset({error = ''}): Promise<any> {
+  public async reset({error = ""}: AbstractObject): Promise<void> {
     if (this.resetCount === 2) {
       await this.error(PromptExceptionType.MAX_RESET_EXCEEDED);
+
       return;
     }
     if (!Sojiro.isEmpty(error)) {
       await this.error(error);
     }
-    this.resetCount++;
-    await this.await().catch(Igor.pocket);
+    this.resetCount += 1;
+    await this.await()
+      .catch(Igor.pocket);
   }
 
   /**
@@ -215,10 +232,17 @@ export abstract class Prompt {
    * @param type
    *   Type of PromptException to fire.
    */
-  public async error (type) {
-    let exception = new PromptException(type);
+  public async error(type: PromptExceptionType): Promise<void> {
+    const exception = new PromptException(type);
     await this.onError(exception);
   }
+
+  /**
+   * Method defining the conditions for this prompt to be resolved.
+   *
+   * This is an abstract method.
+   */
+  protected abstract async condition(resonance: Resonance): Promise<boolean>;
 
   /**
    * Clear the timer attached to this prompt.
@@ -233,12 +257,5 @@ export abstract class Prompt {
   private async clearListeners(): Promise<void> {
     await this.ee.removeAllListeners();
   }
-
-  /**
-   * Method defining the conditions for this prompt to be resolved.
-   *
-   * This is an abstract method.
-   */
-  protected abstract async condition(resonance: Resonance): Promise<boolean>;
 
 }

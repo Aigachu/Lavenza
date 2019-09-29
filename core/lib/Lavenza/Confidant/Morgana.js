@@ -1,4 +1,5 @@
 "use strict";
+/* tslint:disable:no-unnecessary-initializer */
 /**
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
@@ -42,30 +43,32 @@ class Morgana {
      * @param locale
      *   Set the locale to determine the language.
      */
-    static log(message, replacers = undefined, type = 'default', locale = process.env.DEFAULT_LOCALE) {
+    static log(message, replacers = undefined, type = "default", locale = process.env.DEFAULT_LOCALE) {
         return __awaiter(this, void 0, void 0, function* () {
             // Fetch translations of output.
+            // Setting 'any' since we're using the 'colors' module here but TS can't tell.
+            // tslint:disable-next-line:no-any
             let output = yield Yoshida_1.Yoshida.translate(message, replacers, locale);
-            output = 'Lavenza: ' + output;
+            output = `Lavenza: ${output}`;
             // Depending on the type, we send different types of outputs.
             switch (type) {
                 // Status messages.
-                case 'status': {
+                case "status": {
                     console.log(output.status);
                     break;
                 }
                 // Warning messages.
-                case 'warning': {
+                case "warning": {
                     console.log(output.warning);
                     break;
                 }
                 // Success messages.
-                case 'success': {
+                case "success": {
                     console.log(output.success);
                     break;
                 }
                 // Error messages.
-                case 'error': {
+                case "error": {
                     // Send default error message.
                     console.log(output.error);
                     break;
@@ -73,7 +76,6 @@ class Morgana {
                 // By default, do a regular log.
                 default: {
                     console.log(output);
-                    break;
                 }
             }
         });
@@ -85,8 +87,8 @@ class Morgana {
     static success(message, replacers = undefined) {
         return __awaiter(this, void 0, void 0, function* () {
             // If the message is not set, we'll fetch the default success message.
-            message = message || 'SUCCESS';
-            yield this.log(message, replacers, 'success');
+            const messageToSend = message || "SUCCESS";
+            yield Morgana.log(messageToSend, replacers, "success");
         });
     }
     /**
@@ -95,7 +97,7 @@ class Morgana {
      */
     static status(message, replacers = undefined) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.log(message, replacers, 'status');
+            yield Morgana.log(message, replacers, "status");
         });
     }
     /**
@@ -104,7 +106,7 @@ class Morgana {
      */
     static warn(message, replacers = undefined) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.log(message, replacers, 'warning');
+            yield Morgana.log(message, replacers, "warning");
         });
     }
     /**
@@ -114,8 +116,8 @@ class Morgana {
     static error(message, replacers = undefined) {
         return __awaiter(this, void 0, void 0, function* () {
             // If the message is not set, we'll fetch the default error message.
-            message = message || 'ERROR';
-            yield this.log(message, replacers, 'error');
+            const messageToSend = message || "ERROR";
+            yield Morgana.log(messageToSend, replacers, "error");
         });
     }
 }

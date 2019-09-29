@@ -26,44 +26,44 @@ class StorageService {
     /**
      * Make a request to the database.
      *
-     * @param {string} protocol
+     * @param protocol
      *   The protocol we want to use.
      *   The are four: GET, POST, UPDATE, DELETE.
      *    - GET: Fetch and retrieve data from a path/endpoint.
      *    - POST: Create data at a path/endpoint.
      *    - UPDATE: Adjust data at a path/endpoint.
      *    - DELETE: Remove data at a path/endpoint.
-     * @param {string} endpoint
+     * @param endpoint
      *   The string path/endpoint of where to apply the protocol.
-     * @param {Object} payload
+     * @param payload
      *   The data, if needed, to apply the protocol. GET/DELETE will not need a payload.
      *
      * @returns
      *   The result of the protocol call, if applicable.
      */
-    request({ protocol = '', endpoint = '', payload = {} } = {}) {
+    request({ protocol = "", endpoint = "", payload = {} } = {}) {
         return __awaiter(this, void 0, void 0, function* () {
             // Depending on the protocol, we run different methods.
             switch (protocol) {
                 // GET Protocol.
-                case 'get': {
+                case "get": {
                     // Await GET request of the Storage Service.
-                    return yield this.get(endpoint);
+                    return this.get(endpoint);
                 }
                 // POST Protocol.
-                case 'post': {
+                case "post": {
                     // Await POST request of the Storage Service.
-                    return yield this.post(endpoint, payload);
+                    return this.post(endpoint, payload);
                 }
                 // UPDATE Protocol.
-                case 'update': {
+                case "update": {
                     // Await UPDATE request of the Storage Service.
-                    return yield this.update(endpoint, payload);
+                    return this.update(endpoint, payload);
                 }
                 // DELETE Protocol.
-                case 'delete': {
+                case "delete": {
                     // Await DELETE request of the Storage Service.
-                    return yield this.delete(endpoint);
+                    yield this.delete(endpoint);
                 }
             }
         });

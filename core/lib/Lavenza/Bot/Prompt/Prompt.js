@@ -15,12 +15,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// Imports.
+// Modules.
 const EventEmitter = require("events");
+// Imports.
+const Igor_1 = require("../../Confidant/Igor");
+const Sojiro_1 = require("../../Confidant/Sojiro");
 const PromptException_1 = require("./Exception/PromptException");
 const PromptExceptionType_1 = require("./Exception/PromptExceptionType");
-const Sojiro_1 = require("../../Confidant/Sojiro");
-const Igor_1 = require("../../Confidant/Igor");
 /**
  * Provides a base class for Prompts.
  *
@@ -58,7 +59,7 @@ class Prompt {
         this.onError = onError;
         this.bot = bot;
         this.ee = new EventEmitter();
-        this.timer = null;
+        this.timer = undefined;
         this.resetCount = 0;
     }
     /**
@@ -79,7 +80,7 @@ class Prompt {
             // We check the condition defined in this prompt. If it passes, we resolve it.
             if (yield this.condition(resonance)) {
                 // Emit the event that will alert the Prompt that it should be resolved.
-                yield this.ee.emit('prompt-response', resonance);
+                yield this.ee.emit("prompt-response", resonance);
             }
         });
     }
@@ -101,19 +102,20 @@ class Prompt {
                 if (this.bot.prompts.includes(this)) {
                     // If the lifespan depletes, we remove the prompt.
                     yield this.disable();
-                    let exception = new PromptException_1.PromptException(PromptExceptionType_1.PromptExceptionType.NO_RESPONSE, 'No response was provided in the time given. Firing error handler.');
+                    const exception = new PromptException_1.PromptException(PromptExceptionType_1.PromptExceptionType.NO_RESPONSE, "No response was provided in the time given. Firing error handler.");
                     yield this.onError(exception);
                     reject();
                 }
             }), this.lifespan * 1000);
             // If we get a response, we clear the bomb and return early.
-            this.ee.on('prompt-response', (resonance) => __awaiter(this, void 0, void 0, function* () {
+            this.ee.on("prompt-response", (resonance) => __awaiter(this, void 0, void 0, function* () {
                 // Clear timeouts and event listeners since we got a response.
                 yield this.clearTimer();
                 yield this.clearListeners();
                 // Fire the callback.
-                yield this.onResponse(resonance, this).catch((e) => __awaiter(this, void 0, void 0, function* () {
-                    let exception = new PromptException_1.PromptException(PromptExceptionType_1.PromptExceptionType.MISC, e);
+                yield this.onResponse(resonance, this)
+                    .catch((e) => __awaiter(this, void 0, void 0, function* () {
+                    const exception = new PromptException_1.PromptException(PromptExceptionType_1.PromptExceptionType.MISC, e);
                     yield this.onError(exception);
                 }));
                 yield this.disable();
@@ -121,19 +123,20 @@ class Prompt {
             }));
         });
     }
+    // tslint:disable-next-line:comment-format
     // noinspection JSUnusedGlobalSymbols
     /**
      * Resets the prompt to listen for another message.
      *
      * This can be useful in situations where you want to try reading the input again.
      *
-     * @param {string} error
+     * @param error
      *   Details of the error that occurred causing the prompt to reset.
      *
      * @returns
      *   Resolution of the prompt (newly reset), or an error.
      */
-    reset({ error = '' }) {
+    reset({ error = "" }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.resetCount === 2) {
                 yield this.error(PromptExceptionType_1.PromptExceptionType.MAX_RESET_EXCEEDED);
@@ -142,8 +145,9 @@ class Prompt {
             if (!Sojiro_1.Sojiro.isEmpty(error)) {
                 yield this.error(error);
             }
-            this.resetCount++;
-            yield this.await().catch(Igor_1.Igor.pocket);
+            this.resetCount += 1;
+            yield this.await()
+                .catch(Igor_1.Igor.pocket);
         });
     }
     /**
@@ -164,7 +168,7 @@ class Prompt {
      */
     error(type) {
         return __awaiter(this, void 0, void 0, function* () {
-            let exception = new PromptException_1.PromptException(type);
+            const exception = new PromptException_1.PromptException(type);
             yield this.onError(exception);
         });
     }

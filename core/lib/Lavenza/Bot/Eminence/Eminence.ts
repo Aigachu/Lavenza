@@ -10,6 +10,7 @@
  * @TODO - Eventual permissions management? :)
  */
 enum Eminence {
+  // tslint:disable-next-line:comment-format
   // noinspection JSUnusedGlobalSymbols
   None,
   Aficionado,
@@ -18,4 +19,4 @@ enum Eminence {
   Joker,
 }
 
-export {Eminence};
+export { Eminence };

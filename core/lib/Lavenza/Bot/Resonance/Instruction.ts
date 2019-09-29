@@ -6,7 +6,8 @@
  */
 
 // Imports.
-import {Command} from "../Command/Command";
+import { AbstractObject } from "../../Types";
+import { Command } from "../Command/Command";
 
 /**
  * Provides an "Instruction" model that regroups information about a command that was interpreted from a message.
@@ -16,6 +17,7 @@ import {Command} from "../Command/Command";
  * Instructions are sent for approval before they carry out the command.
  */
 export interface Instruction {
+
   /**
    * Command that contained the current Order.
    */
@@ -24,10 +26,11 @@ export interface Instruction {
   /**
    * Arguments of the command received, if any.
    */
-  arguments: any;
+  arguments: AbstractObject;
 
   /**
    * Raw content of the message that was deciphered as an order.
    */
-  content: any;
+  content: string;
+
 }

@@ -16,14 +16,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
-const lodash = require('lodash');
+const lodash = require("lodash");
 // Imports.
 const Akechi_1 = require("../../../Confidant/Akechi");
 const Sojiro_1 = require("../../../Confidant/Sojiro");
+const Core_1 = require("../../../Core/Core");
 const StorageService_1 = require("../StorageService");
 const Collection_1 = require("./Collection/Collection");
 const Item_1 = require("./Item/Item");
-const Core_1 = require("../../../Core/Core");
 /**
  * Chronicler is the default Storage Service used by Gestalt & Lavenza.
  *
@@ -33,35 +33,13 @@ const Core_1 = require("../../../Core/Core");
  */
 class Chronicler extends StorageService_1.StorageService {
     /**
+     * This function will handle build preparations for Chronicler.
+     *
      * @inheritDoc
      */
     build() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.root = Core_1.Core.paths.root + '/database';
-        });
-    }
-    /**
-     * Chronicler alters the endpoints when requests are made.
-     *
-     * We need to make sure that the root of the database, /database in this app, is prepended to all path requests.
-     *
-     * @inheritDoc
-     */
-    request({ protocol = '', endpoint = '', payload = {} } = {}) {
-        const _super = Object.create(null, {
-            request: { get: () => super.request }
-        });
-        return __awaiter(this, void 0, void 0, function* () {
-            // If the endpoint doesn't start with the database root, prepend it to the path.
-            if (!endpoint.startsWith(this.root)) {
-                endpoint = this.root + endpoint;
-            }
-            // Await the execution of the regular request process.
-            return yield _super.request.call(this, {
-                protocol: protocol,
-                endpoint: endpoint,
-                payload: payload,
-            });
+            this.root = `${Core_1.Core.paths.root}/database`;
         });
     }
     /**
@@ -75,9 +53,21 @@ class Chronicler extends StorageService_1.StorageService {
         return __awaiter(this, void 0, void 0, function* () {
             // Prepend database path to the requested endpoint.
             // We have to do it here since this function doesn't pass through the main request() function.
-            let directoryPath = this.root + endpoint;
+            const directoryPath = this.root + endpoint;
             // Await creation of a directory at the path.
             yield Akechi_1.Akechi.createDirectory(directoryPath);
+        });
+    }
+    /**
+     * Delete file at the path.
+     *
+     * @TODO - Finish this.
+     *
+     * @inheritDoc
+     */
+    delete(endpoint) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.error("Oh...Delete isn't ready yet haha. AIGACHU. FINISH YOUR WORK.");
         });
     }
     /**
@@ -88,14 +78,14 @@ class Chronicler extends StorageService_1.StorageService {
     get(endpoint) {
         return __awaiter(this, void 0, void 0, function* () {
             // First we check if the requested path is a file. If it is, we await the returning of its values.
-            if (Akechi_1.Akechi.fileExists(endpoint + '.yml')) {
-                let item = new Item_1.Item(endpoint + '.yml');
-                return yield item.values();
+            if (Akechi_1.Akechi.fileExists(`${endpoint}.yml`)) {
+                const item = new Item_1.Item(`${endpoint}.yml`);
+                return item.values();
             }
             // If it's not a file, then we'll check if it's a directory. If so, await return of its values.
             if (Akechi_1.Akechi.isDirectory(endpoint)) {
-                let collection = new Collection_1.Collection(endpoint);
-                return yield collection.values();
+                const collection = new Collection_1.Collection(endpoint);
+                return collection.values();
             }
             // If nothing was found, return an empty object.
             return {};
@@ -112,6 +102,29 @@ class Chronicler extends StorageService_1.StorageService {
         return __awaiter(this, void 0, void 0, function* () {
             // We simply create a YAML file. We await this process.
             yield Akechi_1.Akechi.writeYamlFile(endpoint, payload);
+            return undefined;
+        });
+    }
+    /**
+     * Chronicler alters the endpoints when requests are made.
+     *
+     * We need to make sure that the root of the database, /database in this app, is prepended to all path requests.
+     *
+     * @inheritDoc
+     */
+    request({ protocol = "", endpoint = "", payload = {} } = {}) {
+        const _super = Object.create(null, {
+            request: { get: () => super.request }
+        });
+        return __awaiter(this, void 0, void 0, function* () {
+            // Variable to store the actual endpoint.
+            let realEndpoint = endpoint;
+            // If the endpoint doesn't start with the database root, prepend it to the path.
+            if (!realEndpoint.startsWith(this.root)) {
+                realEndpoint = this.root + realEndpoint;
+            }
+            // Await the execution of the regular request process.
+            return _super.request.call(this, { protocol, endpoint: realEndpoint, payload });
         });
     }
     /**
@@ -130,25 +143,13 @@ class Chronicler extends StorageService_1.StorageService {
                 data = {};
             }
             // We use lodash to merge the payload containing the updates, with the original data.
-            let updatedData = lodash.merge(data, payload);
+            const updatedData = lodash.merge(data, payload);
             // Finally, we post the new merged data back to the same endpoint.
             yield this.post(endpoint, updatedData);
             // We return the newly merged data.
             // We do another request here. The idea is we want to make sure the data in the file is right.
             // Might change this in the future since the update request actually does 3 requests...But eh.
-            return yield this.get(endpoint);
-        });
-    }
-    /**
-     * Delete file at the path.
-     *
-     * @TODO - Finish this.
-     *
-     * @inheritDoc
-     */
-    delete(endpoint) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return undefined;
+            return this.get(endpoint);
         });
     }
 }

@@ -5,6 +5,17 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Imports.
+import { ClientType } from "./Bot/Client/ClientType";
+import { ClientUser } from "./Bot/Client/ClientUser";
+
+/**
+ * Declare an interface for a basic associative object.
+ */
+export type Joker = {
+  [key in ClientType]: ClientUser;
+};
+
 /**
  * Declare an interface for a basic associative object.
  */

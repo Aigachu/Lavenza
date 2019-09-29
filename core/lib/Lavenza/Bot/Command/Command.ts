@@ -5,17 +5,23 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import {Talent} from "../../Talent/Talent";
-import {CommandClientConfig, CommandConfigurations, CommandParameterConfig} from "./CommandConfigurations";
-import {Bot} from "../Bot";
-import {ClientType} from "../Client/ClientType";
-import {Gestalt} from "../../Gestalt/Gestalt";
-import {Sojiro} from "../../Confidant/Sojiro";
-import {Akechi} from "../../Confidant/Akechi";
-import {Resonance} from "../Resonance/Resonance";
-import {Morgana} from "../../Confidant/Morgana";
-import {Igor} from "../../Confidant/Igor";
-import {Yoshida} from "../../Confidant/Yoshida";
+// Modules.
+import * as path from "path";
+
+// Imports.
+import { Akechi } from "../../Confidant/Akechi";
+import { Igor } from "../../Confidant/Igor";
+import { Morgana } from "../../Confidant/Morgana";
+import { Sojiro } from "../../Confidant/Sojiro";
+import { Gestalt } from "../../Gestalt/Gestalt";
+import { Talent } from "../../Talent/Talent";
+import { AbstractObject } from "../../Types";
+import { Bot } from "../Bot";
+import { CommandClientConfig } from "../Client/ClientConfigurations";
+import { ClientType } from "../Client/ClientType";
+import { Resonance } from "../Resonance/Resonance";
+
+import { CommandConfigurations, CommandParameterConfig } from "./CommandConfigurations";
 
 /**
  * Provides a base class for Commands.
@@ -47,14 +53,14 @@ export abstract class Command {
   public directory: string;
 
   /**
-   * The Talent that declared this Command and manages it.
-   */
-  protected talent: Talent;
-
-  /**
    * The configuration of the command.
    */
   public config: CommandConfigurations;
+
+  /**
+   * The Talent that declared this Command and manages it.
+   */
+  protected talent: Talent;
 
   /**
    * Command constructor.
@@ -83,7 +89,7 @@ export abstract class Command {
    * @param talent
    *   Talent that this command is a child of.
    */
-  public async build(config: CommandConfigurations, talent: Talent) {
+  public async build(config: CommandConfigurations, talent: Talent): Promise<void> {
     this.talent = talent;
     this.config = config;
     this.directory = config.directory;
@@ -101,7 +107,7 @@ export abstract class Command {
    *   Returns the configuration fetched from the database.
    */
   public async getActiveConfigForBot(bot: Bot): Promise<CommandConfigurations> {
-    return await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/config`);
+    return await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/config`) as CommandConfigurations;
   }
 
   /**
@@ -119,13 +125,13 @@ export abstract class Command {
    */
   public async getActiveClientConfig(clientType: ClientType, bot: Bot): Promise<CommandClientConfig> {
     // Attempt to get the active configuration from the database.
-    let activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/${clientType}`);
+    const activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/${clientType}`) as CommandClientConfig;
     if (!Sojiro.isEmpty(activeConfig)) {
       return activeConfig;
     }
 
     // If we don't find any configurations in the database, we'll fetch it normally and then save it.
-    let config = await this.getClientConfig(clientType);
+    const config = await this.getClientConfig(clientType);
 
     // Sync it to the database.
     await Gestalt.sync(config, `/bots/${bot.id}/commands/${this.id}/${clientType}`);
@@ -145,15 +151,15 @@ export abstract class Command {
    */
   public async getClientConfig(clientType: ClientType): Promise<CommandClientConfig> {
     // Determine path to client configuration.
-    let pathToClientConfig = `${this.directory}/${clientType}.yml`;
+    const pathToClientConfig = `${this.directory}/${clientType}.yml`;
 
     // Attempt to fetch client configuration.
-    if (!await Akechi.fileExists(pathToClientConfig)){
+    if (!await Akechi.fileExists(pathToClientConfig)) {
       return undefined;
     }
 
     // Load configuration since it exists.
-    return await Akechi.readYamlFile(pathToClientConfig);
+    return await Akechi.readYamlFile(pathToClientConfig) as CommandClientConfig;
   }
 
   /**
@@ -169,13 +175,13 @@ export abstract class Command {
    */
   public async getActiveParameterConfig(bot: Bot): Promise<CommandParameterConfig> {
     // Attempt to get the active configuration from the database.
-    let activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/parameters`);
+    const activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/parameters`) as CommandParameterConfig;
     if (!Sojiro.isEmpty(activeConfig)) {
       return activeConfig;
     }
 
     // If we don't find any configurations in the database, we'll fetch it normally and then save it.
-    let config = await this.getParameterConfig();
+    const config = await this.getParameterConfig();
 
     // Sync it to the database.
     await Gestalt.sync(config, `/bots/${bot.id}/commands/${this.id}/parameters`);
@@ -192,16 +198,17 @@ export abstract class Command {
    */
   public async getParameterConfig(): Promise<CommandParameterConfig> {
     // Determine path to client configuration.
-    let pathToParameterConfig = `${this.directory}/parameters.yml`;
+    const pathToParameterConfig = `${this.directory}/parameters.yml`;
 
     // Attempt to fetch client configuration.
-    if (!await Akechi.fileExists(pathToParameterConfig)){
-      return {} as CommandParameterConfig;
+    if (!await Akechi.fileExists(pathToParameterConfig)) {
+      return {} as unknown as CommandParameterConfig;
     }
 
     // Load configuration since it exists.
-    let config = await Akechi.readYamlFile(pathToParameterConfig);
-    return Sojiro.isEmpty(config) ? {} as CommandParameterConfig : config;
+    const config = await Akechi.readYamlFile(pathToParameterConfig) as CommandParameterConfig;
+
+    return Sojiro.isEmpty(config) ? {} as unknown as CommandParameterConfig : config;
   }
 
   /**
@@ -216,7 +223,7 @@ export abstract class Command {
    * @param resonance
    *   Resonance that invoked this command. All information about the client and message are here.
    */
-  public abstract async execute(resonance: Resonance);
+  public abstract async execute(resonance: Resonance): Promise<void>;
 
   /**
    * Execute client specific tasks if needed.
@@ -234,29 +241,37 @@ export abstract class Command {
    * @returns
    *   Anything that should be returned by client handlers.
    */
-  public async fireClientHandlers(resonance: Resonance, data: any, method: string = 'execute') {
+  public async fireClientHandlers(
+    resonance: Resonance,
+    data: AbstractObject | string,
+    method: string = "execute",
+  ): Promise<unknown> {
+    // Set variables that we will use.
+    let methodToRun = method;
+    let dataToUse = data;
+
     // If the second provided parameter is a string, this means it's the method we want to run, and data is null.
-    if (typeof data === 'string') {
-      method = data;
-      data = {};
+    if (typeof data === "string") {
+      methodToRun = data;
+      dataToUse = {};
     }
 
     // If data is not set, set it to an empty object.
-    if (data === undefined) { data = {}; }
+    if (dataToUse === undefined) { dataToUse = {}; }
 
     // Define variable for client task handler.
-    let HandlerClass = undefined;
+    let handlerClass;
 
     // Define path to Handler.
-    let pathToHandler = `${this.directory}/handlers/${resonance.client.type}/Handler`;
+    const pathToHandler = `${this.directory}/handlers/${resonance.client.type}/Handler`;
 
     // Try to fetch a handler for this client.
     try {
       // Automatically require the handler we want.
-      HandlerClass = require(pathToHandler).default;
+      handlerClass = await import(pathToHandler);
     } catch (error) {
       // Log a message.
-      await Morgana.warn('Command handler for {{client}} could not be loaded for the {{command}} command. If you are using the handlers() function, make sure client handlers exist for each client this command is usable in.');
+      await Morgana.warn("Command handler for {{client}} could not be loaded for the {{command}} command. If you are using the handlers() function, make sure client handlers exist for each client this command is usable in.");
 
       // Log the error that occurred.
       await Morgana.warn(error.message);
@@ -266,15 +281,15 @@ export abstract class Command {
     }
 
     // Now we can instantiate the Handler.
-    let Handler = new HandlerClass(this, resonance, pathToHandler);
+    const handler = new handlerClass[path.basename(pathToHandler, ".js")](this, resonance, pathToHandler);
 
     // If the method set doesn't exist, we throw an error here.
-    if (Sojiro.isEmpty(Handler[method])) {
-      await Igor.throw(`The {{method}} method does not exist in the {{client}} handler for your {{command}} command. Please verify your handler code!`);
+    if (Sojiro.isEmpty(handler[methodToRun])) {
+      await Igor.throw("The {{method}} method does not exist in the {{client}} handler for your {{command}} command. Please verify your handler code!");
     }
 
     // Then we can execute the tasks in the Handler.
-    return await Handler[method](data);
+    return handler[methodToRun](dataToUse);
   }
 
   /**
@@ -285,91 +300,9 @@ export abstract class Command {
    * @param resonance
    *   Resonance that invoked this command. All information about the client and message are here.
    */
-  public async help(resonance) {
-
-    // Get configuration.
-    let config = await this.getActiveConfigForBot(resonance.bot);
-    let parameterConfig = await this.getActiveParameterConfig(resonance.bot);
-
-    // Depending on the type of client, we want the help function to act differently.
-    switch (resonance.client.type) {
-      // If we're in Discord, we want to send a formatted rich embed.
-      case ClientType.Discord: {
-        // Start building the usage text by getting the command prefix.
-        let usageText = `\`${await resonance.bot.getCommandPrefix(resonance)}${config.key}`;
-
-        // If there is input defined for this command, we will add them to the help text.
-        if (parameterConfig.input) {
-          parameterConfig.input.requests.every(request => {
-            usageText += ` {${request.replace(' ', '_').toLowerCase()}}\`\n`;
-          });
-        } else {
-          usageText += `\`\n`;
-        }
-
-        // If there are aliases defined for this command, add all usage examples to the help text.
-        if (parameterConfig['aliases']) {
-          let original = usageText;
-          parameterConfig['aliases'].every(alias => {
-            usageText += original.replace(`${config.key}`, alias);
-            return true;
-          });
-        }
-
-        // Set the usage section.
-        let fields = [
-          {
-            name: await Yoshida.translate('Usage', resonance.locale),
-            text: usageText
-          }
-        ];
-
-        // If there are options defined for this command, we add a section for options.
-        if (parameterConfig.options) {
-          let optionsList = '';
-          await Promise.all(parameterConfig.options.map(async option => {
-            let description = await Yoshida.translate(option.description, resonance.locale);
-            let name = await Yoshida.translate(option.name, resonance.locale);
-            optionsList += `**${name}** \`-${option.key} {${option['expects'].replace(' ', '_').toLowerCase()}}\` - ${description}\n\n`;
-          }));
-          fields.push({
-            name: await Yoshida.translate('Options', resonance.locale),
-            text: optionsList
-          });
-        }
-
-        // If there are flags defi-...You get the idea.
-        if (parameterConfig.flags) {
-          let flagsList = '';
-          await Promise.all(parameterConfig.flags.map(async flag => {
-            let description = await Yoshida.translate(flag.description, resonance.locale);
-            let name = await Yoshida.translate(flag.name, resonance.locale);
-            flagsList += `**${name}** \`-${flag.key}\` - ${description}\n\n`;
-          }));
-          fields.push({
-            name: await Yoshida.translate('Flags', resonance.locale),
-            text: flagsList
-          });
-        }
-
-        // Finally, send the embed.
-        await resonance.client.sendEmbed(resonance.message.channel, {
-          title: await Yoshida.translate(`${config.name}`, resonance.locale),
-          description: await Yoshida.translate(`${config.description}`, resonance.locale),
-          header: {
-            text: await Yoshida.translate('{{bot}} Guide', {bot: resonance.bot.config.name},resonance.locale),
-            icon: resonance.client.user.avatarURL
-          },
-          fields: fields,
-          thumbnail: resonance.client.user.avatarURL
-        });
-        break;
-      }
-
-      case ClientType.Twitch: {
-        // @TODO - Implement this!
-      }
-    }
+  public async help(resonance: Resonance): Promise<void> {
+    // Fire the client's help handler.
+    await resonance.client.help(this, resonance);
   }
 
   /**
@@ -384,13 +317,21 @@ export abstract class Command {
    *   Returns true if the command is allowed to be executed in the client. Returns false otherwise.
    */
   public async allowedInClient(clientType: ClientType): Promise<boolean> {
-    let allowedForTalent =
-      !Sojiro.isEmpty(this.talent.config.clients) && this.talent.config.clients !== '*' && (this.talent.config.clients.includes(clientType) || this.talent.config.clients === clientType)
-    || (Sojiro.isEmpty(this.talent.config.clients) || this.talent.config.clients === '*');
+    const allowedForTalent =
+      !Sojiro.isEmpty(this.talent.config.clients)
+      && this.talent.config.clients !== "*"
+      && (this.talent.config.clients.includes(clientType)
+      || this.talent.config.clients === clientType)
+    || (Sojiro.isEmpty(this.talent.config.clients)
+      || this.talent.config.clients === "*");
 
-    let allowedForCommand =
-      !Sojiro.isEmpty(this.config.clients) && this.config.clients !== '*' && (this.config.clients.includes(clientType) || this.config.clients === clientType)
-    || (Sojiro.isEmpty(this.config.clients) || this.config.clients === '*');
+    const allowedForCommand =
+      !Sojiro.isEmpty(this.config.clients)
+      && this.config.clients !== "*"
+      && (this.config.clients.includes(clientType)
+      || this.config.clients === clientType)
+    || (Sojiro.isEmpty(this.config.clients)
+      || this.config.clients === "*");
 
     return allowedForTalent && allowedForCommand;
   }

@@ -6,8 +6,10 @@
  */
 
 // Imports.
-import {CommandClientHandler} from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
-import {TwitchResonance} from "../../../../../../../lib/Lavenza/Bot/Resonance/TwitchResonance";
+import { TwitchResonance } from "../../../../../../../lib/Lavenza/Bot/Client/Twitch/TwitchResonance";
+import { CommandClientHandler } from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
+import { AbstractObject } from "../../../../../../../lib/Lavenza/Types";
+
 /**
  * A simple client handler.
  *
@@ -21,10 +23,12 @@ export class Handler extends CommandClientHandler {
   public resonance: TwitchResonance;
 
   /**
+   * Execute handler tasks!
+   *
    * @inheritDoc
    */
-  async execute(data: any = {}) {
-
+  public async execute(data: AbstractObject = {}): Promise<void> {
+    // Do nothing for now!
   }
 
 }

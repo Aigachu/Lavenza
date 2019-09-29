@@ -5,43 +5,61 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import {AssociativeObject} from "../../Types";
+// Imports.
+import { AssociativeObject } from "../../Types";
+import { CommandClientAuthorizationConfig, CommandCooldownConfig } from "../Command/CommandConfigurations";
 
 /**
  * Expose an interface to describe Discord Client configurations.
  */
+// tslint:disable-next-line:no-empty-interface
 export interface ClientConfigurations {
 
 }
 
 /**
- * Expose an interface to describe Discord Client configurations.
+ * Declares a schema for Bot Client Configurations.
  */
-export interface DiscordClientConfigurations extends ClientConfigurations {
-  guilds: AssociativeObject<DiscordClientGuildConfigurations>;
-}
+export interface BotClientConfig {
 
-/**
- * Expose an interface to describe Discord Client configurations for guilds.
- */
-export interface DiscordClientGuildConfigurations {
-  name: string;
+  /**
+   * Unique Identifier of the Joker user in the specified client.
+   *
+   * This unique identifier is always a string, but differs per client.
+   */
+  joker: string;
+
+  /**
+   * Command prefix for this Bot, specific to a client.
+   *
+   * There can be multiple command prefixes per client.
+   */
   commandPrefix: string;
+
+  /**
+   * User Eminence information for a specific client.
+   *
+   * Organized in an object of unique identifiers assigned to a given Eminence.
+   *
+   * Each client needs a list of defined users that have assigned roles.
+   */
   userEminences: AssociativeObject<string>;
+
 }
 
 /**
- * Expose an interface to describe Discord Client configurations.
+ * Declares a base interface schema for Client Configurations specific to Commands.
  */
-export interface TwitchClientConfigurations {
-  channels: AssociativeObject<TwitchClientChannelConfigurations>;
-}
+export interface CommandClientConfig {
 
-/**
- * Expose an interface to describe Twitch Client configurations for channels.
- */
-export interface TwitchClientChannelConfigurations {
-  name: string;
-  commandPrefix: string;
-  userEminences: AssociativeObject<string>;
+  /**
+   * Authorization configurations specific to a client.
+   */
+  authorization: CommandClientAuthorizationConfig;
+
+  /**
+   * Cooldown configurations specific to a client.
+   */
+  cooldown: CommandCooldownConfig;
+
 }

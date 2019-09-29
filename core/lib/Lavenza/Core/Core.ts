@@ -40,12 +40,39 @@ export class Core {
    * These paths are generated when the package is used and initiated with an appropriate directory.
    */
   public static paths: {
+
+    /**
+     * Path to the bots folder that Lavenza will load.
+     */
     bots: string;
+
+    /**
+     * Path to the file database storage root.
+     */
     database: string;
+
+    /**
+     * Path to the root of the application.
+     *
+     * This path will lead to the application root and not necessarily this package's root.
+     */
     root: string;
+
+    /**
+     * Paths to Talent directories.
+     */
     talents: {
+
+      /**
+       * Path to the Core Talents directory.
+       */
       core: string;
+
+      /**
+       * Path to the Custom Talents directory.
+       */
       custom: string;
+
     };
   };
 

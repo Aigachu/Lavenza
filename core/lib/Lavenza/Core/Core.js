@@ -20,15 +20,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const arp = require("app-root-path");
 const prompt = require("prompt-async");
 // Imports.
-const Gestalt_1 = require("../Gestalt/Gestalt");
-const TalentManager_1 = require("../Talent/TalentManager");
 const BotManager_1 = require("../Bot/BotManager");
 const Akechi_1 = require("../Confidant/Akechi");
-const Morgana_1 = require("../Confidant/Morgana");
-const Makoto_1 = require("../Confidant/Makoto");
-const Sojiro_1 = require("../Confidant/Sojiro");
 const Igor_1 = require("../Confidant/Igor");
+const Makoto_1 = require("../Confidant/Makoto");
+const Morgana_1 = require("../Confidant/Morgana");
+const Sojiro_1 = require("../Confidant/Sojiro");
 const Yoshida_1 = require("../Confidant/Yoshida");
+const Gestalt_1 = require("../Gestalt/Gestalt");
+const TalentManager_1 = require("../Talent/TalentManager");
 /**
  * Provides class for the Core of the Lavenza application.
  *
@@ -39,12 +39,6 @@ const Yoshida_1 = require("../Confidant/Yoshida");
  * Lavenza hates dirty code. ;)
  */
 class Core {
-    // noinspection JSUnusedLocalSymbols
-    /**
-     * This is a static class. The constructor will never be used.
-     */
-    constructor() {
-    }
     /**
      * Initialize Lavenza's configurations with the specified path.
      *
@@ -63,23 +57,23 @@ class Core {
             if (!(yield Akechi_1.Akechi.isDirectory(rootPath))) {
                 yield Morgana_1.Morgana.warn(`The Desk path provided in the initialize() function (${rootPath}) doesn't lead to a valid directory.`);
                 // Start a prompt to see if user would like to generate a basic Desk.
-                yield Morgana_1.Morgana.warn(`Would you like to generate a basic Desk at this path?`);
+                yield Morgana_1.Morgana.warn("Would you like to generate a basic Desk at this path?");
                 yield prompt.start();
                 const { confirmation } = yield prompt.get({
                     properties: {
                         confirmation: {
-                            description: 'Yes or no (Y/N)',
-                            type: 'string',
-                            default: 'y',
-                        }
-                    }
+                            default: "y",
+                            description: "Yes or no (Y/N)",
+                            type: "string",
+                        },
+                    },
                 });
                 // If they agree, copy the basic desk to their desired location.
-                if (confirmation.startsWith('y')) {
+                if (confirmation.startsWith("y")) {
                     yield Akechi_1.Akechi.copyFiles(arp.path, rootPath);
-                    yield Morgana_1.Morgana.success(`A Desk structure has been generated at the provided path. You may configure it and try running Lavenza again!`);
+                    yield Morgana_1.Morgana.success("A Desk structure has been generated at the provided path. You may configure it and try running Lavenza again!");
                 }
-                yield Morgana_1.Morgana.error('Until a Desk is properly configured, Lavenza will not run. Please refer to the guides in the README to configure the Desk.');
+                yield Morgana_1.Morgana.error("Until a Desk is properly configured, Lavenza will not run. Please refer to the guides in the README to configure the Desk.");
                 process.exit(1);
             }
             // Using the provided path, we set the relevant paths to the Core.
@@ -87,16 +81,16 @@ class Core {
             // Initialize Yoshida's translation options since we'll be using them throughout the application.
             yield Yoshida_1.Yoshida.initializeI18N();
             // We'll read the settings file if it exists and load settings into our class.
-            let pathToSettings = Core.paths.root + '/settings.yml';
+            const pathToSettings = `${Core.paths.root}/settings.yml`;
             if (!Akechi_1.Akechi.fileExists(pathToSettings)) {
                 yield Morgana_1.Morgana.error(`The settings.yml file does not seem to exist in ${pathToSettings}. Please create this file using the example file found at the same location.`);
                 process.exit(1);
             }
             // Set settings values to the class.
-            Core.settings = yield Akechi_1.Akechi.readYamlFile(pathToSettings);
+            Core.settings = (yield Akechi_1.Akechi.readYamlFile(pathToSettings));
             // If a master isn't set, we shouldn't continue. A master bot must set.
             if (Sojiro_1.Sojiro.isEmpty(Core.settings.master)) {
-                yield Morgana_1.Morgana.error(`There is no master bot set in your settings.yml file. A master bot must be set so the application knows which bot manages everythingx. Refer to the settings.example.yml file for more details.`);
+                yield Morgana_1.Morgana.error("There is no master bot set in your settings.yml file. A master bot must be set so the application knows which bot manages everythingx. Refer to the settings.example.yml file for more details.");
                 process.exit(1);
             }
             // Return the core so we can chain functions.
@@ -122,12 +116,14 @@ class Core {
              * Fire necessary preparations.
              * The application can end here if we hit an error in the build() function.
              */
-            yield Core.build().catch(Igor_1.Igor.stop);
+            yield Core.build()
+                .catch(Igor_1.Igor.stop);
             /*
              * If preparations go through without problems, go for run tasks.
              * Run tasks should be done only after all prep is complete.
              */
-            yield Core.run().catch(Igor_1.Igor.stop);
+            yield Core.run()
+                .catch(Igor_1.Igor.stop);
         });
     }
     /**
@@ -195,13 +191,13 @@ class Core {
     static setPaths(rootPath) {
         return __awaiter(this, void 0, void 0, function* () {
             Core.paths = {
+                bots: `${rootPath}/bots`,
+                database: `${rootPath}/database`,
                 root: rootPath,
-                bots: rootPath + '/bots',
                 talents: {
-                    core: arp.path + '/core/talents',
-                    custom: rootPath + '/talents'
+                    core: `${arp.path}/core/talents`,
+                    custom: `${rootPath}/talents`,
                 },
-                database: rootPath + '/database'
             };
         });
     }
@@ -211,4 +207,4 @@ exports.Core = Core;
  * Stores Lavenza's version.
  * The version number is obtained from the 'package.json' file at the root of the project.
  */
-Core.version = require(arp.path + '/package').version;
+Core.version = require(`${arp.path}/package`).version;

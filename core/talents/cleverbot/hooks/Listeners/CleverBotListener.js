@@ -16,10 +16,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Imports.
+const ClientType_1 = require("../../../../lib/Lavenza/Bot/Client/ClientType");
 const Listener_1 = require("../../../../lib/Lavenza/Bot/Listener/Listener");
 const Morgana_1 = require("../../../../lib/Lavenza/Confidant/Morgana");
-const ClientType_1 = require("../../../../lib/Lavenza/Bot/Client/ClientType");
-// noinspection JSUnusedGlobalSymbols
+// Noinspection JSUnusedGlobalSymbols
 /**
  * Custom Listener for the CleverBot Talent.
  *
@@ -53,25 +53,22 @@ class CleverBotListener extends Listener_1.Listener {
             if (this.talent.cleverBotApi) {
                 try {
                     if (resonance.client.type === ClientType_1.ClientType.Discord) {
-                        let client = resonance.client;
+                        const client = resonance.client;
                         yield client.typeFor(5, resonance.message.channel);
                     }
-                    let response = yield this.talent.cleverBotApi.query(resonance.content);
-                    let author = '';
-                    // If we're on discord, the author should be a tag. Otherwise, we just get the username.
+                    const response = yield this.talent.cleverBotApi.query(resonance.content);
+                    let author = resonance.author.username;
+                    // If we're on discord, the author should be a tag.
                     if (resonance.client.type === ClientType_1.ClientType.Discord) {
                         author = `<@${resonance.message.author.id}>`;
                     }
-                    else {
-                        author = resonance.author.username;
-                    }
-                    yield resonance.__reply(`{{author}}, {{response}}`, {
-                        author: author,
-                        response: response['output'],
+                    yield resonance.__reply("{{author}}, {{response}}", {
+                        author,
+                        response: response.output,
                     });
                 }
                 catch (e) {
-                    yield Morgana_1.Morgana.warn(`Error occurred when querying CleverBot API. This is either due to special characters being in the message heard in the listener, or the API not being able to be instantiated.`);
+                    yield Morgana_1.Morgana.warn("Error occurred when querying CleverBot API. This is either due to special characters being in the message heard in the listener, or the API not being able to be instantiated.");
                 }
             }
         });

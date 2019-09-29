@@ -61,7 +61,7 @@ export class Yoshida {
       const googleTranslateProjectId: string = process.env.LAVENZA_GOOGLE_TRANSLATE_PROJECT_ID;
 
       // Instantiates a translation client.
-      const googleTranslateConfig = {};
+      const googleTranslateConfig: AbstractObject = {};
       googleTranslateConfig.projectId = googleTranslateProjectId;
       googleTranslate = new Translate(googleTranslateConfig as TranslateConfig);
     }

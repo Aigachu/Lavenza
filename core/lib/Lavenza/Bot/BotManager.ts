@@ -8,6 +8,7 @@
 // Modules.
 import * as path from "path";
 
+// Imports.
 import { Akechi } from "../Confidant/Akechi";
 import { Igor } from "../Confidant/Igor";
 import { Morgana } from "../Confidant/Morgana";
@@ -18,8 +19,6 @@ import { AssociativeObject } from "../Types";
 
 import { Bot } from "./Bot";
 import { BotConfigurations } from "./BotConfigurations";
-
-// Imports.
 
 /**
  * Provides a Manager for Bots.
@@ -40,15 +39,9 @@ export class BotManager {
    * Store ignored bot names.
    * We use this to prevent loading unneeded bot folders, like the example one.
    */
-  private static ignoredBots: Object = {
+  private static ignoredBots: {} = {
     example: "example",
   };
-
-  // Noinspection JSUnusedLocalSymbols
-  /**
-   * This is a static class. The constructor will never be used.
-   */
-  private constructor() {}
 
   /**
    * Preparation handler for the BotManager.
@@ -78,10 +71,12 @@ export class BotManager {
     await Gestalt.createCollection("/bots");
 
     // Run Gestalt handlers for each Bot.
-    await Promise.all(Object.keys(BotManager.bots).map(async (botId) => {
-      const bot: Bot = await BotManager.getBot(botId);
-      await bot.gestalt();
-    }));
+    await Promise.all(
+      Object.keys(BotManager.bots)
+        .map(async (botId) => {
+          const bot: Bot = await BotManager.getBot(botId);
+          await bot.gestalt();
+        }));
 
     // Some flavor.
     await Morgana.status("Gestalt bootstrap process complete for the Bot Manager!");
@@ -128,7 +123,7 @@ export class BotManager {
    * @param botId
    *    The ID of the bot to deploy.
    */
-  public static async boot(botId: string) {
+  public static async boot(botId: string): Promise<void> {
     // If the bot isn't found, we can't boot it.
     if (Sojiro.isEmpty(BotManager.bots[botId])) {
       await Morgana.warn("Tried to boot an non-existent bot: {{botId}}. Gracefully continuing the program.", {botId});
@@ -147,10 +142,13 @@ export class BotManager {
    * @param botId
    *   ID of the Bot to shutdown.
    */
-  public static async shutdown(botId: string) {
+  public static async shutdown(botId: string): Promise<void> {
     // If the bot isn't found, we can't shut it down.
     if (Sojiro.isEmpty(BotManager.bots[botId])) {
-      await Morgana.warn("Tried to shutdown an non-existent bot: {{botId}}. Gracefully continuing the program.", {botId});
+      await Morgana.warn(
+        "Tried to shutdown an non-existent bot: {{botId}}. Gracefully continuing the program.",
+        {botId},
+        );
 
       return;
     }
@@ -165,7 +163,7 @@ export class BotManager {
    * @param botId
    *    The ID of the bot to prepare.
    */
-  public static async prepareBot(botId: string) {
+  public static async prepareBot(botId: string): Promise<void> {
     // Await preparation handler for a single bot.
     const bot: Bot = await BotManager.getBot(botId);
     await bot.prepare();
@@ -176,10 +174,12 @@ export class BotManager {
    */
   public static async prepareAllBots(): Promise<void> {
     // Await preparation handlers for all bots.
-    await Promise.all(Object.keys(BotManager.bots).map(async (botId) => {
-      // Await preparation handler for a single bot.
-      await BotManager.prepareBot(botId);
-    }));
+    await Promise.all(
+      Object.keys(BotManager.bots)
+        .map(async (botId) => {
+          // Await preparation handler for a single bot.
+          await BotManager.prepareBot(botId);
+        }));
   }
 
   /**
@@ -210,10 +210,13 @@ export class BotManager {
    * @param directory
    *    Path to the directory where this bot's files are located.
    */
-  private static async registerBot(botId: string, directory: string = undefined) {
+  private static async registerBot(botId: string, directory?: string): Promise<void> {
+    // Variable to store actual path to the bot's directory.
+    let botDirectoryPath = "";
+
     // If the directory isn't provided, we'll get it ourselves.
     if (directory === undefined) {
-      directory = Core.paths.bots + "/" + botId;
+      botDirectoryPath = `${Core.paths.bots}/${botId}`;
     }
 
     // If the bot name is part of the ignored bot list, return now.
@@ -222,8 +225,9 @@ export class BotManager {
     }
 
     // Get the config file for the bot.
-    const configFilePath = directory + "/" + "config.yml";
-    const config: BotConfigurations = await Akechi.readYamlFile(configFilePath).catch(Igor.continue);
+    const configFilePath = `${botDirectoryPath}/config.yml`;
+    const config = await Akechi.readYamlFile(configFilePath)
+      .catch(Igor.continue) as BotConfigurations;
 
     // If the configuration is empty, stop here.
     // @TODO - Use https://www.npmjs.com/package/validate to validate configurations.
@@ -233,9 +237,6 @@ export class BotManager {
       return;
     }
 
-    // Set directory to the configuration. It's nice to have quick access to the bot folder from within the bot.
-    config.directory = directory;
-
     // If the 'active' flag of the config is set and is not 'true', we don't activate this bot.
     if (config.active !== undefined && config.active === false) {
       await Morgana.warn("The {{bot}} bot has been set to inactive. It will not be registered.", {bot: botId});
@@ -244,7 +245,7 @@ export class BotManager {
     }
 
     // Instantiate and set the bot to the collection.
-    const bot = new Bot(botId, config);
+    const bot = new Bot(botId, config, botDirectoryPath);
     if (bot.id === Core.settings.master) {
       bot.isMaster = true;
     }

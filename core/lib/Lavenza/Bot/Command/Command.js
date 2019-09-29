@@ -15,13 +15,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const ClientType_1 = require("../Client/ClientType");
-const Gestalt_1 = require("../../Gestalt/Gestalt");
-const Sojiro_1 = require("../../Confidant/Sojiro");
+// Modules.
+const path = require("path");
+// Imports.
 const Akechi_1 = require("../../Confidant/Akechi");
-const Morgana_1 = require("../../Confidant/Morgana");
 const Igor_1 = require("../../Confidant/Igor");
-const Yoshida_1 = require("../../Confidant/Yoshida");
+const Morgana_1 = require("../../Confidant/Morgana");
+const Sojiro_1 = require("../../Confidant/Sojiro");
+const Gestalt_1 = require("../../Gestalt/Gestalt");
 /**
  * Provides a base class for Commands.
  *
@@ -99,12 +100,12 @@ class Command {
     getActiveClientConfig(clientType, bot) {
         return __awaiter(this, void 0, void 0, function* () {
             // Attempt to get the active configuration from the database.
-            let activeConfig = yield Gestalt_1.Gestalt.get(`/bots/${bot.id}/commands/${this.id}/${clientType}`);
+            const activeConfig = yield Gestalt_1.Gestalt.get(`/bots/${bot.id}/commands/${this.id}/${clientType}`);
             if (!Sojiro_1.Sojiro.isEmpty(activeConfig)) {
                 return activeConfig;
             }
             // If we don't find any configurations in the database, we'll fetch it normally and then save it.
-            let config = yield this.getClientConfig(clientType);
+            const config = yield this.getClientConfig(clientType);
             // Sync it to the database.
             yield Gestalt_1.Gestalt.sync(config, `/bots/${bot.id}/commands/${this.id}/${clientType}`);
             // Return the configuration.
@@ -123,7 +124,7 @@ class Command {
     getClientConfig(clientType) {
         return __awaiter(this, void 0, void 0, function* () {
             // Determine path to client configuration.
-            let pathToClientConfig = `${this.directory}/${clientType}.yml`;
+            const pathToClientConfig = `${this.directory}/${clientType}.yml`;
             // Attempt to fetch client configuration.
             if (!(yield Akechi_1.Akechi.fileExists(pathToClientConfig))) {
                 return undefined;
@@ -146,12 +147,12 @@ class Command {
     getActiveParameterConfig(bot) {
         return __awaiter(this, void 0, void 0, function* () {
             // Attempt to get the active configuration from the database.
-            let activeConfig = yield Gestalt_1.Gestalt.get(`/bots/${bot.id}/commands/${this.id}/parameters`);
+            const activeConfig = yield Gestalt_1.Gestalt.get(`/bots/${bot.id}/commands/${this.id}/parameters`);
             if (!Sojiro_1.Sojiro.isEmpty(activeConfig)) {
                 return activeConfig;
             }
             // If we don't find any configurations in the database, we'll fetch it normally and then save it.
-            let config = yield this.getParameterConfig();
+            const config = yield this.getParameterConfig();
             // Sync it to the database.
             yield Gestalt_1.Gestalt.sync(config, `/bots/${bot.id}/commands/${this.id}/parameters`);
             // Return the configuration.
@@ -167,13 +168,13 @@ class Command {
     getParameterConfig() {
         return __awaiter(this, void 0, void 0, function* () {
             // Determine path to client configuration.
-            let pathToParameterConfig = `${this.directory}/parameters.yml`;
+            const pathToParameterConfig = `${this.directory}/parameters.yml`;
             // Attempt to fetch client configuration.
             if (!(yield Akechi_1.Akechi.fileExists(pathToParameterConfig))) {
                 return {};
             }
             // Load configuration since it exists.
-            let config = yield Akechi_1.Akechi.readYamlFile(pathToParameterConfig);
+            const config = yield Akechi_1.Akechi.readYamlFile(pathToParameterConfig);
             return Sojiro_1.Sojiro.isEmpty(config) ? {} : config;
         });
     }
@@ -193,42 +194,45 @@ class Command {
      * @returns
      *   Anything that should be returned by client handlers.
      */
-    fireClientHandlers(resonance, data, method = 'execute') {
+    fireClientHandlers(resonance, data, method = "execute") {
         return __awaiter(this, void 0, void 0, function* () {
+            // Set variables that we will use.
+            let methodToRun = method;
+            let dataToUse = data;
             // If the second provided parameter is a string, this means it's the method we want to run, and data is null.
-            if (typeof data === 'string') {
-                method = data;
-                data = {};
+            if (typeof data === "string") {
+                methodToRun = data;
+                dataToUse = {};
             }
             // If data is not set, set it to an empty object.
-            if (data === undefined) {
-                data = {};
+            if (dataToUse === undefined) {
+                dataToUse = {};
             }
             // Define variable for client task handler.
-            let HandlerClass = undefined;
+            let handlerClass;
             // Define path to Handler.
-            let pathToHandler = `${this.directory}/handlers/${resonance.client.type}/Handler`;
+            const pathToHandler = `${this.directory}/handlers/${resonance.client.type}/Handler`;
             // Try to fetch a handler for this client.
             try {
                 // Automatically require the handler we want.
-                HandlerClass = require(pathToHandler).default;
+                handlerClass = yield Promise.resolve().then(() => require(pathToHandler));
             }
             catch (error) {
                 // Log a message.
-                yield Morgana_1.Morgana.warn('Command handler for {{client}} could not be loaded for the {{command}} command. If you are using the handlers() function, make sure client handlers exist for each client this command is usable in.');
+                yield Morgana_1.Morgana.warn("Command handler for {{client}} could not be loaded for the {{command}} command. If you are using the handlers() function, make sure client handlers exist for each client this command is usable in.");
                 // Log the error that occurred.
                 yield Morgana_1.Morgana.warn(error.message);
                 // Return.
                 return;
             }
             // Now we can instantiate the Handler.
-            let Handler = new HandlerClass(this, resonance, pathToHandler);
+            const handler = new handlerClass[path.basename(pathToHandler, ".js")](this, resonance, pathToHandler);
             // If the method set doesn't exist, we throw an error here.
-            if (Sojiro_1.Sojiro.isEmpty(Handler[method])) {
-                yield Igor_1.Igor.throw(`The {{method}} method does not exist in the {{client}} handler for your {{command}} command. Please verify your handler code!`);
+            if (Sojiro_1.Sojiro.isEmpty(handler[methodToRun])) {
+                yield Igor_1.Igor.throw("The {{method}} method does not exist in the {{client}} handler for your {{command}} command. Please verify your handler code!");
             }
             // Then we can execute the tasks in the Handler.
-            return yield Handler[method](data);
+            return handler[methodToRun](dataToUse);
         });
     }
     /**
@@ -241,82 +245,8 @@ class Command {
      */
     help(resonance) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Get configuration.
-            let config = yield this.getActiveConfigForBot(resonance.bot);
-            let parameterConfig = yield this.getActiveParameterConfig(resonance.bot);
-            // Depending on the type of client, we want the help function to act differently.
-            switch (resonance.client.type) {
-                // If we're in Discord, we want to send a formatted rich embed.
-                case ClientType_1.ClientType.Discord: {
-                    // Start building the usage text by getting the command prefix.
-                    let usageText = `\`${yield resonance.bot.getCommandPrefix(resonance)}${config.key}`;
-                    // If there is input defined for this command, we will add them to the help text.
-                    if (parameterConfig.input) {
-                        parameterConfig.input.requests.every(request => {
-                            usageText += ` {${request.replace(' ', '_').toLowerCase()}}\`\n`;
-                        });
-                    }
-                    else {
-                        usageText += `\`\n`;
-                    }
-                    // If there are aliases defined for this command, add all usage examples to the help text.
-                    if (parameterConfig['aliases']) {
-                        let original = usageText;
-                        parameterConfig['aliases'].every(alias => {
-                            usageText += original.replace(`${config.key}`, alias);
-                            return true;
-                        });
-                    }
-                    // Set the usage section.
-                    let fields = [
-                        {
-                            name: yield Yoshida_1.Yoshida.translate('Usage', resonance.locale),
-                            text: usageText
-                        }
-                    ];
-                    // If there are options defined for this command, we add a section for options.
-                    if (parameterConfig.options) {
-                        let optionsList = '';
-                        yield Promise.all(parameterConfig.options.map((option) => __awaiter(this, void 0, void 0, function* () {
-                            let description = yield Yoshida_1.Yoshida.translate(option.description, resonance.locale);
-                            let name = yield Yoshida_1.Yoshida.translate(option.name, resonance.locale);
-                            optionsList += `**${name}** \`-${option.key} {${option['expects'].replace(' ', '_').toLowerCase()}}\` - ${description}\n\n`;
-                        })));
-                        fields.push({
-                            name: yield Yoshida_1.Yoshida.translate('Options', resonance.locale),
-                            text: optionsList
-                        });
-                    }
-                    // If there are flags defi-...You get the idea.
-                    if (parameterConfig.flags) {
-                        let flagsList = '';
-                        yield Promise.all(parameterConfig.flags.map((flag) => __awaiter(this, void 0, void 0, function* () {
-                            let description = yield Yoshida_1.Yoshida.translate(flag.description, resonance.locale);
-                            let name = yield Yoshida_1.Yoshida.translate(flag.name, resonance.locale);
-                            flagsList += `**${name}** \`-${flag.key}\` - ${description}\n\n`;
-                        })));
-                        fields.push({
-                            name: yield Yoshida_1.Yoshida.translate('Flags', resonance.locale),
-                            text: flagsList
-                        });
-                    }
-                    // Finally, send the embed.
-                    yield resonance.client.sendEmbed(resonance.message.channel, {
-                        title: yield Yoshida_1.Yoshida.translate(`${config.name}`, resonance.locale),
-                        description: yield Yoshida_1.Yoshida.translate(`${config.description}`, resonance.locale),
-                        header: {
-                            text: yield Yoshida_1.Yoshida.translate('{{bot}} Guide', { bot: resonance.bot.config.name }, resonance.locale),
-                            icon: resonance.client.user.avatarURL
-                        },
-                        fields: fields,
-                        thumbnail: resonance.client.user.avatarURL
-                    });
-                    break;
-                }
-                case ClientType_1.ClientType.Twitch: {
-                    // @TODO - Implement this!
-                }
-            }
+            // Fire the client's help handler.
+            yield resonance.client.help(this, resonance);
         });
     }
     /**
@@ -332,10 +262,18 @@ class Command {
      */
     allowedInClient(clientType) {
         return __awaiter(this, void 0, void 0, function* () {
-            let allowedForTalent = !Sojiro_1.Sojiro.isEmpty(this.talent.config.clients) && this.talent.config.clients !== '*' && (this.talent.config.clients.includes(clientType) || this.talent.config.clients === clientType)
-                || (Sojiro_1.Sojiro.isEmpty(this.talent.config.clients) || this.talent.config.clients === '*');
-            let allowedForCommand = !Sojiro_1.Sojiro.isEmpty(this.config.clients) && this.config.clients !== '*' && (this.config.clients.includes(clientType) || this.config.clients === clientType)
-                || (Sojiro_1.Sojiro.isEmpty(this.config.clients) || this.config.clients === '*');
+            const allowedForTalent = !Sojiro_1.Sojiro.isEmpty(this.talent.config.clients)
+                && this.talent.config.clients !== "*"
+                && (this.talent.config.clients.includes(clientType)
+                    || this.talent.config.clients === clientType)
+                || (Sojiro_1.Sojiro.isEmpty(this.talent.config.clients)
+                    || this.talent.config.clients === "*");
+            const allowedForCommand = !Sojiro_1.Sojiro.isEmpty(this.config.clients)
+                && this.config.clients !== "*"
+                && (this.config.clients.includes(clientType)
+                    || this.config.clients === clientType)
+                || (Sojiro_1.Sojiro.isEmpty(this.config.clients)
+                    || this.config.clients === "*");
             return allowedForTalent && allowedForCommand;
         });
     }

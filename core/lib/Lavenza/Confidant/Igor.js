@@ -40,7 +40,7 @@ class Igor {
         return __awaiter(this, void 0, void 0, function* () {
             // Do nothing. This quietly ignores the error.
             // Not really advised...Though I had couple of use cases for it. Still, not recommended!
-            // console.log('Error pocketed: ' + error.message);
+            // Console.log('Error pocketed: ' + error.message);
         });
     }
     /**
@@ -52,12 +52,13 @@ class Igor {
      *   The error caught.
      *
      * @returns
-     *   Returns true for cases where it's used in functions that need a return value. @TODO - YOU MIGHT BE ABLE TO REMOVE THE RETURN. TEST IT.
+     *   Returns true for cases where it's used in functions that need a return value.
      */
     static continue(error) {
         return __awaiter(this, void 0, void 0, function* () {
             // Sends a warning to the console.
             yield Morgana_1.Morgana.warn(error.message);
+            // @TODO - YOU MIGHT BE ABLE TO REMOVE THE RETURN. TEST IT.
             return true;
         });
     }
@@ -90,14 +91,16 @@ class Igor {
      * @param locale
      *   Locale determining the language to send the error in.
      */
-    static throw(error, replacers = undefined, locale = process.env.CONSOLE_LOCALE) {
+    static throw(error, 
+    // tslint:disable-next-line:no-unnecessary-initializer
+    replacers = undefined, locale = process.env.CONSOLE_LOCALE) {
         return __awaiter(this, void 0, void 0, function* () {
             // If the error is an instance of the error class, simply throw it.
             if (error instanceof Error) {
                 throw error;
             }
             // Get the output's translation.
-            let output = yield Yoshida_1.Yoshida.translate(error, replacers, locale);
+            const output = yield Yoshida_1.Yoshida.translate(error, replacers, locale);
             // Throw the error with the built output.
             throw new Error(output);
         });

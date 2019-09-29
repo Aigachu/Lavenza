@@ -151,7 +151,7 @@ export class Sojiro {
    * @param element
    *   Element to be removed.
    */
-  public static removeFromArray(array: unknown[], element: unknown): unknown {
+  public static removeFromArray(array: unknown[], element: unknown): unknown[] {
     return array.filter((e: unknown) => e !== element);
   }
 

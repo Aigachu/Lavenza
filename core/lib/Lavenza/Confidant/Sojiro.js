@@ -16,8 +16,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
-const _ = require("underscore");
 const thesaurus = require("thesaurus-com");
+const _ = require("underscore");
 /**
  * Provides a class that handles input/output to the console & errors.
  *
@@ -41,24 +41,26 @@ class Sojiro {
      */
     static isConfirmation(text) {
         return __awaiter(this, void 0, void 0, function* () {
+            // Variable to store clean text.
+            let cleanText = text;
             // Clean punctuation.
-            text = text.replace('?', '');
-            text = text.replace('!', '');
-            text = text.replace('.', '');
-            text = text.replace(',', '');
+            cleanText = cleanText.replace("?", "");
+            cleanText = cleanText.replace("!", "");
+            cleanText = cleanText.replace(".", "");
+            cleanText = cleanText.replace(",", "");
             // Make a function to store a confirmation.
             let confirmation = false;
             // Store an array of all confirmation words we'd like to check for.
-            let confirmations = [
-                'yes',
-                'sure',
-                'okay',
+            const confirmations = [
+                "yes",
+                "sure",
+                "okay",
             ];
             // Set up Promises for the confirmations check.
-            let confirmationPromises = confirmations.map((word) => __awaiter(this, void 0, void 0, function* () {
+            const confirmationPromises = confirmations.map((word) => __awaiter(this, void 0, void 0, function* () {
                 return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                     // Check whether we find a word match.
-                    let match = yield this.findWordMatch(word, text);
+                    const match = yield Sojiro.findWordMatch(word, cleanText);
                     if (match) {
                         confirmation = true;
                         // We reject to end Promise.all() early.
@@ -67,15 +69,15 @@ class Sojiro {
                 }));
             }));
             // Store an array of all denial words.
-            let denials = [
-                'no',
-                'deny'
+            const denials = [
+                "no",
+                "deny",
             ];
             // Set up Promises for the confirmations check.
-            let denialPromises = denials.map((word) => __awaiter(this, void 0, void 0, function* () {
+            const denialPromises = denials.map((word) => __awaiter(this, void 0, void 0, function* () {
                 return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                     // Check whether we find a word match.
-                    let match = yield this.findWordMatch(word, text);
+                    const match = yield Sojiro.findWordMatch(word, cleanText);
                     if (match) {
                         confirmation = false;
                         // We reject to end Promise.all() early.
@@ -84,11 +86,12 @@ class Sojiro {
                 }));
             }));
             // For each of these words we'll be making checks to see if they're used, or if synonyms are used.
-            yield Promise.all(confirmationPromises.concat(denialPromises)).catch(() => __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all(confirmationPromises.concat(denialPromises))
+                .catch(() => __awaiter(this, void 0, void 0, function* () {
                 // Do nothing.
                 // We're expecting rejection here since we don't necessarily want to run all of them if we find a match.
                 // See if Promise.race() worked properly, we could use it here. But it would return a pending promise that never
-                // resolves if we don't find any matches.
+                // Resolves if we don't find any matches.
             }));
             // Return the confirmation.
             return confirmation;
@@ -111,13 +114,14 @@ class Sojiro {
                 return true;
             }
             // If the haystack contains the word, return true.
-            if (haystack.split(' ').includes(word)) {
+            if (haystack.split(" ")
+                .includes(word)) {
                 return true;
             }
             // Get the synonyms of the word.
-            let synonyms = yield thesaurus.search(word).synonyms;
+            const synonyms = yield thesaurus.search(word).synonyms;
             // If we find a synonym of the word in the text, return true.
-            if (!Sojiro.isEmpty(synonyms) && new RegExp(synonyms.join('|')).test(haystack)) {
+            if (!Sojiro.isEmpty(synonyms) && new RegExp(synonyms.join("|")).test(haystack)) {
                 return true;
             }
             // Otherwise, no match was found and we can return false.
@@ -147,7 +151,7 @@ class Sojiro {
      *   Element to be removed.
      */
     static removeFromArray(array, element) {
-        return array.filter(e => e !== element);
+        return array.filter((e) => e !== element);
     }
     /**
      * Utility function to check if a variable is empty.
@@ -162,7 +166,7 @@ class Sojiro {
         // So underscore is cool and all...
         // BUT any FUNCTION passed to its isEmpty() function evaluates to TRUE for...I don't know what reason.
         // Here we handle this case.
-        if (typeof variable === 'function') {
+        if (typeof variable === "function") {
             return false;
         }
         // If it's not a function, underscore SHOULD cover the rest of the cases.

@@ -6,9 +6,10 @@
  */
 
 // Imports.
-import {Command} from "../../../../../lib/Lavenza/Bot/Command/Command";
-import {Sojiro} from "../../../../../lib/Lavenza/Confidant/Sojiro";
-import {BotManager} from "../../../../../lib/Lavenza/Bot/BotManager";
+import { BotManager } from "../../../../../lib/Lavenza/Bot/BotManager";
+import { Command } from "../../../../../lib/Lavenza/Bot/Command/Command";
+import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
+import { Sojiro } from "../../../../../lib/Lavenza/Confidant/Sojiro";
 
 /**
  * Shutdown Command.
@@ -18,28 +19,23 @@ import {BotManager} from "../../../../../lib/Lavenza/Bot/BotManager";
 export class Shutdown extends Command {
 
   /**
+   * Execute command.
+   *
    * @inheritDoc
    */
-  async build(config, talent) {
-    // The build function must always run the parent's build function! Don't remove this line.
-    await super.build(config, talent);
-  }
-
-  /**
-   * @inheritDoc
-   */
-  async execute(resonance) {
+  public async execute(resonance: Resonance): Promise<void> {
     // The raw content here should be the ID of the bot we want to activate.
-    let botToShutdown = resonance.instruction.content;
+    const botToShutdown = resonance.instruction.content;
 
     // Now we should check if the bot exists.
     if (Sojiro.isEmpty(BotManager.bots[botToShutdown])) {
-      await resonance.__reply(`Hmm...That bot doesn't seem to exist in the codebase. Did you make a typo? Make sure to enter the exact ID of the bot for this to work.`);
+      await resonance.__reply("Hmm...That bot doesn't seem to exist in the codebase. Did you make a typo? Make sure to enter the exact ID of the bot for this to work.");
+
       return;
     }
 
     // If all is good, we can go ahead and boot the bot.
-    await resonance.__reply(`Shutting down {{bot}}...`, {bot: botToShutdown});
+    await resonance.__reply("Shutting down {{bot}}...", {bot: botToShutdown});
     await BotManager.shutdown(botToShutdown);
   }
 

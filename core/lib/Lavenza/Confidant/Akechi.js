@@ -19,8 +19,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const fsrfp = require("fs-readfile-promise");
 const yaml = require("js-yaml");
-const path = require("path");
 const ncp_1 = require("ncp");
+const path = require("path");
 // Imports.
 const Igor_1 = require("./Igor");
 /**
@@ -37,13 +37,13 @@ class Akechi {
     /**
      * Create a directory at a given path.
      *
-     * @param path
+     * @param directoryPath
      *   Path to create directory in.
      */
-    static createDirectory(path) {
+    static createDirectory(directoryPath) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!fs.existsSync(path)) {
-                fs.mkdirSync(path);
+            if (!fs.existsSync(directoryPath)) {
+                fs.mkdirSync(directoryPath);
             }
         });
     }
@@ -63,30 +63,30 @@ class Akechi {
     /**
      * Create a directory at a given path.
      *
-     * @param path
+     * @param directoryPath
      *   Path to create directory in.
      *
      * @returns
      *   Returns TRUE if the directory exists, FALSE otherwise.
      */
-    static directoryExists(path) {
-        if (fs.existsSync(path) && !this.isDirectory(path)) {
+    static directoryExists(directoryPath) {
+        if (fs.existsSync(directoryPath) && !Akechi.isDirectory(directoryPath)) {
             return false;
         }
-        return fs.existsSync(path);
+        return fs.existsSync(directoryPath);
     }
     /**
      * Create a directory at a given path.
      *
-     * @param path
+     * @param filePath
      *   Path to create directory in.
      *
      * @returns
      *   Returns TRUE if the file exists, FALSE otherwise.
      */
-    static fileExists(path) {
+    static fileExists(filePath) {
         try {
-            fs.statSync(path);
+            fs.statSync(filePath);
             return true;
         }
         catch (err) {
@@ -96,15 +96,15 @@ class Akechi {
     /**
      * Simply read a file from a given path.
      *
-     * @param path
+     * @param filePath
      *   Path to the file to read.
      *
      * @returns
      *   File data obtained, if any.
      */
-    static readFile(path) {
+    static readFile(filePath) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield fsrfp(path);
+            return fsrfp(filePath);
         });
     }
     /**
@@ -119,7 +119,7 @@ class Akechi {
     static readYamlFile(filePath) {
         return __awaiter(this, void 0, void 0, function* () {
             // Read the file data.
-            let fileData = yield this.readFile(filePath);
+            const fileData = yield Akechi.readFile(filePath);
             // Get document, or throw exception on error
             return yaml.safeLoad(fileData);
         });
@@ -127,20 +127,22 @@ class Akechi {
     /**
      * Write a .yml file a return an object with the contents.
      *
-     * @param path
+     * @param filePath
      *   Path to write the file to.
-     *
      * @param output
      *   Output to write to the file.
      */
-    static writeYamlFile(path, output) {
+    static writeYamlFile(filePath, output) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!path.endsWith('.yml')) {
-                path += '.yml';
+            // Variable to store true file path.
+            let realFilePath = filePath;
+            if (!realFilePath.endsWith(".yml")) {
+                realFilePath += ".yml";
             }
-            fs.writeFile(path, yaml.safeDump(output), function (err) {
+            fs.writeFile(realFilePath, yaml.safeDump(output), (err) => {
                 if (err) {
-                    Igor_1.Igor.throw(err).then(() => {
+                    Igor_1.Igor.throw(err)
+                        .then(() => {
                         // Do nothing.
                     });
                 }
@@ -152,16 +154,16 @@ class Akechi {
      *
      * @ref https://stackoverflow.com/questions/18112204/get-all-directories-within-directory-nodejs
      *
-     * @param path
+     * @param directoryPath
      *   The source directory to search in.
      *
      * @returns
      *   Return list of directories found at the given path.
      */
-    static getDirectoriesFrom(path) {
+    static getDirectoriesFrom(directoryPath) {
         return __awaiter(this, void 0, void 0, function* () {
             // Fetch directories from the requested path.
-            return yield this.getFilesFrom(path, true);
+            return Akechi.getFilesFrom(directoryPath, true);
         });
     }
     /**
@@ -178,12 +180,13 @@ class Akechi {
     static getFilesFrom(source, dirs = false) {
         return __awaiter(this, void 0, void 0, function* () {
             // Get the list of files.
-            let files = fs.readdirSync(source).map(name => path.join(source, name));
+            const files = fs.readdirSync(source)
+                .map((name) => path.join(source, name));
             // Return directories if the flag is set.
             if (dirs === true) {
-                return files.filter(path => this.isDirectory(path) === true);
+                return files.filter((dirPath) => Akechi.isDirectory(dirPath) === true);
             }
-            return files.filter(path => this.isDirectory(path) === false);
+            return files.filter((filePath) => Akechi.isDirectory(filePath) === false);
         });
     }
     /**
@@ -196,7 +199,8 @@ class Akechi {
      */
     static isDirectory(source) {
         try {
-            return fs.lstatSync(source).isDirectory();
+            return fs.lstatSync(source)
+                .isDirectory();
         }
         catch (error) {
             return false;

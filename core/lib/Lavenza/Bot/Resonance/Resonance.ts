@@ -6,14 +6,20 @@
  */
 
 // Imports.
-import {Sojiro} from '../../Confidant/Sojiro';
-import {Yoshida} from '../../Confidant/Yoshida';
-import {Igor} from '../../Confidant/Igor';
-import {Bot} from "../Bot";
-import {ClientInterface} from "../Client/ClientInterface";
-import {Instruction} from "./Instruction";
-import {BotConfigurations} from "../BotConfigurations";
-import {Command} from "../Command/Command";
+import { Igor } from "../../Confidant/Igor";
+import { Sojiro } from "../../Confidant/Sojiro";
+import { Yoshida } from "../../Confidant/Yoshida";
+import { AbstractObject } from "../../Types";
+import { Bot } from "../Bot";
+import { BotConfigurations } from "../BotConfigurations";
+import { Client } from "../Client/Client";
+import { ClientMessage } from "../Client/ClientMessage";
+import { ClientUser } from "../Client/ClientUser";
+import { Command } from "../Command/Command";
+import { PromptException } from "../Prompt/Exception/PromptException";
+import { Prompt } from "../Prompt/Prompt";
+
+import { Instruction } from "./Instruction";
 
 /**
  * Provides a model that regroups information about a message received from a client.
@@ -37,7 +43,7 @@ export abstract class Resonance {
   /**
    * Message object obtained from the client.
    */
-  public message: any;
+  public message: ClientMessage;
 
   /**
    * The Bot that heard the message.
@@ -47,7 +53,7 @@ export abstract class Resonance {
   /**
    * The client where this message was heard.
    */
-  public client: ClientInterface;
+  public client: Client;
 
   /**
    * Storage of an Instruction associated to this resonance.
@@ -58,12 +64,12 @@ export abstract class Resonance {
   /**
    * The author of the message that was heard.
    */
-  public author: any;
+  public author: ClientUser;
 
   /**
    * The origin of the message in the form of data from the client.
    */
-  public origin: any;
+  public origin: unknown;
 
   /**
    * The locale describing the language the message was said in.
@@ -79,7 +85,7 @@ export abstract class Resonance {
   /**
    * The location where this message was heard. Type relative to the client.
    */
-  public channel: any;
+  public channel: unknown;
 
   /**
    * Resonance constructor.
@@ -94,7 +100,7 @@ export abstract class Resonance {
    * @param client
    *   The client that sent the original message.
    */
-  protected constructor(content: string, message: any, bot: Bot, client: ClientInterface) {
+  protected constructor(content: string, message: ClientMessage, bot: Bot, client: Client) {
     this.content = content;
     this.message = message;
     this.bot = bot;
@@ -120,7 +126,7 @@ export abstract class Resonance {
    * @param instruction
    *   An instruction to set to the Resonance.
    */
-  public async setInstruction(instruction: Instruction) {
+  public async setInstruction(instruction: Instruction): Promise<void> {
     this.instruction = instruction;
   }
 
@@ -131,14 +137,14 @@ export abstract class Resonance {
    *   Returns the command tied to this Resonance, through its instruction.
    */
   public async getCommand(): Promise<Command> {
-    return await this.instruction.command;
+    return this.instruction.command;
   }
 
   /**
    * Return arguments used with the command issued in this Resonance, if any.
    */
-  public async getArguments(): Promise<Array<any>> {
-    return await this.instruction.arguments;
+  public async getArguments(): Promise<AbstractObject> {
+    return this.instruction.arguments;
   }
 
   /**
@@ -170,13 +176,18 @@ export abstract class Resonance {
    *   Returns true if the Resonance was heard in a private channel. Returns false otherwise.
    */
   public async isPrivate(): Promise<boolean> {
-    return this.private === 'public';
+    return this.private === "public";
   }
 
   /**
    * Set up a prompt to a specified user.
    *
    * Prompts are interactive ways to query information from a user in a seamless conversational way.
+   *
+   * Commands can issue prompts to expect input from the user in their next messages. For example, is a user uses the
+   * '!ping' command, in the code we can use Prompts to prompt the user for information afterwards. The prompt can send
+   * a message along the lines of "Pong! How are you?" and act upon the next reply the person that initially called the
+   * command writes (Or act upon any future message really).
    *
    * @param user
    *   User that is being prompted.
@@ -193,9 +204,15 @@ export abstract class Resonance {
    * @param onError
    *   The callback function that runs once a failure occurs. Failure includes not getting a response.
    */
-  public async prompt(user: any, line: any, lifespan: number, onResponse: Function, onError: Function = (e) => { console.log(e); }) {
+  public async prompt(
+    user: ClientUser,
+    line: unknown,
+    lifespan: number,
+    onResponse: (resonance: Resonance, prompt: Prompt) => Promise<void>,
+    onError: (error: PromptException) => Promise<void> = async (e) => { console.log(e); })
+    : Promise<void> {
     // Simply run this through the bot's prompt function.
-    await this.bot.prompt(user, line, this, lifespan, onResponse, onError);
+    await this.client.prompt(user, line, this, lifespan, onResponse, onError);
   }
 
   /**
@@ -212,9 +229,9 @@ export abstract class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  public async reply(content: string, personalizationTag: string = ''): Promise<any> {
+  public async reply(content: string, personalizationTag: string = ""): Promise<unknown> {
     // Basically call the send method, but we already know the destination.
-    return await this.send(this.origin, content, personalizationTag);
+    return this.send(this.origin, content, personalizationTag);
   }
 
   /**
@@ -232,12 +249,13 @@ export abstract class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  public async __reply(...parameters: any): Promise<any> {
+  public async __reply(...parameters: unknown[]): Promise<unknown> {
     // Parse the parameters obtained.
-    let params = await Yoshida.parseI18NParams(parameters);
+    const params = await Yoshida.parseI18NParams(parameters);
 
     // Basically call the send method, but we already know the destination.
-    return await this.__send(this.origin, {phrase: params.phrase, locale: params.locale, tag: params.tag}, params.replacers, 'PARSED').catch(Igor.stop);
+    return this.__send(this.origin, {phrase: params.phrase, locale: params.locale, tag: params.tag}, params.replacers, "PARSED")
+      .catch(Igor.stop);
   }
 
   /**
@@ -258,15 +276,19 @@ export abstract class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed. This is useful for Discord.
    */
-  public async send(destination: any, content: string, personalizationTag: string = ''): Promise<any> {
+  public async send(destination: unknown, content: string, personalizationTag: string = ""): Promise<unknown> {
+    // Store variable for any content that is altered.
+    let alteredContent = content;
+
     // If a personalization tag is set, we want to use Yoshida to get a personalization for this bot.
     if (!Sojiro.isEmpty(personalizationTag)) {
-      content = await Yoshida.personalize(content, personalizationTag, this.bot);
+      alteredContent = await Yoshida.personalize(alteredContent, personalizationTag, this.bot);
     }
 
     // If all fails, we'll simply use this instance's doSend function.
     // Which will currently crash the program.
-    return await this.doSend(this.bot, destination, content).catch(Igor.stop);
+    return this.doSend(this.bot, destination, alteredContent)
+      .catch(Igor.stop);
   }
 
   /**
@@ -289,9 +311,9 @@ export abstract class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  public async __send(destination: any, ...parameters: any): Promise<any> {
+  public async __send(destination: unknown, ...parameters: unknown[]): Promise<unknown> {
     // Parse the parameters obtained.
-    let params = await Yoshida.parseI18NParams(parameters);
+    const params = await Yoshida.parseI18NParams(parameters);
 
     // If a locale is not set in the parameters, we need to determine what it is using the Resonance.
     if (params.locale === undefined) {
@@ -300,22 +322,36 @@ export abstract class Resonance {
 
     // If a locale is STILL not defined after the above code, we set it to the default one set to the bot.
     if (params.locale === undefined) {
-      let config: BotConfigurations = await this.bot.getActiveConfig();
+      const config: BotConfigurations = await this.bot.getActiveConfig();
       params.locale = config.locale;
     }
 
     // If a personalization tag is set, we want to use Yoshida to get a personalization for this bot.
     if (!Sojiro.isEmpty(params.tag)) {
-      params.phrase = await Yoshida.personalize(params.phrase, params.tag, this.bot).catch(Igor.stop);
+      params.phrase = await Yoshida.personalize(params.phrase, params.tag, this.bot)
+        .catch(Igor.stop);
     }
 
     // Now, using the information from the parameters, we fetch necessary translations.
-    let content = await Yoshida.translate({phrase: params.phrase, locale: params.locale}, params.replacers, 'PARSED');
+    const content = await Yoshida.translate({phrase: params.phrase, locale: params.locale}, params.replacers, "PARSED");
 
     // Invoke the regular send function.
-    return await this.send(destination, content);
+    return this.send(destination, content);
 
   }
+
+  /**
+   * Emulate the bot typing for a given amount of seconds.
+   *
+   * Each client will have its way of handling this. We just need a proper shortcut function to simplify coding in
+   * commands.
+   *
+   * @param seconds
+   *   The amount of seconds to type or wait for.
+   * @param destination
+   *   Destination to type in, if needed.
+   */
+  public abstract async typeFor(seconds: number, destination: unknown): Promise<void>;
 
   /**
    * Execute the actions required to send a message to a destination.
@@ -333,20 +369,7 @@ export abstract class Resonance {
    *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
    *   act upon it if needed.
    */
-  protected abstract async doSend(bot: Bot, destination: any, content: string): Promise<any>;
-
-  /**
-   * Emulate the bot typing for a given amount of seconds.
-   *
-   * Each client will have its way of handling this. We just need a proper shortcut function to simplify coding in
-   * commands.
-   *
-   * @param seconds
-   *   The amount of seconds to type or wait for.
-   * @param destination
-   *   Destination to type in, if needed.
-   */
-  public abstract async typeFor(seconds: number, destination: any);
+  protected abstract async doSend(bot: Bot, destination: unknown, content: string): Promise<unknown>;
 
   /**
    * Process parameters through i18n translation specifications for this Resonance.
@@ -367,7 +390,7 @@ export abstract class Resonance {
    * @return
    *   Origin of the message. Depending on the client, it could be anything.
    */
-  protected abstract async resolveOrigin(): Promise<any>;
+  protected abstract async resolveOrigin(): Promise<unknown>;
 
   /**
    * Determine whether or not this resonance was a private message to the bot.

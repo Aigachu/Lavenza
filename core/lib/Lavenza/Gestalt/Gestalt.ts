@@ -158,7 +158,7 @@ export class Gestalt {
   public static async request({protocol = "", endpoint = "", payload = {}}: AbstractObject = {})
     : Promise<{} | undefined> {
     // Await the request function call of the storage service.
-    return Gestalt.storageService.request({endpoint, protocol, payload});
+    return Gestalt.storageService.request({protocol, endpoint, payload});
   }
 
   /**

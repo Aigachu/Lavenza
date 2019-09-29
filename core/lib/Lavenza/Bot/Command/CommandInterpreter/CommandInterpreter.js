@@ -17,6 +17,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
 const minimist = require("minimist");
+// Imports.
 const Morgana_1 = require("../../../Confidant/Morgana");
 /**
  * Provides an Interpreter for Commands.
@@ -33,7 +34,7 @@ class CommandInterpreter {
     static interpret(resonance) {
         return __awaiter(this, void 0, void 0, function* () {
             // Fetch an instruction if we can.
-            let instruction = yield this.getInstruction(resonance);
+            const instruction = yield CommandInterpreter.getInstruction(resonance);
             // Set the instruction to the Resonance.
             // If an instruction wasn't found, undefined will be set here, which shouldn't be a problem!
             yield resonance.setInstruction(instruction);
@@ -53,17 +54,18 @@ class CommandInterpreter {
     static getInstruction(resonance) {
         return __awaiter(this, void 0, void 0, function* () {
             // Initialize some variables.
-            let content = resonance.content;
-            let bot = resonance.bot;
-            let client = resonance.client;
+            const content = resonance.content;
+            const bot = resonance.bot;
+            const client = resonance.client;
             // Split content with spaces.
-            // i.e. If the input is '! ping hello', then we get ['!', 'ping', 'hello'].
-            let splitContent = content.split(' ');
+            // I.e. If the input is '! ping hello', then we get ['!', 'ping', 'hello'].
+            let splitContent = content.split(" ");
             // Get command prefix.
             // If there is a command prefix override for this client, we will set it. If not, we grab the default.
-            let cprefix = yield bot.getCommandPrefix(resonance);
+            const cprefix = yield bot.getCommandPrefix(resonance);
             // If the content doesn't start with the command prefix or the bot tag, it's not a command.
-            // @todo - In Discord, we want to be able to tag the bot. Maybe in other clients too. But for now we'll keep it simple.
+            // @todo - In Discord, we want to be able to tag the bot.
+            //  Maybe in other clients too. But for now we'll keep it simple.
             if (!splitContent[0].startsWith(cprefix)) {
                 return undefined;
             }
@@ -75,29 +77,31 @@ class CommandInterpreter {
             // First, we'll format the string accordingly if needed.
             // If a user enters a command attached to the prefix, we separate them here.
             if (splitContent[0].length !== cprefix.length) {
-                splitContent = content.replace(cprefix, cprefix + ' ').split(' ');
+                splitContent = content.replace(cprefix, `${cprefix} `)
+                    .split(" ");
             }
             // Attempt to fetch the command from the bot.
-            let command = yield bot.getCommand(splitContent[1].toLowerCase());
+            const command = yield bot.getCommand(splitContent[1].toLowerCase());
             // If the command doesn't exist, we'll stop here.
             if (!command) {
-                yield Morgana_1.Morgana.warn('No command found in message...');
+                yield Morgana_1.Morgana.warn("No command found in message...");
                 return undefined;
             }
             // Now we do one final check to see if this command is allowed to be used in this client.
             // We check the command configuration for this.
-            let allowedInClient = yield command.allowedInClient(client.type);
+            const allowedInClient = yield command.allowedInClient(client.type);
             if (!allowedInClient) {
-                yield Morgana_1.Morgana.warn('Command found, but not allowed in client. Returning.');
+                yield Morgana_1.Morgana.warn("Command found, but not allowed in client. Returning.");
                 return undefined;
             }
             // Next, we'll build the arguments as well, using minimist.
-            let args = minimist(splitContent.slice(2));
+            const args = minimist(splitContent.slice(2));
             // Return our crafted Order.
             return {
-                command: command,
                 arguments: args,
-                content: splitContent.slice(2).join(' ')
+                command,
+                content: splitContent.slice(2)
+                    .join(" "),
             };
         });
     }

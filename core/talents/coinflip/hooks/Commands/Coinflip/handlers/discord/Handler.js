@@ -15,7 +15,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// Imports.
 const CommandClientHandler_1 = require("../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler");
 /**
  * A simple client handler.
@@ -24,6 +23,8 @@ const CommandClientHandler_1 = require("../../../../../../../lib/Lavenza/Bot/Com
  */
 class Handler extends CommandClientHandler_1.CommandClientHandler {
     /**
+     * Execute handler tasks.
+     *
      * @inheritDoc
      */
     execute(data = {}) {
@@ -40,11 +41,11 @@ class Handler extends CommandClientHandler_1.CommandClientHandler {
     getOpponent(data) {
         return __awaiter(this, void 0, void 0, function* () {
             let input = data.userInput;
-            input = input.replace('<@', '');
-            input = input.replace('!', '');
-            input = input.replace('>', '');
-            let opponent = this.resonance.guild.members.find(member => member.id === input);
-            return opponent || undefined;
+            input = input.replace("<@", "");
+            input = input.replace("!", "");
+            input = input.replace(">", "");
+            const opponent = this.resonance.guild.members.find((member) => member.id === input);
+            return opponent.user || undefined;
         });
     }
 }

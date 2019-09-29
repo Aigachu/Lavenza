@@ -6,18 +6,9 @@
  */
 
 // Imports.
-import {
-  ClientConfigurations,
-  DiscordClientConfigurations,
-  TwitchClientConfigurations
-} from "../../Client/ClientConfigurations";
-import {BotClientConfig, BotConfigurations, BotDiscordClientConfig, BotTwitchClientConfig} from "../../BotConfigurations";
-import {
-  CommandClientConfig,
-  CommandConfigurations, CommandDiscordClientConfig,
-  CommandParameterConfig,
-  CommandTwitchClientConfig
-} from "../CommandConfigurations";
+import { BotConfigurations } from "../../BotConfigurations";
+import { BotClientConfig, ClientConfigurations, CommandClientConfig } from "../../Client/ClientConfigurations";
+import { CommandConfigurations, CommandParameterConfig } from "../CommandConfigurations";
 
 /**
  * Provide an interface for a Command Authorizer's collection of configurations.
@@ -27,78 +18,59 @@ import {
  * We provide an interface for better type completion.
  */
 export interface CommandAuthorizerConfigurationsCollection {
+
+  /**
+   * House bot's configurations.
+   */
   bot: CommandAuthorizerBotConfigurations;
+
+  /**
+   * House command's configurations.
+   */
   command: CommandAuthorizerCommandConfigurations;
+
+  /**
+   * House client's configurations.
+   */
   client: ClientConfigurations;
+
 }
 
 /**
  * Provides an interface for Command Authorizer Bot configurations.
  */
 export interface CommandAuthorizerBotConfigurations {
+
+  /**
+   * House core bot configurations.
+   */
   base: BotConfigurations;
+
+  /**
+   * House client specific configurations for bot.
+   */
   client: BotClientConfig;
+
 }
 
 /**
  * Provides an interface for Command Authorizer Command configurations.
  */
 export interface CommandAuthorizerCommandConfigurations {
+
+  /**
+   * House core command configurations.
+   */
   base: CommandConfigurations;
+
+  /**
+   * House client specific configurations for command.
+   */
   client: CommandClientConfig;
+
+  /**
+   * House command's parameter configurations.
+   */
   parameters: CommandParameterConfig;
-}
 
-/**
- * === DISCORD ===
- */
-
-/**
- * Provide an interface for a Discord Command Authorizer's collection of configurations.
- */
-export interface DiscordCommandAuthorizerConfigurationsCollection extends CommandAuthorizerConfigurationsCollection {
-  bot: DiscordCommandAuthorizerBotConfigurations;
-  command: DiscordCommandAuthorizerCommandConfigurations;
-  client: DiscordClientConfigurations;
-}
-
-/**
- * Provides an interface for Command Authorizer Bot configurations.
- */
-export interface DiscordCommandAuthorizerBotConfigurations extends CommandAuthorizerBotConfigurations {
-  client: BotDiscordClientConfig;
-}
-
-/**
- * Provides an interface for Command Authorizer Command configurations specific to Discord.
- */
-export interface DiscordCommandAuthorizerCommandConfigurations extends CommandAuthorizerCommandConfigurations {
-  client: CommandDiscordClientConfig;
-}
-
-/**
- * === TWITCH ===
- */
-
-/**
- * Provide an interface for a Twitch Command Authorizer's collection of configurations.
- */
-export interface TwitchCommandAuthorizerConfigurationsCollection extends CommandAuthorizerConfigurationsCollection {
-  bot: TwitchCommandAuthorizerBotConfigurations;
-  command: TwitchCommandAuthorizerCommandConfigurations;
-  client: TwitchClientConfigurations;
-}
-
-/**
- * Provides an interface for Command Authorizer Bot configurations.
- */
-export interface TwitchCommandAuthorizerBotConfigurations extends CommandAuthorizerBotConfigurations {
-  client: BotTwitchClientConfig;
-}
-
-/**
- * Provides an interface for Command Authorizer Command configurations specific to Twitch.
- */
-export interface TwitchCommandAuthorizerCommandConfigurations extends CommandAuthorizerCommandConfigurations {
-  client: CommandTwitchClientConfig;
 }

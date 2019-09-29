@@ -5,7 +5,9 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import {Talent} from "../../Talent/Talent";
+// Imports.
+import { Talent } from "../../Talent/Talent";
+import { Resonance } from "../Resonance/Resonance";
 
 /**
  * Provides a base class for Listeners.
@@ -31,7 +33,7 @@ export abstract class Listener {
    * @param talent
    *   The talent that this listener belongs to, if any. Core listeners most likely won't have a talent.
    */
-  public async build(talent: Talent) {
+  public async build(talent: Talent): Promise<void> {
     this.talent = talent;
   }
 
@@ -46,6 +48,6 @@ export abstract class Listener {
    * @param resonance
    *   The Resonance to listen to.
    */
-  public abstract async listen(resonance);
+  public abstract async listen(resonance: Resonance): Promise<void>;
 
 }

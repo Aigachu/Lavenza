@@ -16,83 +16,72 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
-const _ = require("underscore");
 const jsonic = require("jsonic");
+const _ = require("underscore");
 // Imports.
-const Gestalt_1 = require("../../../../../lib/Lavenza/Gestalt/Gestalt");
-const Command_1 = require("../../../../../lib/Lavenza/Bot/Command/Command");
-const Sojiro_1 = require("../../../../../lib/Lavenza/Confidant/Sojiro");
 const ClientType_1 = require("../../../../../lib/Lavenza/Bot/Client/ClientType");
+const Command_1 = require("../../../../../lib/Lavenza/Bot/Command/Command");
 const Igor_1 = require("../../../../../lib/Lavenza/Confidant/Igor");
+const Sojiro_1 = require("../../../../../lib/Lavenza/Confidant/Sojiro");
+const Gestalt_1 = require("../../../../../lib/Lavenza/Gestalt/Gestalt");
 /**
- * Hello command.
- *
- * Literally just replies with 'Hello!'.
- *
- * A great testing command.
+ * Gestalt command used to make database queries through a client's chat.
  */
 class Gestalt extends Command_1.Command {
     constructor() {
         super(...arguments);
-        // Store the Gestalt protocols.
+        /**
+         * Store all usable Gestalt protocols.
+         */
         this.protocols = [
-            'get',
-            'post',
-            'update',
-            'delete'
+            "get",
+            "post",
+            "update",
+            "delete",
         ];
     }
     /**
-     * @inheritDoc
-     */
-    build(config, talent) {
-        const _super = Object.create(null, {
-            build: { get: () => super.build }
-        });
-        return __awaiter(this, void 0, void 0, function* () {
-            // Run the parent build function. Must always be done.
-            yield _super.build.call(this, config, talent);
-        });
-    }
-    /**
+     * Execute command.
+     *
      * @inheritDoc
      */
     execute(resonance) {
         return __awaiter(this, void 0, void 0, function* () {
             // The first argument must be one of the protocols, or we don't do anything.
             if (!_.contains(this.protocols, resonance.instruction.arguments._[0])) {
-                yield resonance.__reply('You need to use one of the API protocols.');
+                yield resonance.__reply("You need to use one of the API protocols.");
                 return;
             }
-            let protocol = resonance.instruction.arguments._[0];
-            let endpoint = resonance.instruction.arguments._[1];
-            let payload = jsonic(resonance.instruction.arguments._.slice(2).join(' ')) || {};
+            const protocol = resonance.instruction.arguments._[0];
+            const endpoint = resonance.instruction.arguments._[1];
+            const payload = jsonic(resonance.instruction.arguments._.slice(2)
+                .join(" ")) || {};
             switch (protocol) {
-                case 'get': {
-                    let getResult = yield Gestalt_1.Gestalt.get(endpoint);
+                case "get": {
+                    const getResult = yield Gestalt_1.Gestalt.get(endpoint);
                     if (Sojiro_1.Sojiro.isEmpty(getResult)) {
-                        yield resonance.__reply('No data found for that path, sadly. :(');
+                        yield resonance.__reply("No data found for that path, sadly. :(");
                         return;
                     }
                     // If a Discord Client exists for the bot, we send a message to the Discord architect.
                     if (!Sojiro_1.Sojiro.isEmpty(yield resonance.bot.getClient(ClientType_1.ClientType.Discord))) {
-                        let getResultToString = JSON.stringify(getResult, null, '\t');
-                        yield resonance.send(resonance.bot.joker.discord, '```\n' + getResultToString + '\n```');
+                        const getResultToString = JSON.stringify(getResult, undefined, "\t");
+                        yield resonance.send(resonance.bot.joker.discord, `\`\`\`\n${getResultToString}\n\`\`\``);
                     }
                     break;
                 }
-                case 'update': {
-                    let updateResult = yield Gestalt_1.Gestalt.update(endpoint, payload).catch(Igor_1.Igor.continue);
+                case "update": {
+                    const updateResult = yield Gestalt_1.Gestalt.update(endpoint, payload)
+                        .catch(Igor_1.Igor.continue);
                     if (Sojiro_1.Sojiro.isEmpty(updateResult)) {
-                        yield resonance.__reply('No data found at that path, sadly. :(');
+                        yield resonance.__reply("No data found at that path, sadly. :(");
                         return;
                     }
                     // If a Discord Client exists for the bot, we send a message to the Discord architect.
                     if (!Sojiro_1.Sojiro.isEmpty(yield resonance.bot.getClient(ClientType_1.ClientType.Discord))) {
-                        let updateResultToString = JSON.stringify(updateResult, null, '\t');
-                        yield resonance.send(resonance.bot.joker.discord, '```\n' + updateResultToString + '\n```');
+                        const updateResultToString = JSON.stringify(updateResult, undefined, "\t");
+                        yield resonance.send(resonance.bot.joker.discord, `\`\`\`\n${updateResultToString}\n\`\`\``);
                     }
-                    break;
                 }
             }
         });

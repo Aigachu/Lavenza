@@ -16,9 +16,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Imports.
+const Igor_1 = require("../../Confidant/Igor");
 const Sojiro_1 = require("../../Confidant/Sojiro");
 const Yoshida_1 = require("../../Confidant/Yoshida");
-const Igor_1 = require("../../Confidant/Igor");
 /**
  * Provides a model that regroups information about a message received from a client.
  *
@@ -84,7 +84,7 @@ class Resonance {
      */
     getCommand() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.instruction.command;
+            return this.instruction.command;
         });
     }
     /**
@@ -92,7 +92,7 @@ class Resonance {
      */
     getArguments() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.instruction.arguments;
+            return this.instruction.arguments;
         });
     }
     /**
@@ -127,13 +127,18 @@ class Resonance {
      */
     isPrivate() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.private === 'public';
+            return this.private === "public";
         });
     }
     /**
      * Set up a prompt to a specified user.
      *
      * Prompts are interactive ways to query information from a user in a seamless conversational way.
+     *
+     * Commands can issue prompts to expect input from the user in their next messages. For example, is a user uses the
+     * '!ping' command, in the code we can use Prompts to prompt the user for information afterwards. The prompt can send
+     * a message along the lines of "Pong! How are you?" and act upon the next reply the person that initially called the
+     * command writes (Or act upon any future message really).
      *
      * @param user
      *   User that is being prompted.
@@ -150,10 +155,10 @@ class Resonance {
      * @param onError
      *   The callback function that runs once a failure occurs. Failure includes not getting a response.
      */
-    prompt(user, line, lifespan, onResponse, onError = (e) => { console.log(e); }) {
+    prompt(user, line, lifespan, onResponse, onError = (e) => __awaiter(this, void 0, void 0, function* () { console.log(e); })) {
         return __awaiter(this, void 0, void 0, function* () {
             // Simply run this through the bot's prompt function.
-            yield this.bot.prompt(user, line, this, lifespan, onResponse, onError);
+            yield this.client.prompt(user, line, this, lifespan, onResponse, onError);
         });
     }
     /**
@@ -170,10 +175,10 @@ class Resonance {
      *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
      *   act upon it if needed.
      */
-    reply(content, personalizationTag = '') {
+    reply(content, personalizationTag = "") {
         return __awaiter(this, void 0, void 0, function* () {
             // Basically call the send method, but we already know the destination.
-            return yield this.send(this.origin, content, personalizationTag);
+            return this.send(this.origin, content, personalizationTag);
         });
     }
     /**
@@ -194,9 +199,10 @@ class Resonance {
     __reply(...parameters) {
         return __awaiter(this, void 0, void 0, function* () {
             // Parse the parameters obtained.
-            let params = yield Yoshida_1.Yoshida.parseI18NParams(parameters);
+            const params = yield Yoshida_1.Yoshida.parseI18NParams(parameters);
             // Basically call the send method, but we already know the destination.
-            return yield this.__send(this.origin, { phrase: params.phrase, locale: params.locale, tag: params.tag }, params.replacers, 'PARSED').catch(Igor_1.Igor.stop);
+            return this.__send(this.origin, { phrase: params.phrase, locale: params.locale, tag: params.tag }, params.replacers, "PARSED")
+                .catch(Igor_1.Igor.stop);
         });
     }
     /**
@@ -217,15 +223,18 @@ class Resonance {
      *   We'll receive a Promise containing the message that was sent in the reply, allowing us to
      *   act upon it if needed. This is useful for Discord.
      */
-    send(destination, content, personalizationTag = '') {
+    send(destination, content, personalizationTag = "") {
         return __awaiter(this, void 0, void 0, function* () {
+            // Store variable for any content that is altered.
+            let alteredContent = content;
             // If a personalization tag is set, we want to use Yoshida to get a personalization for this bot.
             if (!Sojiro_1.Sojiro.isEmpty(personalizationTag)) {
-                content = yield Yoshida_1.Yoshida.personalize(content, personalizationTag, this.bot);
+                alteredContent = yield Yoshida_1.Yoshida.personalize(alteredContent, personalizationTag, this.bot);
             }
             // If all fails, we'll simply use this instance's doSend function.
             // Which will currently crash the program.
-            return yield this.doSend(this.bot, destination, content).catch(Igor_1.Igor.stop);
+            return this.doSend(this.bot, destination, alteredContent)
+                .catch(Igor_1.Igor.stop);
         });
     }
     /**
@@ -251,24 +260,25 @@ class Resonance {
     __send(destination, ...parameters) {
         return __awaiter(this, void 0, void 0, function* () {
             // Parse the parameters obtained.
-            let params = yield Yoshida_1.Yoshida.parseI18NParams(parameters);
+            const params = yield Yoshida_1.Yoshida.parseI18NParams(parameters);
             // If a locale is not set in the parameters, we need to determine what it is using the Resonance.
             if (params.locale === undefined) {
                 params.locale = yield this.locale;
             }
             // If a locale is STILL not defined after the above code, we set it to the default one set to the bot.
             if (params.locale === undefined) {
-                let config = yield this.bot.getActiveConfig();
+                const config = yield this.bot.getActiveConfig();
                 params.locale = config.locale;
             }
             // If a personalization tag is set, we want to use Yoshida to get a personalization for this bot.
             if (!Sojiro_1.Sojiro.isEmpty(params.tag)) {
-                params.phrase = yield Yoshida_1.Yoshida.personalize(params.phrase, params.tag, this.bot).catch(Igor_1.Igor.stop);
+                params.phrase = yield Yoshida_1.Yoshida.personalize(params.phrase, params.tag, this.bot)
+                    .catch(Igor_1.Igor.stop);
             }
             // Now, using the information from the parameters, we fetch necessary translations.
-            let content = yield Yoshida_1.Yoshida.translate({ phrase: params.phrase, locale: params.locale }, params.replacers, 'PARSED');
+            const content = yield Yoshida_1.Yoshida.translate({ phrase: params.phrase, locale: params.locale }, params.replacers, "PARSED");
             // Invoke the regular send function.
-            return yield this.send(destination, content);
+            return this.send(destination, content);
         });
     }
 }

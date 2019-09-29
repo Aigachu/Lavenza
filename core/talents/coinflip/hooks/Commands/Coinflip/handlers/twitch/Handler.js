@@ -15,7 +15,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// Imports.
 const CommandClientHandler_1 = require("../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler");
 /**
  * A simple client handler.
@@ -24,10 +23,13 @@ const CommandClientHandler_1 = require("../../../../../../../lib/Lavenza/Bot/Com
  */
 class Handler extends CommandClientHandler_1.CommandClientHandler {
     /**
+     * Execute handler tasks!
+     *
      * @inheritDoc
      */
     execute(data = {}) {
         return __awaiter(this, void 0, void 0, function* () {
+            // Do nothing for now!
         });
     }
 }

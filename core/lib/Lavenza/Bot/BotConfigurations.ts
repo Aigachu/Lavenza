@@ -5,60 +5,44 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import {User} from "discord.js";
-import {TwitchUser} from "./Client/TwitchClient/TwitchUser";
-import {AssociativeObject} from "../Types";
-
 /**
  * Declares an interface schema for Base Bot Configurations.
  */
 export interface BotConfigurations {
+
+  /**
+   * Reader-Friendly name of the Bot.
+   */
   name: string;
+
+  /**
+   * Flag that determines whether this bot is active or not. Inactive bots will not be summoned.
+   */
   active: boolean;
+
+  /**
+   * Path to the directory where this bot's files are stored.
+   */
   directory: string;
+
+  /**
+   * The global default command prefix for this bot.
+   */
   commandPrefix: string;
+
+  /**
+   * The global default language this bot will communicate in.
+   */
   locale: string;
-  talents: Array<string>;
-  clients: Array<string>;
-}
 
-/**
- * Declares an interface for Joker, the object that exposes information about the bot's superuser.
- */
-export interface Joker {
-  discord: User;
-  twitch: TwitchUser;
-}
+  /**
+   * List of machinenames of Talents that are enabled for this bot.
+   */
+  talents: string[];
 
-/**
- * Declares a schema for Bot Client Configurations.
- */
-export interface BotClientConfig {
-  joker: string;
-  commandPrefix: string;
-  userEminences: AssociativeObject<string>;
-}
+  /**
+   * List of clients that this bot is connected to.
+   */
+  clients: string[];
 
-/**
- * === DISCORD ===
- */
-
-/**
- * Declares a schema for Bot Client Configurations specific to Discord Clients.
- */
-export interface BotDiscordClientConfig extends BotClientConfig {
-  activity: string;
-  integrationUrl: string;
-}
-
-/**
- * === TWITCH ===
- */
-
-/**
- * Declares a schema for Bot Client Configurations specific to Twitch Clients.
- */
-export interface BotTwitchClientConfig extends BotClientConfig {
-  username: string;
-  channels: Array<string>;
 }

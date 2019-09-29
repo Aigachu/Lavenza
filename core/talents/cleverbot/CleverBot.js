@@ -17,8 +17,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 // Imports.
 const CleverBotApi = require("cleverbot");
-const Talent_1 = require("../../lib/Lavenza/Talent/Talent");
 const Morgana_1 = require("../../lib/Lavenza/Confidant/Morgana");
+const Talent_1 = require("../../lib/Lavenza/Talent/Talent");
 /**
  * CleverBot Talent.
  *
@@ -26,18 +26,10 @@ const Morgana_1 = require("../../lib/Lavenza/Confidant/Morgana");
  */
 class CleverBot extends Talent_1.Talent {
     /**
-     * @inheritDoc
-     */
-    build(config) {
-        const _super = Object.create(null, {
-            build: { get: () => super.build }
-        });
-        return __awaiter(this, void 0, void 0, function* () {
-            // Run default builder.
-            yield _super.build.call(this, config);
-        });
-    }
-    /**
+     * Initializers for CleverBot talent.
+     *
+     * Here, we expect to obtain a CleverBot API Key in environement variables for Bots using this talent.
+     *
      * @inheritDoc
      */
     initialize(bot) {
@@ -48,10 +40,12 @@ class CleverBot extends Talent_1.Talent {
             // Run default initializer.
             yield _super.initialize.call(this, bot);
             // Initialize CleverBot API connection with Bot ENV.
-            let cleverBotApiKey = bot.env.CLEVER_BOT_API_KEY;
+            const cleverBotApiKey = bot.env.CLEVER_BOT_API_KEY;
             // If the token isn't found, we throw an error.
             if (cleverBotApiKey === undefined) {
-                yield Morgana_1.Morgana.error(`CleverBot API Key is missing for {{bot}}. An entry called CLEVER_BOT_API_KEY must be found in the bot's env file for the CleverBot Talent to work.`, { bot: bot.id });
+                yield Morgana_1.Morgana.error("CleverBot API Key is missing for {{bot}}. An entry called CLEVER_BOT_API_KEY must be found in the bot's env file for the CleverBot Talent to work.", {
+                    bot: bot.id,
+                });
                 return;
             }
             // Initialize variables if all is well.

@@ -51,7 +51,7 @@ class Kawakami {
      * @returns
      *   Text surrounded in a code block.
      */
-    static code(text, language = '') {
+    static code(text, language = "") {
         return `\`\`\`${language}\n${text}\n\`\`\``;
     }
 }

@@ -92,7 +92,7 @@ class Talent {
     getActiveConfigForBot(bot) {
         return __awaiter(this, void 0, void 0, function* () {
             // Await Gestalt's API call to get the configuration from the storage.
-            return Gestalt_1.Gestalt.get(`/bots/${bot.id}/talents/${this.machineName}/config`);
+            return yield Gestalt_1.Gestalt.get(`/bots/${bot.id}/talents/${this.machineName}/config`);
         });
     }
     /**

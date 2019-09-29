@@ -16,9 +16,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Imports.
+const BotManager_1 = require("../../../../../lib/Lavenza/Bot/BotManager");
 const Command_1 = require("../../../../../lib/Lavenza/Bot/Command/Command");
 const Sojiro_1 = require("../../../../../lib/Lavenza/Confidant/Sojiro");
-const BotManager_1 = require("../../../../../lib/Lavenza/Bot/BotManager");
 /**
  * Shutdown Command.
  *
@@ -26,31 +26,21 @@ const BotManager_1 = require("../../../../../lib/Lavenza/Bot/BotManager");
  */
 class Shutdown extends Command_1.Command {
     /**
-     * @inheritDoc
-     */
-    build(config, talent) {
-        const _super = Object.create(null, {
-            build: { get: () => super.build }
-        });
-        return __awaiter(this, void 0, void 0, function* () {
-            // The build function must always run the parent's build function! Don't remove this line.
-            yield _super.build.call(this, config, talent);
-        });
-    }
-    /**
+     * Execute command.
+     *
      * @inheritDoc
      */
     execute(resonance) {
         return __awaiter(this, void 0, void 0, function* () {
             // The raw content here should be the ID of the bot we want to activate.
-            let botToShutdown = resonance.instruction.content;
+            const botToShutdown = resonance.instruction.content;
             // Now we should check if the bot exists.
             if (Sojiro_1.Sojiro.isEmpty(BotManager_1.BotManager.bots[botToShutdown])) {
-                yield resonance.__reply(`Hmm...That bot doesn't seem to exist in the codebase. Did you make a typo? Make sure to enter the exact ID of the bot for this to work.`);
+                yield resonance.__reply("Hmm...That bot doesn't seem to exist in the codebase. Did you make a typo? Make sure to enter the exact ID of the bot for this to work.");
                 return;
             }
             // If all is good, we can go ahead and boot the bot.
-            yield resonance.__reply(`Shutting down {{bot}}...`, { bot: botToShutdown });
+            yield resonance.__reply("Shutting down {{bot}}...", { bot: botToShutdown });
             yield BotManager_1.BotManager.shutdown(botToShutdown);
         });
     }

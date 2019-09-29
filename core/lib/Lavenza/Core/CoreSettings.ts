@@ -9,6 +9,7 @@
  * Declares an interface schema for Core Lavenza settings.
  */
 export interface CoreSettings {
+
   /**
    * List of machine names of bots to automatically boot when starting Lavenza.
    */
@@ -18,4 +19,5 @@ export interface CoreSettings {
    * Machine name of the Master Bot, the main bot being used.
    */
   master: string;
+
 }

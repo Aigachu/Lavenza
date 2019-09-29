@@ -1,4 +1,3 @@
-/* tslint:disable:prefer-function-over-method */
 /**
  * Project Lavenza
  * Copyright 2017-2018 Aigachu, All Rights Reserved
@@ -34,6 +33,8 @@ export class Chronicler extends StorageService {
   private root: string;
 
   /**
+   * This function will handle build preparations for Chronicler.
+   *
    * @inheritDoc
    */
   public async build(): Promise<void> {
@@ -123,7 +124,7 @@ export class Chronicler extends StorageService {
     }
 
     // Await the execution of the regular request process.
-    return super.request({protocol, realEndpoint, payload});
+    return super.request({protocol, endpoint: realEndpoint, payload});
   }
 
   /**

@@ -35,11 +35,14 @@ class Handler extends CommandClientHandler_1.CommandClientHandler {
             // In the case of this example, data.hello should be accessible here.
             console.log(data.hello);
             // You also have access to these!
-            // console.log(this.command); // The command this handler is being used for.
-            // console.log(this.resonance); // The resonance, of course!
-            // console.log(this.directory); // The path to the directory of this handler. Useful if you want to include even more files.
+            // The command this handler is being used for.
+            console.log(this.command);
+            // The resonance, of course!
+            console.log(this.resonance);
+            // The path to the directory of this handler. Useful if you want to include even more files.
+            console.log(this.directory);
             // Send an additional message when this command is used in Discord clients.
-            yield this.resonance.__reply('Ah, we seem to be on Discord! This application is so much better than Skype & TeamSpeak. Oof!');
+            yield this.resonance.__reply("Ah, we seem to be on Discord! This application is so much better than Skype & TeamSpeak. Oof!");
         });
     }
     /**
@@ -52,13 +55,13 @@ class Handler extends CommandClientHandler_1.CommandClientHandler {
         return __awaiter(this, void 0, void 0, function* () {
             // Depending on if the user had a good day or not, customize reply.
             if (data.goodDay === true) {
-                yield this.resonance.__reply(`Good days are awesome, right?`);
+                yield this.resonance.__reply("Good days are awesome, right?");
             }
             else if (data.goodDay === false) {
-                yield this.resonance.__reply(`Bad days suck huh...`);
+                yield this.resonance.__reply("Bad days suck huh...");
             }
             else {
-                yield this.resonance.__reply(`>:S`);
+                yield this.resonance.__reply(">:S");
             }
         });
     }

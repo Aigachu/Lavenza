@@ -29,7 +29,7 @@ export class Makoto {
   /**
    * Set a cooldown for a given command, scope and duration.
    */
-  public static set(bot: string, type: string, key: string, scope: string, duration: number): Promise<void> {
+  public static set(bot: string, type: string, key: string, scope: string | number, duration: number): Promise<void> {
     if (!(bot in Makoto.cooldowns)) {
       Makoto.cooldowns[bot] = {};
     }
@@ -61,7 +61,7 @@ export class Makoto {
   /**
    * Unset a cooldown for a given command, user and scope.
    */
-  public static unset(bot: string, type: string, key: string, scope: string): void {
+  public static unset(bot: string, type: string, key: string, scope: string | number): void {
     // Remove the cooldown.
     Makoto.cooldowns[bot][type][key].splice(Makoto.cooldowns[bot][type][key].indexOf(scope), 1);
   }
@@ -69,7 +69,7 @@ export class Makoto {
   /**
    * Check if a cooldown exists with the given parameters.
    */
-  public static check(bot: string, type: string, key: string, scope: string): boolean {
+  public static check(bot: string, type: string, key: string, scope: string | number): boolean {
     if (!(bot in Makoto.cooldowns)) {
       return false;
     }

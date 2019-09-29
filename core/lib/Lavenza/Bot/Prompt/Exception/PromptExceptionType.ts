@@ -11,10 +11,27 @@
  * We don't wanna have to change them EVERYWHERE. So we manage them all here!
  */
 enum PromptExceptionType {
-  NO_RESPONSE = 'no-response',
-  INVALID_RESPONSE = 'invalid-response',
-  MISC = 'miscellaneous',
-  MAX_RESET_EXCEEDED = 'max-reset-exceeded'
+
+  /**
+   * When a prompt doesn't receive a response before it's lifespan, fire this error.
+   */
+  NO_RESPONSE = "no-response",
+
+  /**
+   * When a prompt doesn't receive a valid response, fire this error.
+   */
+  INVALID_RESPONSE = "invalid-response",
+
+  /**
+   * Fire this error for miscellaneous failures.
+   */
+  MISC = "miscellaneous",
+
+  /**
+   * When a prompt reaches it's maximum reset allowance, fire this error.
+   */
+  MAX_RESET_EXCEEDED = "max-reset-exceeded",
+
 }
 
-export {PromptExceptionType};
+export { PromptExceptionType };

@@ -15,17 +15,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// Includes
-const DiscordClient_1 = require("./DiscordClient/DiscordClient");
-const TwitchClient_1 = require("./TwitchClient/TwitchClient");
+const Gestalt_1 = require("../../Gestalt/Gestalt");
 const ClientType_1 = require("./ClientType");
-// import SlackClient from './SlackClient/SlackClient';
+const DiscordClient_1 = require("./Discord/DiscordClient");
+const TwitchClient_1 = require("./Twitch/TwitchClient");
 /**
  * Provide a factory class that manages the creation of the right client given a type.
  */
 class ClientFactory {
     /**
      * Creates a client instance given a type, bot and configuration.
+     *
+     * A client is created for each Bot.
      *
      * Each type of client has a different class. We will properly decouple and manage the functionality of each type of
      * client.
@@ -48,23 +49,32 @@ class ClientFactory {
             switch (type) {
                 // Create a DiscordClient if the type is Discord.
                 case ClientType_1.ClientType.Discord: {
-                    client = new DiscordClient_1.DiscordClient(config, bot);
+                    client = new DiscordClient_1.DiscordClient(bot, config);
                     break;
                 }
                 // Create a TwitchClient if the type is Discord.
                 case ClientType_1.ClientType.Twitch: {
-                    client = new TwitchClient_1.TwitchClient(config, bot);
-                    break;
+                    client = new TwitchClient_1.TwitchClient(bot, config);
                 }
                 // // Create a SlackClient if the type is Discord.
-                // case ClientType.Slack: {
-                //   client = new SlackClient(config, bot);
-                //   break;
+                // Case ClientType.Slack: {
+                //   Client = new SlackClient(config, bot);
+                //   Break;
                 // }
             }
+            // Bridge a connection to the application for the client.
+            yield client.bridge();
+            // Run build tasks for client.
+            yield client.build();
+            // Make sure database collection exists for this client for the given bot.
+            yield Gestalt_1.Gestalt.createCollection(`/bots/${bot.id}/clients/${client.type}`);
+            // Make sure database collection exists for permissions in this client.
+            yield Gestalt_1.Gestalt.createCollection(`/bots/${bot.id}/clients/${client.type}`);
+            // Initialize i18n database collection for this client if it doesn't already exist.
+            yield Gestalt_1.Gestalt.createCollection(`/i18n/${bot.id}/clients/${client.type}`);
+            // Return the client.
             return client;
         });
     }
 }
 exports.ClientFactory = ClientFactory;
-;

@@ -6,10 +6,9 @@
  */
 
 // Imports.
-import {Listener} from '../../Listener/Listener';
-import {CommandInterpreter} from '../CommandInterpreter/CommandInterpreter';
-import {CommandAuthorizerFactory} from "../CommandAuthorizer/CommandAuthorizerFactory";
-import {Resonance} from "../../Resonance/Resonance";
+import { Listener } from "../../Listener/Listener";
+import { Resonance } from "../../Resonance/Resonance";
+import { CommandInterpreter } from "../CommandInterpreter/CommandInterpreter";
 
 /**
  * Provides a Listener that listens for commands when messages are heard by a Bot.
@@ -21,9 +20,11 @@ import {Resonance} from "../../Resonance/Resonance";
 export class CommandListener extends Listener {
 
   /**
+   * Listen to a resonance and act upon it.
+   *
    * @inheritDoc
    */
-  public async listen(resonance: Resonance) {
+  public async listen(resonance: Resonance): Promise<void> {
     // Use the CommandInterpreter to find out if there's a command in the resonance.
     // If there's a command, the interpreter will return an instruction that will be assigned to the Resonance we heard.
     await CommandInterpreter.interpret(resonance);
@@ -34,32 +35,28 @@ export class CommandListener extends Listener {
     }
 
     // If the help option is used, we fire the help function of the command and return.
-    let args = await resonance.getArguments();
-    if (args['_'].includes('help') || 'help' in args) {
-      resonance.executeHelp().then(() => {
-        // Do nothing.
-      });
+    const args = await resonance.getArguments();
+    if (args._.includes("help") || "help" in args) {
+      resonance.executeHelp()
+        .then(() => {
+          // Do nothing.
+        });
+
       return;
     }
 
     // Now that we know a command has been found, we need to pass it through the right Authorizer.
     // We use a factory to build an appropriate authorizer.
-    let authorizer = await CommandAuthorizerFactory.build(resonance, await resonance.getCommand());
-
-    // The CommandAuthorizer checks if the command is authorized in the current context.
-    // If for any reason it's unauthorized, we don't do anything with the command.
-    let authorized = await authorizer.authorize();
+    const authorized = await resonance.client.authorize(await resonance.getCommand(), resonance);
     if (!authorized) {
       return;
     }
 
-    // If an order was found, execute it.
-    resonance.executeCommand().then(() => {
-      // Do nothing.
-    });
-
-    // And at the same time we set the cooldown for the command.
-    await authorizer.activateCooldownForCommand();
+    // If a command was found and authorized, execute it.
+    resonance.executeCommand()
+      .then(() => {
+        // Do nothing.
+      });
   }
 
 }
