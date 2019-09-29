@@ -6,7 +6,8 @@
  */
 
 // Imports.
-import {CommandClientHandler} from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
+import { CommandClientHandler } from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
+import { AbstractObject } from "../../../../../../../lib/Lavenza/Types";
 
 /**
  * A simple Twitch client handler for the Pong command.
@@ -20,19 +21,22 @@ export class Handler extends CommandClientHandler {
    *
    * @inheritDoc
    */
-  async execute(data: any = {}) {
+  public async execute(data: AbstractObject = {}): Promise<void>  {
     // Example of accessing the data that was passed in the this.fireClientHandlers() function call in the command.
     // It'all be found in the data variable.
     // In the case of this example, data.hello should be accessible here.
-    // console.log(data);
+    console.log(data);
 
     // You also have access to these!
-    // console.log(this.command); // The command this handler is being used for.
-    // console.log(this.resonance); // The resonance, of course!
-    // console.log(this.directory); // The path to the directory of this handler. Useful if you want to include even more files.
+    // The command this handler is being used for.
+    console.log(this.command);
+    // The resonance, of course!
+    console.log(this.resonance);
+    // The path to the directory of this handler. Useful if you want to include even more files.
+    console.log(this.directory);
 
     // Send an additional message when this command is used in Twitch clients.
-    await this.resonance.__reply(`I love Twitch! It's such a cool website. :P`);
+    await this.resonance.__reply("I love Twitch! It's such a cool website. :P");
   }
 
   /**
@@ -41,14 +45,14 @@ export class Handler extends CommandClientHandler {
    * @param data
    *   Data given through the command's call of its handlers() function.
    */
-  async myCustomMethod(data: any = {}) {
+  public async myCustomMethod(data: AbstractObject = {}): Promise<void> {
     // Depending on if the invoker had a good day or not, customize reply.
     if (data.goodDay === true) {
-      await this.resonance.__reply(`Good days are awesome, right?`);
+      await this.resonance.__reply("Good days are awesome, right?");
     } else if (data.goodDay === false) {
-      await this.resonance.__reply(`Bad days suck huh...`);
+      await this.resonance.__reply("Bad days suck huh...");
     } else {
-      await this.resonance.__reply(`>:(`);
+      await this.resonance.__reply(">:(");
     }
   }
 

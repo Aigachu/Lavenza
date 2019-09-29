@@ -21,6 +21,9 @@
     // No really, it got annoying. It shouldn't be too bad to keep this off!
     "no-magic-numbers": false,
 
+    // This rule is annoying so we're gonna disable it.
+    "max-line-length": false,
+
     // === Adjusted Rules ===
     // We don't want type definitions everywhere as it causes needless noise. Here we specify this.
     "typedef": {
@@ -54,13 +57,6 @@
     // Allow public class methods to not use 'this'.
     "prefer-function-over-method": {
       "options": ["allow-public", "allow-protected"]
-    },
-
-    // Max line length at 120 for consistency and ease of reading.
-    "max-line-length": {
-      "options": {
-        "limit": 120
-      }
     },
 
     // Preventing most console functions for production code.
