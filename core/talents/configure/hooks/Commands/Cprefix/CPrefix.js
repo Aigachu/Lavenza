@@ -47,6 +47,7 @@ class CPrefix extends Command_1.Command {
                 const currentPrefix = currentConfig.commandPrefix;
                 // Update the cprefix.
                 yield Gestalt_1.Gestalt.update(`/bots/${resonance.bot.id}/config/core`, { commandPrefix: args.s });
+                // For each client, we need to update the command prefix in all contexts.
                 // Send a confirmation.
                 yield resonance.__reply("I've updated the command prefix from {{oldPrefix}} to {{newPrefix}}.", {
                     newPrefix: yield Kawakami_1.Kawakami.bold(args.s),

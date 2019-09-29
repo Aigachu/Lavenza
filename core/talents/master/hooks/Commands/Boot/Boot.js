@@ -39,6 +39,11 @@ class Boot extends Command_1.Command {
                 yield resonance.__reply("Hmm...That bot doesn't seem to exist in the codebase. Did you make a typo? Make sure to enter the exact ID of the bot for this to work.");
                 return;
             }
+            // Now we should check if the bot is already online.
+            if (BotManager_1.BotManager.bots[botToBoot].summoned) {
+                yield resonance.__reply("That bot is already online!");
+                return;
+            }
             // If all is good, we can go ahead and boot the bot.
             yield resonance.__reply("Initializing boot process for {{bot}}. They should be active shortly!", { bot: botToBoot });
             yield BotManager_1.BotManager.boot(botToBoot);

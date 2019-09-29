@@ -79,6 +79,10 @@ class Bot {
          * Boolean to determine if the bot is the Master Bot. There can only be one!
          */
         this.isMaster = false;
+        /**
+         * Boolean to store whether or no the bot is summoned.
+         */
+        this.summoned = false;
         this.id = id;
         this.config = config;
         this.directory = directory;
@@ -139,6 +143,11 @@ class Bot {
      */
     deploy() {
         return __awaiter(this, void 0, void 0, function* () {
+            // If the bot is already summoned, we don't want to do anything here.
+            if (this.summoned) {
+                yield Morgana_1.Morgana.warn("Tried to deploy {{bot}}, but the bot is already summoned!", { bot: this.id });
+                return;
+            }
             // Await client initialization.
             yield this.initializeClients();
             // Await clients authentication.
@@ -148,6 +157,8 @@ class Bot {
             // Await talent initializations for this bot.
             // We do this AFTER authenticating clients. Some talents might need client info to perform their initializations.
             yield this.initializeTalentsForBot();
+            // Set the bot's summoned flag to true.
+            this.summoned = true;
         });
     }
     /**
@@ -155,8 +166,15 @@ class Bot {
      */
     shutdown() {
         return __awaiter(this, void 0, void 0, function* () {
+            // If the bot isn't summoned, we can't shut it down.
+            if (!this.summoned) {
+                yield Morgana_1.Morgana.warn("Tried to shutdown {{bot}}, but it's already disconnected!", { bot: this.id });
+                return;
+            }
             // Disconnect the bot from all clients.
             yield this.disconnectClients();
+            // Set the bot's summoned flag to true.
+            this.summoned = false;
         });
     }
     /**

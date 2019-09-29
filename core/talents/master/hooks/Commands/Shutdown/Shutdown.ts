@@ -34,6 +34,13 @@ export class Shutdown extends Command {
       return;
     }
 
+    // Now we should check if the bot is already online.
+    if (!BotManager.bots[botToShutdown].summoned) {
+      await resonance.__reply("That bot is already offline!");
+
+      return;
+    }
+
     // If all is good, we can go ahead and boot the bot.
     await resonance.__reply("Shutting down {{bot}}...", {bot: botToShutdown});
     await BotManager.shutdown(botToShutdown);

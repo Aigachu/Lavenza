@@ -34,6 +34,13 @@ export class Boot extends Command {
       return;
     }
 
+    // Now we should check if the bot is already online.
+    if (BotManager.bots[botToBoot].summoned) {
+      await resonance.__reply("That bot is already online!");
+
+      return;
+    }
+
     // If all is good, we can go ahead and boot the bot.
     await resonance.__reply("Initializing boot process for {{bot}}. They should be active shortly!", {bot: botToBoot});
     await BotManager.boot(botToBoot);

@@ -111,6 +111,11 @@ export class Bot {
   public isMaster: boolean = false;
 
   /**
+   * Boolean to store whether or no the bot is summoned.
+   */
+  public summoned: boolean = false;
+
+  /**
    * Bot constructor.
    *
    * @param id
@@ -194,6 +199,13 @@ export class Bot {
    * Authenticates the clients and initializes talents.
    */
   public async deploy(): Promise<void> {
+    // If the bot is already summoned, we don't want to do anything here.
+    if (this.summoned) {
+      await Morgana.warn("Tried to deploy {{bot}}, but the bot is already summoned!", {bot: this.id});
+
+      return;
+    }
+
     // Await client initialization.
     await this.initializeClients();
 
@@ -206,14 +218,27 @@ export class Bot {
     // Await talent initializations for this bot.
     // We do this AFTER authenticating clients. Some talents might need client info to perform their initializations.
     await this.initializeTalentsForBot();
+
+    // Set the bot's summoned flag to true.
+    this.summoned = true;
   }
 
   /**
    * Shutdown the bot, disconnecting it from all clients.
    */
   public async shutdown(): Promise<void> {
+    // If the bot isn't summoned, we can't shut it down.
+    if (!this.summoned) {
+      await Morgana.warn("Tried to shutdown {{bot}}, but it's already disconnected!", {bot: this.id});
+
+      return;
+    }
+
     // Disconnect the bot from all clients.
     await this.disconnectClients();
+
+    // Set the bot's summoned flag to true.
+    this.summoned = false;
   }
 
   /**
