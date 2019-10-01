@@ -110,7 +110,6 @@ export class CommandCooldownManager {
    *   Resonance to check for, that includes information on the  command and more.
    */
   public static async check(resonance: Resonance): Promise<boolean> {
-    console.log(CommandCooldownManager.cooldowns);
     // Contexts to check.
     const globalSign = await CommandCooldownManager.signature(resonance);
     const userSign = await CommandCooldownManager.signature(resonance, [resonance.author.id]);
