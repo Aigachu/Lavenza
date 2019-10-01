@@ -95,8 +95,6 @@ export class Bot {
 
   /**
    * Object to store data about the bot's master user.
-   * @TODO - More specifications and maybe an interface to define it's properties.
-   * @TODO - Normalize the properties.
    */
   public joker: Joker = {} as unknown as Joker;
 
