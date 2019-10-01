@@ -23,7 +23,6 @@ const prompt = require("prompt-async");
 const BotManager_1 = require("../Bot/BotManager");
 const Akechi_1 = require("../Confidant/Akechi");
 const Igor_1 = require("../Confidant/Igor");
-const Makoto_1 = require("../Confidant/Makoto");
 const Morgana_1 = require("../Confidant/Morgana");
 const Sojiro_1 = require("../Confidant/Sojiro");
 const Yoshida_1 = require("../Confidant/Yoshida");
@@ -157,13 +156,6 @@ class Core {
              * Creates & verifies database tables/files.
              */
             yield Gestalt_1.Gestalt.bootstrap();
-            /*
-             * Await Makoto's Preparation.
-             * Makoto is the cooldown manager. She needs to be initialized here.
-             * No announcements needed for this. She can prepare quietly.
-             * @TODO - Manage this elsewhere...She shouldn't have to be initiated here honestly.
-             */
-            yield Makoto_1.Makoto.build();
             // Some more flavor.
             yield Morgana_1.Morgana.success("Preparations complete.");
         });

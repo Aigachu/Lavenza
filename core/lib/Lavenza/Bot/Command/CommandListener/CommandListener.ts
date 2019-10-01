@@ -8,6 +8,7 @@
 // Imports.
 import { Listener } from "../../Listener/Listener";
 import { Resonance } from "../../Resonance/Resonance";
+import { CommandCooldownManager } from "../CommandCooldownManager/CommandCooldownManager";
 import { CommandInterpreter } from "../CommandInterpreter/CommandInterpreter";
 
 /**
@@ -53,9 +54,15 @@ export class CommandListener extends Listener {
     }
 
     // If a command was found and authorized, execute it.
+    // We don't use await here, or this would probably halt the whole program while the command executes.
     resonance.executeCommand()
-      .then(() => {
-        // Do nothing.
+      .then(async () => {
+        // Activate cooldown for this command.
+        // @TODO - We MAY need to take this out of the above then() and set it to execute synchronously. We'll see.
+        CommandCooldownManager.setCooldown(resonance)
+          .then(async () => {
+            // Do nothing for now!
+          });
       });
   }
 

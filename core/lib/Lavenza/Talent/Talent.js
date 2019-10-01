@@ -35,6 +35,28 @@ const Gestalt_1 = require("../Gestalt/Gestalt");
  * seemed like a good move.
  */
 class Talent {
+    constructor() {
+        /**
+         * Object to store this Talent's command aliases.
+         */
+        this.commandAliases = {};
+        /**
+         * Object to store this Talent's commands.
+         */
+        this.commands = {};
+        /**
+         * Object to store relevant paths to the Talent's database entries.
+         *
+         * Contains paths to Gestalt databases for this Talent.
+         *  - databases.global    - Path to global database. i.e. /talents/{TALENT_NAME}
+         *  - databases.{BOT_ID}  - Path to bot specific database for this talent. i.e. /bots/{YOUR_BOT}/talents/{TALENT_NAME}
+         */
+        this.databases = {};
+        /**
+         * Object to store this Talent's listeners.
+         */
+        this.listeners = [];
+    }
     /**
      * Perform build tasks.
      *
@@ -49,10 +71,6 @@ class Talent {
             this.machineName = path.basename(config.directory); // Here we get the name of the directory and set it as the ID.
             this.config = config;
             this.directory = config.directory;
-            this.databases = {};
-            this.commands = {};
-            this.commandAliases = {};
-            this.listeners = [];
             // Set the path to the talent's global database.
             this.databases.global = `/talents/${this.machineName}`;
             // Await the process of loading commands.

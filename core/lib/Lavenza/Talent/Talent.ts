@@ -39,12 +39,12 @@ export class Talent {
   /**
    * Object to store this Talent's command aliases.
    */
-  public commandAliases: AssociativeObject<string>;
+  public commandAliases: AssociativeObject<string> = {};
 
   /**
    * Object to store this Talent's commands.
    */
-  public commands: AssociativeObject<Command>;
+  public commands: AssociativeObject<Command> = {};
 
   /**
    * Talent configuration.
@@ -58,7 +58,7 @@ export class Talent {
    *  - databases.global    - Path to global database. i.e. /talents/{TALENT_NAME}
    *  - databases.{BOT_ID}  - Path to bot specific database for this talent. i.e. /bots/{YOUR_BOT}/talents/{TALENT_NAME}
    */
-  public databases: AssociativeObject<string>;
+  public databases: AssociativeObject<string> = {};
 
   /**
    * Path to the directory of the Talent.
@@ -68,7 +68,7 @@ export class Talent {
   /**
    * Object to store this Talent's listeners.
    */
-  public listeners: Listener[];
+  public listeners: Listener[] = [];
 
   /**
    * Unique machine name of the talent.
@@ -91,10 +91,6 @@ export class Talent {
     this.machineName = path.basename(config.directory); // Here we get the name of the directory and set it as the ID.
     this.config = config;
     this.directory = config.directory;
-    this.databases = {};
-    this.commands = {};
-    this.commandAliases = {};
-    this.listeners = [];
 
     // Set the path to the talent's global database.
     this.databases.global = `/talents/${this.machineName}`;

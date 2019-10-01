@@ -20,7 +20,6 @@ const Resonance_1 = require("./Lavenza/Bot/Resonance/Resonance");
 const Akechi_1 = require("./Lavenza/Confidant/Akechi");
 const Igor_1 = require("./Lavenza/Confidant/Igor");
 const Kawakami_1 = require("./Lavenza/Confidant/Kawakami");
-const Makoto_1 = require("./Lavenza/Confidant/Makoto");
 const Morgana_1 = require("./Lavenza/Confidant/Morgana");
 const Sojiro_1 = require("./Lavenza/Confidant/Sojiro");
 const Yoshida_1 = require("./Lavenza/Confidant/Yoshida");
@@ -63,7 +62,6 @@ const heart = {
     Akechi: Akechi_1.Akechi,
     Igor: Igor_1.Igor,
     Kawakami: Kawakami_1.Kawakami,
-    Makoto: Makoto_1.Makoto,
     Morgana: Morgana_1.Morgana,
     Sojiro: Sojiro_1.Sojiro,
     Yoshida: Yoshida_1.Yoshida,

@@ -106,6 +106,10 @@ export class CommandInterpreter {
     return {
       arguments: args,
       command,
+      config: {
+        base: await command.getActiveConfigForBot(resonance.bot),
+        client: await command.getActiveClientConfig(resonance.client.type, resonance.bot),
+      },
       content: splitContent.slice(2)
         .join(" "),
     };

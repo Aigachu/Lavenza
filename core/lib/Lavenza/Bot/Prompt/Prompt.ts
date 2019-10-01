@@ -70,7 +70,7 @@ export abstract class Prompt {
   /**
    * Event Emitter.
    */
-  public ee: EventEmitter;
+  public ee: EventEmitter = new EventEmitter();
 
   /**
    * Timeout that will handle the lifespan of the prompt.
@@ -80,7 +80,7 @@ export abstract class Prompt {
   /**
    * Field to hold the number of times this prompt has failed through error.
    */
-  public resetCount: number;
+  public resetCount: number = 0;
 
   /**
    * Prompt constructor.
@@ -120,9 +120,6 @@ export abstract class Prompt {
     this.onResponse = onResponse;
     this.onError = onError;
     this.bot = bot;
-    this.ee = new EventEmitter();
-    this.timer = undefined;
-    this.resetCount = 0;
   }
 
   /**

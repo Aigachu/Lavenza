@@ -14,6 +14,7 @@ import { ClientType } from "../../Client/ClientType";
 import { Eminence } from "../../Eminence/Eminence";
 import { Resonance } from "../../Resonance/Resonance";
 import { Command } from "../Command";
+import { CommandCooldownManager } from "../CommandCooldownManager/CommandCooldownManager";
 
 import { CommandAuthorizerConfigurationsCollection } from "./CommandAuthorizerConfigurations";
 
@@ -136,6 +137,7 @@ export abstract class CommandAuthorizer {
     if (commandIsOnCooldown) {
       // Send the cooldown notification.
       await this.sendCooldownNotification();
+      await Morgana.warn("command on cooldown");
 
       return false;
     }
@@ -255,13 +257,13 @@ export abstract class CommandAuthorizer {
     // At this point we know the message is private. We return whether or not it's allowed.
     // Get the base command configuration.
     if (this.configurations.command.base.authorization
-      && this.configurations.command.base.authorization.hasOwnProperty("enabledInDirectMessages")) {
+      && "enabledInDirectMessages" in this.configurations.command.base.authorization) {
       allowedInPrivate = this.configurations.command.base.authorization.enabledInDirectMessages;
     }
 
     // If the client configuration has an override, we'll use it.
     if (this.configurations.command.base.authorization
-      && this.configurations.command.client.authorization.hasOwnProperty("enabledInDirectMessages")) {
+      && "enabledInDirectMessages" in this.configurations.command.client.authorization) {
       allowedInPrivate = this.configurations.command.client.authorization.enabledInDirectMessages;
     }
 
@@ -302,13 +304,13 @@ export abstract class CommandAuthorizer {
 
     // Attempt to get configuration set in the base command configuration.
     if (this.configurations.command.base.authorization
-      && this.configurations.command.base.authorization.hasOwnProperty("accessEminence")) {
+      && "accessEminence" in this.configurations.command.base.authorization) {
       requiredEminence = Eminence[this.configurations.command.base.authorization.accessEminence];
     }
 
     // Attempt to get configuration set in the client command configuration.
     if (this.configurations.command.client.authorization
-      && this.configurations.command.client.authorization.hasOwnProperty("accessEminence")) {
+      && "accessEminence" in this.configurations.command.client.authorization) {
       requiredEminence = Eminence[this.configurations.command.client.authorization.accessEminence];
     }
 
@@ -404,10 +406,8 @@ export abstract class CommandAuthorizer {
    * @returns
    *   Returns true if the command is on cooldown. False otherwise.
    */
-  // tslint:disable-next-line:prefer-function-over-method
   private async validateCooldown(): Promise<boolean> {
-    // @TODO - Refactor all of this.
-    return false;
+    return CommandCooldownManager.check(this.resonance);
   }
 
 }

@@ -100,6 +100,10 @@ class CommandInterpreter {
             return {
                 arguments: args,
                 command,
+                config: {
+                    base: yield command.getActiveConfigForBot(resonance.bot),
+                    client: yield command.getActiveClientConfig(resonance.client.type, resonance.bot),
+                },
                 content: splitContent.slice(2)
                     .join(" "),
             };

@@ -15,7 +15,7 @@ import { Morgana } from "../Confidant/Morgana";
 import { Sojiro } from "../Confidant/Sojiro";
 import { Gestalt } from "../Gestalt/Gestalt";
 import { TalentManager } from "../Talent/TalentManager";
-import { AssociativeObject, Joker } from "../Types";
+import { AbstractObject, AssociativeObject, Joker } from "../Types";
 
 // Imports.
 // Holy shit this LIST! LMFAO!
@@ -98,7 +98,7 @@ export class Bot {
    * @TODO - More specifications and maybe an interface to define it's properties.
    * @TODO - Normalize the properties.
    */
-  public joker: Joker;
+  public joker: Joker = {} as unknown as Joker;
 
   /**
    * Boolean to determine whether the bot is set to maintenance mode or not.
@@ -129,9 +129,6 @@ export class Bot {
     this.id = id;
     this.config = config;
     this.directory = directory;
-    this.maintenance = false;
-    this.isMaster = false;
-    this.joker = {} as unknown as Joker;
   }
 
   /**

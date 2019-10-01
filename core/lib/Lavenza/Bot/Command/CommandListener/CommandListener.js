@@ -17,6 +17,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 // Imports.
 const Listener_1 = require("../../Listener/Listener");
+const CommandCooldownManager_1 = require("../CommandCooldownManager/CommandCooldownManager");
 const CommandInterpreter_1 = require("../CommandInterpreter/CommandInterpreter");
 /**
  * Provides a Listener that listens for commands when messages are heard by a Bot.
@@ -56,10 +57,16 @@ class CommandListener extends Listener_1.Listener {
                 return;
             }
             // If a command was found and authorized, execute it.
+            // We don't use await here, or this would probably halt the whole program while the command executes.
             resonance.executeCommand()
-                .then(() => {
-                // Do nothing.
-            });
+                .then(() => __awaiter(this, void 0, void 0, function* () {
+                // Activate cooldown for this command.
+                // @TODO - We MAY need to take this out of the above then() and set it to execute synchronously. We'll see.
+                CommandCooldownManager_1.CommandCooldownManager.setCooldown(resonance)
+                    .then(() => __awaiter(this, void 0, void 0, function* () {
+                    // Do nothing for now!
+                }));
+            }));
         });
     }
 }

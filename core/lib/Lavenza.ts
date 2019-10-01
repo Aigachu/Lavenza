@@ -20,7 +20,6 @@ import { Resonance } from "./Lavenza/Bot/Resonance/Resonance";
 import { Akechi } from "./Lavenza/Confidant/Akechi";
 import { Igor } from "./Lavenza/Confidant/Igor";
 import { Kawakami } from "./Lavenza/Confidant/Kawakami";
-import { Makoto } from "./Lavenza/Confidant/Makoto";
 import { Morgana } from "./Lavenza/Confidant/Morgana";
 import { Sojiro } from "./Lavenza/Confidant/Sojiro";
 import { Yoshida } from "./Lavenza/Confidant/Yoshida";
@@ -69,7 +68,6 @@ const heart: {} = {
   Akechi,
   Igor,
   Kawakami,
-  Makoto,
   Morgana,
   Sojiro,
   Yoshida,

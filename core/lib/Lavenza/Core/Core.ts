@@ -14,7 +14,6 @@ import * as prompt from "prompt-async";
 import { BotManager } from "../Bot/BotManager";
 import { Akechi } from "../Confidant/Akechi";
 import { Igor } from "../Confidant/Igor";
-import { Makoto } from "../Confidant/Makoto";
 import { Morgana } from "../Confidant/Morgana";
 import { Sojiro } from "../Confidant/Sojiro";
 import { Yoshida } from "../Confidant/Yoshida";
@@ -218,14 +217,6 @@ export class Core {
      * Creates & verifies database tables/files.
      */
     await Gestalt.bootstrap();
-
-    /*
-     * Await Makoto's Preparation.
-     * Makoto is the cooldown manager. She needs to be initialized here.
-     * No announcements needed for this. She can prepare quietly.
-     * @TODO - Manage this elsewhere...She shouldn't have to be initiated here honestly.
-     */
-    await Makoto.build();
 
     // Some more flavor.
     await Morgana.success("Preparations complete.");

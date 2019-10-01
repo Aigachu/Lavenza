@@ -20,6 +20,7 @@ const Igor_1 = require("../../../Confidant/Igor");
 const Morgana_1 = require("../../../Confidant/Morgana");
 const Sojiro_1 = require("../../../Confidant/Sojiro");
 const Eminence_1 = require("../../Eminence/Eminence");
+const CommandCooldownManager_1 = require("../CommandCooldownManager/CommandCooldownManager");
 /**
  * Provides a base class for Command Authorizers.
  *
@@ -103,6 +104,7 @@ class CommandAuthorizer {
             if (commandIsOnCooldown) {
                 // Send the cooldown notification.
                 yield this.sendCooldownNotification();
+                yield Morgana_1.Morgana.warn("command on cooldown");
                 return false;
             }
             // At this point, if the configuration is empty, we have no checks to make, so we let it pass.
@@ -178,12 +180,12 @@ class CommandAuthorizer {
             // At this point we know the message is private. We return whether or not it's allowed.
             // Get the base command configuration.
             if (this.configurations.command.base.authorization
-                && this.configurations.command.base.authorization.hasOwnProperty("enabledInDirectMessages")) {
+                && "enabledInDirectMessages" in this.configurations.command.base.authorization) {
                 allowedInPrivate = this.configurations.command.base.authorization.enabledInDirectMessages;
             }
             // If the client configuration has an override, we'll use it.
             if (this.configurations.command.base.authorization
-                && this.configurations.command.client.authorization.hasOwnProperty("enabledInDirectMessages")) {
+                && "enabledInDirectMessages" in this.configurations.command.client.authorization) {
                 allowedInPrivate = this.configurations.command.client.authorization.enabledInDirectMessages;
             }
             return allowedInPrivate;
@@ -221,12 +223,12 @@ class CommandAuthorizer {
             let requiredEminence = Eminence_1.Eminence.None;
             // Attempt to get configuration set in the base command configuration.
             if (this.configurations.command.base.authorization
-                && this.configurations.command.base.authorization.hasOwnProperty("accessEminence")) {
+                && "accessEminence" in this.configurations.command.base.authorization) {
                 requiredEminence = Eminence_1.Eminence[this.configurations.command.base.authorization.accessEminence];
             }
             // Attempt to get configuration set in the client command configuration.
             if (this.configurations.command.client.authorization
-                && this.configurations.command.client.authorization.hasOwnProperty("accessEminence")) {
+                && "accessEminence" in this.configurations.command.client.authorization) {
                 requiredEminence = Eminence_1.Eminence[this.configurations.command.client.authorization.accessEminence];
             }
             // Then we just make sure that the author's ID can be found where it's needed.
@@ -308,11 +310,9 @@ class CommandAuthorizer {
      * @returns
      *   Returns true if the command is on cooldown. False otherwise.
      */
-    // tslint:disable-next-line:prefer-function-over-method
     validateCooldown() {
         return __awaiter(this, void 0, void 0, function* () {
-            // @TODO - Refactor all of this.
-            return false;
+            return CommandCooldownManager_1.CommandCooldownManager.check(this.resonance);
         });
     }
 }

@@ -50,6 +50,14 @@ class Prompt {
      *   The Bot this prompt is being created for.
      */
     constructor(user, line, resonance, lifespan, onResponse, onError, bot) {
+        /**
+         * Event Emitter.
+         */
+        this.ee = new EventEmitter();
+        /**
+         * Field to hold the number of times this prompt has failed through error.
+         */
+        this.resetCount = 0;
         this.user = user;
         this.line = line;
         this.resonance = resonance;
@@ -58,9 +66,6 @@ class Prompt {
         this.onResponse = onResponse;
         this.onError = onError;
         this.bot = bot;
-        this.ee = new EventEmitter();
-        this.timer = undefined;
-        this.resetCount = 0;
     }
     /**
      * Prompts have their own listen functions.

@@ -57,7 +57,7 @@ export abstract class Resonance {
 
   /**
    * Storage of an Instruction associated to this resonance.
-   * An Order would mean that a command was invoked and an order was given to the bot.
+   * An instruction would mean that a command was invoked and an order was given to the bot.
    */
   public instruction: Instruction;
 
@@ -105,8 +105,6 @@ export abstract class Resonance {
     this.message = message;
     this.bot = bot;
     this.client = client;
-    this.instruction = undefined; // A demand is set to the Resonance only if a command was issued.
-    this.author = undefined; // The author will be resolved depending on the type of Resonance.
   }
 
   /**

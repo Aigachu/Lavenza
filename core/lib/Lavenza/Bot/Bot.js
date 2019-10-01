@@ -72,6 +72,12 @@ class Bot {
          */
         this.prompts = [];
         /**
+         * Object to store data about the bot's master user.
+         * @TODO - More specifications and maybe an interface to define it's properties.
+         * @TODO - Normalize the properties.
+         */
+        this.joker = {};
+        /**
          * Boolean to determine whether the bot is set to maintenance mode or not.
          */
         this.maintenance = false;
@@ -86,9 +92,6 @@ class Bot {
         this.id = id;
         this.config = config;
         this.directory = directory;
-        this.maintenance = false;
-        this.isMaster = false;
-        this.joker = {};
     }
     /**
      * The Gestalt function is used to setup database tables for a given object.

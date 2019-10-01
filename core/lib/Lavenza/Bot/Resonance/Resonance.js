@@ -50,8 +50,6 @@ class Resonance {
         this.message = message;
         this.bot = bot;
         this.client = client;
-        this.instruction = undefined; // A demand is set to the Resonance only if a command was issued.
-        this.author = undefined; // The author will be resolved depending on the type of Resonance.
     }
     /**
      * Perform build tasks for a Resonance.
