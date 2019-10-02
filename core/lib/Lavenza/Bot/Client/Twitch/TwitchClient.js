@@ -147,7 +147,7 @@ class TwitchClient extends Client_1.Client {
      */
     help(command, resonance) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Do nothing for now!
+            yield resonance.send(resonance.author, "Hello\n\nHow's this look?");
         });
     }
     /**
@@ -222,8 +222,6 @@ class TwitchClient extends Client_1.Client {
     }
     /**
      * A little utility function to order the bot to type for a set amount of seconds in a given channel.
-     *
-     * @TODO - Do something about that dumb 'method can be static' message.
      *
      * @param seconds
      *   Amount of seconds to type for.

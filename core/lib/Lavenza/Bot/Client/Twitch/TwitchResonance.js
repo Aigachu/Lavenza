@@ -96,9 +96,15 @@ class TwitchResonance extends Resonance_1.Resonance {
      */
     doSend(bot, destination, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            // If the destination is a channel, and it's a private whisper channel, we use TMI's whisper function instead.
-            if (destination instanceof TwitchChannel_1.TwitchChannel && destination.type === "whisper") {
-                return this.client.connector.whisper(destination.id, content);
+            // If the destination is a channel.
+            if (destination instanceof TwitchChannel_1.TwitchChannel) {
+                // If it's a private whisper channel, we use TMI's whisper function instead.
+                // Otherwise, just talk in the channel.
+                if (destination.type === "whisper") {
+                    return this.client.connector.whisper(destination.id, content);
+                }
+                // Otherwise, just talk in the channel.
+                return this.client.connector.say(destination.id, content);
             }
             // If the destination is a user, then we send a whisper as well.
             if (destination instanceof TwitchUser_1.TwitchUser) {

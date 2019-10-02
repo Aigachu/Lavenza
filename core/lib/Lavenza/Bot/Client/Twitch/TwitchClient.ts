@@ -158,10 +158,15 @@ export class TwitchClient extends Client {
   /**
    * Send help dialog through Twitch.
    *
+   * @TODO - A couple of ideas here.
+   *    1. Having help text be determine per command, and having the default behavior being the current behaviour.
+   *    2. Making it possible to customize help text per command at will.
+   *    3. Linking to online documentation whenever needed (Since Twitch and surely other clients can't format text...)
+   *
    * @inheritDoc
    */
   public async help(command: Command, resonance: TwitchResonance): Promise<void> {
-    // Do nothing for now!
+    await resonance.send(resonance.author, "Sadly, command help text is currently not available for Twitch.");
   }
 
   /**
@@ -248,8 +253,6 @@ export class TwitchClient extends Client {
 
   /**
    * A little utility function to order the bot to type for a set amount of seconds in a given channel.
-   *
-   * @TODO - Do something about that dumb 'method can be static' message.
    *
    * @param seconds
    *   Amount of seconds to type for.

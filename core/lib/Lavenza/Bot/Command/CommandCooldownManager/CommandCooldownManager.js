@@ -105,7 +105,6 @@ class CommandCooldownManager {
      */
     static check(resonance) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(CommandCooldownManager.cooldowns);
             // Contexts to check.
             const globalSign = yield CommandCooldownManager.signature(resonance);
             const userSign = yield CommandCooldownManager.signature(resonance, [resonance.author.id]);

@@ -1,6 +1,6 @@
 {
   "name": "lavenza",
-  "version": "3.0.0-dev.16",
+  "version": "3.0.0-rc.0",
   "description": "A development framework for chatbots that supports many platforms. The successor to Lavenza, built in NodeJS and written in ES6!",
   "main": "core/lib/Lavenza.js",
   "scripts": {
@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@google-cloud/translate": "^2.1.4",
-    "@types/node": "^12.7.8",
+    "@types/node": "^12.7.9",
     "app-root-path": "^2.2.1",
     "cleverbot": "^1.0.1",
     "colors": "^1.4.0",
