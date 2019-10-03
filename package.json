@@ -1,6 +1,6 @@
 {
   "name": "lavenza",
-  "version": "3.0.0-rc.1",
+  "version": "3.0.0-rc.2",
   "description": "A development framework for chatbots that supports many platforms. The successor to Lavenza, built in NodeJS and written in ES6!",
   "main": "core/lib/Lavenza.js",
   "scripts": {
@@ -59,9 +59,9 @@
     "underscore": "^1.9.1"
   },
   "devDependencies": {
+    "@types/node": "^12.7.10",
     "nodemon": "^1.19.3",
     "tslint": "^5.20.0",
-    "typescript": "^3.6.3",
-    "@types/node": "^12.7.9"
+    "typescript": "^3.6.3"
   }
 }

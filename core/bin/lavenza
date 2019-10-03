@@ -75,7 +75,7 @@ async function processArguments(args) {
       console.log(err);
     });
     // @ts-ignore
-    console.log(`Lavenza: Successfully initialized a Desk with the appropriate folder structure at '${deskDestination}'. Refer to the README.md file found in that folder to begin configuring Lavenza!`.success);
+    console.log(`Lavenza: Successfully initialized a Desk with the appropriate folder structure at '${installDestination}'. Refer to the README.md file found in that folder to begin configuring Lavenza!`.success);
   }
 }
 
