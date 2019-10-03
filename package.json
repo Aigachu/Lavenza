@@ -9,7 +9,7 @@
     "dev": "docker-compose up --detach --no-recreate && ./node_modules/nodemon/bin/nodemon.js -e ts  --exec \"npm run compile\""
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=6.0.0"
   },
   "repository": {
     "type": "git",
@@ -37,7 +37,6 @@
   ],
   "dependencies": {
     "@google-cloud/translate": "^2.1.4",
-    "@types/node": "^12.7.9",
     "app-root-path": "^2.2.1",
     "cleverbot": "^1.0.1",
     "colors": "^1.4.0",
@@ -62,6 +61,7 @@
   "devDependencies": {
     "nodemon": "^1.19.3",
     "tslint": "^5.20.0",
-    "typescript": "^3.6.3"
+    "typescript": "^3.6.3",
+    "@types/node": "^12.7.9"
   }
 }

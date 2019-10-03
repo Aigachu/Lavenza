@@ -26,52 +26,56 @@ colors.setTheme({
 const argv = minimist(process.argv.slice(2));
 
 // Process the command!
-processCommand(argv).then(() => {
+processArguments(argv).then(() => {
   process.exit(1);
 });
 
 /**
- * Process the 'lavenza' command.
+ * Process the 'lavenza' command line arguments.
  *
- * @param args
- *   Arguments supplied with the command.
+ * @TODO - Roadmap
+ *    -> Add code that will generate a .gitignore for those that setup Lavenza. (.env files must be ignored at all times)
+ *    -> Add code that will handle the generation of bots at will (i.e. lavenza create bot)
+ *    -> Add code that will handle the generation of talents at will (i.e. lavenza create talent)
+ *    -> Add code that will handle the generation of commands at will (i.e. lavenza create command)
+ *    -> Add code that will handle the generation of listeners at will (i.e. lavenza create listener)
+ *
+ * @param {Object} args
+ *   Arguments supplied with the command, parsed with minimist.
  */
-async function processCommand(args) {
+async function processArguments(args) {
   // For now we just want simple management of ONE command.
-  if (argv['_'][0] === 'init-desk') {
+  if (argv['_'][0] === 'setup') {
     // Flavor text.
     // @ts-ignore
-    console.log(`Lavenza: Commencing initialization.`.success);
-    console.log(`Lavenza: To run Lavenza, a Desk must exist within your project. The Desk is a directory where all configurations specific to Lavenza will reside. Lavenza's Database will also be located here.`);
+    console.log(`Lavenza: Commencing installation!.`.success);
 
     // Get the intended destination directory to initiate the Desk at.
-    let deskDestination = args['_'][1];
+    let installDestination;
 
-    // If none was supplied, we prompt the user to tell us where to place it.
-    if (!deskDestination) {
-      await prompt.start();
-      const {inputDeskDestination} = await prompt.get({
-        properties: {
-          inputDeskDestination: {
-            description: `Enter the desired path for Lavenza's Desk in your project`,
-            type: 'string',
-            default: 'tests/desk/desk',
-          }
+    // We prompt the user to tell us where to place it.
+    await prompt.start();
+    console.log(`Lavenza: Installation files for the framework must reside in a directory within your project.`);
+    const {installDestinationInput} = await prompt.get({
+      properties: {
+        installDestinationInput: {
+          description: `Enter the desired path for Lavenza's installation in your project`,
+          type: 'string',
+          default: 'lavenza',
         }
-      });
-      deskDestination = inputDeskDestination;
-    }
+      }
+    });
+    installDestination = installDestinationInput;
 
     // If the destination directory doesn't exist, we want to cancel and shoot an error.
     // @TODO
 
     // Copy the base Desk to the provided path.
-    await copyFilesAsync(`${arp.path}/resources/basedesk`, deskDestination).then(() => {
-      // @ts-ignore
-      console.log(`Lavenza: Successfully initialized a Desk with the appropriate folder structure at '${deskDestination}'. Refer to the README.md file found in that folder to begin configuring Lavenza!`.success);
-    }).catch((err) => {
+    await copyFilesAsync(`${arp.path}/templates/installation`, installDestination).catch((err) => {
       console.log(err);
     });
+    // @ts-ignore
+    console.log(`Lavenza: Successfully initialized a Desk with the appropriate folder structure at '${deskDestination}'. Refer to the README.md file found in that folder to begin configuring Lavenza!`.success);
   }
 }
 
