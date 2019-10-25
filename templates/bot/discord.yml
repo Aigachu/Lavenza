@@ -1,0 +1,40 @@
+# Activity to set to the bot when it's running.
+activity: 'Hello world!'
+
+# Command Prefix override for Discord.
+# commandPrefix: '!'
+
+# Joker
+# The Joker is you, the master of the Bot. Enter your own Discord User ID here.
+# The easiest way to get your Discord User ID is to set your Discord in Developer's Mode through the Appearance settings.
+# You will then be able to right-click your avatar (or anyone's avatar) and get their ID with the 'Copy ID' option.
+# There can only be 1 Joker. You have access to all commands and some core commands will send some important info
+# to you and you only!
+joker: 'YOUR_DISCORD_ID'
+
+# User Eminences Configuration.
+# Users in Lavenza are managed as a simple hierarchy with 5 different Eminences. Here are the official names of them:
+#
+# None -> Aficionado -> Confidant -> Thief -> Joker
+# As we go up in the chain, higher eminences will have higher permissions. When developing Talents, each Command can
+# have an "Access Eminence" specified, which determines which eminences have access to the Command. A eminence that is
+# above others will be able to access everything the eminences under it can.
+#
+# {None}
+# Simply base level users.
+#
+# {Aficionado}
+# Level 1 users. Usually have access to commands that can edit features in a server, but not add or delete.
+#
+# {Confidant}
+# Level 2 users. Usually have access to commands that can add/delete features in a server.
+#
+# {Thief}
+# Level 3 users. They are the highest authority for the bot and will usually have access to all commands.
+#
+# As in the example below, add entries that take up a DISCORD_USER_ID: EMINENCE_ID format. The entries added here will be
+# the baseline configuration. Additional configuration can be set per discord server.
+userRoles:
+  DISCORD_USER_ID: Aficionado
+  DISCORD_USER_ID_2: Confidant
+  DISCORD_USER_ID_3: Thief

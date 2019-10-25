@@ -18,18 +18,36 @@ It is fully written in [Typescript](http://www.typescriptlang.org/) and is fully
 - WhatsApp (Maybe?...)
 - Skype (God I don't know...)
 
-## Getting Started
-
-### Installing Lavenza
+## Installation & Quickstart
 **Node.js 6.0.0 or newer is required to run Lavenza.**
 
-#### Use NPM to install the package
-
+### Use NPM to install the package
 `npm install lavenza`
 
-#### Run Lavenza's setup script
+### Run Lavenza's initialization script and follow the instructions.
+`lavenza init`
 
-`lavenza setup`
+### Run Lavenza in your code.
+```javascript
+// Require Lavenza.
+const Lavenza = require('lavenza');
+
+// Initialize Lavenza.
+// This will read everything found in your lavenza installation folder and do what's necessary to run your bots.
+Lavenza.initialize().then(() => {
+  Lavenza.summon();
+});
+```
+
+## Additional Help
+When executing `lavenza init`, the installation will leave you with a directory where all of the framework's files are located.
+
+A second README.md file will be found here containing further explanations to help you get started with development in Lavenza!
+
+Otherwise, feel free to open issues here with questions & concerns so I can work on bettering the framework. :)
+
+## Contributing to Lavenza
+***More info soon!***
 
 ----
 

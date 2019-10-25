@@ -78,7 +78,7 @@ class Chronicler extends StorageService_1.StorageService {
     get(endpoint) {
         return __awaiter(this, void 0, void 0, function* () {
             // First we check if the requested path is a file. If it is, we await the returning of its values.
-            if (Akechi_1.Akechi.fileExists(`${endpoint}.yml`)) {
+            if (yield Akechi_1.Akechi.fileExists(`${endpoint}.yml`)) {
                 const item = new Item_1.Item(`${endpoint}.yml`);
                 return item.values();
             }

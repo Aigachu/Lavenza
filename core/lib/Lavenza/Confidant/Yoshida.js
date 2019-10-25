@@ -40,15 +40,15 @@ class Yoshida {
             // Configure i18n real quick.
             i18n.configure({
                 autoReload: true,
-                defaultLocale: process.env.LAVENZA_DEFAULT_LOCALE,
+                defaultLocale: Core_1.Core.settings.locale.default || "en",
                 directory: `${Core_1.Core.paths.root}/lang`,
             });
             // Initialize variable that will house translate client.
             let googleTranslate;
             // If a project ID is set, we can set up translate.
-            if (process.env.LAVENZA_GOOGLE_TRANSLATE_PROJECT_ID) {
+            if (Core_1.Core.settings.services.google.translate.enabled && Core_1.Core.settings.services.google.translate.projectId) {
                 // Your Google Cloud Platform project ID is fetched from the .env file.
-                const googleTranslateProjectId = process.env.LAVENZA_GOOGLE_TRANSLATE_PROJECT_ID;
+                const googleTranslateProjectId = Core_1.Core.settings.services.google.translate.projectId;
                 // Instantiates a translation client.
                 const googleTranslateConfig = {};
                 googleTranslateConfig.projectId = googleTranslateProjectId;
@@ -293,7 +293,7 @@ class Yoshida {
             // Determine path to personalizations file.
             const pathToPersonalizations = `${bot.directory}/personalizations.yml`;
             // If personalizations don't exist, simply return the default text.
-            if (!Akechi_1.Akechi.fileExists(pathToPersonalizations)) {
+            if (!(yield Akechi_1.Akechi.fileExists(pathToPersonalizations))) {
                 personalizations[tag] = {
                     default: defaultText,
                     personalizations: [],

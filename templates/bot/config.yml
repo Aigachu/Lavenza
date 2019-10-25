@@ -1,0 +1,28 @@
+# Reader-Friendly name of the bot.
+name: 'Example'
+
+# Main command prefix.
+# The command prefix can be overridden per client. A default one is necessary, though.
+commandPrefix: '!'
+
+# Default Locale.
+# Set the default language the bot will speak in.
+locale: 'en'
+
+# Talents configuration.
+# Set the list of custom talents this bot should have.
+# You must enter the exact name of the directory of the talent.
+talents:
+  # Core Talents
+  - examples
+
+# Clients
+# Configurations for which clients this bot will access and other details.
+# For each client added, a respective CLIENT_NAME.yml must be found in this directory with the client's configuration.
+#
+# Supported Clients:
+# - Discord
+# - Twitch
+clients:
+  - Discord
+  - Twitch

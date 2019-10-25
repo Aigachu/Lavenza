@@ -54,7 +54,7 @@ export class Akechi {
   }
 
   /**
-   * Create a directory at a given path.
+   * Check if a directory exists at a given path.
    *
    * @param directoryPath
    *   Path to create directory in.
@@ -62,16 +62,16 @@ export class Akechi {
    * @returns
    *   Returns TRUE if the directory exists, FALSE otherwise.
    */
-  public static directoryExists(directoryPath: string): boolean {
-    if (fs.existsSync(directoryPath) && !Akechi.isDirectory(directoryPath)) {
+  public static async directoryExists(directoryPath: string): Promise<boolean> {
+    if (await Akechi.fileExists(directoryPath) && !Akechi.isDirectory(directoryPath)) {
       return false;
     }
 
-    return fs.existsSync(directoryPath);
+    return Akechi.fileExists(directoryPath);
   }
 
   /**
-   * Create a directory at a given path.
+   * Check if a file exists at a given path.
    *
    * @param filePath
    *   Path to create directory in.
@@ -79,14 +79,15 @@ export class Akechi {
    * @returns
    *   Returns TRUE if the file exists, FALSE otherwise.
    */
-  public static fileExists(filePath: string): boolean {
-    try {
-      fs.statSync(filePath);
-
-      return true;
-    } catch (err) {
-      return false;
-    }
+  public static async fileExists(filePath: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+          resolve(false);
+        }
+        resolve(true);
+      });
+    });
   }
 
   /**
@@ -138,8 +139,8 @@ export class Akechi {
       if (err) {
         Igor.throw(err)
           .then(() => {
-          // Do nothing.
-        });
+            // Do nothing.
+          });
       }
     });
   }

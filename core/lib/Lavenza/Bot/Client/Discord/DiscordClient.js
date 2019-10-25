@@ -169,6 +169,11 @@ class DiscordClient extends Client_1.Client {
     /**
      * Send a pretty help dialog.
      *
+     * @TODO - A couple of ideas here.
+     *    1. Having help text be determine per command, and having the default behavior being the current behaviour.
+     *    2. Making it possible to customize help text per command at will.
+     *    3. Linking to online documentation whenever needed (Since Twitch and surely other clients can't format text...)
+     *
      * @inheritDoc
      */
     help(command, resonance) {

@@ -102,7 +102,7 @@ export class BotManager {
     await BotManager.bootMasterBot();
 
     // Some more flavor.
-    await Morgana.success("Booted the master bot, {{bot}}!", {bot: Core.settings.master});
+    await Morgana.success("Booted the master bot, {{bot}}!", {bot: Core.settings.config.bots.master});
 
     // Boot auto-boot bots.
     // Some bots are set up for auto-booting. We'll handle those too.
@@ -114,7 +114,7 @@ export class BotManager {
    */
   public static async bootMasterBot(): Promise<void> {
     // Await deployment of the master bot.
-    await BotManager.boot(Core.settings.master);
+    await BotManager.boot(Core.settings.config.bots.master);
   }
 
   /**
@@ -187,14 +187,14 @@ export class BotManager {
    */
   private static async bootAutoBoots(): Promise<void> {
     // If the autoboot array is empty, we don't do anything here.
-    if (Sojiro.isEmpty(Core.settings.autoboot)) {
+    if (Sojiro.isEmpty(Core.settings.config.bots.autoboot)) {
       await Morgana.warn("No bots set up for autobooting. Continuing!");
 
       return;
     }
 
     // Boot all bots set up in autobooting.
-    await Promise.all(Core.settings.autoboot.map(async (botId) => {
+    await Promise.all(Core.settings.config.bots.autoboot.map(async (botId) => {
       await BotManager.boot(botId);
       await Morgana.success("Successfully Auto-Booted {{bot}}!", {bot: botId});
     }));
@@ -246,7 +246,7 @@ export class BotManager {
 
     // Instantiate and set the bot to the collection.
     const bot = new Bot(botId, config, botDirectoryPath);
-    if (bot.id === Core.settings.master) {
+    if (bot.id === Core.settings.config.bots.master) {
       bot.isMaster = true;
     }
     Object.assign(BotManager.bots, {[botId]: bot});

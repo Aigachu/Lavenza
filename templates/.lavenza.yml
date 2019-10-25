@@ -1,0 +1,46 @@
+# Welcome to Lavenza!
+# This is the main configuration file for Lavenza. It should be located in the root of your application.
+# This file will be generated when you first run the 'lavenza setup' command.
+# Alternatively, you can create it manually and modify it to your liking if you know what you're doing! :)
+# Happy coding!
+
+# Root Directory of the framework.
+# This is the folder where all of the framework's files will be installed / have been installed.
+#--{{root}}
+
+# Language settings.
+# Lavenza natively supports internationalization in the code when it comes to texts.
+locale:
+  # You can set a different default language here if desired.
+  # Your code will STILL expect you to set English strings as the default!
+  # You simply have the ability to preset which language will be used by your bots when responding!
+  # Full list of locales found here: https://cloud.google.com/translate/docs/languages
+  #--{{defaultLocale}}
+
+# Configurations.
+config:
+  # Bot configurations.
+  bots:
+    # Master Bot
+    # The master bot is going to be your main bot.
+    # This bot will act as a superadmin for the framework and have more commands.
+    #--{{master}}
+
+    # Auto-Boot bots.
+    # By default, only the Master bot above is booted during initialization of Lavenza.
+    # Here you can configure additional bots that will be booted alongside the master bot.
+    # Enter their machine names in an array here.
+    autoboot: []
+
+# In some cases, Lavenza can connect to exterior services if you choose to connect them.
+# This will all be managed here.
+services:
+  # Google Services.
+  google:
+    # Google Translate Cloud API
+    # If desired, Google Translate can be activated in Lavenza. As a result, when you use translation functions in your
+    # code, they will be ran through Google Translate and saved to files so that they can be modified later.
+    # This requires a subscription to the Google Cloud.
+    translate:
+      enabled: false
+      projectId: ''

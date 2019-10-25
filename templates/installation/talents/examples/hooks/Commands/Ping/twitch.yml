@@ -1,0 +1,26 @@
+# Authorization configuration.
+authorization:
+
+  # Blacklist - Prevent use of the command in certain contexts.
+  blacklist:
+    channels: []
+    users: []
+
+  # Whitelist - Permit use of the command in contexts where the command is globally blacklisted.
+  whitelist:
+    channels: []
+    users: []
+
+  # Determines whether or not this command can work in direct messages with the bot.
+  # The value here will override whatever is placed in the base command configuration.
+  # enabledInDirectMessages: true
+
+  # Determines the Eminence needed to operate this command.
+  # The value here will override whatever is placed in the base command configuration.
+  # accessEminence: None
+
+# Cooldown overrides for Discord, if needed.
+# By default, commands will have a cooldown of 5 seconds for users, and no global cooldown.
+cooldown:
+  global: 0
+  user: 0

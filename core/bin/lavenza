@@ -1,34 +1,120 @@
 #!/usr/bin/env node
 
 // Modules.
+const path = require("path");
 const arp = require('app-root-path');
 const minimist = require('minimist');
 const ncp = require('ncp');
 const colors = require('colors');
-const prompt = require('prompt-async');
+const prompts = require('prompts');
+const fs = require('fs');
+const fsrfp = require('fs-readfile-promise');
+const yaml = require('js-yaml');
+const rimraf = require('rimraf');
+const dotenv = require('dotenv');
 
 // Configure colors.
 colors.setTheme({
   silly: 'rainbow',
   input: 'grey',
   verbose: 'cyan',
-  prompt: 'grey',
-  success: 'cyan',
-  data: 'grey',
+  prompt: 'blue',
+  success: 'green',
+  cyan: 'cyan',
+  info: 'cyan',
+  data: 'blue',
   help: 'cyan',
   status: 'blue',
   warning: 'yellow',
   debug: 'blue',
-  error: 'red'
+  error: 'red',
 });
+
+// Variable to house the environment values if found.
+let environment;
+let botEnvironments = {};
 
 // Grab provided arguments using minimist.
 const argv = minimist(process.argv.slice(2));
 
-// Process the command!
+// Process the arguments given with the script.
 processArguments(argv).then(() => {
-  process.exit(1);
+  exit();
 });
+
+/**
+ * Fetch environment information using the LavenzaFile.
+ */
+async function loadEnvironment() {
+  // We'll try to get the lavenzaFile information.
+  if (!await fileExists(`${process.cwd()}/.lavenza.yml`)) {
+    message(`A Lavenzafile could not be found in the current directory. Are you at the root of your module?`, "error");
+    message(`We likely haven't made it so that this command can be ran from anywhere within your project yet. Sorry!`, "error");
+    message(`Otherwise, make sure everything is properly configured. You may need to run "lavenza provision" before anything!`, "error");
+    exit();
+  } else {
+    // Check if the installation exists and is properly set.
+    // We'll read the data from the yaml file to get the configurations currently set.
+    const lavenzaFileData = await fsrfp(`${process.cwd()}/.lavenza.yml`);
+    const lavenzaFile = await yaml.safeLoad(lavenzaFileData);
+
+    // If the file is set but certain values aren't set in it, the file is likely not properly set or corrupted.
+    if (!("root" in lavenzaFile)
+      || !("config" in lavenzaFile)
+      || !("bots" in lavenzaFile.config)
+    ) {
+      // Alert the user.
+      message(`There seems to be a problem with the Lavenzafile. It may be corrupted or invalid. You can fix this by running 'lavenza provision' to regenerate a new one if needed!`, "warning");
+      exit();
+    }
+    let lavenzaroot = `${process.cwd()}/${lavenzaFile.root}`;
+    if (!await directoryExists(lavenzaroot) || await directoryIsEmpty(lavenzaroot)) {
+      message(`The configured Lavenza installation path is missing or empty. You can't run many of these commands without initializing Lavenza first!`, "error");
+      message(`Please make sure everything is properly configured in the Lavenzafile (.lavenza.yml).`, "error");
+      exit();
+    }
+    environment = {
+      root: lavenzaFile.root,
+      master: lavenzaFile.config.master,
+      paths: {
+        bots: `${lavenzaFile.root}/bots`,
+      },
+    };
+  }
+}
+
+/**
+ * Fetch environment information using the LavenzaFile.
+ *
+ * @param {string} bot
+ *   Machine name of the bot that we want to load environment variables for.
+ */
+async function loadBotEnvironment(bot) {
+  // If environment is empty for whatever reason, we can't do anything.
+  if (!environment) {
+    message("Uhm, so for some reason the core Lavenza environment variables are not set.\nWe can't load a bot's environment variables in this case.", "error");
+    exit();
+  }
+
+  // If the bot doesn't exist, we call an error.
+  if (!await botExists(bot)) {
+    message(`Can't load environment for ${bot}. The bot doesn't seem to exist.`, "error");
+    return;
+  }
+
+  // Otherwise, we get the path to this bot's folder.
+  let path = await getBotPath(bot);
+
+  // Now if this bot doesn't have a .env file, we have nothing to do.
+  if (!await fileExists(`${path}/.env`)) {
+    // message(`.env does not exist for ${bot}!`, "warning");
+    return;
+  }
+
+  // If it does exist, we'll parse the contents real quick!
+  let envFileData = await fsrfp(`${path}/.env`);
+  botEnvironments[bot] = dotenv.parse(envFileData);
+}
 
 /**
  * Process the 'lavenza' command line arguments.
@@ -44,39 +130,1041 @@ processArguments(argv).then(() => {
  *   Arguments supplied with the command, parsed with minimist.
  */
 async function processArguments(args) {
-  // For now we just want simple management of ONE command.
-  if (argv['_'][0] === 'setup') {
-    // Flavor text.
-    // @ts-ignore
-    console.log(`Lavenza: Commencing installation!.`.success);
+  // The subject is by default an argument that can be added here.
+  let command = argv['_'][0];
 
-    // Get the intended destination directory to initiate the Desk at.
-    let installDestination;
-
-    // We prompt the user to tell us where to place it.
-    await prompt.start();
-    console.log(`Lavenza: Installation files for the framework must reside in a directory within your project.`);
-    const {installDestinationInput} = await prompt.get({
-      properties: {
-        installDestinationInput: {
-          description: `Enter the desired path for Lavenza's installation in your project`,
-          type: 'string',
-          default: 'lavenza',
-        }
-      }
-    });
-    installDestination = installDestinationInput;
-
-    // If the destination directory doesn't exist, we want to cancel and shoot an error.
-    // @TODO
-
-    // Copy the base Desk to the provided path.
-    await copyFilesAsync(`${arp.path}/templates/installation`, installDestination).catch((err) => {
-      console.log(err);
-    });
-    // @ts-ignore
-    console.log(`Lavenza: Successfully initialized a Desk with the appropriate folder structure at '${installDestination}'. Refer to the README.md file found in that folder to begin configuring Lavenza!`.success);
+  // If the first argument is not set, we'll prompt the user for additional information.
+  if (!command) {
+    // Welcome message!
+    message("Welcome to Lavenza's Command Interface!", "info");
+    const promptResponse = await prompts(
+      {
+        message: "Which command would you like to execute?",
+        type: "select",
+        name: "command",
+        choices: [
+          {title: 'Provision', value: 'provision'},
+          {title: 'Generate', value: 'generate'},
+          {title: 'Customize', value: 'customize'},
+        ],
+        onState: gracefulPromptAbort,
+      });
+    command = promptResponse['command'];
   }
+
+  // Depending on what was entered as the first argument, we process a different set of commands.
+  switch (command) {
+    // 'lavenza provision'
+    case 'provision':
+    case 'init':
+      message("Alright! Executing Provision...", "info");
+      message("\n");
+      await provision(args);
+      break;
+
+    // 'lavenza generate'
+    case 'generate':
+      message("Alright! Executing Generate...", "info");
+      message("\n");
+      await loadEnvironment();
+      await generate(args);
+      break;
+
+    // 'lavenza configure'
+    case 'customize':
+      message("Alright! Executing Customize...", "info");
+      message("\n");
+      await loadEnvironment();
+      await customize(args);
+      break;
+
+    // 'lavenza diagnose'
+    // case 'diagnose':
+    //   await diagnose(args);
+    //   break;
+
+    default:
+      message("That command doesn't seem to exist. Feel free to simply run 'lavenza' with no arguments to get a list of available commands!", "error");
+      break;
+  }
+}
+
+/**
+ * Process the 'provision' command.
+ *
+ * Initialize Lavenza installation by providing necessary files and base configurations.
+ *
+ * @param {Object} args
+ *   Arguments supplied with the command, parsed with minimist.
+ * @param {boolean} bypassIntro
+ *   Bypass the initial prompt in case we want to re-execute the command.
+ */
+async function provision(args, bypassIntro = false) {
+  // Straightforward.
+  if (!bypassIntro) {
+    // Flavor text.
+//     message(
+//       ` __
+// |  \\
+// | $$       ______  __     __   ______   _______   ________  ______
+// | $$      |      \\|  \\   /  \\ /      \\ |       \\ |        \\|      \\
+// | $$       \\$$$$$$\\\\$$\\ /  $$|  $$$$$$\\| $$$$$$$\\ \\$$$$$$$$ \\$$$$$$\\
+// | $$      /      $$ \\$$\\  $$ | $$    $$| $$  | $$  /    $$ /      $$
+// | $$_____|  $$$$$$$  \\$$ $$  | $$$$$$$$| $$  | $$ /  $$$$_|  $$$$$$$
+// | $$     \\\\$$    $$   \\$$$    \\$$     \\| $$  | $$|  $$    \\\\$$    $$
+//  \\$$$$$$$$ \\$$$$$$$    \\$      \\$$$$$$$ \\$$   \\$$ \\$$$$$$$$ \\$$$$$$$`, 'silly');
+    message("Welcome to Lavenza's Provisioning Tool!", "silly");
+    separator();
+    message(`The following steps will take you through Lavenza's installation process.`, 'info');
+  }
+
+  // So first we want to check if there's a .lavenza.yml file in the current working directory.
+  if (await fileExists(`${process.cwd()}/.lavenza.yml`)) {
+    // Mhmm.
+    if (!bypassIntro) {
+      // A little message.
+      message(`Looks like a Lavenzafile already exists here! Awesome!`, "success");
+    }
+
+    // We'll read the data from the yaml file to get the configurations currently set.
+    const lavenzaFileData = await fsrfp(`${process.cwd()}/.lavenza.yml`);
+    const lavenzaFile = await yaml.safeLoad(lavenzaFileData);
+
+    // If the file is set but certain values aren't set in it, the file is likely not properly set or corrupted.
+    if (!("root" in lavenzaFile)
+      || !("config" in lavenzaFile)
+      || !("bots" in lavenzaFile.config)
+      || !("master" in lavenzaFile.config.bots)
+    ) {
+      // Alert the user.
+      newline();
+      message(`There seems to be a problem with the Lavenzafile. Would you like to generate a new one?`, "warning");
+      message(`Be advised that this will remove the current LavenzaFile and essentially reinstall Lavenza. You may want to back things up!`, "error");
+
+      // If the user declines, we exit with a message.
+      if (!await confirm()) {
+        message(`Attempt to fix the issues in the Lavenzafile before proceeding!`, "error");
+        return;
+      }
+
+      // Space that shit.
+      newline();
+
+      // If the user confirms wanting to generate a new Lavenzafile, they will be brought through the provisioning process.
+      // Run necessary prompts to initiate a new Lavenzafile.
+      await provisionSetup();
+
+      // We'll rerun the command with the new configurations just set up, effectively bypassing this step and moving onto the next.
+      await provision(args, true);
+    }
+
+    // If the Lavenzafile is valid and well set, we'll check if the provided path to the root is properly configured.
+    const lavenzaroot = `${process.cwd()}/${lavenzaFile.root}`;
+
+    // Check if the directory is empty and if so, create it.
+    if (!await directoryExists(lavenzaroot)) {
+      // Alert the user and ask if they'd like to generate the path with default files.
+      newline();
+      message(`The specified directory for Lavenza's root (${lavenzaroot}) doesn't exist. Would you like to initialize it with the default files?`, 'warning');
+
+      // If they don't want to generate files, the process ends here.
+      if (!await confirm()) {
+        message(`Sounds good! When you're ready, you can adjust your project structure and re-run "lavenza provision" to verify that all is good then!`, "warning");
+        return;
+      }
+
+      // If they agree to generate the files, we go through with this.
+      await fs.mkdirSync(lavenzaroot, {recursive: true});
+      await copyFilesAsync(`${arp.path}/templates/installation`, lavenzaroot);
+      await message(`Lavenza's files were initialized at "${lavenzaroot}".`, "success");
+
+      // Now we'll ask if they'd like to generate their bot as well.
+      newline();
+      message(`Would you like to generate the defined master bot as well? (${lavenzaFile.config.bots.master})`);
+
+      // If they decline this, the process ends here with a message.
+      if (!await confirm()) {
+        message(`Be sure to generate/configure the master bot, or Lavenza will not function correctly! You can do this by either re-running "lavenza provision" or running "lavenza generate {botname}"!`, "warning");
+        return;
+      }
+
+      // Load the environment.
+      await loadEnvironment();
+
+      // If they confirm, we can generate the bot.
+      // Run necessary prompts to generate the bot.
+      await generateBot(lavenzaFile.config.bots.master);
+
+      // We'll rerun the command with the new configurations just set up, effectively bypassing this step and moving onto the next.
+      await provision(args, true);
+    }
+
+    // We check if the master bot that is configured actually exists.
+    if (!await directoryExists(`${lavenzaroot}/bots/${lavenzaFile.config.bots.master}`)) {
+      // Alert the user and ask if they'd like to generate the bot with default files.
+      newline();
+      message(`The master bot defined in your configurations, "${lavenzaFile.config.bots.master}", doesn't seem to exist. Would you like to generate this bot now?`, 'warning');
+
+      // If they decline, leave them with a warning message.
+      if (!await confirm()) {
+        message(`Be sure to configure the master bot, or Lavenza will not function correctly! You can do this by either re-running "lavenza provision" or running "lavenza generate ${lavenzaFile.config.bots.master}"!`, "warning");
+        return;
+      }
+
+      // Load the environment.
+      await loadEnvironment();
+
+      // If they confirm, we can generate the bot.
+      // Run necessary prompts to generate the bot.
+      await generateBot(lavenzaFile.config.bots.master);
+
+      // We'll rerun the command with the new configurations just set up, effectively bypassing this step and moving onto the next.
+      await provision(args, true);
+    }
+  } else {
+    // Run necessary prompts to initiate a new Lavenzafile.
+    await provisionSetup();
+  }
+
+  // If we reach here, we've gone through all the necessary checks and everything's good!
+//   message(`                     __                      __
+//                     |  \\                    |  \\
+//  _______    ______   \\$$  _______   ______  | $$
+// |       \\  /      \\ |  \\ /       \\ /      \\ | $$
+// | $$$$$$$\\|  $$$$$$\\| $$|  $$$$$$$|  $$$$$$\\| $$
+// | $$  | $$| $$  | $$| $$| $$      | $$    $$ \\$$
+// | $$  | $$| $$__/ $$| $$| $$_____ | $$$$$$$$ __
+// | $$  | $$ \\$$    $$| $$ \\$$     \\ \\$$     \\|  \\
+//  \\$$   \\$$  \\$$$$$$  \\$$  \\$$$$$$$  \\$$$$$$$ \\$$`, "silly");
+  newline();
+  separator();
+  message("WOO! Looks like everything's good to go!", "silly");
+  separator();
+  // message(`It is recommended to run a 'lavenza diagnose' to perform checks in you configurations and files.`, "success");
+  // message(`This command will tell you exactly what you need to do to make sure everything is properly configured for your bots to run.`, "success");
+  message(`Enjoy!`, "silly");
+  exit();
+}
+
+/**
+ * Provision Lavenza, creating the Lavenzafile and assuring the files are properly prepared.
+ */
+async function provisionSetup() {
+  // Validate that they are in the root of their module.
+  message(`To facilitate the installation process, please confirm that your current working directory is the root of your node module.`, 'warning');
+  // If they are not at the root of their node module, exit.
+  if (!await confirm()) {
+    message(`In that case, please navigate to the intended root of your project and run 'lavenza provision' again!`, "error");
+    exit();
+  }
+
+  // Flavor.
+  message(`Awesome! Let's get started.`, 'success');
+  newline();
+
+  // Resolve which directory to install Lavenza's files in.
+  message(`Lavenza needs a dedicated directory to install its files in.`, "info");
+  message("Please specify the desired path to the directory where Lavenza's files should be installed.", "warning");
+  let {relativeRoot} = await prompts(
+    {
+      initial: "lavenza",
+      message: "Enter the desired path to the installation directory, relative to the root of your module:",
+      type: "text",
+      name: "relativeRoot",
+      onState: gracefulPromptAbort,
+    });
+
+  // Get the actual path to this directory.
+  const lavenzaroot = `${process.cwd()}/${relativeRoot}`;
+
+  // Confirm entry.
+  message(`Great! Lavenza will be installed at the following path: ${lavenzaroot}`, "success");
+
+  // Space that shit.
+  newline();
+
+  // Resolve Lavenza's default locale.
+  message(`Lavenza has internationalization! You can configure which language is used by default.`, "info");
+  message(`For a list of supported languages, visit the following link: https://cloud.google.com/translate/docs/languages`, "warning");
+  message("Please specify the desired default language for your bots to speak in.", "warning");
+  const {defaultLocale} = await prompts(
+    {
+      initial: "en",
+      message: "Enter the desired default language:",
+      type: "text",
+      name: "defaultLocale",
+      onState: gracefulPromptAbort,
+    });
+
+  message(`Perfect!`, "success");
+
+  // Space that ish.
+  newline();
+
+  // Create the Lavenzafile and remove any existing one.
+  if (await fileExists(`${process.cwd()}/.lavenza.yml`))
+    await fs.unlinkSync(`${process.cwd()}/.lavenza.yml`);
+  await copyFilesAsync(`${arp.path}/templates/.lavenza.yml`, `${process.cwd()}/.lavenza.yml`);
+
+  // Search & Replace appropriate sections in the LavenzaFile template.
+  await replaceInFileAsync(`${process.cwd()}/.lavenza.yml`, '#--{{root}}', `root: ${relativeRoot}`);
+  await replaceInFileAsync(`${process.cwd()}/.lavenza.yml`, '#--{{defaultLocale}}', `default: ${defaultLocale}`);
+
+  // Message confirmation.
+  await message(`Your Lavenzafile was created!`, "success");
+
+  // Check if the provided root path exists.
+  if (await directoryExists(lavenzaroot)) {
+    // If the directory already exists, they may want to stop here since they may have an existing installation.
+    message(`Ooh! Looks like your provided installation (${lavenzaroot}) path isn't empty.`, 'warning');
+    message(`Would you like to proceed with the installation in this folder?`, 'error');
+    message(`It may be wise to say NO here if you already have a lavenza installation in that folder!`, 'error');
+    message(`WARNING: If you answer YES here, the files at this path will be deleted/overwritten!`, 'error');
+    message(`DOUBLE WARNING: SERIOUSLY! BE CAREFUL!`, 'error');
+
+    // Check confirmation.
+    if (!await confirm()) {
+      message(`Okay! Then we'll use the current installation.`, 'success');
+      newline();
+
+      // We can load the environment with the current installation.
+      await loadEnvironment();
+
+      // Now we want to select an existing bot from the current installation if we can.
+      message(`From the current installation structure, select a bot that will serve as the master bot of your application.`, 'warning');
+      let master = await promptForBotMachineName({
+        shouldExist: true,
+        msg: "Choose a bot that will serve as your main bot.",
+      });
+
+      // Search & Replace master bot section in the LavenzaFile template.
+      await replaceInFileAsync(`${process.cwd()}/.lavenza.yml`, '#--{{master}}', `master: ${master}`);
+
+      return;
+    }
+
+    // DOUBLE CONFIRMATION.
+    message(`Are you sure?`, 'error');
+    if (!await confirm()) {
+      message(`Okay! Then we'll use the current installation.`, 'success');
+      newline();
+
+      // We can load the environment with the current installation.
+      await loadEnvironment();
+
+      // Now we want to select an existing bot from the current installation if we can.
+      message(`From the current installation structure, select a bot that will serve as the master bot of your application.`, 'warning');
+      let master = await promptForBotMachineName({
+        shouldExist: true,
+        msg: "Choose a bot that will serve as your main bot.",
+      });
+
+      // Search & Replace master bot section in the LavenzaFile template.
+      await replaceInFileAsync(`${process.cwd()}/.lavenza.yml`, '#--{{master}}', `master: ${master}`);
+
+      return;
+    }
+
+    message(`Alllrigghty then! BOOM! We're nuking ${lavenzaroot}`, 'error');
+    await rimraf.sync(lavenzaroot);
+    message(`Nuked "${lavenzaroot}"!`, 'error');
+    await message(`Attempting to recreate "${lavenzaroot}"...`, "warning");
+    await fs.mkdirSync(lavenzaroot, {recursive: true});
+    await message(`Successfully recreated "${lavenzaroot}" directory.`, "success");
+  } else {
+    await message(`"${lavenzaroot}" directory is empty. Attempting to create it...`, "warning");
+    await fs.mkdirSync(lavenzaroot, {recursive: true});
+    await message(`Successfully created "${lavenzaroot}" directory.`, "success");
+  }
+
+  // Install the files in the provided directory only if it's empty.
+  if (await directoryIsEmpty(lavenzaroot)) {
+    await copyFilesAsync(`${arp.path}/templates/installation`, lavenzaroot);
+    await message(`Lavenza's files were initialized at "${lavenzaroot}"!`, "success");
+  }
+
+  // Separate that ish.
+  newline();
+
+  // Load environment.
+  await loadEnvironment();
+
+  // Now we'll create the first bot and set it as the master bot.
+  // We'll first store the path to the bot repo using the configurations we specified above.
+  await message(`Now we will set up your main bot.`, "info");
+  await message(`Think of a unique, concise machine name for your bot. This machine name will be used as your bot's unique identifier.`, "warning");
+  const masterBotMachineName = await promptForBotMachineName({
+    shouldExist: false,
+    msg:  "Enter the desired name for your master bot.",
+  });
+
+  // Search & Replace appropriate master bot section in the LavenzaFile template.
+  await replaceInFileAsync(`${process.cwd()}/.lavenza.yml`, '#--{{master}}', `master: ${masterBotMachineName}`);
+
+  // Generate the bot files and configure clients if the user wants to.
+  await generateBot(masterBotMachineName);
+}
+
+/**
+ * Process the 'generate' command.
+ *
+ * Generate folder structure for specific entities.
+ *
+ * @param {Object} args
+ *   Arguments supplied with the command, parsed with minimist.
+ */
+async function generate(args) {
+  // The subject is by default an argument that can be added here.
+  let subject = argv['_'][1];
+
+  // If the first argument is not set, we'll prompt the user for additional information.
+  if (!subject) {
+    const promptResponse = await prompts(
+      {
+        message: "What would you like to generate?",
+        type: "select",
+        name: "subject",
+        choices: [
+          {title: 'A Bot', value: 'bot'},
+          {title: 'A Command', value: 'command'},
+          {title: 'A Talent', value: 'talent'}
+        ],
+        onState: gracefulPromptAbort,
+      });
+    subject = promptResponse['subject'];
+  }
+
+  // Depending on what was entered as the first argument, we process a different set of commands.
+  switch (subject) {
+    // Generate a bot.
+    case 'bot':
+      await generateBot(argv['_'][2]);
+      exit();
+      break;
+
+    // Generate a command.
+    case 'command':
+      message(`Command generation is not available yet, but it's coming soon in V3! Trust me!`, "error");
+      exit();
+      break;
+
+    // Generate a talent.
+    case 'talent':
+      message(`Talent generation is not available yet, but it's coming soon in V3! Trust me!`, "error");
+      exit();
+      break;
+
+    default:
+      message(`Sorry, "${subject}" doesn't seem to be a valid argument for the generae command!`, "error");
+      exit();
+      break;
+  }
+}
+
+/**
+ * Setup a part of your Lavenza installation.
+ *
+ * @param {Object} args
+ *   Arguments supplied with the command, parsed with minimist.
+ */
+async function customize(args) {
+  // The subject is by default an argument that can be added here.
+  let subject = argv['_'][1];
+
+  // If the first argument is not set, we'll prompt the user for additional information.
+  if (!subject) {
+    const promptResponse = await prompts(
+      {
+        message: "What would you like to configure?",
+        type: "select",
+        name: "subject",
+        choices: [
+          {title: 'Clients for a Bot', value: 'clients'},
+        ],
+        onState: gracefulPromptAbort,
+      });
+    subject = promptResponse['subject'];
+  }
+
+  // Depending on the subject, we do different tasks.
+  switch (subject) {
+    case 'clients':
+      await clientSetupForBot(args);
+      break;
+
+    default:
+      message(`Sorry! "${subject}" is not a valid argument for the customize command.`,"error");
+      break;
+  }
+}
+
+/**
+ * Generate a bot with the default files, taking input from the user.
+ *
+ * @param {string} botMachineName
+ *   Machine name of the bot that we want to generate.
+ */
+async function generateBot(botMachineName = undefined) {
+  // If we don't have a bot machine name set, we'll prompt for one.
+  botMachineName = botMachineName || await promptForBotMachineName({
+    shouldExist: false,
+    msg:  "Enter the name of the bot you'd like to generate",
+  });
+
+  // If the bot exists, we can't do anything here.
+  if (await botExists(botMachineName)) {
+    message(`The ${botMachineName} bot already exists!`, "error");
+    return;
+  }
+
+  // With this name, we'll simply create a folder with the default template at the repository path.
+  await copyFilesAsync(`${arp.path}/templates/bot`, await getBotPath(botMachineName));
+  await message(`Files for the ${botMachineName} bot have been created at "${await getBotPath(botMachineName)}"!`, "success");
+
+  // Space them shits out.
+  newline();
+
+  // Now we'll ask which clients they'd like to configure for the bot.
+  await message(`Would you like to customize client connections for your bot now?`, "info");
+
+  // If they deny, we return here.
+  if (!await confirm()) {
+    await message(`Okay! Then you're all done! Make sure to customize client connections for ${botMachineName} before running the application.`, "info");
+    await message(`You can do this at anytime by running "lavenza customize clients ${botMachineName}" in the command line.`, "info");
+    await message(`This can also be done manually by creating and populating a .env file at "${await getBotPath(botMachineName)}". You can use .env.example as a guide!`, "info");
+    return botMachineName;
+  }
+
+  // @TODO - Add a step that allows the customization of the base command prefix?
+  // @TODO - Automatically adjust the configuration in the config.yml file afterwards.
+
+  // @TODO - Prompt to multiselect which core talents should be enabled by default.
+
+  // Prompt for client selection.
+  let clientSelections = await promptForClientSelections();
+
+  // We want to run the client setup script for the given bot.
+  await clientSetupForBot({
+    args: {},
+    types: clientSelections,
+    bot: botMachineName
+  });
+
+  // Return the machine name at the end in case we need to do more with it after generating the bot.
+  return botMachineName;
+}
+
+/**
+ * Setup a client for a bot.
+ *
+ * @param {Object} args
+ *   Arguments supplied with the command, parsed with minimist.
+ * @param {array} types
+ *   ID of the type of client to setup.
+ * @param {string|null} bot
+ *   The machine name of the bot to set up the client for.
+ */
+async function clientSetupForBot({args, types, bot} = {args: {}, types: undefined, bot: undefined}) {
+  // If we don't have a bot machine name set, we'll prompt for one.
+  bot = bot || argv['_'][2] || await promptForBotMachineName({shouldExist: true, msg:  "Select the bot you'd like to setup clients for."});
+
+  // If the bot doesn't exist, we can't do anything here.
+  if (!await botExists(bot)) {
+    message(`The ${bot} bot doesn't seem to exist. We can't setup clients for a non-existent bot!`, "error");
+    message(`If you would like to generate this bot, do a "lavenza generate bot ${bot}".`, "error");
+    return;
+  }
+
+  // If we don't have a type, we prompt for one.
+  types = types || argv['_'][3] || await promptForClientSelections();
+  if (!Array.isArray(types)) {
+    types = [types];
+  }
+
+  // Now we want to load the bot's dedicated environment data.
+  // This will load any existing data.
+  await loadBotEnvironment(bot);
+
+  // If 'All' is in the selections, we just run all of the client setups.
+  if (types.includes('*')) {
+    // Run the Discord setup first.
+    await discordClientSetupForBot(bot);
+
+    // Ask if they wish to proceed with the Twitch setup next.
+    message("Do you wish to proceed with the Twitch setup?", "info");
+    if (await confirm())
+      await twitchClientSetupForBot(bot);
+
+    return;
+  }
+
+  // Depending on the type, we run the appropriate function.
+  for (const type of types) {
+    if (type === '*')
+      continue;
+
+    switch (type) {
+      case 'discord':
+        await discordClientSetupForBot(bot);
+        break;
+
+      case 'twitch':
+        await twitchClientSetupForBot(bot);
+        break;
+
+      // We should never get here honestly.
+      default:
+        console.error(`Tried to setup an unsupported client. How did this even happen? LOL.`);
+        break;
+    }
+  }
+}
+
+/**
+ * Setup a Discord client for a bot.
+ *
+ * @param {string} bot
+ *   The machine name of the bot to set up the client for.
+ */
+async function discordClientSetupForBot(bot) {
+  // First we want to check if any environment data is already set for the bot.
+  message(`BEGINNING DISCORD CLIENT SETUP FOR: ${bot}`, "success");
+  if (botEnvironments[bot]) {
+    // This means we already have environment data set.
+    // For Discord, we check if the following values exist.
+    if (botEnvironments[bot].DISCORD_TOKEN || botEnvironments[bot].DISCORD_CLIENT_ID) {
+      // We tell them that some values are already set and may be overriden.
+      message(`A .env file already exists for ${bot} and the values in it will likely be overriden if you proceed.
+      \nDo you still wish to go on with the setup?`, "warning");
+
+      // If they deny continuing, we end here.
+      if (!await confirm()) {
+        message(`Very well! We'll end the Discord client setup here.`, "error");
+        newline();
+        return;
+      }
+    }
+  } else {
+    // If the environment data isn't set, this clearly means the .env file doesn't exist. So we'll create it here.
+    message(`.env file does not exist for ${bot}...Creating it now...`, "warning");
+    await copyFilesAsync(`${arp.path}/templates/bot/.env.example`, `${await getBotPath(bot)}/.env`);
+    message(`Successfully created base .env file for ${bot}`, "success");
+  }
+
+  // Space it out.
+  newline();
+
+  // Variable to store path to .env file.
+  const botEnvPath = `${await getBotPath(bot)}/.env`;
+
+  // Variable to store path to discord config file.
+  const discordConfigFilePath = `${await getBotPath(bot)}/discord.yml`;
+
+  // Beginning message.
+  message('We will prompt you for important information needed to connect to Discord with your bot!', "info");
+  message("Here is the link to the Discord Developers web interface: https://discordapp.com/developers/applications", "info");
+  message("We recommend opening this up and logging into your account before proceeding.", "info");
+
+  // Immaculate spacing...
+  newline();
+
+  // Ask if a Discord application is already set up for this bot.
+  message("Does a Discord Developer application already exist for your bot?", "info");
+
+  // If they say no, we send additional tutorial text.
+  if (!await confirm()) {
+    newline();
+    message("To connect your bot to Discord, you must create a Developer Application via Discord's Developers website.", "info");
+    message("Log into your Discord account and create an application. Once it's created, go to the 'Bot' tab on the left and add a bot to your app!", "info");
+    message("Once your application is created, you can confirm that you're ready to proceed with the next steps. Otherwise, you may do CTLR-C to quit!", "info");
+
+    // While they're not ready, we can continue to prompt them.
+    while (!await confirm()) {
+      newline();
+      message("Please take your time! We'll wait.", "info");
+      message("To abort, you can do CTLR-C.", "warning");
+    }
+  }
+
+  // Immaculate spacing...
+  newline();
+
+  // Now we'll prompt the user to obtain and enter their Discord Token.
+  message("Please paste in the Discord token for the bot associated to your application.", "warning");
+  message("This can be accessed through the 'Bot' tab on the left of the Discord Developers web interface when viewing your application.", "warning");
+  const {token} = await prompts(
+    {
+      message: "Paste your application's bot token here. It will be hidden for security purposes.",
+      type: "invisible",
+      name: "token",
+      onState: gracefulPromptAbort,
+    });
+
+  // Space it out!
+  newline();
+
+  // Now we'll prompt the user to obtain and enter their Discord Client ID.
+  message("Please paste in the Discord Client ID for your application.", "warning");
+  message("This can be accessed through the 'General Information' tab on the left of the Discord Developers web interface when viewing your application.", "warning");
+  const {clientId} = await prompts(
+    {
+      message: "Paste your applications's Client ID here.",
+      type: "text",
+      name: "clientId",
+      onState: gracefulPromptAbort,
+    });
+
+  // Space it out!
+  newline();
+
+  // Now we'll prompt the user to obtain and enter their Discord User ID.
+  message("Please paste in your Discord User ID", "warning");
+  message("This can be accessed by setting your Discord to Developer Mode through the Appearance Settings.", "warning");
+  message("After doing this, you can right click on your avatar anywhere, and click on 'Copy ID', and then paste it here!", "warning");
+  const {userId} = await prompts(
+    {
+      message: "Paste your Discord User's ID here.",
+      type: "text",
+      name: "userId",
+      onState: gracefulPromptAbort,
+    });
+
+  // Space it out!
+  newline();
+
+  // Now we do all the necessary replacements.
+  await replaceInFileAsync(botEnvPath, /^DISCORD_TOKEN(.*)$/, `DISCORD_TOKEN='${token}'`, "gm");
+  await replaceInFileAsync(botEnvPath, /^DISCORD_CLIENT_ID(.*)$/, `DISCORD_CLIENT_ID='${clientId}'`, "gm");
+  await replaceInFileAsync(discordConfigFilePath, /^joker:(.*)$/, `joker: '${userId}'`, "gm");
+
+  message(`Perfect! ${bot}'s configuration files have been adjusted accordingly.`, "success");
+  message(`This file can always be consulted and modified manually at "${await getBotPath(bot)}/.env".`, "success");
+  message(`If you are tracking your project with Git, make sure to NEVER commit this file!!! It contains sensitive information that others should never have access to!".`, "error");
+  message(`Our .gitignore handles this, but make sure to double check!".`, "error");
+  newline();
+  message(`Your bot ${bot} should be good to go for Discord connection!`, "success");
+  message(`Please consult your bot's configuration file at "${await getBotPath(bot)}/config.yml" to make sure that Discord is enabled in the 'clients' section!`, "warning");
+  message(`Additionally, be sure to consult the "${await getBotPath(bot)}/discord.yml" file for additional configuration options for your bot.`, "warning");
+  message(`Without this, your bot will likely not connect to Discord when you run Lavenza! So be sure to do it.`, "warning");
+  message(`This concludes the Discord client setup! Good job!`, "success");
+  newline();
+  await loadBotEnvironment(bot);
+}
+
+/**
+ * Setup a Twitch client for a bot.
+ *
+ * @param bot
+ *   The machine name of the bot to set up the client for.
+ */
+async function twitchClientSetupForBot(bot) {
+  // First we want to check if any environment data is already set for the bot.
+  message(`BEGINNING TWITCH CLIENT SETUP FOR: ${bot}`, "success");
+  if (botEnvironments[bot]) {
+    // This means we already have environment data set.
+    // For Twitch, we check if the following values exist.
+    if (botEnvironments[bot].TWITCH_OAUTH_TOKEN) {
+      // We tell them that some values are already set and may be overriden.
+      message(`A .env file already exists for ${bot} and the values in it will likely be overriden if you proceed.
+      \nDo you still wish to go on with the setup?`, "warning");
+
+      // If they deny continuing, we end here.
+      if (!await confirm()) {
+        message(`Very well! We'll end the Twitch client setup here.`, "error");
+        newline();
+        return;
+      }
+    }
+  } else {
+    // If the environment data isn't set, this clearly means the .env file doesn't exist. So we'll create it here.
+    message(`.env file does not exist for ${bot}...Creating it now...`, "warning");
+    await copyFilesAsync(`${arp.path}/templates/bot/.env.example`, `${await getBotPath(bot)}/.env`);
+    message(`Successfully created base .env file for ${bot}`, "success");
+  }
+
+  // Space it out.
+  newline();
+
+  // Variable to store path to .env file.
+  const botEnvPath = `${await getBotPath(bot)}/.env`;
+
+  // Variable to store path to discord config file.
+  const twitchConfigFilePath = `${await getBotPath(bot)}/twitch.yml`;
+
+  // Beginning message.
+  message('We will prompt you for important information needed to connect to Twitch with your bot!', "info");
+
+  // Immaculate spacing...
+  newline();
+
+  // Ask if a Discord application is already set up for this bot.
+  message("Does a Twitch Account already exist for your bot?", "info");
+
+  // If they say no, we send additional tutorial text.
+  if (!await confirm()) {
+    newline();
+    message("To connect your bot to Twitch, you must create a Twitch account for it to use!", "info");
+    message("Go to Twitch.TV and create an account just like you would any other!", "info");
+    message("It is also recommended to verify an email for this account, as this will potentially prevent future headaches.", "info");
+    message("Once your bot's account is created, you can confirm that you're ready to proceed with the next steps. Otherwise, you may do CTLR-C to quit!", "info");
+
+    // While they're not ready, we can continue to prompt them.
+    while (!await confirm()) {
+      newline();
+      message("Please take your time! We'll wait.", "info");
+      message("To abort, you can do CTLR-C.", "warning");
+    }
+  }
+
+  // Immaculate spacing...
+  newline();
+
+  // Now we'll prompt the user to obtain and enter the bot's Twitch Username.
+  message("Please enter your bot's Twitch Username", "warning");
+  message("You should have an account created for your bot to use. Enter its username here.", "warning");
+  const {botUsername} = await prompts(
+    {
+      message: "Enter your bot's Twitch Username here.",
+      type: "text",
+      name: "botUsername",
+      onState: gracefulPromptAbort,
+    });
+
+  // Space it out!
+  newline();
+
+  // Now we'll prompt the user to obtain and enter their Twitch OAuth Token.
+  message("Please paste in the Twitch OAuth token for the twitch account you created for your bot.", "warning");
+  message("This can be accessed by going the following link while logged in AS the twitch user you made for your bot: https://twitchapps.com/tmi/", "warning");
+  message("Follow the quick instructions and they should provide you with a token you can copy and paste here.", "warning");
+  const {token} = await prompts(
+    {
+      message: "Paste your token here. It will be hidden for security purposes.",
+      type: "invisible",
+      name: "token",
+      onState: gracefulPromptAbort,
+    });
+
+  // Space it out!
+  newline();
+
+  // Now we'll prompt the user to obtain and enter their personal Twitch Username.
+  message("Please enter your personal Twitch Username", "warning");
+  message("This is really just YOUR twitch username. This way your bot will know who it's maker and master is!", "warning");
+  const {userUsername} = await prompts(
+    {
+      message: "Enter your Twitch Username here.",
+      type: "text",
+      name: "userUsername",
+      onState: gracefulPromptAbort,
+    });
+
+  // Space it out!
+  newline();
+
+  // Now we do all the necessary replacements.
+  await replaceInFileAsync(twitchConfigFilePath, /^username:(.*)$/, `username: '${botUsername}'`, "gm");
+  await replaceInFileAsync(botEnvPath, /^TWITCH_OAUTH_TOKEN(.*)$/, `TWITCH_OAUTH_TOKEN='${token}'`, "gm");
+  await replaceInFileAsync(twitchConfigFilePath, /^joker:(.*)$/, `joker: '${userUsername}'`, "gm");
+
+  message(`Perfect! ${bot}'s configuration files have been adjusted accordingly.`, "success");
+  message(`This file can always be consulted and modified manually at "${await getBotPath(bot)}/.env".`, "success");
+  message(`If you are tracking your project with Git, make sure to NEVER commit this file!!! It contains sensitive information that others should never have access to!".`, "error");
+  message(`Our .gitignore handles this, but make sure to double check!".`, "error");
+  newline();
+  message(`Your bot ${bot} should be good to go for Twitch connection!`, "success");
+  message(`Please consult your bot's configuration file at "${await getBotPath(bot)}/config.yml" to make sure that Twitch is enabled in the 'clients' section!`, "warning");
+  message(`Additionally, be sure to consult the "${await getBotPath(bot)}/twitch.yml" file for additional configuration options for your bot.`, "warning");
+  message(`Without this, your bot will likely not connect to Twitch when you run Lavenza! So be sure to do it.`, "warning");
+  message(`This concludes the Twitch client setup! Good job!`, "success");
+  newline();
+  await loadBotEnvironment(bot);
+}
+
+/**
+ * Prompt the console user for a desired machine name for a bot.
+ *
+ * @param {Boolean|null} shouldExist
+ *   Determine whether the bot should already exist or not.
+ * @param {string|null} message
+ *   The prompt message that can be customized if desired.
+ *
+ * @return {Promise<string>}
+ *   The desired machine name of the bot.
+ */
+async function promptForBotMachineName({shouldExist, msg} = {shouldExist: false, msg: "Enter a machine name for the bot, all in lowercase!"}) {
+  // Variable to store the prompt properties.
+  let prompt = {
+    message: msg,
+    name: "machineName",
+    onState: gracefulPromptAbort,
+  };
+
+  // Existence rules.
+  switch (shouldExist) {
+    case false:
+      prompt['initial'] = "lavenzabot";
+      prompt['type'] = 'text';
+      prompt['validator'] = async value => await directoryExists(`${environment.root}/bots/${value}`) ? `The ${value} bot already exists! Try another name.` : true;
+      break;
+
+    case true:
+      prompt['type'] = 'select';
+      let choices = [];
+      // Get the list of bots.
+      let bots = fs.readdirSync(environment.paths.bots);
+      for (const bot of bots) {
+        if (bot === 'example')
+          continue;
+        choices.push({
+          title: bot,
+          value: bot,
+        });
+      }
+      // If there are no choices, then we can't do anything and we exit!
+      if (choices.length === 0) {
+        message(`Bots don't exist in your current Lavenza installation. You can use the "lavenza generate" command to fix this problem!`, "error");
+        exit();
+      }
+      prompt['choices'] = choices;
+      break;
+  }
+
+  const machineNameResponse = await prompts(prompt);
+  return machineNameResponse['machineName'];
+}
+
+/**
+ * Prompt the console user for a desired client for various actions.
+ *
+ * @return {Promise<[]>}
+ *   The desired client's machine_name.
+ */
+async function promptForClientSelections() {
+  // If they confirm, we want to ask them which clients they want to configure.
+  const {selections} = await prompts(
+    {
+      message: "Which clients would you like to configure?",
+      type: "multiselect",
+      name: "selections",
+      choices: [
+        {title: 'All', value: '*'},
+        {title: 'Discord', value: 'discord'},
+        {title: 'Twitch', value: 'twitch'}
+      ],
+      onState: gracefulPromptAbort,
+    });
+
+  return selections;
+}
+
+/**
+ * Machine name to get the bot path for.
+ *
+ * @param {string} botMachineName
+ *   Machine name of the bot we want to check for.
+ */
+async function getBotPath(botMachineName) {
+  return `${environment.paths.bots}/${botMachineName}`;
+}
+
+/**
+ * Check if a bot exists in this environment.
+ *
+ * @param {string} botMachineName
+ *   Machine name of the bot we want to check for.
+ */
+async function botExists(botMachineName) {
+  // If the bot's folder doesn't exist, we can't do anything here.
+  if (!await directoryExists(`${environment.paths.bots}/${botMachineName}`)) {
+    return false;
+  }
+
+  // Otherwise the bot exists.
+  return true;
+}
+
+/**
+ * Exit the process with a given code.
+ *
+ * @param code
+ *   Code to exit with.
+ */
+function exit(code = 1) {
+  process.exit(code);
+}
+
+/**
+ * Log a message with a certain color.
+ *
+ * @param {string} message
+ *   The message to log.
+ * @param {string} theme
+ *   The theme determining the color of the message.
+ */
+function message(message, theme = undefined) {
+  if (theme) {
+    console.log(message[theme]);
+  } else {
+    console.log(message);
+  }
+}
+
+/**
+ * Confirm with the user via the console.
+ *
+ * @param message
+ *   The message to use for the confirmation.
+ */
+async function confirm(message = `Type in "y" to confirm! Just press enter otherwise.`) {
+  const {confirmation} = await prompts(
+    {
+      initial: false,
+      message: message,
+      type: "confirm",
+      name: 'confirmation',
+      onState: gracefulPromptAbort,
+    });
+
+  // If they are not at the root of their node module, exit.
+  return confirmation;
+}
+
+/**
+ * Print a silly separator.
+ */
+function newline() {
+  console.log('\n');
+}
+
+/**
+ * Print a silly separator.
+ */
+function separator(theme = "silly") {
+  console.log('----------------------------------------------------------------------'[theme])
+}
+
+/**
+ * Replace text in a file.
+ *
+ * @param filePath
+ * @param toReplace
+ * @param replacement
+ * @param flags
+ * @return {Promise<any>}
+ */
+async function replaceInFileAsync(filePath, toReplace, replacement, flags = "g") {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) reject(err);
+      const result = data.replace(new RegExp(toReplace, flags), replacement);
+
+      fs.writeFile(filePath, result, 'utf8', (err) => {
+        if (err) reject(err);
+        resolve();
+      });
+    });
+  });
 }
 
 /**
@@ -101,4 +1189,100 @@ function copyFilesAsync(source, destination) {
       resolve();
     });
   });
+}
+
+/**
+ * Create a directory at a given path.
+ *
+ * @param filePath
+ *   Path to create directory in.
+ *
+ * @returns
+ *   Returns TRUE if the file exists, FALSE otherwise.
+ */
+async function fileExists(filePath) {
+  return new Promise((resolve) => {
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        resolve(false);
+      }
+      resolve(true);
+    });
+  });
+}
+
+/**
+ * Check if a directory exists at a given path.
+ *
+ * @param directoryPath
+ *   Path to create directory in.
+ *
+ * @returns
+ *   Returns TRUE if the directory exists, FALSE otherwise.
+ */
+async function directoryExists(directoryPath) {
+  if (await fileExists(directoryPath) && !await isDirectory(directoryPath)) {
+    return false;
+  }
+
+  return fileExists(directoryPath);
+}
+
+/**
+ * Check if a directory is empty at a given path.
+ *
+ * @param directoryPath
+ *   Path to create directory in.
+ *
+ * @returns
+ *   Returns TRUE if the directory is empty, FALSE otherwise.
+ */
+async function directoryIsEmpty(directoryPath) {
+  return new Promise((resolve, reject) => {
+    fs.readdir(directoryPath, (err, files) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (!files.length) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      }
+    });
+  })
+}
+
+
+/**
+ * Check if a source path is a directory.
+ *
+ * @param source
+ *   Path of the source file to check.
+ * @returns
+ *   Returns true if the source is a directory, returns false otherwise.
+ */
+async function isDirectory(source) {
+  return new Promise((resolve) => {
+    try {
+      resolve(fs.lstatSync(source)
+        .isDirectory());
+    } catch (error) {
+      resolve(false);
+    }
+  });
+}
+
+/**
+ * Utility function to gracefully abort a Prompt and end execution.
+ *
+ * @param {Object} state
+ *   Prompt state obtained from the prompt's onState listener.
+ */
+async function gracefulPromptAbort(state) {
+  if (state.aborted) {
+    newline();
+    message("Gracefully aborting...", "error");
+    exit();
+  }
 }

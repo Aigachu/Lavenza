@@ -158,7 +158,7 @@ export class Talent {
     const commandDirectoriesPath = `${this.directory}/hooks/Commands`;
 
     // If this directory doesn't exist, we simply return.
-    if (!await Akechi.directoryExists(commandDirectoriesPath)) {
+    if (! await Akechi.directoryExists(commandDirectoriesPath)) {
       return;
     }
 
@@ -243,7 +243,7 @@ export class Talent {
     const listenerClassesPath = `${this.directory}/hooks/Listeners`;
 
     // If this directory doesn't exist, we simply return.
-    if (!await Akechi.directoryExists(listenerClassesPath)) {
+    if (! await Akechi.directoryExists(listenerClassesPath)) {
       return;
     }
 

@@ -16,6 +16,11 @@ export interface BotEnvironmentVariables {
   DISCORD_TOKEN: string;
 
   /**
+   * The Discord Client ID the bot will use, if applicable.
+   */
+  DISCORD_CLIENT_ID: string;
+
+  /**
    * The Twitch OAuth Token the bot will use, if applicable.
    */
   TWITCH_OAUTH_TOKEN: string;

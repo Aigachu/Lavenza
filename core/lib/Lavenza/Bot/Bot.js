@@ -149,6 +149,12 @@ class Bot {
                 yield Morgana_1.Morgana.warn("Tried to deploy {{bot}}, but the bot is already summoned!", { bot: this.id });
                 return;
             }
+            // If the environment variables aren't set, we can't do anything here.
+            if (Sojiro_1.Sojiro.isEmpty(this.env)) {
+                yield Morgana_1.Morgana.error("Tried to deploy {{bot}}, but the bot has no environment variables set!", { bot: this.id });
+                yield Morgana_1.Morgana.error("Make sure a .env file exists for {{bot}}!", { bot: this.id });
+                return;
+            }
             // Await client initialization.
             yield this.initializeClients();
             // Await clients authentication.
@@ -186,7 +192,10 @@ class Bot {
     prepare() {
         return __awaiter(this, void 0, void 0, function* () {
             // Load environment variables.
-            yield this.loadEnvironmentVariables();
+            yield this.loadEnvironmentVariables()
+                .catch(() => __awaiter(this, void 0, void 0, function* () {
+                yield Morgana_1.Morgana.error(`Could not load environent variables for ${this.id}. Is the .env created for this bot?`);
+            }));
             // Talent grants.
             yield this.grantTalents();
             // Command inheritance.

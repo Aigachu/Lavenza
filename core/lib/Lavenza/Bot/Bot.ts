@@ -15,7 +15,7 @@ import { Morgana } from "../Confidant/Morgana";
 import { Sojiro } from "../Confidant/Sojiro";
 import { Gestalt } from "../Gestalt/Gestalt";
 import { TalentManager } from "../Talent/TalentManager";
-import { AbstractObject, AssociativeObject, Joker } from "../Types";
+import { AssociativeObject, Joker } from "../Types";
 
 // Imports.
 // Holy shit this LIST! LMFAO!
@@ -201,6 +201,14 @@ export class Bot {
       return;
     }
 
+    // If the environment variables aren't set, we can't do anything here.
+    if (Sojiro.isEmpty(this.env)) {
+      await Morgana.error("Tried to deploy {{bot}}, but the bot has no environment variables set!", {bot: this.id});
+      await Morgana.error("Make sure a .env file exists for {{bot}}!", {bot: this.id});
+
+      return;
+    }
+
     // Await client initialization.
     await this.initializeClients();
 
@@ -243,7 +251,10 @@ export class Bot {
    */
   public async prepare(): Promise<void> {
     // Load environment variables.
-    await this.loadEnvironmentVariables();
+    await this.loadEnvironmentVariables()
+      .catch(async () => {
+        await Morgana.error(`Could not load environent variables for ${this.id}. Is the .env created for this bot?`);
+      });
 
     // Talent grants.
     await this.grantTalents();

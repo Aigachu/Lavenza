@@ -18,7 +18,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
 const arp = require("app-root-path");
-const prompt = require("prompt-async");
+const path = require("path");
+const prompts = require("prompts");
 // Imports.
 const BotManager_1 = require("../Bot/BotManager");
 const Akechi_1 = require("../Confidant/Akechi");
@@ -44,52 +45,59 @@ class Core {
      * With the provided path, we will tell the rest of the code where to look for important files. Projects that
      * inherit Lavenza will need to create relevant files that are needed to use the framework.
      *
-     * @param rootPath
-     *   Path to the directory where Lavenza files are stored.
+     * By default, we get the path to the entrypoint script of the module that called Lavenza.
      */
-    static initialize(rootPath) {
+    static initialize(root = path.dirname(require.main.filename)) {
         return __awaiter(this, void 0, void 0, function* () {
             // Some flavor text for the console.
-            yield Morgana_1.Morgana.warn(`Initializing (v${Core.version})...`);
+            yield Morgana_1.Morgana.success(`Initializing (v${Core.version})...`);
+            // Path to the Lavenzafile.
+            const pathToLavenzafile = `${root}/.lavenza.yml`;
+            // Variable to store the path to the framework installation in the module that is calling Lavenza.
+            let pathToLavenzaInstallation;
+            // Check if the .lavenza.yml file exists at this path.
+            if (yield Akechi_1.Akechi.fileExists(`${root}/.lavenza.yml`)) {
+                // Set settings values to the class.
+                Core.settings = (yield Akechi_1.Akechi.readYamlFile(pathToLavenzafile));
+                pathToLavenzaInstallation = `${root}/${Core.settings.root}`;
+            }
+            else {
+                yield Morgana_1.Morgana.warn(`A Lavenzafile could not be located at "${root}". Use the "lavenza init" command to initialize the base config file and set this up.`);
+                process.exit(1);
+            }
             // So first, we want to check if the provided path exists.
             // We're already going to start making use of our Confidants here! Woo!
-            if (!(yield Akechi_1.Akechi.isDirectory(rootPath))) {
-                yield Morgana_1.Morgana.warn(`The Desk path provided in the initialize() function (${rootPath}) doesn't lead to a valid directory.`);
+            if (!Akechi_1.Akechi.isDirectory(pathToLavenzaInstallation)) {
+                yield Morgana_1.Morgana.warn(`The path configured (${pathToLavenzaInstallation}) doesn't lead to a valid Lavenza installation directory.`);
                 // Start a prompt to see if user would like to generate a basic Desk.
-                yield Morgana_1.Morgana.warn("Would you like to generate a basic Desk at this path?");
-                yield prompt.start();
-                const { confirmation } = yield prompt.get({
-                    properties: {
-                        confirmation: {
-                            default: "y",
-                            description: "Yes or no (Y/N)",
-                            type: "string",
-                        },
-                    },
+                yield Morgana_1.Morgana.warn("Would you like to generate an installation at this path?");
+                const { confirmation } = yield prompts({
+                    initial: true,
+                    message: "Yes or no (Y/N) ?",
+                    name: "confirmation",
+                    type: "confirm",
                 });
                 // If they agree, copy the basic desk to their desired location.
-                if (confirmation.startsWith("y")) {
-                    yield Akechi_1.Akechi.copyFiles(arp.path, rootPath);
-                    yield Morgana_1.Morgana.success("A Desk structure has been generated at the provided path. You may configure it and try running Lavenza again!");
+                if (confirmation) {
+                    yield Akechi_1.Akechi.copyFiles(`${arp.path}/templates/installation`, pathToLavenzaInstallation);
+                    yield Morgana_1.Morgana.success("An installation has been generated at the provided path. You may configure it and try running Lavenza again!");
                 }
-                yield Morgana_1.Morgana.error("Until a Desk is properly configured, Lavenza will not run. Please refer to the guides in the README to configure the Desk.");
+                yield Morgana_1.Morgana.error("Until an installation is properly configured, Lavenza will not run properly. Please refer to the guides in the README to configure Lavenza.");
                 process.exit(1);
             }
             // Using the provided path, we set the relevant paths to the Core.
-            yield Core.setPaths(rootPath);
+            yield Core.setPaths(pathToLavenzaInstallation);
             // Initialize Yoshida's translation options since we'll be using them throughout the application.
             yield Yoshida_1.Yoshida.initializeI18N();
-            // We'll read the settings file if it exists and load settings into our class.
-            const pathToSettings = `${Core.paths.root}/settings.yml`;
-            if (!Akechi_1.Akechi.fileExists(pathToSettings)) {
-                yield Morgana_1.Morgana.error(`The settings.yml file does not seem to exist in ${pathToSettings}. Please create this file using the example file found at the same location.`);
+            // If a master isn't set, we shouldn't continue. A master bot must set.
+            if (Sojiro_1.Sojiro.isEmpty(Core.settings.config.bots.master)) {
+                yield Morgana_1.Morgana.error("There is no master bot set in your Lavenzafile. A master bot must be set so the application knows which bot manages everything!");
                 process.exit(1);
             }
-            // Set settings values to the class.
-            Core.settings = (yield Akechi_1.Akechi.readYamlFile(pathToSettings));
-            // If a master isn't set, we shouldn't continue. A master bot must set.
-            if (Sojiro_1.Sojiro.isEmpty(Core.settings.master)) {
-                yield Morgana_1.Morgana.error("There is no master bot set in your settings.yml file. A master bot must be set so the application knows which bot manages everythingx. Refer to the settings.example.yml file for more details.");
+            // If a master bot is set but doesn't exist, we shouldn't continue either.
+            if (!(yield Akechi_1.Akechi.directoryExists(`${Core.paths.bots}/${Core.settings.config.bots.master}`))) {
+                yield Morgana_1.Morgana.error(`The configured master bot (${Core.settings.config.bots.master}) does not exist. Run "lavenza init" or "lavenza generate bot" to fix this.`);
+                yield Morgana_1.Morgana.error("It is highly recommended to run \"lavenza init\" to make sure that everything is configured correctly!");
                 process.exit(1);
             }
             // Return the core so we can chain functions.
@@ -123,6 +131,8 @@ class Core {
              */
             yield Core.run()
                 .catch(Igor_1.Igor.stop);
+            // Some more flavor text.
+            yield Morgana_1.Morgana.success("Lavenza should now be running! Scroll up in the logs to see if any errors occurred and handle them as needed. :)");
         });
     }
     /**

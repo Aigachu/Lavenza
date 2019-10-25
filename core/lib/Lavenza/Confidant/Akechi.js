@@ -61,7 +61,7 @@ class Akechi {
         });
     }
     /**
-     * Create a directory at a given path.
+     * Check if a directory exists at a given path.
      *
      * @param directoryPath
      *   Path to create directory in.
@@ -70,13 +70,15 @@ class Akechi {
      *   Returns TRUE if the directory exists, FALSE otherwise.
      */
     static directoryExists(directoryPath) {
-        if (fs.existsSync(directoryPath) && !Akechi.isDirectory(directoryPath)) {
-            return false;
-        }
-        return fs.existsSync(directoryPath);
+        return __awaiter(this, void 0, void 0, function* () {
+            if ((yield Akechi.fileExists(directoryPath)) && !Akechi.isDirectory(directoryPath)) {
+                return false;
+            }
+            return Akechi.fileExists(directoryPath);
+        });
     }
     /**
-     * Create a directory at a given path.
+     * Check if a file exists at a given path.
      *
      * @param filePath
      *   Path to create directory in.
@@ -85,13 +87,16 @@ class Akechi {
      *   Returns TRUE if the file exists, FALSE otherwise.
      */
     static fileExists(filePath) {
-        try {
-            fs.statSync(filePath);
-            return true;
-        }
-        catch (err) {
-            return false;
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve) => {
+                fs.access(filePath, fs.constants.F_OK, (err) => {
+                    if (err) {
+                        resolve(false);
+                    }
+                    resolve(true);
+                });
+            });
+        });
     }
     /**
      * Simply read a file from a given path.

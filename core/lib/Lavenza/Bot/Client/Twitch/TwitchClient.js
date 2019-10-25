@@ -143,11 +143,16 @@ class TwitchClient extends Client_1.Client {
     /**
      * Send help dialog through Twitch.
      *
+     * @TODO - A couple of ideas here.
+     *    1. Having help text be determine per command, and having the default behavior being the current behaviour.
+     *    2. Making it possible to customize help text per command at will.
+     *    3. Linking to online documentation whenever needed (Since Twitch and surely other clients can't format text...)
+     *
      * @inheritDoc
      */
     help(command, resonance) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield resonance.send(resonance.author, "Hello\n\nHow's this look?");
+            yield resonance.send(resonance.author, "Sadly, command help text is currently not available for Twitch.");
         });
     }
     /**

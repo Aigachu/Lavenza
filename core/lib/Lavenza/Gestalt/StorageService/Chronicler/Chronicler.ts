@@ -75,7 +75,7 @@ export class Chronicler extends StorageService {
    */
   public async get(endpoint: string): Promise<{}> {
     // First we check if the requested path is a file. If it is, we await the returning of its values.
-    if (Akechi.fileExists(`${endpoint}.yml`)) {
+    if (await Akechi.fileExists(`${endpoint}.yml`)) {
       const item: Item = new Item(`${endpoint}.yml`);
 
       return item.values();

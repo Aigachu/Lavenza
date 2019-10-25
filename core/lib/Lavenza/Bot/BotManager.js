@@ -90,7 +90,7 @@ class BotManager {
             // Boot master bot that will manage all other bots in the codebase.
             yield BotManager.bootMasterBot();
             // Some more flavor.
-            yield Morgana_1.Morgana.success("Booted the master bot, {{bot}}!", { bot: Core_1.Core.settings.master });
+            yield Morgana_1.Morgana.success("Booted the master bot, {{bot}}!", { bot: Core_1.Core.settings.config.bots.master });
             // Boot auto-boot bots.
             // Some bots are set up for auto-booting. We'll handle those too.
             yield BotManager.bootAutoBoots();
@@ -102,7 +102,7 @@ class BotManager {
     static bootMasterBot() {
         return __awaiter(this, void 0, void 0, function* () {
             // Await deployment of the master bot.
-            yield BotManager.boot(Core_1.Core.settings.master);
+            yield BotManager.boot(Core_1.Core.settings.config.bots.master);
         });
     }
     /**
@@ -172,12 +172,12 @@ class BotManager {
     static bootAutoBoots() {
         return __awaiter(this, void 0, void 0, function* () {
             // If the autoboot array is empty, we don't do anything here.
-            if (Sojiro_1.Sojiro.isEmpty(Core_1.Core.settings.autoboot)) {
+            if (Sojiro_1.Sojiro.isEmpty(Core_1.Core.settings.config.bots.autoboot)) {
                 yield Morgana_1.Morgana.warn("No bots set up for autobooting. Continuing!");
                 return;
             }
             // Boot all bots set up in autobooting.
-            yield Promise.all(Core_1.Core.settings.autoboot.map((botId) => __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all(Core_1.Core.settings.config.bots.autoboot.map((botId) => __awaiter(this, void 0, void 0, function* () {
                 yield BotManager.boot(botId);
                 yield Morgana_1.Morgana.success("Successfully Auto-Booted {{bot}}!", { bot: botId });
             })));
@@ -222,7 +222,7 @@ class BotManager {
             }
             // Instantiate and set the bot to the collection.
             const bot = new Bot_1.Bot(botId, config, botDirectoryPath);
-            if (bot.id === Core_1.Core.settings.master) {
+            if (bot.id === Core_1.Core.settings.config.bots.master) {
                 bot.isMaster = true;
             }
             Object.assign(BotManager.bots, { [botId]: bot });
