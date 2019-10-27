@@ -1,9 +1,0 @@
-# DEVELOPMENT WILL IGNORE MOST FILES GENERATED THROUGH RUNNING LAVENZA AS WELL AS CONFIGURATIN FILES.
-.env
-/bots/*
-/database/*
-!/database/.gitkeep
-/lang/*
-!/lang/.gitkeep
-/talents/*
-settings.yml

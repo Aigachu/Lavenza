@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Modules.
-const path = require("path");
+const lavenza = require(__dirname + '/../lib/Lavenza');
 const arp = require('app-root-path');
 const minimist = require('minimist');
 const ncp = require('ncp');
@@ -156,7 +156,6 @@ async function processArguments(args) {
   switch (command) {
     // 'lavenza provision'
     case 'provision':
-    case 'init':
       message("Alright! Executing Provision...", "info");
       message("\n");
       await provision(args);
@@ -182,6 +181,12 @@ async function processArguments(args) {
     // case 'diagnose':
     //   await diagnose(args);
     //   break;
+
+    // 'lavenza run'
+    case 'run':
+      await lavenza.initialize(process.cwd());
+      await lavenza.summon();
+      break;
 
     default:
       message("That command doesn't seem to exist. Feel free to simply run 'lavenza' with no arguments to get a list of available commands!", "error");
