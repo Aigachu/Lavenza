@@ -16,7 +16,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Imports.
-const Command_1 = require("../../../../../lib/Lavenza/Bot/Command/Command");
+const lavenza_1 = require("lavenza");
 /**
  * Ping command.
  *
@@ -24,7 +24,7 @@ const Command_1 = require("../../../../../lib/Lavenza/Bot/Command/Command");
  *
  * A great testing command.
  */
-class Ping extends Command_1.Command {
+class Ping extends lavenza_1.Command {
     /**
      * This is the static build function of the command.
      *
@@ -42,7 +42,7 @@ class Ping extends Command_1.Command {
             yield _super.build.call(this, config, talent);
             // Example of setting a property to use across the command.
             // We'll be sending this response back.
-            this.responseMessage = "Pong! Hello there. :)";
+            this.responseMessage = "Pong!";
         });
     }
     /**

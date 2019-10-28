@@ -24,6 +24,10 @@
     // This rule is annoying so we're gonna disable it.
     "max-line-length": false,
 
+    // For testing purposes, we want to include lavenza in some parts of our code.
+    // We know that whatever packages we include are actually installed, so no worries in taking this off!
+    "no-implicit-dependencies": false,
+
     // === Adjusted Rules ===
     // We don't want type definitions everywhere as it causes needless noise. Here we specify this.
     "typedef": {

@@ -6,8 +6,10 @@
  */
 
 // Imports.
-import { CommandClientHandler } from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
-import { AbstractObject } from "../../../../../../../lib/Lavenza/Types";
+import {
+  AbstractObject,
+  CommandClientHandler,
+} from "lavenza";
 
 /**
  * A simple Discord client handler for the Pong command.

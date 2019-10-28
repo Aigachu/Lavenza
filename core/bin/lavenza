@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Modules.
-const lavenza = require(__dirname + '../lib/Lavenza');
+const lavenza = require('lavenza');
 const arp = require('app-root-path');
 const minimist = require('minimist');
 const ncp = require('ncp');
@@ -182,7 +182,8 @@ async function processArguments(args) {
     //   await diagnose(args);
     //   break;
 
-    // 'lavenza run'
+    // 'lavenza summon'
+    case 'summon':
     case 'run':
       await lavenza.initialize(process.cwd());
       await lavenza.summon();

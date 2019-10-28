@@ -15,8 +15,8 @@ import { BotManager } from "./Lavenza/Bot/BotManager";
 import { ClientType } from "./Lavenza/Bot/Client/ClientType";
 import { Command } from "./Lavenza/Bot/Command/Command";
 import { CommandClientHandler } from "./Lavenza/Bot/Command/CommandClientHandler";
-import { CommandConfigurations } from "./Lavenza/Bot/Command/CommandConfigurations";
 import { Listener } from "./Lavenza/Bot/Listener/Listener";
+import { PromptException } from "./Lavenza/Bot/Prompt/Exception/PromptException";
 import { PromptExceptionType } from "./Lavenza/Bot/Prompt/Exception/PromptExceptionType";
 import { Resonance } from "./Lavenza/Bot/Resonance/Resonance";
 import { Akechi } from "./Lavenza/Confidant/Akechi";
@@ -52,11 +52,14 @@ Colors.setTheme({
 
 // Define the Heart of the module.
 // This is the object that is later set as a global.
-export {
+module.exports = {
+
   // Lavenza's core.
   // This class is the main handler of the application.
   // There is a clear defined order as to how things are ran in the application. The Core properly outlines this order.
   Core,
+  initialize: Core.initialize,
+  summon: Core.summon,
 
   // Confidants.
   // Re-usable functionality is managed in what I'm calling Confidants for this project. Shoutouts to Persona 5!
@@ -83,18 +86,33 @@ export {
   // These are classes that are extended or used across the application. We import them here once.
   // They are linked in the global variable for easy access to outside applications.
   Command,
-  CommandConfigurations,
   CommandClientHandler,
   Listener,
+  PromptException,
   Resonance,
   Talent,
 
   // Enums.
   ClientType,
   PromptExceptionType,
-};
 
-// Utility functions.
-export const initialize = async (root: string = path.dirname(require.main.filename)) => Core.initialize(root);
-export const summon = async () => Core.summon();
-export const __ = async (...parameters: unknown[]) => Yoshida.translate(parameters);
+  // Function shortcuts from Confidants.
+  __: Yoshida.translate,
+  bold: Kawakami.bold,
+  code: Kawakami.code,
+  continue: Igor.continue,
+  error: Morgana.error,
+  getRandomElementFromArray: Sojiro.getRandomElementFromArray,
+  isEmpty: Sojiro.isEmpty,
+  italics: Kawakami.italics,
+  log: Morgana.log,
+  personalize: Yoshida.personalize,
+  pocket: Igor.pocket,
+  removeFromArray: Sojiro.removeFromArray,
+  status: Morgana.status,
+  stop: Igor.stop,
+  success: Morgana.success,
+  throw: Igor.throw,
+  wait: Sojiro.wait,
+  warn: Morgana.warn,
+};

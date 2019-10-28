@@ -10,7 +10,7 @@ import {
   Command,
   CommandConfigurations,
   Resonance,
-  Talent
+  Talent,
 } from "lavenza";
 
 
