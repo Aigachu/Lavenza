@@ -29,8 +29,6 @@ import { Gestalt } from "./Lavenza/Gestalt/Gestalt";
 import { Talent } from "./Lavenza/Talent/Talent";
 import { TalentManager } from "./Lavenza/Talent/TalentManager";
 
-import { Attachment } from "discord.js";
-
 // Load Environment Variables from .env file at the root of the project.
 DotEnv.load();
 

@@ -1,7 +1,7 @@
 {
   // Call us crazy. We're extending ALL of the rules.
   // We'll disable some of them below, and adjust others as needed. We don't wanna disable too many though!
-  "extends": "tslint:all",
+  "extends": ["tslint:all"],
   "rules": {
     // === Disabled Rules ===
     // We want consecutive blank lines sometimes! (Rarely though!)
