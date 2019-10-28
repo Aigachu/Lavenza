@@ -1,7 +1,7 @@
 "use strict";
 /**
  * Project Lavenza
- * Copyright 2017-2018 Aigachu, All Rights Reserved
+ * Copyright 2017-2019 Aigachu, All Rights Reserved
  *
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
@@ -147,14 +147,14 @@ class TalentManager {
             // Compute the path to the talent, should it exist in the core directory.
             const pathToCoreTalent = `${Core_1.Core.paths.talents.core}/${name}`;
             // If this directory exists, we can return with the path to it.
-            if (fs.existsSync(pathToCoreTalent)) {
+            if (yield fs.existsSync(pathToCoreTalent)) {
                 return pathToCoreTalent;
             }
             // If we reach here, this means the talent was not found in the core directory.
             // Compute the path to the talent, should it exist in the custom directory.
             const pathToCustomTalent = `${Core_1.Core.paths.talents.custom}/${name}`;
             // If this directory exists, we can return with the path to it.
-            if (fs.existsSync(pathToCustomTalent)) {
+            if (yield fs.existsSync(pathToCustomTalent)) {
                 return pathToCustomTalent;
             }
             // If the talent was not found, we return undefined.

@@ -375,7 +375,7 @@ async function provisionSetup() {
   newline();
 
   // Resolve which directory to install Lavenza's files in.
-  message(`Lavenza needs a dedicated directory to install its files in.`, "info");
+  message(`Lavenza needs a dedicated directory for its installation. This directory should be found within your module.`, "info");
   message("Please specify the desired path to the directory where Lavenza's files should be installed.", "warning");
   let {relativeRoot} = await prompts(
     {
@@ -395,23 +395,23 @@ async function provisionSetup() {
   // Space that shit.
   newline();
 
-  // Resolve Lavenza's default locale.
-  message(`Lavenza has internationalization! You can configure which language is used by default.`, "info");
-  message(`For a list of supported languages, visit the following link: https://cloud.google.com/translate/docs/languages`, "warning");
-  message("Please specify the desired default language for your bots to speak in.", "warning");
-  const {defaultLocale} = await prompts(
-    {
-      initial: "en",
-      message: "Enter the desired default language:",
-      type: "text",
-      name: "defaultLocale",
-      onState: gracefulPromptAbort,
-    });
-
-  message(`Perfect!`, "success");
-
-  // Space that ish.
-  newline();
+  // // Resolve Lavenza's default locale.
+  // message(`Lavenza has internationalization! You can configure which language is used by default.`, "info");
+  // message(`For a list of supported languages, visit the following link: https://cloud.google.com/translate/docs/languages`, "warning");
+  // message("Please specify the desired default language for your bots to speak in.", "warning");
+  // const {defaultLocale} = await prompts(
+  //   {
+  //     initial: "en",
+  //     message: "Enter the desired default language:",
+  //     type: "text",
+  //     name: "defaultLocale",
+  //     onState: gracefulPromptAbort,
+  //   });
+  //
+  // message(`Perfect!`, "success");
+  //
+  // // Space that ish.
+  // newline();
 
   // Create the Lavenzafile and remove any existing one.
   if (await fileExists(`${process.cwd()}/.lavenza.yml`))
@@ -420,7 +420,7 @@ async function provisionSetup() {
 
   // Search & Replace appropriate sections in the LavenzaFile template.
   await replaceInFileAsync(`${process.cwd()}/.lavenza.yml`, '#--{{root}}', `root: ${relativeRoot}`);
-  await replaceInFileAsync(`${process.cwd()}/.lavenza.yml`, '#--{{defaultLocale}}', `default: ${defaultLocale}`);
+  // await replaceInFileAsync(`${process.cwd()}/.lavenza.yml`, '#--{{defaultLocale}}', `default: ${defaultLocale}`);
 
   // Message confirmation.
   await message(`Your Lavenzafile was created!`, "success");
@@ -878,10 +878,10 @@ async function discordClientSetupForBot(bot) {
 
   message(`Perfect! ${bot}'s configuration files have been adjusted accordingly.`, "success");
   message(`This file can always be consulted and modified manually at "${await getBotPath(bot)}/.env".`, "success");
-  message(`If you are tracking your project with Git, make sure to NEVER commit this file!!! It contains sensitive information that others should never have access to!".`, "error");
-  message(`Our .gitignore handles this, but make sure to double check!".`, "error");
+  message(`If you are tracking your project with Git, make sure to NEVER commit this file!!! It contains sensitive information that others should never have access to!`, "error");
+  message(`Our .gitignore handles this, but make sure to double check!`, "error");
   newline();
-  message(`Your bot ${bot} should be good to go for Discord connection!`, "success");
+  message(`"${bot}" should be good to go for Discord connection!`, "success");
   message(`Please consult your bot's configuration file at "${await getBotPath(bot)}/config.yml" to make sure that Discord is enabled in the 'clients' section!`, "warning");
   message(`Additionally, be sure to consult the "${await getBotPath(bot)}/discord.yml" file for additional configuration options for your bot.`, "warning");
   message(`Without this, your bot will likely not connect to Discord when you run Lavenza! So be sure to do it.`, "warning")

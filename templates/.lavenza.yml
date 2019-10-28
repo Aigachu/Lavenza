@@ -15,7 +15,7 @@ locale:
   # Your code will STILL expect you to set English strings as the default!
   # You simply have the ability to preset which language will be used by your bots when responding!
   # Full list of locales found here: https://cloud.google.com/translate/docs/languages
-  #--{{defaultLocale}}
+  default: en
 
 # Configurations.
 config:

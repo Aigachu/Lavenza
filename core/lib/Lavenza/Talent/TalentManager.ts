@@ -1,6 +1,6 @@
 /**
  * Project Lavenza
- * Copyright 2017-2018 Aigachu, All Rights Reserved
+ * Copyright 2017-2019 Aigachu, All Rights Reserved
  *
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
@@ -159,7 +159,7 @@ export class TalentManager {
     const pathToCoreTalent = `${Core.paths.talents.core}/${name}`;
 
     // If this directory exists, we can return with the path to it.
-    if (fs.existsSync(pathToCoreTalent)) {
+    if (await fs.existsSync(pathToCoreTalent)) {
       return pathToCoreTalent;
     }
 
@@ -168,7 +168,7 @@ export class TalentManager {
     const pathToCustomTalent = `${Core.paths.talents.custom}/${name}`;
 
     // If this directory exists, we can return with the path to it.
-    if (fs.existsSync(pathToCustomTalent)) {
+    if (await fs.existsSync(pathToCustomTalent)) {
       return pathToCustomTalent;
     }
 

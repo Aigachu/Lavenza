@@ -1,4 +1,4 @@
-# Lavenza ![License](https://img.shields.io/github/license/Aigachu/Lavenza?color=%233b83f7) ![Node Version Support](https://img.shields.io/node/v/lavenza?color=%233b83f7) [![npm version](https://img.shields.io/npm/v/lavenza?color=%233b83f7)](https://www.npmjs.com/package/lavenza) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6c484201a6234202b9ee8bfa60e99582)](https://www.codacy.com/manual/Aigachu/Lavenza?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Aigachu/Lavenza&amp;utm_campaign=Badge_Grade) [![Dependencies](https://img.shields.io/librariesio/github/Aigachu/Lavenza)](https://libraries.io/github/Aigachu/Lavenza)
+# Lavenza ![License](https://img.shields.io/github/license/Aigachu/Lavenza?color=%233b83f7) ![Node Version Support](https://img.shields.io/node/v/lavenza?color=%233b83f7) [![npm version](https://img.shields.io/npm/v/lavenza?color=%233b83f7)](https://www.npmjs.com/package/lavenza) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6c484201a6234202b9ee8bfa60e99582)](https://www.codacy.com/manual/Aigachu/Lavenza?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Aigachu/Lavenza&amp;utm_campaign=Badge_Grade)
 
 [![NPM](https://nodei.co/npm/lavenza.png?compact=true)](https://nodei.co/npm/lavenza/)
 
@@ -21,14 +21,39 @@ It is fully written in [Typescript](http://www.typescriptlang.org/) and is fully
 ## Installation & Quickstart
 **Node.js 6.0.0 or newer is required to run Lavenza.**
 
-### Use NPM to install the package
-`npm install lavenza`
+### Use NPM to install the package & run `npm link`
+```bash
+npm install lavenza;
+npm link;
+```
 
 ### Run Lavenza's provisioning script and follow the instructions.
-`lavenza provision`
+```bash
+lavenza provision;
+```
+
+One of the steps will ask for you to specify an installation directory.
+A **second README** file will be created at the provided path. Consult this README for a more detail explanation on how things work!
 
 ### Run Lavenza.
-`lavenza run` or `lavenza summon`
+```bash
+lavenza summon;
+```
+
+#### Run via Code.
+Alternatively, in your javascript code, paste the following to run Lavenza.
+
+```javascript
+// Require the module.
+const Lavenza = require('lavenza');
+
+// Initialize Lavenza.
+// This will read everything found in your lavenza installation folder and do what's necessary to run your bots.
+// Initialize must always run before summoning.
+Lavenza.initialize().then(() => {
+  Lavenza.summon();
+});
+```
 
 ## Additional Help
 When executing `lavenza provision`, the installation will leave you with a directory where all of the framework's files are located.
