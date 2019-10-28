@@ -13,7 +13,6 @@ import {
   Talent,
 } from "lavenza";
 
-
 /**
  * Ping command.
  *

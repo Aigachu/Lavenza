@@ -8,7 +8,6 @@
 // Modules.
 import * as Colors from "colors";
 import * as DotEnv from "dotenv";
-import * as path from "path";
 
 // Imports.
 import { BotManager } from "./Lavenza/Bot/BotManager";
@@ -29,6 +28,8 @@ import { Core } from "./Lavenza/Core/Core";
 import { Gestalt } from "./Lavenza/Gestalt/Gestalt";
 import { Talent } from "./Lavenza/Talent/Talent";
 import { TalentManager } from "./Lavenza/Talent/TalentManager";
+
+import { Attachment } from "discord.js";
 
 // Load Environment Variables from .env file at the root of the project.
 DotEnv.load();
@@ -58,8 +59,6 @@ module.exports = {
   // This class is the main handler of the application.
   // There is a clear defined order as to how things are ran in the application. The Core properly outlines this order.
   Core,
-  initialize: Core.initialize,
-  summon: Core.summon,
 
   // Confidants.
   // Re-usable functionality is managed in what I'm calling Confidants for this project. Shoutouts to Persona 5!
@@ -96,23 +95,9 @@ module.exports = {
   ClientType,
   PromptExceptionType,
 
-  // Function shortcuts from Confidants.
+  // Utility functions.
   __: Yoshida.translate,
-  bold: Kawakami.bold,
-  code: Kawakami.code,
-  continue: Igor.continue,
-  error: Morgana.error,
-  getRandomElementFromArray: Sojiro.getRandomElementFromArray,
-  isEmpty: Sojiro.isEmpty,
-  italics: Kawakami.italics,
-  log: Morgana.log,
+  initialize: Core.initialize,
   personalize: Yoshida.personalize,
-  pocket: Igor.pocket,
-  removeFromArray: Sojiro.removeFromArray,
-  status: Morgana.status,
-  stop: Igor.stop,
-  success: Morgana.success,
-  throw: Igor.throw,
-  wait: Sojiro.wait,
-  warn: Morgana.warn,
+  summon: Core.summon,
 };

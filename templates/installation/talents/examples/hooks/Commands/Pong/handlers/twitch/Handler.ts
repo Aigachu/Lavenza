@@ -6,7 +6,6 @@
  */
 
 // Imports.
-import { Client } from "discord.js";
 import {
   AbstractObject,
   CommandClientHandler,

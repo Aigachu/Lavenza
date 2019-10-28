@@ -12,7 +12,7 @@ import {
   PromptException,
   PromptExceptionType,
   Resonance,
-  Talent
+  Talent,
 } from "lavenza";
 
 /**

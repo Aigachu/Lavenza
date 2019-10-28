@@ -15,6 +15,7 @@ const ClientType_1 = require("./Lavenza/Bot/Client/ClientType");
 const Command_1 = require("./Lavenza/Bot/Command/Command");
 const CommandClientHandler_1 = require("./Lavenza/Bot/Command/CommandClientHandler");
 const Listener_1 = require("./Lavenza/Bot/Listener/Listener");
+const PromptException_1 = require("./Lavenza/Bot/Prompt/Exception/PromptException");
 const PromptExceptionType_1 = require("./Lavenza/Bot/Prompt/Exception/PromptExceptionType");
 const Resonance_1 = require("./Lavenza/Bot/Resonance/Resonance");
 const Akechi_1 = require("./Lavenza/Confidant/Akechi");
@@ -47,13 +48,11 @@ Colors.setTheme({
 });
 // Define the Heart of the module.
 // This is the object that is later set as a global.
-const heart = {
+module.exports = {
     // Lavenza's core.
     // This class is the main handler of the application.
     // There is a clear defined order as to how things are ran in the application. The Core properly outlines this order.
     Core: Core_1.Core,
-    initialize: Core_1.Core.initialize,
-    summon: Core_1.Core.summon,
     // Confidants.
     // Re-usable functionality is managed in what I'm calling Confidants for this project. Shoutouts to Persona 5!
     // Each confidant has a specific use. See each of their files for more deets.
@@ -78,29 +77,15 @@ const heart = {
     Command: Command_1.Command,
     CommandClientHandler: CommandClientHandler_1.CommandClientHandler,
     Listener: Listener_1.Listener,
+    PromptException: PromptException_1.PromptException,
     Resonance: Resonance_1.Resonance,
     Talent: Talent_1.Talent,
     // Enums.
     ClientType: ClientType_1.ClientType,
     PromptExceptionType: PromptExceptionType_1.PromptExceptionType,
-    // Function shortcuts from Confidants.
+    // Utility functions.
     __: Yoshida_1.Yoshida.translate,
-    bold: Kawakami_1.Kawakami.bold,
-    code: Kawakami_1.Kawakami.code,
-    continue: Igor_1.Igor.continue,
-    error: Morgana_1.Morgana.error,
-    getRandomElementFromArray: Sojiro_1.Sojiro.getRandomElementFromArray,
-    isEmpty: Sojiro_1.Sojiro.isEmpty,
-    italics: Kawakami_1.Kawakami.italics,
-    log: Morgana_1.Morgana.log,
+    initialize: Core_1.Core.initialize,
     personalize: Yoshida_1.Yoshida.personalize,
-    pocket: Igor_1.Igor.pocket,
-    removeFromArray: Sojiro_1.Sojiro.removeFromArray,
-    status: Morgana_1.Morgana.status,
-    stop: Igor_1.Igor.stop,
-    success: Morgana_1.Morgana.success,
-    throw: Igor_1.Igor.throw,
-    wait: Sojiro_1.Sojiro.wait,
-    warn: Morgana_1.Morgana.warn,
+    summon: Core_1.Core.summon,
 };
-module.exports = heart;
