@@ -6,7 +6,7 @@
  */
 
 // Imports.
-import { Talent } from "../../lib/Lavenza/Talent/Talent";
+import { Talent } from "lavenza";
 
 /**
  * Example Talent.

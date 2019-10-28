@@ -6,10 +6,13 @@
  */
 
 // Imports.
-import { Command } from "../../../../../lib/Lavenza/Bot/Command/Command";
-import { CommandConfigurations } from "../../../../../lib/Lavenza/Bot/Command/CommandConfigurations";
-import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
-import { Talent } from "../../../../../lib/Lavenza/Talent/Talent";
+import {
+  Command,
+  CommandConfigurations,
+  Resonance,
+  Talent
+} from "lavenza";
+
 
 /**
  * Ping command.

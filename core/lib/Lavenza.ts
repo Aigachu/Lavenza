@@ -8,12 +8,14 @@
 // Modules.
 import * as Colors from "colors";
 import * as DotEnv from "dotenv";
+import * as path from "path";
 
 // Imports.
 import { BotManager } from "./Lavenza/Bot/BotManager";
 import { ClientType } from "./Lavenza/Bot/Client/ClientType";
 import { Command } from "./Lavenza/Bot/Command/Command";
 import { CommandClientHandler } from "./Lavenza/Bot/Command/CommandClientHandler";
+import { CommandConfigurations } from "./Lavenza/Bot/Command/CommandConfigurations";
 import { Listener } from "./Lavenza/Bot/Listener/Listener";
 import { PromptExceptionType } from "./Lavenza/Bot/Prompt/Exception/PromptExceptionType";
 import { Resonance } from "./Lavenza/Bot/Resonance/Resonance";
@@ -48,18 +50,13 @@ Colors.setTheme({
   warning: "yellow",
 });
 
-// Enums.
-
 // Define the Heart of the module.
 // This is the object that is later set as a global.
-const heart: {} = {
-
+export {
   // Lavenza's core.
   // This class is the main handler of the application.
   // There is a clear defined order as to how things are ran in the application. The Core properly outlines this order.
   Core,
-  initialize: Core.initialize,
-  summon: Core.summon,
 
   // Confidants.
   // Re-usable functionality is managed in what I'm calling Confidants for this project. Shoutouts to Persona 5!
@@ -86,6 +83,7 @@ const heart: {} = {
   // These are classes that are extended or used across the application. We import them here once.
   // They are linked in the global variable for easy access to outside applications.
   Command,
+  CommandConfigurations,
   CommandClientHandler,
   Listener,
   Resonance,
@@ -94,26 +92,9 @@ const heart: {} = {
   // Enums.
   ClientType,
   PromptExceptionType,
-
-  // Function shortcuts from Confidants.
-  __: Yoshida.translate,
-  bold: Kawakami.bold,
-  code: Kawakami.code,
-  continue: Igor.continue,
-  error: Morgana.error,
-  getRandomElementFromArray: Sojiro.getRandomElementFromArray,
-  isEmpty: Sojiro.isEmpty,
-  italics: Kawakami.italics,
-  log: Morgana.log,
-  personalize: Yoshida.personalize,
-  pocket: Igor.pocket,
-  removeFromArray: Sojiro.removeFromArray,
-  status: Morgana.status,
-  stop: Igor.stop,
-  success: Morgana.success,
-  throw: Igor.throw,
-  wait: Sojiro.wait,
-  warn: Morgana.warn,
 };
 
-module.exports = heart;
+// Utility functions.
+export const initialize = async (root: string = path.dirname(require.main.filename)) => Core.initialize(root);
+export const summon = async () => Core.summon();
+export const __ = async (...parameters: unknown[]) => Yoshida.translate(parameters);

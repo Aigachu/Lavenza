@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Modules.
-const lavenza = require(__dirname + '/../lib/Lavenza');
+const lavenza = require(__dirname + '../lib/Lavenza');
 const arp = require('app-root-path');
 const minimist = require('minimist');
 const ncp = require('ncp');
