@@ -13,9 +13,11 @@ import { Igor } from "../../../Confidant/Igor";
 import { Morgana } from "../../../Confidant/Morgana";
 import { Sojiro } from "../../../Confidant/Sojiro";
 import { Gestalt } from "../../../Gestalt/Gestalt";
+import { Bot } from "../../Bot";
 import { Command } from "../../Command/Command";
 import { PromptException } from "../../Prompt/Exception/PromptException";
 import { Client } from "../Client";
+import { BotClientConfig } from "../ClientConfigurations";
 import { ClientType } from "../ClientType";
 
 import { TwitchChannel } from "./Entity/TwitchChannel";
@@ -59,6 +61,13 @@ export class TwitchClient extends Client {
    * @inheritDoc
    */
   public connector: tmi.Client;
+
+  /**
+   * @inheritDoc
+   */
+  public constructor(bot: Bot, config: BotClientConfig) {
+    super(bot, config);
+  }
 
   /**
    * Bridge a connection to Twitch.

@@ -8,8 +8,10 @@
 // Imports.
 import { Morgana } from "../../../Confidant/Morgana";
 import { Sojiro } from "../../../Confidant/Sojiro";
+import { Command } from "../../Command/Command";
 import { CommandAuthorizer } from "../../Command/CommandAuthorizer/CommandAuthorizer";
 import { Eminence } from "../../Eminence/Eminence";
+import { Resonance } from "../../Resonance/Resonance";
 
 import { TwitchCommandAuthorizerConfigurationsCollection } from "./TwitchConfigurations";
 import { TwitchResonance } from "./TwitchResonance";
@@ -28,6 +30,13 @@ export class TwitchCommandAuthorizer extends CommandAuthorizer {
    * Object to store relevant configurations.
    */
   protected configurations: TwitchCommandAuthorizerConfigurationsCollection;
+
+  /**
+   * @inheritDoc
+   */
+  public constructor(command: Command, resonance: TwitchResonance) {
+    super(command, resonance);
+  }
 
   /**
    * The warrant function. This function will return TRUE if the order is authorized, and FALSE otherwise.

@@ -25,6 +25,12 @@ const Eminence_1 = require("../../Eminence/Eminence");
  */
 class TwitchCommandAuthorizer extends CommandAuthorizer_1.CommandAuthorizer {
     /**
+     * @inheritDoc
+     */
+    constructor(command, resonance) {
+        super(command, resonance);
+    }
+    /**
      * The warrant function. This function will return TRUE if the order is authorized, and FALSE otherwise.
      *
      * Twitch specific checks are performed here.

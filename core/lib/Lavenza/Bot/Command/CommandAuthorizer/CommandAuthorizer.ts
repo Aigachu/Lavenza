@@ -71,7 +71,7 @@ export abstract class CommandAuthorizer {
    * @param resonance
    *   The resonance that we are trying to locate a command in.
    */
-  public constructor(command: Command, resonance: Resonance) {
+  protected constructor(command: Command, resonance: Resonance) {
     this.resonance = resonance;
     this.bot = resonance.bot;
     this.type = resonance.client.type;

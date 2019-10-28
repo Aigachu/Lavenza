@@ -6,7 +6,7 @@
  */
 
 // Modules.
-import * as EventEmitter from "events";
+import { EventEmitter } from "events";
 
 // Imports.
 import { Igor } from "../../Confidant/Igor";

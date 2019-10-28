@@ -12,8 +12,10 @@ import { Message } from "discord.js";
 import { Igor } from "../../../Confidant/Igor";
 import { Morgana } from "../../../Confidant/Morgana";
 import { Sojiro } from "../../../Confidant/Sojiro";
+import { Command } from "../../Command/Command";
 import { CommandAuthorizer } from "../../Command/CommandAuthorizer/CommandAuthorizer";
 import { Eminence } from "../../Eminence/Eminence";
+import { Resonance } from "../../Resonance/Resonance";
 
 import { DiscordCommandAuthorizerConfigurationsCollection } from "./DiscordConfigurations";
 import { DiscordResonance } from "./DiscordResonance";
@@ -37,6 +39,13 @@ export class DiscordCommandAuthorizer extends CommandAuthorizer {
    * Object to store relevant configurations.
    */
   protected configurations: DiscordCommandAuthorizerConfigurationsCollection;
+
+  /**
+   * @inheritDoc
+   */
+  public constructor(command: Command, resonance: DiscordResonance) {
+    super(command, resonance);
+  }
 
   /**
    * The warrant function. This function will return TRUE if the command is authorized, and FALSE otherwise.

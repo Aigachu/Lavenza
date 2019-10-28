@@ -39,7 +39,6 @@ const argv = minimist(process.argv.slice(2));
 
 // Process the arguments given with the script.
 processArguments(argv).then(() => {
-  exit();
 });
 
 /**
@@ -146,6 +145,7 @@ async function processArguments(args) {
           {title: 'Provision', value: 'provision'},
           {title: 'Generate', value: 'generate'},
           {title: 'Customize', value: 'customize'},
+          {title: 'Summon', value: 'summon'},
         ],
         onState: gracefulPromptAbort,
       });
@@ -159,6 +159,7 @@ async function processArguments(args) {
       message("Alright! Executing Provision...", "info");
       message("\n");
       await provision(args);
+      exit();
       break;
 
     // 'lavenza generate'
@@ -167,6 +168,7 @@ async function processArguments(args) {
       message("\n");
       await loadEnvironment();
       await generate(args);
+      exit();
       break;
 
     // 'lavenza configure'
@@ -175,6 +177,7 @@ async function processArguments(args) {
       message("\n");
       await loadEnvironment();
       await customize(args);
+      exit();
       break;
 
     // 'lavenza diagnose'
@@ -185,12 +188,14 @@ async function processArguments(args) {
     // 'lavenza summon'
     case 'summon':
     case 'run':
+      await loadEnvironment();
       await core.initialize(process.cwd());
       await core.summon();
       break;
 
     default:
       message("That command doesn't seem to exist. Feel free to simply run 'lavenza' with no arguments to get a list of available commands!", "error");
+      exit();
       break;
   }
 }
@@ -561,7 +566,7 @@ async function generate(args) {
       break;
 
     default:
-      message(`Sorry, "${subject}" doesn't seem to be a valid argument for the generae command!`, "error");
+      message(`Sorry, "${subject}" doesn't seem to be a valid argument for the generate command!`, "error");
       exit();
       break;
   }
@@ -611,11 +616,23 @@ async function customize(args) {
  *   Machine name of the bot that we want to generate.
  */
 async function generateBot(botMachineName = undefined) {
-  // If we don't have a bot machine name set, we'll prompt for one.
-  botMachineName = botMachineName || await promptForBotMachineName({
-    shouldExist: false,
-    msg:  "Enter the name of the bot you'd like to generate",
-  });
+  if (botMachineName) {
+    newline();
+    // If a bot machine name is already set, we'll double confirm.
+    message(`Proceed with the generation of the "${botMachineName}" bot at "${environment.paths.bots}/${botMachineName}"?`, "warning");
+
+    // If they decline, we can exit.
+    if (!await confirm()) {
+      message("Alright, then we'll cancel this here!", "error");
+      exit();
+    }
+  } else {
+    // If we don't have a bot machine name set, we'll prompt for one.
+    botMachineName = await promptForBotMachineName({
+      shouldExist: false,
+      msg:  "Enter the name of the bot you'd like to generate",
+    });
+  }
 
   // If the bot exists, we can't do anything here.
   if (await botExists(botMachineName)) {
@@ -625,10 +642,25 @@ async function generateBot(botMachineName = undefined) {
 
   // With this name, we'll simply create a folder with the default template at the repository path.
   await copyFilesAsync(`${arp.path}/templates/bot`, await getBotPath(botMachineName));
-  await message(`Files for the ${botMachineName} bot have been created at "${await getBotPath(botMachineName)}"!`, "success");
+  await message(`Files for the "${botMachineName}" bot have been created at "${await getBotPath(botMachineName)}"!`, "success");
 
   // Space them shits out.
   newline();
+
+  // Now we'll ask for a global command prefix to set for this bot.
+  message("Enter the desired command prefix for this bot. Note that you can always change this later!", "info");
+  message("Avoid using generic prefixes such as '!', '!!' or '$'. This will avoid conflicts with other bots!", "warning");
+  const {commandPrefix} = await prompts(
+    {
+      message: "Enter your desired command prefix here.",
+      type: "text",
+      initial: "lavy",
+      name: "commandPrefix",
+      onState: gracefulPromptAbort,
+    });
+
+  // Using the answer, replace the entry in the bot's configuration file.
+  await replaceInFileAsync(`${environment.paths.bots}/${botMachineName}/config.yml`, /^commandPrefix:(.*)$/, `commandPrefix: '${commandPrefix}'`, "gm");
 
   // Now we'll ask which clients they'd like to configure for the bot.
   await message(`Would you like to customize client connections for your bot now?`, "info");
@@ -640,9 +672,6 @@ async function generateBot(botMachineName = undefined) {
     await message(`This can also be done manually by creating and populating a .env file at "${await getBotPath(botMachineName)}". You can use .env.example as a guide!`, "info");
     return botMachineName;
   }
-
-  // @TODO - Add a step that allows the customization of the base command prefix?
-  // @TODO - Automatically adjust the configuration in the config.yml file afterwards.
 
   // @TODO - Prompt to multiselect which core talents should be enabled by default.
 

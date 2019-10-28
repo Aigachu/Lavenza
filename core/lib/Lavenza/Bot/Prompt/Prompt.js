@@ -16,7 +16,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
-const EventEmitter = require("events");
+const events_1 = require("events");
 // Imports.
 const Igor_1 = require("../../Confidant/Igor");
 const Sojiro_1 = require("../../Confidant/Sojiro");
@@ -53,7 +53,7 @@ class Prompt {
         /**
          * Event Emitter.
          */
-        this.ee = new EventEmitter();
+        this.ee = new events_1.EventEmitter();
         /**
          * Field to hold the number of times this prompt has failed through error.
          */

@@ -51,7 +51,7 @@ export abstract class Client {
    * @param config
    *   The configurations for this Client.
    */
-  public constructor(bot: Bot, config: BotClientConfig) {
+  protected constructor(bot: Bot, config: BotClientConfig) {
     this.bot = bot;
     this.config = config;
   }

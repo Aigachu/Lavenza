@@ -38,8 +38,11 @@ const TwitchResonance_1 = require("./TwitchResonance");
  * @see https://www.npmjs.com/package/twitch
  */
 class TwitchClient extends Client_1.Client {
-    constructor() {
-        super(...arguments);
+    /**
+     * @inheritDoc
+     */
+    constructor(bot, config) {
+        super(bot, config);
         /**
          * The type of client.
          *

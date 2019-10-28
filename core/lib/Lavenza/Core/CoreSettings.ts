@@ -54,6 +54,7 @@ export interface CoreConfigurationsSettings {
    * Bot configurations.
    */
   bots: CoreBotSettings;
+
 }
 
 /**

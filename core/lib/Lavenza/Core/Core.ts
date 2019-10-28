@@ -154,8 +154,8 @@ export class Core {
 
     // If a master bot is set but doesn't exist, we shouldn't continue either.
     if (!await Akechi.directoryExists(`${Core.paths.bots}/${Core.settings.config.bots.master}`)) {
-      await Morgana.error(`The configured master bot (${Core.settings.config.bots.master}) does not exist. Run "lavenza init" or "lavenza generate bot" to fix this.`);
-      await Morgana.error("It is highly recommended to run \"lavenza init\" to make sure that everything is configured correctly!");
+      await Morgana.error(`The configured master bot, "${Core.settings.config.bots.master}", does not exist. Run "lavenza provision" or "lavenza generate bot ${Core.settings.config.bots.master}" to fix this.`);
+      await Morgana.error("It is highly recommended to run \"lavenza provision\" to make sure that everything is configured correctly!");
       process.exit(1);
     }
 

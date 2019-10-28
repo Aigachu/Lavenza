@@ -22,9 +22,11 @@ import { Sojiro } from "../../../Confidant/Sojiro";
 import { Yoshida } from "../../../Confidant/Yoshida";
 import { Gestalt } from "../../../Gestalt/Gestalt";
 import { AbstractObject } from "../../../Types";
+import { Bot } from "../../Bot";
 import { Command } from "../../Command/Command";
 import { PromptException } from "../../Prompt/Exception/PromptException";
 import { Client } from "../Client";
+import { BotClientConfig } from "../ClientConfigurations";
 import { ClientType } from "../ClientType";
 
 import { DiscordCommandAuthorizer } from "./DiscordCommandAuthorizer";
@@ -66,6 +68,13 @@ export class DiscordClient extends Client {
    * @inheritDoc
    */
   public connector: DiscordJSClient;
+
+  /**
+   * @inheritDoc
+   */
+  public constructor(bot: Bot, config: BotClientConfig) {
+    super(bot, config);
+  }
 
   /**
    * Bridge a connection to Discord.

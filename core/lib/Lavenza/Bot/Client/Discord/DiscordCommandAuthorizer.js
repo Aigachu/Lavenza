@@ -26,6 +26,12 @@ const Eminence_1 = require("../../Eminence/Eminence");
  */
 class DiscordCommandAuthorizer extends CommandAuthorizer_1.CommandAuthorizer {
     /**
+     * @inheritDoc
+     */
+    constructor(command, resonance) {
+        super(command, resonance);
+    }
+    /**
      * The warrant function. This function will return TRUE if the command is authorized, and FALSE otherwise.
      *
      * Discord specific checks are performed here.

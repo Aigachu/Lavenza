@@ -37,8 +37,11 @@ const DiscordResonance_1 = require("./DiscordResonance");
  * @see https://discord.js.org/#/
  */
 class DiscordClient extends Client_1.Client {
-    constructor() {
-        super(...arguments);
+    /**
+     * @inheritDoc
+     */
+    constructor(bot, config) {
+        super(bot, config);
         /**
          * The type of client.
          *

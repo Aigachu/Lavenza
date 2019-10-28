@@ -98,4 +98,5 @@ module.exports = {
   initialize: Core.initialize,
   personalize: Yoshida.personalize,
   summon: Core.summon,
+  translate: Yoshida.translate,
 };
