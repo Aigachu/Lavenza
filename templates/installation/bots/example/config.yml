@@ -17,7 +17,11 @@ talents:
   - examples
 
 # Clients
-# Configurations for which clients this bot will access and other details.
+# Configurations for which clients this bot will acces.
 # For each client added, a respective CLIENT_NAME.yml must be found in this directory with the client's configuration.
-clients:
-  - Discord
+# You can always find example templates of these files in the example bot!
+#
+# Supported Clients:
+# - Discord
+# - Twitch
+clients: []

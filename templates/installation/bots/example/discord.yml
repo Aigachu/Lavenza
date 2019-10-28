@@ -1,21 +1,15 @@
 # Activity to set to the bot when it's running.
 activity: 'Hello world!'
 
-# URL to integrate the bot to Discord servers.
-# This is here so that the bot can send its own URL to others.
-# If you are configuring a new bot, simply replace the 'client_id' parameter in the url and set your bot's client ID.
-# @see https://discordapp.com/developers/applications
-integrationUrl: 'https://discordapp.com/oauth2/authorize?&client_id=1234567890&scope=bot&permissions=1546959939'
-
 # Command Prefix override for Discord.
 # commandPrefix: '!'
 
 # Joker
-# The Joker is the maker of the bot. Enter your own Discord User ID here.
-# The easiest way to get your Discord User ID is to put your Discord in Developer's Mode.
+# The Joker is you, the master of the Bot. Enter your own Discord User ID here.
+# The easiest way to get your Discord User ID is to set your Discord in Developer's Mode through the Appearance settings.
 # You will then be able to right-click your avatar (or anyone's avatar) and get their ID with the 'Copy ID' option.
 # There can only be 1 Joker. You have access to all commands and some core commands will send some important info
-# to you and you only.
+# to you and you only!
 joker: 'YOUR_DISCORD_ID'
 
 # User Eminences Configuration.
@@ -39,7 +33,8 @@ joker: 'YOUR_DISCORD_ID'
 # Level 3 users. They are the highest authority for the bot and will usually have access to all commands.
 #
 # As in the example below, add entries that take up a DISCORD_USER_ID: EMINENCE_ID format. The entries added here will be
-# the baseline role configuration. Additional role configuration can be customized later on per client.
+# the baseline configuration. Additional configuration can be set per discord server.
 userRoles:
   DISCORD_USER_ID: Aficionado
   DISCORD_USER_ID_2: Confidant
+  DISCORD_USER_ID_3: Thief

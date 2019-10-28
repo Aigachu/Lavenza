@@ -2,7 +2,6 @@
 username: 'TWITCH_USERNAME'
 
 # Channels this bot will be connected to.
-# @TODO - Dynamic addition to channels.
 channels:
   - YOUR_CHANNEL
   - ANOTHER_CHANNEL
@@ -38,7 +37,7 @@ joker: 'YOUR_TWITCH_USERNAME'
 # Level 3 users. They are the highest authority for the bot and will usually have access to all commands.
 #
 # As in the example below, add entries that take up a TWITCH_USERNAME: EMINENCE_ID format. The entries added here will be
-# the baseline role configuration. Additional role configuration can be customized later on per client.
+# the baseline configuration. Additional configurations can be customized later on per twitch channel.
 userRoles:
   TWITCH_USERNAME: Aficionado
   TWITCH_USERNAME_2: Confidant

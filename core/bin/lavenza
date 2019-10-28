@@ -350,6 +350,7 @@ async function provision(args, bypassIntro = false) {
   newline();
   separator();
   message("WOO! Looks like everything's good to go!", "silly");
+  message(`For more information, consult the README.md file found at "${environment.root}/README.md"! You should have a bot up and running shortly!`, "success");
   separator();
   // message(`It is recommended to run a 'lavenza diagnose' to perform checks in you configurations and files.`, "success");
   // message(`This command will tell you exactly what you need to do to make sure everything is properly configured for your bots to run.`, "success");
@@ -662,6 +663,9 @@ async function generateBot(botMachineName = undefined) {
   // Using the answer, replace the entry in the bot's configuration file.
   await replaceInFileAsync(`${environment.paths.bots}/${botMachineName}/config.yml`, /^commandPrefix:(.*)$/, `commandPrefix: '${commandPrefix}'`, "gm");
 
+  // Space them shits out.
+  newline();
+
   // Now we'll ask which clients they'd like to configure for the bot.
   await message(`Would you like to customize client connections for your bot now?`, "info");
 
@@ -880,7 +884,8 @@ async function discordClientSetupForBot(bot) {
   message(`Your bot ${bot} should be good to go for Discord connection!`, "success");
   message(`Please consult your bot's configuration file at "${await getBotPath(bot)}/config.yml" to make sure that Discord is enabled in the 'clients' section!`, "warning");
   message(`Additionally, be sure to consult the "${await getBotPath(bot)}/discord.yml" file for additional configuration options for your bot.`, "warning");
-  message(`Without this, your bot will likely not connect to Discord when you run Lavenza! So be sure to do it.`, "warning");
+  message(`Without this, your bot will likely not connect to Discord when you run Lavenza! So be sure to do it.`, "warning")
+  message(`One more thing: Here is the URL you can use to add your Bot to Discord Servers: https://discordapp.com/api/oauth2/authorize?client_id=${clientId}&scope=bot&permissions=67488832`, "warning");
   message(`This concludes the Discord client setup! Good job!`, "success");
   newline();
   await loadBotEnvironment(bot);
@@ -1079,7 +1084,7 @@ async function promptForClientSelections() {
   // If they confirm, we want to ask them which clients they want to configure.
   const {selections} = await prompts(
     {
-      message: "Which clients would you like to configure?",
+      message: "Select your desired clients",
       type: "multiselect",
       name: "selections",
       choices: [
