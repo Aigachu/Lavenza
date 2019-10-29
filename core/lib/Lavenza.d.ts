@@ -549,7 +549,7 @@ declare module "lavenza" {
   }
 
   // === Functions ===
-  export function initialize(root: string): Promise<Core>;
+  export function initialize(root?: string): Promise<Core>;
   export function summon(): Promise<void>;
   export function personalize(defaultText: string, tag: string, bot: Bot): Promise<string>;
   export function __(...parameters: unknown[]): Promise<string>;
