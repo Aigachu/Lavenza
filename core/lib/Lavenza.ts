@@ -30,7 +30,7 @@ import { Talent } from "./Lavenza/Talent/Talent";
 import { TalentManager } from "./Lavenza/Talent/TalentManager";
 
 // Load Environment Variables from .env file at the root of the project.
-DotEnv.load();
+DotEnv.config();
 
 // Configure colors for console.
 // Set console color themes.

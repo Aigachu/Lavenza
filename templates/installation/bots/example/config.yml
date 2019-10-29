@@ -12,16 +12,17 @@ locale: 'en'
 # Talents configuration.
 # Set the list of custom talents this bot should have.
 # You must enter the exact name of the directory of the talent.
+# Talents are like bundles of features that can be used by the bot.
 talents:
-  # Core Talents
   - examples
 
 # Clients
-# Configurations for which clients this bot will acces.
+# Configurations for which clients this bot will access.
 # For each client added, a respective CLIENT_NAME.yml must be found in this directory with the client's configuration.
 # You can always find example templates of these files in the example bot!
 #
 # Supported Clients:
 # - Discord
 # - Twitch
-clients: []
+clients:
+  - Discord

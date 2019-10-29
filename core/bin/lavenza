@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 // Modules.
-const lavenza = require('lavenza');
 const arp = require('app-root-path');
+const lavenza = require(`${arp}`);
 const minimist = require('minimist');
 const ncp = require('ncp');
 const colors = require('colors');
@@ -416,7 +416,7 @@ async function provisionSetup() {
   // Create the Lavenzafile and remove any existing one.
   if (await fileExists(`${process.cwd()}/.lavenza.yml`))
     await fs.unlinkSync(`${process.cwd()}/.lavenza.yml`);
-  await copyFilesAsync(`${arp.path}/templates/.lavenza.yml`, `${process.cwd()}/.lavenza.yml`);
+  await copyFilesAsync(`${arp.path}/templates/lavenzafile/.lavenza.yml`, `${process.cwd()}/.lavenza.yml`);
 
   // Search & Replace appropriate sections in the LavenzaFile template.
   await replaceInFileAsync(`${process.cwd()}/.lavenza.yml`, '#--{{root}}', `root: ${relativeRoot}`);

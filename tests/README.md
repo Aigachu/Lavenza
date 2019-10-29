@@ -4,9 +4,12 @@ This folder will be used by developers planning to contribute to Lavenza.
 To setup the tests folder, simply run the following at the root of the repository.
 
 ```
-npm link;
-lavenza provision; # Set installation root to 'tests/lavenza'.
-lavenza summon;
+lavenza provision;
+npm run dev;
 ```
 
-Make sure that you actually set up bots between the provision and summoning.
+For the installation directory, enter **tests/lavenza**.
+
+The rest can be configured to your liking.
+
+Make sure that you actually set up bots between the provision and summoning to actually test!

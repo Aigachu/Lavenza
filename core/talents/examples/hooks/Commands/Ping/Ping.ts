@@ -6,12 +6,10 @@
  */
 
 // Imports.
-import {
-  Command,
-  CommandConfigurations,
-  Resonance,
-  Talent,
-} from "lavenza";
+import { Command } from "../../../../../lib/Lavenza/Bot/Command/Command";
+import { CommandConfigurations } from "../../../../../lib/Lavenza/Bot/Command/CommandConfigurations";
+import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
+import { Examples } from "../../../Examples";
 
 /**
  * Ping command.
@@ -34,7 +32,7 @@ export class Ping extends Command {
    *
    * @inheritDoc
    */
-  public async build(config: CommandConfigurations, talent: Talent): Promise<void> {
+  public async build(config: CommandConfigurations, talent: Examples): Promise<void> {
     // The build function must always run the parent's build function! Don't remove this line.
     await super.build(config, talent);
 

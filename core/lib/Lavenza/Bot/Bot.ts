@@ -433,7 +433,7 @@ export class Bot {
    */
   private async loadEnvironmentVariables(): Promise<void> {
     const envFileData = await Akechi.readFile(`${this.directory}/.env`);
-    this.env = DotEnv.parse(envFileData) as BotEnvironmentVariables;
+    this.env = DotEnv.parse(envFileData) as unknown as BotEnvironmentVariables;
   }
 
   /**

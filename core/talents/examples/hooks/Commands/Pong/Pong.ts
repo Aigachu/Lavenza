@@ -6,14 +6,12 @@
  */
 
 // Imports.
-import {
-  Command,
-  CommandConfigurations,
-  PromptException,
-  PromptExceptionType,
-  Resonance,
-  Talent,
-} from "lavenza";
+import { Command } from "../../../../../lib/Lavenza/Bot/Command/Command";
+import { CommandConfigurations } from "../../../../../lib/Lavenza/Bot/Command/CommandConfigurations";
+import { PromptException } from "../../../../../lib/Lavenza/Bot/Prompt/Exception/PromptException";
+import { PromptExceptionType } from "../../../../../lib/Lavenza/Bot/Prompt/Exception/PromptExceptionType";
+import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
+import { Examples } from "../../../Examples";
 
 /**
  * Pong command.
@@ -32,7 +30,7 @@ export class Pong extends Command {
    *
    * @inheritDoc
    */
-  public async build(config: CommandConfigurations, talent: Talent): Promise<void> {
+  public async build(config: CommandConfigurations, talent: Examples): Promise<void> {
     // The build function must always run the parent's build function! Don't remove this line.
     await super.build(config, talent);
   }

@@ -6,7 +6,7 @@
   "types": "typings/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "tsc && node ./tests",
+    "compile": "tsc && ./core/bin/lavenza run",
     "dev": "docker-compose up --detach --no-recreate && ./node_modules/nodemon/bin/nodemon.js -e ts  --exec \"npm run compile\""
   },
   "engines": {
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/Aigachu/Lavenza-II.git"
+    "url": "git+ssh://git@github.com/Aigachu/Lavenza.git"
   },
   "author": "Aigachu",
   "license": "MIT",
@@ -22,9 +22,9 @@
     "lavenza": "./core/bin/lavenza"
   },
   "bugs": {
-    "url": "https://github.com/Aigachu/Lavenza-II/issues"
+    "url": "https://github.com/Aigachu/Lavenza/issues"
   },
-  "homepage": "https://github.com/Aigachu/Lavenza-II#readme",
+  "homepage": "https://github.com/Aigachu/Lavenza#readme",
   "keywords": [
     "discord",
     "twitch",
@@ -37,7 +37,7 @@
     "discordapp"
   ],
   "dependencies": {
-    "@google-cloud/translate": "^5.0.1",
+    "@google-cloud/translate": "^2.1.4",
     "app-root-path": "^2.2.1",
     "cleverbot": "^1.0.1",
     "colors": "^1.4.0",

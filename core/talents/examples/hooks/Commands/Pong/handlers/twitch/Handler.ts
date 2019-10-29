@@ -6,10 +6,8 @@
  */
 
 // Imports.
-import {
-  AbstractObject,
-  CommandClientHandler,
-} from "lavenza";
+import { CommandClientHandler } from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
+import { AbstractObject } from "../../../../../../../lib/Lavenza/Types";
 
 /**
  * A simple Twitch client handler for the Pong command.
