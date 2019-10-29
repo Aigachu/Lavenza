@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Modules.
-const core = require('../lib/Lavenza/Core/Core').Core;
+const lavenza = require('lavenza');
 const arp = require('app-root-path');
 const minimist = require('minimist');
 const ncp = require('ncp');
@@ -189,8 +189,8 @@ async function processArguments(args) {
     case 'summon':
     case 'run':
       await loadEnvironment();
-      await core.initialize(process.cwd());
-      await core.summon();
+      await lavenza.initialize(process.cwd());
+      await lavenza.summon();
       break;
 
     default:
