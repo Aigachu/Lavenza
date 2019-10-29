@@ -1,2 +1,10 @@
 # Ignore Sensitive Files.
 .env
+
+# Ignore Database.
+database
+!database/.gitkeep
+
+# Ignore Lang.
+lang
+!lang/.gitkeep
