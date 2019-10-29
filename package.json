@@ -1,9 +1,9 @@
 {
   "name": "lavenza",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "description": "A development framework for chatbots that supports many platforms. The successor to Lavenza, built in NodeJS and written in ES6!",
   "main": "core/lib/Lavenza.js",
-  "types": "typings/Lavenza.d.ts",
+  "types": "typings/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "tsc && node ./tests",

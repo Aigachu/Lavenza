@@ -1,4 +1,4 @@
-/* tslint:disable:completed-docs only-arrow-functions max-classes-per-file no-any */
+/* tslint:disable:completed-docs only-arrow-functions max-classes-per-file no-any file-name-casing */
 /**
  * Project Lavenza
  * Copyright 2017-2019 Aigachu, All Rights Reserved
