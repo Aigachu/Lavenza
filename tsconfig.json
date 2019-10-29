@@ -4,7 +4,8 @@
     "target": "es6",
     "module": "commonjs",
     "lib": [ "es2018" ],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": [
     "./core/**/*"

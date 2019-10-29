@@ -7,11 +7,11 @@
  */
 
 // Modules.
-import * as arp from "app-root-path";
 import * as path from "path";
 import * as prompts from "prompts";
 
 // Imports.
+import * as PackageInfo from "../../../../package.json";
 import { BotManager } from "../Bot/BotManager";
 import { Akechi } from "../Confidant/Akechi";
 import { Igor } from "../Confidant/Igor";
@@ -85,7 +85,7 @@ export class Core {
    * Stores Lavenza's version.
    * The version number is obtained from the 'package.json' file at the root of the project.
    */
-  private static version: string = require(`${arp.path}/package`).version;
+  private static version: string = PackageInfo.version;
 
   /**
    * Initialize Lavenza's configurations with the specified path.
@@ -132,7 +132,7 @@ export class Core {
 
       // If they agree, copy the basic desk to their desired location.
       if (confirmation) {
-        await Akechi.copyFiles(`${arp.path}/templates/installation`, pathToLavenzaInstallation);
+        await Akechi.copyFiles(path.resolve(__dirname, "../../../templates/installation"), pathToLavenzaInstallation);
         await Morgana.success("An installation has been generated at the provided path. You may configure it and try running Lavenza again!");
       }
 
@@ -261,7 +261,7 @@ export class Core {
       database: `${rootPath}/database`,
       root: rootPath,
       talents: {
-        core: `${arp.path}/core/talents`,
+        core: path.resolve(__dirname, "../../../talents"),
         custom: `${rootPath}/talents`,
       },
     };

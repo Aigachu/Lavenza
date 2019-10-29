@@ -17,10 +17,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Modules.
-const arp = require("app-root-path");
 const path = require("path");
 const prompts = require("prompts");
 // Imports.
+const PackageInfo = require("../../../../package.json");
 const BotManager_1 = require("../Bot/BotManager");
 const Akechi_1 = require("../Confidant/Akechi");
 const Igor_1 = require("../Confidant/Igor");
@@ -79,7 +79,7 @@ class Core {
                 });
                 // If they agree, copy the basic desk to their desired location.
                 if (confirmation) {
-                    yield Akechi_1.Akechi.copyFiles(`${arp.path}/templates/installation`, pathToLavenzaInstallation);
+                    yield Akechi_1.Akechi.copyFiles(path.resolve(__dirname, "../../../templates/installation"), pathToLavenzaInstallation);
                     yield Morgana_1.Morgana.success("An installation has been generated at the provided path. You may configure it and try running Lavenza again!");
                 }
                 yield Morgana_1.Morgana.error("Until an installation is properly configured, Lavenza will not run properly. Please refer to the guides in the README to configure Lavenza.");
@@ -197,7 +197,7 @@ class Core {
                 database: `${rootPath}/database`,
                 root: rootPath,
                 talents: {
-                    core: `${arp.path}/core/talents`,
+                    core: path.resolve(__dirname, "../../../talents"),
                     custom: `${rootPath}/talents`,
                 },
             };
@@ -209,4 +209,4 @@ exports.Core = Core;
  * Stores Lavenza's version.
  * The version number is obtained from the 'package.json' file at the root of the project.
  */
-Core.version = require(`${arp.path}/package`).version;
+Core.version = PackageInfo.version;
