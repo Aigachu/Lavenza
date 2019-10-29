@@ -58,7 +58,7 @@ Lavenza.initialize().then(() => {
 ## Additional Help
 When executing `lavenza provision`, the installation will leave you with a directory where all of the framework's files are located.
 
-A second README.md file will be found here containing further explanations to help you get started with development in Lavenza!
+A second README.md file will be found there containing further explanations to help you get started with development in Lavenza!
 
 Otherwise, feel free to open issues here with questions & concerns so I can work on bettering the framework. :)
 
