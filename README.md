@@ -33,7 +33,7 @@ lavenza provision;
 ```
 
 One of the steps will ask for you to specify an installation directory.
-A **second README** file will be created at the provided path. Consult this README for a more detail explanation on how things work!
+A **second README** file will be created at the provided path. Consult this README for a more detailed explanation on how things work!
 
 ### Run Lavenza.
 ```bash
@@ -54,13 +54,6 @@ Lavenza.initialize().then(() => {
   Lavenza.summon();
 });
 ```
-
-## Additional Help
-When executing `lavenza provision`, the installation will leave you with a directory where all of the framework's files are located.
-
-A second README.md file will be found there containing further explanations to help you get started with development in Lavenza!
-
-Otherwise, feel free to open issues here with questions & concerns so I can work on bettering the framework. :)
 
 ## Contributing to Lavenza
 ***More info soon!***
