@@ -7,7 +7,7 @@
 
 // Imports.
 import { DiscordResonance } from "../../../../../lib/Lavenza/Bot/Client/Discord/DiscordResonance";
-import { Command } from "../../../../../lib/Lavenza/Bot/Command/Command";
+import { Command } from "../../../../commander/src/Command/Command";
 
 /**
  * UserPic command.

@@ -129,6 +129,21 @@ export class Sojiro {
   }
 
   /**
+   * Check if an array has objects with duplicates.
+   *
+   * @param array
+   *   Array to check.
+   *
+   * @param uprop
+   *   Unique proper
+   */
+  public static arrayHasDuplicates<T>(array: T[], uprop: string): boolean {
+    const seen = new Set();
+
+    return array.some((currentObject) => seen.size === seen.add(currentObject[uprop]).size);
+  }
+
+  /**
    * Utility function to return a random element from a given array.
    *
    * Self-Explanatory.
@@ -139,7 +154,7 @@ export class Sojiro {
    * @returns
    *   Returns a random element from the provided array.
    */
-  public static getRandomElementFromArray(array: unknown[]): unknown {
+  public static getRandomElementFromArray<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)];
   }
 
@@ -151,8 +166,8 @@ export class Sojiro {
    * @param element
    *   Element to be removed.
    */
-  public static removeFromArray(array: unknown[], element: unknown): unknown[] {
-    return array.filter((e: unknown) => e !== element);
+  public static removeFromArray<T>(array: T[], element: T): T[] {
+    return array.filter((e: T) => e !== element);
   }
 
   /**
@@ -164,7 +179,7 @@ export class Sojiro {
    * @returns
    *   Returns TRUE if empty, false otherwise.
    */
-  public static isEmpty(variable: unknown): boolean {
+  public static isEmpty<T>(variable: T): boolean {
     // So underscore is cool and all...
     // BUT any FUNCTION passed to its isEmpty() function evaluates to TRUE for...I don't know what reason.
     // Here we handle this case.

@@ -7,11 +7,11 @@
 
 // Imports.
 import { BotConfigurations } from "../../../../../lib/Lavenza/Bot/BotConfigurations";
-import { Command } from "../../../../../lib/Lavenza/Bot/Command/Command";
+import { Command } from "../../../../commander/src/Command/Command";
 import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
 import { Kawakami } from "../../../../../lib/Lavenza/Confidant/Kawakami";
 import { Sojiro } from "../../../../../lib/Lavenza/Confidant/Sojiro";
-import { Gestalt } from "../../../../../lib/Lavenza/Gestalt/Gestalt";
+import { Gestalt } from "../../../../../lib/Lavenza/Service/Gestalt/Gestalt";
 
 /**
  * Command Prefix command.

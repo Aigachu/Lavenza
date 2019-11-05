@@ -6,9 +6,9 @@
  */
 
 // Imports.
-import { Command } from "../../../../../lib/Lavenza/Bot/Command/Command";
+import { Command } from "../../../../commander/src/Command/Command";
 import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
-import { Gestalt } from "../../../../../lib/Lavenza/Gestalt/Gestalt";
+import { Gestalt } from "../../../../../lib/Lavenza/Service/Gestalt/Gestalt";
 
 /**
  * Locale command.

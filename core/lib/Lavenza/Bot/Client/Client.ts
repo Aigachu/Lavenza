@@ -8,8 +8,8 @@
 // Imports.
 import { Igor } from "../../Confidant/Igor";
 import { Bot } from "../Bot";
-import { Command } from "../Command/Command";
-import { CommandAuthorizer } from "../Command/CommandAuthorizer/CommandAuthorizer";
+import { Command } from "../../../../talents/commander/src/Command/Command";
+import { CommandAuthorizer } from "../../../../talents/commander/src/Command/CommandAuthorizer/CommandAuthorizer";
 import { PromptException } from "../Prompt/Exception/PromptException";
 import { Prompt } from "../Prompt/Prompt";
 import { Resonance } from "../Resonance/Resonance";

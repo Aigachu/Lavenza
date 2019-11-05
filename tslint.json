@@ -28,6 +28,17 @@
     // We know that whatever packages we include are actually installed, so no worries in taking this off!
     "no-implicit-dependencies": false,
 
+    // This got a little annoying for our case. We'll turn it off for now.
+    "newline-per-chained-call": false,
+
+    // I don't think we'll be using .tsx files, and this is the only thing making this rule a thing.
+    // Taking it off for now.
+    "no-angle-bracket-type-assertion": false,
+
+    // This shouldn't be compulsory as reassigning paramters isn't that bad.
+    // We'll make it a house rule that parameter reassignment should be done at the beginning of functions if need be.
+    "no-parameter-reassignment": false,
+
     // === Adjusted Rules ===
     // We don't want type definitions everywhere as it causes needless noise. Here we specify this.
     "typedef": {

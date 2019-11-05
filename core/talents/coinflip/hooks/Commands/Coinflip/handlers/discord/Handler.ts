@@ -8,7 +8,7 @@
 // Imports.
 import { ClientUser } from "../../../../../../../lib/Lavenza/Bot/Client/ClientUser";
 import { DiscordResonance } from "../../../../../../../lib/Lavenza/Bot/Client/Discord/DiscordResonance";
-import { CommandClientHandler } from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
+import { CommandClientHandler } from "../../../../../../commander/src/Command/CommandClientHandler";
 import { AbstractObject } from "../../../../../../../lib/Lavenza/Types";
 
 /**

@@ -6,7 +6,7 @@
  */
 
 // Imports.
-import { Listener } from "../../../../lib/Lavenza/Bot/Listener/Listener";
+import { Listener } from "../../../../lib/Lavenza/Listener/Listener";
 import { Resonance } from "../../../../lib/Lavenza/Bot/Resonance/Resonance";
 
 /**

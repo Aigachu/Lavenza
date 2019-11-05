@@ -11,11 +11,11 @@ import * as _ from "underscore";
 
 // Imports.
 import { ClientType } from "../../../../../lib/Lavenza/Bot/Client/ClientType";
-import { Command } from "../../../../../lib/Lavenza/Bot/Command/Command";
+import { Command } from "../../../../commander/src/Command/Command";
 import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
 import { Igor } from "../../../../../lib/Lavenza/Confidant/Igor";
 import { Sojiro } from "../../../../../lib/Lavenza/Confidant/Sojiro";
-import { Gestalt as GestaltService } from "../../../../../lib/Lavenza/Gestalt/Gestalt";
+import { Gestalt as GestaltService } from "../../../../../lib/Lavenza/Service/Gestalt/Gestalt";
 
 /**
  * Gestalt command used to make database queries through a client's chat.

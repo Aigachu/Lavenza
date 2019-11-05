@@ -8,8 +8,8 @@
 // Imports.
 import { Morgana } from "../../../Confidant/Morgana";
 import { Sojiro } from "../../../Confidant/Sojiro";
-import { Command } from "../../Command/Command";
-import { CommandAuthorizer } from "../../Command/CommandAuthorizer/CommandAuthorizer";
+import { Command } from "../../../../../talents/commander/src/Command/Command";
+import { CommandAuthorizer } from "../../../../../talents/commander/src/Command/CommandAuthorizer/CommandAuthorizer";
 import { Eminence } from "../../Eminence/Eminence";
 import { Resonance } from "../../Resonance/Resonance";
 

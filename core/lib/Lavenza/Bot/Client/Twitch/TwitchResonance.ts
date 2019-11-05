@@ -8,7 +8,7 @@
 // Imports.
 import { Igor } from "../../../Confidant/Igor";
 import { Sojiro } from "../../../Confidant/Sojiro";
-import { Gestalt } from "../../../Gestalt/Gestalt";
+import { Gestalt } from "../../../Service/Gestalt/Gestalt";
 import { Bot } from "../../Bot";
 import { BotConfigurations } from "../../BotConfigurations";
 import { Resonance } from "../../Resonance/Resonance";

@@ -8,8 +8,8 @@
 // Imports.
 import { AbstractObject } from "../../Types";
 import { CommandClientConfig } from "../Client/ClientConfigurations";
-import { Command } from "../Command/Command";
-import { CommandConfigurations } from "../Command/CommandConfigurations";
+import { Command } from "../../../../talents/commander/src/Command/Command";
+import { CommandConfigurations } from "../../../../talents/commander/src/Command/CommandConfigurations";
 
 /**
  * Provides an "Instruction" model that regroups information about a command that was interpreted from a message.

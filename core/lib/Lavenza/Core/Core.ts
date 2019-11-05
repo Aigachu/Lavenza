@@ -12,14 +12,18 @@ import * as prompts from "prompts";
 
 // Imports.
 import * as PackageInfo from "../../../../package.json";
-import { BotManager } from "../Bot/BotManager";
+import { BotManager } from "../Bot/Service/BotManager";
 import { Akechi } from "../Confidant/Akechi";
 import { Igor } from "../Confidant/Igor";
 import { Morgana } from "../Confidant/Morgana";
 import { Sojiro } from "../Confidant/Sojiro";
 import { Yoshida } from "../Confidant/Yoshida";
-import { Gestalt } from "../Gestalt/Gestalt";
-import { TalentManager } from "../Talent/TalentManager";
+import { Gestalt } from "../Service/Gestalt/Gestalt";
+import { Service } from "../Service/Service";
+import { ServiceContainer } from "../Service/ServiceContainer";
+import { ServiceType } from "../Service/ServiceType";
+import { TalentCatalogue } from "../Talent/Service/TalentCatalogue";
+import { TalentManager } from "../Talent/Service/TalentManager";
 
 import { CoreSettings } from "./CoreSettings";
 
@@ -159,6 +163,9 @@ export class Core {
       process.exit(1);
     }
 
+    // Now we'll perform core service loading.
+    await ServiceContainer.load(path.resolve(__dirname, "../lavenza.services.yml"));
+
     // Return the core so we can chain functions.
     return Core;
   }
@@ -179,74 +186,174 @@ export class Core {
     }
 
     /*
-     * Fire necessary preparations.
-     * The application can end here if we hit an error in the build() function.
+     * Fire genesis tasks.
+     *
+     * This is the primordial phase of Lavenza's execution.
      */
-    await Core.build()
-      .catch(Igor.stop);
+    await Core.genesis().catch(Igor.stop);
 
     /*
-     * If preparations go through without problems, go for run tasks.
-     * Run tasks should be done only after all prep is complete.
+     * Fire build tasks.
+     *
+     * This is the first phase of Lavenza's execution.
      */
-    await Core.run()
-      .catch(Igor.stop);
+    await Core.build().catch(Igor.stop);
+
+    /*
+    * Fire arrangements.
+    *
+    * This is the second phase of Lavenza's execution.
+    */
+    await Core.arrange().catch(Igor.stop);
+
+    /*
+     * Start running.
+     *
+     * This is the final phase, concluding the execution of Lavenza.
+     */
+    await Core.run().catch(Igor.stop);
 
     // Some more flavor text.
     await Morgana.success("Lavenza should now be running! Scroll up in the logs to see if any errors occurred and handle them as needed. :)");
   }
 
   /**
-   * Run all build tasks.
-   *
-   * This involves reading and parsing bot files, talent files and command files. Database preparations and instances
-   * are also prepared here.
+   * Fetch a service from the Service Container.
    */
-  private static async build(): Promise<void> {
-    // Some more flavor text.
-    await Morgana.status("Commencing preparatory tasks!");
-
-    /*
-     * Run build handler for the Gestalt service.
-     * We need to set up the database first and foremost.
-     */
-    await Gestalt.build();
-
-    /**
-     * Run build functions for the Talent Manager.
-     * This will load all talents from the 'talents' folder and prepare them accordingly.
-     */
-    await TalentManager.build();
-
-    /**
-     * Run build functions for the Bot Manager.
-     * This will load all bots and prepare their data before they connect to their clients.
-     * Each bot may undergo tasks specific to Talents they have.
-     */
-    await BotManager.build();
-
-    /*
-     * Run bootstrap handler for Gestalt.
-     * Creates & verifies database tables/files.
-     */
-    await Gestalt.bootstrap();
-
-    // Some more flavor.
-    await Morgana.success("Preparations complete.");
+  public static service<S extends Service>(id: ServiceType<S> | string): S {
+    // Find the service through the Service Container.
+    return ServiceContainer.get(id);
   }
 
   /**
-   * Application Run phase.
+   * Obtain Gestalt.
    *
-   * All execution tasks are ran here.
+   * @return
+   *   The Gestalt service.
+   */
+  public static gestalt(): Gestalt {
+    return Core.service(Gestalt);
+  }
+
+  /**
+   * Obtain BotManager from Services.
+   *
+   * @return
+   *   The Bot Catalogue.
+   */
+  public static botManager(): BotManager {
+    return Core.service(BotManager);
+  }
+
+  /**
+   * Obtain BotManager from Services.
+   *
+   * @return
+   *   The Bot Catalogue.
+   */
+  public static talentManager(): TalentManager {
+    return Core.service(TalentManager);
+  }
+
+  /**
+   * Run all genesis tasks.
+   *
+   * This involves:
+   *  - Loading all defined PRIMORDIAL services.
+   *  - Loading talents and their defined services.
+   *  - Running all genesis tasks for these services.
+   *
+   *  The order in which Services run their build() functions is determined by the 'priority' key for each Service,
+   *  defined in the definition file.
+   */
+  private static async genesis(): Promise<void> {
+    // Some more flavor text.
+    await Morgana.status("BEGIN PHASE 0 - GENESIS");
+
+    // Now we'll perform genesis tasks for all primordial services after sorting them appropriately.
+    await ServiceContainer.services.sort(Service.prioritySortGenesis);
+    for (const service of ServiceContainer.services) {
+      if (service.primordial === true) {
+        await service.genesis();
+      }
+    }
+
+    // Some more flavor.
+    await Morgana.success("GENESIS COMPLETED SUCCESSFULLY");
+  }
+
+  /**
+   * Run all build tasks.
+   *
+   * This involves:
+   *  - Loading all defined services for the Core.
+   *  - Running build() function tasks for all loaded Services.
+   *
+   *  The order in which Services run their build() functions is determined by the 'priority' key for each Service,
+   *  defined in the definition file.
+   */
+  private static async build(): Promise<void> {
+    // Some more flavor text.
+    await Morgana.status("BEGIN PHASE 1 - BUILD");
+
+    // Now we'll perform build tasks for all services after sorting them appropriately.
+    await ServiceContainer.services.sort(Service.prioritySortGenesis);
+    for (const service of ServiceContainer.services) {
+      await service.build();
+    }
+
+    // Some more flavor.
+    await Morgana.success("BUILD COMPLETED SUCCESSFULLY");
+  }
+
+  /**
+   * Run all arrangement tasks.
+   *
+   * This involves:
+   *  - Loading all defined services for the Core.
+   *  - Running arrange() function tasks for all loaded Services.
+   *
+   * The order in which Services run their arrange() functions is determined by the 'priority' key for each Service,
+   * defined in the definition file.
+   */
+  private static async arrange(): Promise<void> {
+    // Some more flavor text.
+    await Morgana.status("BEGIN PHASE 2 - ARRANGEMENTS");
+
+    // Now we'll perform arrangement tasks for all services after sorting them appropriately.
+    await ServiceContainer.services.sort(Service.prioritySortGenesis);
+    for (const service of ServiceContainer.services) {
+      await console.log(`Running arrangement tasks for Service: ${service.id}.`);
+      await service.arrange();
+    }
+
+    process.exit(1);
+
+    // Some more flavor.
+    await Morgana.success("ARRANGEMENTS COMPLETED SUCCESSFULLY");
+  }
+
+  /**
+   * Run all execution tasks.
+   *
+   * This involves:
+   *  - Authenticating all bots.
+   *
+   * The order in which Services run their run() functions is determined by the 'priority' key for each Service,
+   * defined in the definition file.
    */
   private static async run(): Promise<void> {
-    // Some more flavor.
-    await Morgana.status("Commencing execution phase!");
+    // Some more flavor text.
+    await Morgana.status("BEGIN FINAL PHASE - EXECUTION");
 
-    // Deploy bots from the BotManager.
-    // All bots set to run will be online after this executes.
-    await BotManager.run();
+    // Now we'll perform execution tasks for all services after sorting them appropriately.
+    await ServiceContainer.services.sort(Service.prioritySortGenesis);
+    for (const service of ServiceContainer.services) {
+      await console.log(`Running execution tasks for Service: ${service.id}.`);
+      await service.run();
+    }
+
+    process.exit(1);
   }
 
   /**

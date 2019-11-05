@@ -11,7 +11,7 @@ import { DMChannel, GroupDMChannel, TextChannel } from "discord.js";
 // Imports.
 import { ClientType } from "../../../../lib/Lavenza/Bot/Client/ClientType";
 import { DiscordClient } from "../../../../lib/Lavenza/Bot/Client/Discord/DiscordClient";
-import { Listener } from "../../../../lib/Lavenza/Bot/Listener/Listener";
+import { Listener } from "../../../../lib/Lavenza/Listener/Listener";
 import { Resonance } from "../../../../lib/Lavenza/Bot/Resonance/Resonance";
 import { Morgana } from "../../../../lib/Lavenza/Confidant/Morgana";
 import { CleverBot } from "../../CleverBot";

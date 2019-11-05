@@ -5,8 +5,8 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import { Command } from "../../../../../lib/Lavenza/Bot/Command/Command";
-import { CommandConfigurations } from "../../../../../lib/Lavenza/Bot/Command/CommandConfigurations";
+import { Command } from "../../../../commander/src/Command/Command";
+import { CommandConfigurations } from "../../../../commander/src/Command/CommandConfigurations";
 import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
 import { Yoshida } from "../../../../../lib/Lavenza/Confidant/Yoshida";
 import { AbstractObject } from "../../../../../lib/Lavenza/Types";

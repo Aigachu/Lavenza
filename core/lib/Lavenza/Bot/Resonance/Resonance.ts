@@ -15,7 +15,7 @@ import { BotConfigurations } from "../BotConfigurations";
 import { Client } from "../Client/Client";
 import { ClientMessage } from "../Client/ClientMessage";
 import { ClientUser } from "../Client/ClientUser";
-import { Command } from "../Command/Command";
+import { Command } from "../../../../talents/commander/src/Command/Command";
 import { PromptException } from "../Prompt/Exception/PromptException";
 import { Prompt } from "../Prompt/Prompt";
 

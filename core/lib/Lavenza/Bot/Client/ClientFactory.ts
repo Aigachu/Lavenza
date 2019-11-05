@@ -5,7 +5,7 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import { Gestalt } from "../../Gestalt/Gestalt";
+import { Gestalt } from "../../Service/Gestalt/Gestalt";
 // Includes
 import { Bot } from "../Bot";
 

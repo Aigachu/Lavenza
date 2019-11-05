@@ -10,11 +10,11 @@ import { AssociativeObject } from "../../../Types";
 import {
   CommandAuthorizerBotConfigurations, CommandAuthorizerCommandConfigurations,
   CommandAuthorizerConfigurationsCollection,
-} from "../../Command/CommandAuthorizer/CommandAuthorizerConfigurations";
+} from "../../../../../talents/commander/src/Command/CommandAuthorizer/CommandAuthorizerConfigurations";
 import {
   CommandClientAuthorizationConfig,
   CommandClientAuthorizationListConfig,
-} from "../../Command/CommandConfigurations";
+} from "../../../../../talents/commander/src/Command/CommandConfigurations";
 import { BotClientConfig, ClientConfigurations, CommandClientConfig } from "../ClientConfigurations";
 
 /**

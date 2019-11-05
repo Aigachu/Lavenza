@@ -10,14 +10,14 @@ import * as Colors from "colors";
 import * as DotEnv from "dotenv";
 
 // Imports.
-import { BotManager } from "./Lavenza/Bot/BotManager";
+import { Command } from "../talents/commander/src/Command/Command";
+import { CommandClientHandler } from "../talents/commander/src/Command/CommandClientHandler";
+
 import { ClientType } from "./Lavenza/Bot/Client/ClientType";
-import { Command } from "./Lavenza/Bot/Command/Command";
-import { CommandClientHandler } from "./Lavenza/Bot/Command/CommandClientHandler";
-import { Listener } from "./Lavenza/Bot/Listener/Listener";
 import { PromptException } from "./Lavenza/Bot/Prompt/Exception/PromptException";
 import { PromptExceptionType } from "./Lavenza/Bot/Prompt/Exception/PromptExceptionType";
 import { Resonance } from "./Lavenza/Bot/Resonance/Resonance";
+import { BotManager } from "./Lavenza/Bot/Service/BotManager";
 import { Akechi } from "./Lavenza/Confidant/Akechi";
 import { Igor } from "./Lavenza/Confidant/Igor";
 import { Kawakami } from "./Lavenza/Confidant/Kawakami";
@@ -25,9 +25,9 @@ import { Morgana } from "./Lavenza/Confidant/Morgana";
 import { Sojiro } from "./Lavenza/Confidant/Sojiro";
 import { Yoshida } from "./Lavenza/Confidant/Yoshida";
 import { Core } from "./Lavenza/Core/Core";
-import { Gestalt } from "./Lavenza/Gestalt/Gestalt";
+import { Gestalt } from "./Lavenza/Service/Gestalt/Gestalt";
+import { TalentManager } from "./Lavenza/Talent/Service/TalentManager";
 import { Talent } from "./Lavenza/Talent/Talent";
-import { TalentManager } from "./Lavenza/Talent/TalentManager";
 
 // Load Environment Variables from .env file at the root of the project.
 DotEnv.config();
@@ -84,7 +84,6 @@ module.exports = {
   // They are linked in the global variable for easy access to outside applications.
   Command,
   CommandClientHandler,
-  Listener,
   PromptException,
   Resonance,
   Talent,
@@ -97,6 +96,7 @@ module.exports = {
   __: Yoshida.translate,
   initialize: Core.initialize,
   personalize: Yoshida.personalize,
+  service: Core.service,
   summon: Core.summon,
   translate: Yoshida.translate,
 };

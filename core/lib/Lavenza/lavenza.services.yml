@@ -1,0 +1,65 @@
+#
+# Service Definition File for Lavenza's Core.
+#
+services:
+  #
+  # Global Database Service.
+  # Should normally run first in all stages of the execution flow.
+  #
+  gestalt:
+    class: Service/Gestalt/Gestalt
+    dependencies: []
+    primordial: true
+    priority: 500
+
+  #
+  # Loader Service service for Talents.
+  #
+  talent.loader:
+    class: Talent/Service/TalentDirectoryLoader
+    dependencies: []
+    primordial: true
+
+  #
+  # Catalogue Service service for Talents.
+  #
+  talent.catalogue:
+    class: Talent/Service/TalentCatalogue
+    dependencies:
+      - talent.loader
+    primordial: true
+    priority: 400
+
+  #
+  # Management Service for Talents.
+  #
+  talent.manager:
+    class: Talent/Service/TalentManager
+    dependencies:
+      - talent.catalogue
+      - talent.loader
+    primordial: true
+
+  #
+  # Catalogue Service for Bots.
+  #
+  bot.catalogue:
+    class: Bot/Service/BotCatalogue
+    dependencies: []
+    priority: 350
+
+  #
+  # Management Service for Bots.
+  #
+  bot.manager:
+    class: Bot/Service/BotManager
+    dependencies:
+      - bot.catalogue
+    priority: 300
+
+  #
+  # Loader Service service for Bots.
+  #
+  bot.loader:
+    class: Bot/Service/BotDirectoryLoader
+    dependencies: []

@@ -79,43 +79,51 @@ declare module "lavenza" {
     private static getPersonalization(defaultText: string, tag: string, bot: Bot): Promise<string>;
   }
 
-  export class BotManager {
-    public static bots: AssociativeObject<Bot>;
-    private static ignoredBots: {};
-    public static build(): Promise<void>;
-    public static gestalt(): Promise<void>;
-    public static getBot(id: string): Promise<Bot>;
-    public static run(): Promise<void>;
-    public static bootMasterBot(): Promise<void>;
-    public static boot(botId: string): Promise<void>;
-    public static shutdown(botId: string): Promise<void>;
-    public static prepareBot(botId: string): Promise<void>;
-    public static prepareAllBots(): Promise<void>;
-    private static bootAutoBoots(): Promise<void>;
-    private static registerBot(botId: string, directory?: string): Promise<void>;
-    private static registerAllBotsInDirectory(): Promise<void>;
+  abstract class Manager<T> {
+    protected repository: T[];
+    public build(): Promise<void>;
+    public arrange(): Promise<void>;
+    public run(): Promise<void>;
+    public all(): Promise<T[]>;
+    public find(predicate: (item: T) => {}): T;
+    public retrieve(predicate: (item: T) => {}): T[];
+    public push(item: T): Promise<void>;
+    public pop(item: unknown): Promise<void>;
   }
 
-  export class TalentManager {
-    public static talents: AssociativeObject<Talent>;
-    public static build(): Promise<void>;
-    public static gestalt(): Promise<void>;
-    public static getTalent(machineName: string): Promise<Talent>;
-    public static loadTalent(name: string): Promise<void>;
-    private static getTalentPath(name: string): Promise<string | undefined>;
+  export class BotManager extends Manager {
+    private ignoredBots: {};
+    public build(): Promise<void>;
+    public getBot(id: string): Promise<Bot>;
+    public run(): Promise<void>;
+    public bootMasterBot(): Promise<void>;
+    public boot(botId: string): Promise<void>;
+    public shutdown(botId: string): Promise<void>;
+    public buldBot(botId: string): Promise<void>;
+    public buildAllBots(): Promise<void>;
+    private bootAutoBoots(): Promise<void>;
+    private registerBot(botId: string, directory?: string): Promise<void>;
+    private registerAllBotsInDirectory(): Promise<void>;
+  }
+
+  export class TalentManager extends Manager {
+    public build(): Promise<void>;
+    public getTalent(machineName: string): Promise<Talent>;
+    public loadTalent(name: string): Promise<void>;
+    private getTalentPath(name: string): Promise<string | undefined>;
   }
 
   export class Gestalt {
-    private static storageService: StorageService;
-    public static bootstrap(): Promise<void>;
-    public static build(): Promise<void>;
-    public static createCollection(endpoint: string, payload: {}): Promise<void>;
-    public static delete(endpoint: string): Promise<void>;
-    public static get(endpoint: string): Promise<{}>;
-    public static post(endpoint: string, payload: {}): Promise<{} | undefined>;
-    public static request({protocol, endpoint, payload}: AbstractObject): Promise<{} | undefined>;
-    public static sync(config: {}, source: string): Promise<{}>;
-    public static update(endpoint: string, payload: {}): Promise<{} | undefined>;
+    private storageService: StorageService;
+    public bootstrap(): Promise<void>;
+    public build(): Promise<void>;
+    public createCollection(endpoint: string, payload: {}): Promise<void>;
+    public delete(endpoint: string): Promise<void>;
+    public get(endpoint: string): Promise<{}>;
+    public post(endpoint: string, payload: {}): Promise<{} | undefined>;
+    public request({protocol, endpoint, payload}: AbstractObject): Promise<{} | undefined>;
+    public sync(config: {}, source: string): Promise<{}>;
+    public update(endpoint: string, payload: {}): Promise<{} | undefined>;
   }
 
   abstract class StorageService {
@@ -134,9 +142,8 @@ declare module "lavenza" {
     public config: BotConfigurations;
     public directory: string;
     public clients: AssociativeObject<Client>;
-    public talents: string[];
-    public commands: AssociativeObject<Command>;
-    public commandAliases: AssociativeObject<string>;
+    public enabledTalents: string[];
+    public enabledCommands: string[];
     public listeners: Listener[];
     public prompts: Prompt[];
     public joker: Joker;
@@ -144,15 +151,13 @@ declare module "lavenza" {
     public isMaster: boolean;
     public summoned: boolean;
     public constructor(id: string, config: BotConfigurations, directory: string);
-    public gestalt(): Promise<void>;
+    public build(): Promise<void>;
     public deploy(): Promise<void>;
     public shutdown(): Promise<void>;
-    public prepare(): Promise<void>;
     public getActiveConfig(): Promise<BotConfigurations>;
     public getClient(clientType: ClientType): Promise<Client>;
     public getClientConfig(clientType: ClientType): Promise<BotClientConfig>;
     public getActiveClientConfig(clientType: ClientType): Promise<BotClientConfig>;
-    public getCommand(commandKey: string): Promise<Command>;
     public removePrompt(prompt: Prompt): Promise<void>;
     public disconnectClients(): Promise<void>;
     public disconnectClient(clientType: ClientType): Promise<void>;
@@ -227,19 +232,15 @@ declare module "lavenza" {
   }
 
   export class Talent {
-    public commandAliases: AssociativeObject<string>;
-    public commands: AssociativeObject<Command>;
+    public nestedCommands: string[];
     public config: TalentConfigurations;
     public databases: AssociativeObject<string>;
     public directory: string;
     public listeners: Listener[];
     public machineName: string;
     public build(config: TalentConfigurations): Promise<void>;
-    public gestalt(): Promise<void>;
     public getActiveConfigForBot(bot: Bot): Promise<TalentConfigurations>;
     public initialize(bot: Bot): Promise<void>;
-    private loadCommands(): Promise<void>;
-    private loadListeners(): Promise<void>;
   }
 
   export abstract class Resonance {

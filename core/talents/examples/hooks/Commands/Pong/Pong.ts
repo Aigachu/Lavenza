@@ -6,8 +6,8 @@
  */
 
 // Imports.
-import { Command } from "../../../../../lib/Lavenza/Bot/Command/Command";
-import { CommandConfigurations } from "../../../../../lib/Lavenza/Bot/Command/CommandConfigurations";
+import { Command } from "../../../../commander/src/Command/Command";
+import { CommandConfigurations } from "../../../../commander/src/Command/CommandConfigurations";
 import { PromptException } from "../../../../../lib/Lavenza/Bot/Prompt/Exception/PromptException";
 import { PromptExceptionType } from "../../../../../lib/Lavenza/Bot/Prompt/Exception/PromptExceptionType";
 import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";

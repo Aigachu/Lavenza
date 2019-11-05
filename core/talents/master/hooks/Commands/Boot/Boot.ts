@@ -6,8 +6,8 @@
  */
 
 // Imports.
-import { BotManager } from "../../../../../lib/Lavenza/Bot/BotManager";
-import { Command } from "../../../../../lib/Lavenza/Bot/Command/Command";
+import { BotManager } from "../../../../../lib/Lavenza/Bot/Service/BotManager";
+import { Command } from "../../../../commander/src/Command/Command";
 import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
 import { Sojiro } from "../../../../../lib/Lavenza/Confidant/Sojiro";
 

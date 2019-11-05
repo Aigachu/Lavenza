@@ -7,7 +7,7 @@
 
 // Imports.
 import { AssociativeObject } from "../../Types";
-import { CommandClientAuthorizationConfig, CommandCooldownConfig } from "../Command/CommandConfigurations";
+import { CommandClientAuthorizationConfig, CommandCooldownConfig } from "../../../../talents/commander/src/Command/CommandConfigurations";
 
 /**
  * Expose an interface to describe Discord Client configurations.

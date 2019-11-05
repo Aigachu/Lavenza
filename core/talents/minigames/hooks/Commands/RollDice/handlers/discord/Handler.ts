@@ -6,7 +6,7 @@
  */
 
 // Imports.
-import { CommandClientHandler } from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
+import { CommandClientHandler } from "../../../../../../commander/src/Command/CommandClientHandler";
 import { Kawakami } from "../../../../../../../lib/Lavenza/Confidant/Kawakami";
 import { Yoshida } from "../../../../../../../lib/Lavenza/Confidant/Yoshida";
 import { AbstractObject } from "../../../../../../../lib/Lavenza/Types";

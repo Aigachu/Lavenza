@@ -7,7 +7,7 @@
 
 // Imports.
 import { TwitchResonance } from "../../../../../../../lib/Lavenza/Bot/Client/Twitch/TwitchResonance";
-import { CommandClientHandler } from "../../../../../../../lib/Lavenza/Bot/Command/CommandClientHandler";
+import { CommandClientHandler } from "../../../../../../commander/src/Command/CommandClientHandler";
 import { AbstractObject } from "../../../../../../../lib/Lavenza/Types";
 
 /**
