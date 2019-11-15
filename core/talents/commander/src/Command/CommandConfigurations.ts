@@ -65,6 +65,23 @@ export interface CommandConfigurations {
 }
 
 /**
+ * Declares a base interface schema for Client Configurations specific to Commands.
+ */
+export interface CommandClientConfig {
+
+  /**
+   * Authorization configurations specific to a client.
+   */
+  authorization: CommandClientAuthorizationConfig;
+
+  /**
+   * Cooldown configurations specific to a client.
+   */
+  cooldown: CommandCooldownConfig;
+
+}
+
+/**
  * Declares an interface schema for Parameter configurations in Commands.
  * @TODO - Specialized interface for parameter configurations and refactoring.
  */

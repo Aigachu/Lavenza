@@ -5,10 +5,7 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-// Imports.
-import { ServicePriority } from "./ServiceDefinitionFile";
-
 /**
  * Expose a type for Service class constructors.
  */
-export type ServiceType<S> = new (id: string, priority: number | ServicePriority, dependencies: string[], primordial: boolean) => S;
+export type ServiceType<S> = new (id: string, dependencies: string[], tags: string[], talent?: string) => S;

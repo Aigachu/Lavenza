@@ -10,9 +10,9 @@ import { Igor } from "../../../../../lib/Lavenza/Confidant/Igor";
 import { Morgana } from "../../../../../lib/Lavenza/Confidant/Morgana";
 import { Sojiro } from "../../../../../lib/Lavenza/Confidant/Sojiro";
 import { Bot } from "../../../../../lib/Lavenza/Bot/Bot";
-import { ClientType } from "../../../../../lib/Lavenza/Bot/Client/ClientType";
-import { Eminence } from "../../../../../lib/Lavenza/Bot/Eminence/Eminence";
-import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
+import { ClientType } from "../../../../../lib/Lavenza/Client/ClientType";
+import { Eminence } from "../../../../../lib/Lavenza/Eminence/Eminence";
+import { Resonance } from "../../../../../lib/Lavenza/Resonance/Resonance";
 import { Command } from "../Command";
 import { CommandCooldownManager } from "../CommandCooldownManager/CommandCooldownManager";
 

@@ -1,0 +1,111 @@
+#
+# Runtime Flow.
+#
+runtime:
+  genesis:
+    - { service: gestalt, priority: 5000 }
+    - { service: talent.catalogue, priority: 4000 }
+    - { service: bot.catalogue, priority: 3000 }
+    - { service: talent.manager, priority: 2000 }
+    - { service: plugin_seeker.manager, priority: 1000 }
+  synthesis:
+    - { service: talent.manager, priority: 5000 }
+    - { service: gestalt, priority: 4000 }
+    - { service: event_subscriber.manager, priority: 3000 }
+  statis:
+    - { service: bot.manager, priority: 5000 }
+    - { service: gestalt, priority: 4000 }
+    - { service: talent.manager, priority: 3000 }
+
+#
+# Service definitions.
+#
+services:
+  #
+  # Global Database Service.
+  # Should normally run first in all stages of the execution flow.
+  #
+  gestalt:
+    class: Gestalt/Gestalt
+    dependencies:
+      - talent.catalogue
+      - bot.catalogue
+
+  # Event Subscriber for the Database service.
+  gestalt.event_subscriber:
+    class: Gestalt/GestaltEventSubsriber
+    dependencies:
+      - gestalt
+    tags:
+      - 'event_subscriber'
+
+  #
+  # Loader Service service for Talents.
+  #
+  talent.loader:
+    class: Talent/TalentDirectoryLoader
+    dependencies: []
+
+  #
+  # Catalogue Service service for Talents.
+  #
+  talent.catalogue:
+    class: Talent/TalentCatalogue
+    dependencies:
+      - talent.loader
+
+  #
+  # Management Service for Talents.
+  #
+  talent.manager:
+    class: Talent/TalentManager
+    dependencies:
+      - talent.catalogue
+      - talent.loader
+      - bot.catalogue
+
+  #
+  # Loader Service service for Bots.
+  #
+  bot.loader:
+    class: Bot/BotDirectoryLoader
+    dependencies: []
+
+  #
+  # Catalogue Service for Bots.
+  #
+  bot.catalogue:
+    class: Bot/BotCatalogue
+    dependencies:
+      - bot.loader
+
+  #
+  # Management Service for Bots.
+  #
+  bot.manager:
+    class: Bot/BotManager
+    dependencies:
+      - bot.catalogue
+      - talent.catalogue
+
+  #
+  # Management service for Event Subscribers.
+  #
+  event_subscriber.manager:
+    class: Service/EventSubscriber/EventSubscriberManager
+    dependencies: []
+
+  #
+  # Management service for Plugin Seekers.
+  #
+  plugin_seeker.manager:
+    class: Service/PluginSeeker/PluginSeekerManager
+    dependencies: []
+
+  #
+  # Event Subscriber for the Resonance methodology.
+  resonance.event_subscriber:
+    class: Resonance/ResonanceEventSubscriber
+    dependencies: []
+    tags:
+      - 'event_subscriber'

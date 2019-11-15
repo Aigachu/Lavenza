@@ -5,9 +5,14 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Modules.
+import * as lodash from "lodash";
+
 // Imports.
 import { Sojiro } from "../../Confidant/Sojiro";
 import { Service } from "../Service";
+
+import { Library } from "./Library";
 
 /**
  * Provides a base class for Catalogues.
@@ -21,15 +26,18 @@ export abstract class Catalogue<T> extends Service {
    *
    * The repository is an array containing the full list of objects that the catalogue will store.
    */
-  protected repository: T[];
+  protected repository: T[] = [];
 
   /**
-   * Sections for this catalogue.
+   * Libraries for this catalogue.
    *
-   * This will store different 'sections' for this catalogue, adding the ability to organize objects into categories or
-   * sections.
+   * This will store different 'libraries' for this catalogue, adding the ability to organize objects into different
+   * spaces.
+   *
+   * A concrete example would be a FoodCatalogue. You store Food items in it. When you store Food items, you can tag
+   * it with different Libraries to store it in, such as 'fruits' if the Food you're storing is a Fruit.
    */
-  private sections: Map<string, T[]>;
+  protected libraries: Array<Library<T>>;
 
   /**
    * Retrieve a full list of all items, regardless of storage.
@@ -39,23 +47,34 @@ export abstract class Catalogue<T> extends Service {
   }
 
   /**
+   * Retrieve a subset of the catalogue given a unique library ID.
+   *
+   * @param id
+   *   The id of the library to retrieve.
+   */
+  public library(id: string): T[] {
+    return this.libraries.find((library: Library<T>) => library.id === id).objects || undefined;
+  }
+
+  /**
    * Retrieve one of the items with a provided predicate.
    *
    * @param predicate
    *   Function to use to filter the items we want to retrieve.
-   * @param section
-   *   The section to search in, if specified.
+   * @param library
+   *   The library to search in, if specified.
    */
-  public find(predicate: (item: T) => {}, section?: string): T {
-    // If the section is specified, we'd like to fetch only from the subset of objects that are within that section.
-    if (section) {
-      if (!this.sections.get(section)) { return; }
-      const objectsToRetrieveFrom = this.sections.get(section);
+  public find(predicate: (item: T) => {}, library?: string): T {
+    // If the library is specified, we'd like to fetch only from the subset of objects that are within that library.
+    if (library) {
+      if (!this.library(library)) {
+        return;
+      }
 
-      return objectsToRetrieveFrom.find(predicate);
+      return this.library(library).find(predicate);
     }
 
-    // If the repository is just an array, just return it.
+    // Otherwise, search in the full repository.
     return this.repository.find(predicate);
   }
 
@@ -64,20 +83,58 @@ export abstract class Catalogue<T> extends Service {
    *
    * @param predicate
    *   Function to use to filter the items we want to retrieve.
-   * @param section
-   *   The section to retrieve from, if specified.
+   * @param library
+   *   The library to retrieve from, if specified.
    */
-  public retrieve(predicate: (item: T) => {}, section?: string): T[] {
+  public retrieve(predicate: (item: T) => {}, library?: string): T[] {
     // If the section is specified, we'd like to fetch only from the subset of objects that are within that section.
-    if (section) {
-      if (!this.sections.get(section)) { return; }
-      const objectsToRetrieveFrom = this.sections.get(section);
+    if (library) {
+      if (!this.library(library)) {
+        return;
+      }
 
-      return objectsToRetrieveFrom.filter(predicate);
+      return this.library(library).filter(predicate);
     }
 
-    // If no section is specified, we simply filter through the repository.
+    // If no library is specified, we simply filter through the full repository.
     return this.repository.filter(predicate);
+  }
+
+  /**
+   * Add an element to a section in the catalogue.
+   *
+   * @param payload
+   *   The item(s) to add.
+   * @param library
+   *   Section to update if need be.
+   */
+  public async assign(payload: T | T[], library: string): Promise<void> {
+    // If the payload is not an array, we put it in one.
+    if (!(payload instanceof Array)) {
+      payload = [payload];
+    }
+
+    // We'll add the payload to the appropriate library.
+    let currentObjectList = this.library(library) || [];
+    currentObjectList = lodash.union([...currentObjectList, ...payload]);
+    this.libraries.push({id: library, objects: currentObjectList});
+  }
+
+  /**
+   * Remove an item from a section in the catalogue.
+   *
+   * @param item
+   *   Item to remove.
+   * @param library
+   *   Library to remove from.
+   */
+  public async unassign(item: T, library: string): Promise<void> {
+    // If the library doesn't exist, or is empty, we should just exit.
+    if (!this.library(library) || await Sojiro.isEmpty(this.library(library))) {
+      return;
+    }
+    const currentSectionList = this.library(library);
+    await Sojiro.removeFromArray(currentSectionList, item);
   }
 
   /**
@@ -85,48 +142,38 @@ export abstract class Catalogue<T> extends Service {
    *
    * @param payload
    *   The item(s) to add.
-   * @param section
-   *   Section to update if need be.
+   * @param library
+   *   Library to add items in.
    */
-  public async store(payload: T | T[], section?: string): Promise<void> {
+  public async store(payload: T | T[], library?: string): Promise<void> {
     // If the payload is not an array, we put it in one.
     if (!(payload instanceof Array)) {
       payload = [payload];
     }
 
     // First, we push the object into the repository.
-    this.repository = [...this.repository, ...payload];
+    this.repository = lodash.union([...this.repository, ...payload]);
 
     // If a section is specified, we'll add the payload to the appropriate section.
-    if (section) {
-      if (!this.sections.get(section)) { return; }
-      const currentSectionList = this.sections.get(section) || [];
-      this.sections.set(section, [...currentSectionList, ...payload]);
+    if (library) {
+      let currentObjectList = this.library(library) || [];
+      currentObjectList = lodash.union([...currentObjectList, ...payload]);
+      this.libraries.push({id: library, objects: currentObjectList});
     }
   }
 
   /**
-   * Remove an item from the repository.
+   * Remove an item from the catalogue.
    *
    * @param item
    *   Item to remove from the storage
-   * @param section
-   *   Section to remove from.
+   * @param library
+   *   Library to remove from.
    */
-  public async pop(item: T, section?: string): Promise<void> {
-    // If a section is specified, only remove the object from the section.
-    if (section) {
-      // If the section doesn't exists, we can't do anything.
-      if (!this.sections.get(section)) { return; }
-      const currentSectionList = this.sections.get(section);
-      await Sojiro.removeFromArray(currentSectionList, item);
-
-      return;
-    }
-
+  public async pop(item: T, library?: string): Promise<void> {
     // Remove the item from the repository itself and all sections.
     await Sojiro.removeFromArray(this.repository, item);
-    this.sections.forEach(async (sectionArray) => Sojiro.removeFromArray(sectionArray, item));
+    this.libraries.forEach(async (lib) => Sojiro.removeFromArray(lib.objects, item));
   }
 
 }

@@ -14,7 +14,7 @@ import { Loader } from "./Loader";
 /**
  * Provides an abstract class for Directory Loaders.
  *
- * Directory Loaders crawl a path and perform specific tasks on each Directory found in a path.
+ * Directory Loaders crawl a path and perform specific tasks on each directory found in a path.
  */
 export abstract class DirectoryLoader<T> extends Loader<T> {
 

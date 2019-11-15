@@ -18,7 +18,7 @@ export abstract class Loader<T> extends Service {
   /**
    * Crawl the provided root path and process items found in it.
    *
-   * For each directory, we'll run the process() function and return the results.
+   * For each item found, we'll run the process() function and return the results.
    *
    * Each loader must specify actions to undertake when loading a given path.
    *

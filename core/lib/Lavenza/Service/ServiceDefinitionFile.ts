@@ -5,7 +5,11 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+// Imports.
 import { AssociativeObject } from "../Types";
+
+import { RuntimeProcessId } from "./RuntimeProcessId";
+import { Service } from "./Service";
 
 /**
  * Provides an interface for Service Definition files.
@@ -16,6 +20,11 @@ export interface ServiceDefinitionFile {
    * Hold list of all service definitions.
    */
   services: AssociativeObject<ServiceDefinition>;
+
+  /**
+   * Hold list of all runtime steps divided into 4 levels.
+   */
+  runtime: RuntimeFlowDefinition;
 
 }
 
@@ -30,45 +39,72 @@ export interface ServiceDefinition {
   class: string;
 
   /**
-   * Priorities for this Service.
-   */
-  priority: string | number | ServicePriority;
-
-  /**
    * Dependencies on other services.
    */
   dependencies: string[];
 
   /**
-   * Primordial flag for the service.
+   * Tags for this service.
    */
-  primordial: boolean;
+  tags: string[];
 
 }
 
 /**
- * Provides an interface for Service Priority data.
+ * Provides a type for a Runtime Flow definition.
  */
-export interface ServicePriority  {
+export type RuntimeFlowDefinition = {
 
   /**
-   * Priority specific to genesis tasks.
+   * Each definition will be an array of objects containing a list of services that must run actions during the given
+   * process ID.
    */
-  genesis: string | number;
+  [key in RuntimeProcessId]: RuntimeTaskDefinition[];
+
+};
+
+/**
+ * Provides an interface for Runtime Service Definitions.
+ * These are configurations for a certain service's actions in the process where it is set.
+ */
+export interface RuntimeTaskDefinition {
 
   /**
-   * Priority specific to build tasks.
+   * Stores the ID of the service.
    */
-  build: string | number;
+  service: string;
 
   /**
-   * Priority specific to arrangement tasks.
+   * Priority of this execution service within the established process.
    */
-  arrange: string | number;
+  priority: number;
 
   /**
-   * Priority specific to run tasks.
+   * Class method to run for this task.
+   * We assume that this class method exists in the service, and enter a string here.
    */
-  run: string | number;
+  method: string;
+
+}
+
+/**
+ * Export an interface for runtime tasks.
+ */
+export interface RuntimeTask {
+
+  /**
+   * The service that will execute the task.
+   */
+  service: Service;
+
+  /**
+   * The priority of this task.
+   */
+  priority: number;
+
+  /**
+   * The class method to run for the task.
+   */
+  method: string;
 
 }

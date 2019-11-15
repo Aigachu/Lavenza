@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 // Modules.
-const arp = require('app-root-path');
-const lavenza = require(`${arp}`);
+const path = require('path');
+const root = path.resolve(__dirname, '../../');
+const lavenza = require(`${root}`);
 const minimist = require('minimist');
 const ncp = require('ncp');
 const colors = require('colors');
@@ -286,7 +287,7 @@ async function provision(args, bypassIntro = false) {
 
       // If they agree to generate the files, we go through with this.
       await fs.mkdirSync(lavenzaroot, {recursive: true});
-      await copyFilesAsync(`${arp.path}/templates/installation`, lavenzaroot);
+      await copyFilesAsync(`${root}/templates/installation`, lavenzaroot);
       await message(`Lavenza's files were initialized at "${lavenzaroot}".`, "success");
 
       // Now we'll ask if they'd like to generate their bot as well.
@@ -416,7 +417,7 @@ async function provisionSetup() {
   // Create the Lavenzafile and remove any existing one.
   if (await fileExists(`${process.cwd()}/.lavenza.yml`))
     await fs.unlinkSync(`${process.cwd()}/.lavenza.yml`);
-  await copyFilesAsync(`${arp.path}/templates/lavenzafile/.lavenza.yml`, `${process.cwd()}/.lavenza.yml`);
+  await copyFilesAsync(`${root}/templates/lavenzafile/.lavenza.yml`, `${process.cwd()}/.lavenza.yml`);
 
   // Search & Replace appropriate sections in the LavenzaFile template.
   await replaceInFileAsync(`${process.cwd()}/.lavenza.yml`, '#--{{root}}', `root: ${relativeRoot}`);
@@ -491,7 +492,7 @@ async function provisionSetup() {
 
   // Install the files in the provided directory only if it's empty.
   if (await directoryIsEmpty(lavenzaroot)) {
-    await copyFilesAsync(`${arp.path}/templates/installation`, lavenzaroot);
+    await copyFilesAsync(`${root}/templates/installation`, lavenzaroot);
     await message(`Lavenza's files were initialized at "${lavenzaroot}"!`, "success");
   }
 
@@ -642,7 +643,7 @@ async function generateBot(botMachineName = undefined) {
   }
 
   // With this name, we'll simply create a folder with the default template at the repository path.
-  await copyFilesAsync(`${arp.path}/templates/bot`, await getBotPath(botMachineName));
+  await copyFilesAsync(`${root}/templates/bot`, await getBotPath(botMachineName));
   await message(`Files for the "${botMachineName}" bot have been created at "${await getBotPath(botMachineName)}"!`, "success");
 
   // Space them shits out.
@@ -786,7 +787,7 @@ async function discordClientSetupForBot(bot) {
   } else {
     // If the environment data isn't set, this clearly means the .env file doesn't exist. So we'll create it here.
     message(`.env file does not exist for ${bot}...Creating it now...`, "warning");
-    await copyFilesAsync(`${arp.path}/templates/bot/.env.example`, `${await getBotPath(bot)}/.env`);
+    await copyFilesAsync(`${root}/templates/bot/.env.example`, `${await getBotPath(bot)}/.env`);
     message(`Successfully created base .env file for ${bot}`, "success");
   }
 
@@ -797,7 +798,7 @@ async function discordClientSetupForBot(bot) {
   const botEnvPath = `${await getBotPath(bot)}/.env`;
 
   // Variable to store path to discord config file.
-  const discordConfigFilePath = `${await getBotPath(bot)}/discord.yml`;
+  const discordConfigFilePath = `${await getBotPath(bot)}/clients/discord.yml`;
 
   // Beginning message.
   message('We will prompt you for important information needed to connect to Discord with your bot!', "info");
@@ -883,7 +884,7 @@ async function discordClientSetupForBot(bot) {
   newline();
   message(`"${bot}" should be good to go for Discord connection!`, "success");
   message(`Please consult your bot's configuration file at "${await getBotPath(bot)}/config.yml" to make sure that Discord is enabled in the 'clients' section!`, "warning");
-  message(`Additionally, be sure to consult the "${await getBotPath(bot)}/discord.yml" file for additional configuration options for your bot.`, "warning");
+  message(`Additionally, be sure to consult the "${await getBotPath(bot)}/clients/discord.yml" file for additional configuration options for your bot.`, "warning");
   message(`Without this, your bot will likely not connect to Discord when you run Lavenza! So be sure to do it.`, "warning")
   message(`One more thing: Here is the URL you can use to add your Bot to Discord Servers: https://discordapp.com/api/oauth2/authorize?client_id=${clientId}&scope=bot&permissions=67488832`, "warning");
   message(`This concludes the Discord client setup! Good job!`, "success");
@@ -918,7 +919,7 @@ async function twitchClientSetupForBot(bot) {
   } else {
     // If the environment data isn't set, this clearly means the .env file doesn't exist. So we'll create it here.
     message(`.env file does not exist for ${bot}...Creating it now...`, "warning");
-    await copyFilesAsync(`${arp.path}/templates/bot/.env.example`, `${await getBotPath(bot)}/.env`);
+    await copyFilesAsync(`${root}/templates/bot/.env.example`, `${await getBotPath(bot)}/.env`);
     message(`Successfully created base .env file for ${bot}`, "success");
   }
 
@@ -929,7 +930,7 @@ async function twitchClientSetupForBot(bot) {
   const botEnvPath = `${await getBotPath(bot)}/.env`;
 
   // Variable to store path to discord config file.
-  const twitchConfigFilePath = `${await getBotPath(bot)}/twitch.yml`;
+  const twitchConfigFilePath = `${await getBotPath(bot)}/clients/twitch.yml`;
 
   // Beginning message.
   message('We will prompt you for important information needed to connect to Twitch with your bot!', "info");
@@ -1014,7 +1015,7 @@ async function twitchClientSetupForBot(bot) {
   newline();
   message(`Your bot ${bot} should be good to go for Twitch connection!`, "success");
   message(`Please consult your bot's configuration file at "${await getBotPath(bot)}/config.yml" to make sure that Twitch is enabled in the 'clients' section!`, "warning");
-  message(`Additionally, be sure to consult the "${await getBotPath(bot)}/twitch.yml" file for additional configuration options for your bot.`, "warning");
+  message(`Additionally, be sure to consult the "${await getBotPath(bot)}/clients/twitch.yml" file for additional configuration options for your bot.`, "warning");
   message(`Without this, your bot will likely not connect to Twitch when you run Lavenza! So be sure to do it.`, "warning");
   message(`This concludes the Twitch client setup! Good job!`, "success");
   newline();

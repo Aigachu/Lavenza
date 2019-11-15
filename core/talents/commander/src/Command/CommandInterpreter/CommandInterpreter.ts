@@ -7,13 +7,15 @@
 
 // Modules.
 import * as minimist from "minimist";
+import { Bot } from "../../../../../lib/Lavenza/Bot/Bot";
 
 // Imports.
 import { Morgana } from "../../../../../lib/Lavenza/Confidant/Morgana";
-import { Instruction } from "../../../../../lib/Lavenza/Bot/Resonance/Instruction";
-import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
-import { Command } from "../Command";
+import { Sojiro } from "../../../../../lib/Lavenza/Confidant/Sojiro";
+import { Resonance } from "../../../../../lib/Lavenza/Resonance/Resonance";
+import { Instruction } from "../../Instruction/Instruction";
 import { CommandCatalogue } from "../../Service/CommandCatalogue";
+import { Command } from "../Command";
 
 /**
  * Provides an Interpreter for Commands.
@@ -28,13 +30,9 @@ export class CommandInterpreter {
    * @param resonance
    *   The Resonance that will be interpreted.
    */
-  public static async interpret(resonance: Resonance): Promise<void> {
-    // Fetch an instruction if we can.
-    const instruction: Instruction = await CommandInterpreter.getInstruction(resonance);
-
-    // Set the instruction to the Resonance.
-    // If an instruction wasn't found, undefined will be set here, which shouldn't be a problem!
-    await resonance.setInstruction(instruction);
+  public static async interpret(resonance: Resonance): Promise<Instruction> {
+    // Return the instruction. If no instruction was found, we simply return undefined here.
+    return CommandInterpreter.getInstruction(resonance);
   }
 
   /**
@@ -122,6 +120,35 @@ export class CommandInterpreter {
       content: splitContent.slice(2)
         .join(" "),
     };
+  }
+
+  /**
+   * Get the command prefix from a resonance, after a couple of checks in the bot that heard the resonance.
+   *
+   * @param resonance
+   *   The Resonance we're taking a look at. We'll look at the information for the given bot to determine the prefix.
+   *
+   * @returns
+   *   Returns the command prefix we need to check for.
+   */
+  private async getCommandPrefix(resonance: Resonance): Promise<string> {
+    // Get the configuration.
+    const botConfig = await resonance.bot.config;
+
+    // Get bot's client configuration.
+    const botClientConfig = await resonance.bot.getClientConfig(resonance.client.type);
+
+    // Variable to store retrieved command prefix.
+    // Using the client, fetch appropriate command prefix configured in a client.
+    let commandprefix = await resonance.client.getCommandPrefix(resonance) || undefined;
+
+    // Reset it to undefined if it's empty.
+    if (Sojiro.isEmpty(commandprefix)) {
+      commandprefix = undefined;
+    }
+
+    // By default, return the following.
+    return commandprefix || botClientConfig.commandPrefix || botConfig.commandPrefix;
   }
 
 }

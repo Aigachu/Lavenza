@@ -7,7 +7,7 @@
 
 // Imports.
 import { BotConfigurations } from "../../../../../lib/Lavenza/Bot/BotConfigurations";
-import { BotClientConfig, ClientConfigurations, CommandClientConfig } from "../../../../../lib/Lavenza/Bot/Client/ClientConfigurations";
+import { BotClientConfig, ClientConfigurations, CommandClientConfig } from "../../../../../lib/Lavenza/Client/ClientConfigurations";
 import { CommandConfigurations, CommandParameterConfig } from "../CommandConfigurations";
 
 /**

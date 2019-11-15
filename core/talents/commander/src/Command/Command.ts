@@ -13,13 +13,13 @@ import { Akechi } from "../../../../lib/Lavenza/Confidant/Akechi";
 import { Igor } from "../../../../lib/Lavenza/Confidant/Igor";
 import { Morgana } from "../../../../lib/Lavenza/Confidant/Morgana";
 import { Sojiro } from "../../../../lib/Lavenza/Confidant/Sojiro";
-import { Gestalt } from "../../../../lib/Lavenza/Service/Gestalt/Gestalt";
+import { Gestalt } from "../../../gestalt/src/Service/Gestalt";
 import { Talent } from "../../../../lib/Lavenza/Talent/Talent";
 import { AbstractObject } from "../../../../lib/Lavenza/Types";
 import { Bot } from "../../../../lib/Lavenza/Bot/Bot";
-import { CommandClientConfig } from "../../../../lib/Lavenza/Bot/Client/ClientConfigurations";
-import { ClientType } from "../../../../lib/Lavenza/Bot/Client/ClientType";
-import { Resonance } from "../../../../lib/Lavenza/Bot/Resonance/Resonance";
+import { CommandClientConfig } from "../../../../lib/Lavenza/Client/ClientConfigurations";
+import { ClientType } from "../../../../lib/Lavenza/Client/ClientType";
+import { Resonance } from "../../../../lib/Lavenza/Resonance/Resonance";
 
 import { CommandConfigurations, CommandParameterConfig } from "./CommandConfigurations";
 

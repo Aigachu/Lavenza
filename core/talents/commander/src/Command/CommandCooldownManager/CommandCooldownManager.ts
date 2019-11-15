@@ -7,7 +7,7 @@
 
 // Imports.
 import { Sojiro } from "../../../../../lib/Lavenza/Confidant/Sojiro";
-import { Resonance } from "../../../../../lib/Lavenza/Bot/Resonance/Resonance";
+import { Resonance } from "../../../../../lib/Lavenza/Resonance/Resonance";
 import { CommandCooldownConfig } from "../CommandConfigurations";
 
 /**

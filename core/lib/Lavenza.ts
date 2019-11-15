@@ -13,11 +13,8 @@ import * as DotEnv from "dotenv";
 import { Command } from "../talents/commander/src/Command/Command";
 import { CommandClientHandler } from "../talents/commander/src/Command/CommandClientHandler";
 
-import { ClientType } from "./Lavenza/Bot/Client/ClientType";
-import { PromptException } from "./Lavenza/Bot/Prompt/Exception/PromptException";
-import { PromptExceptionType } from "./Lavenza/Bot/Prompt/Exception/PromptExceptionType";
-import { Resonance } from "./Lavenza/Bot/Resonance/Resonance";
-import { BotManager } from "./Lavenza/Bot/Service/BotManager";
+import { BotManager } from "./Lavenza/Bot/BotManager";
+import { ClientType } from "./Lavenza/Client/ClientType";
 import { Akechi } from "./Lavenza/Confidant/Akechi";
 import { Igor } from "./Lavenza/Confidant/Igor";
 import { Kawakami } from "./Lavenza/Confidant/Kawakami";
@@ -25,9 +22,21 @@ import { Morgana } from "./Lavenza/Confidant/Morgana";
 import { Sojiro } from "./Lavenza/Confidant/Sojiro";
 import { Yoshida } from "./Lavenza/Confidant/Yoshida";
 import { Core } from "./Lavenza/Core/Core";
-import { Gestalt } from "./Lavenza/Service/Gestalt/Gestalt";
-import { TalentManager } from "./Lavenza/Talent/Service/TalentManager";
+import { Gestalt } from "./Lavenza/Gestalt/Gestalt";
+import { PromptException } from "./Lavenza/Prompt/Exception/PromptException";
+import { PromptExceptionType } from "./Lavenza/Prompt/Exception/PromptExceptionType";
+import { Resonance } from "./Lavenza/Resonance/Resonance";
+import { Resonator } from "./Lavenza/Resonance/Resonator/Resonator";
+import { Catalogue } from "./Lavenza/Service/Catalogue/Catalogue";
+import { EventSubscriber } from "./Lavenza/Service/EventSubscriber/EventSubscriber";
+import { DirectoryLoader } from "./Lavenza/Service/Loader/DirectoryLoader";
+import { FileLoader } from "./Lavenza/Service/Loader/FileLoader";
+import { Loader } from "./Lavenza/Service/Loader/Loader";
+import { PluginSeeker } from "./Lavenza/Service/PluginSeeker/PluginSeeker";
+import { Service } from "./Lavenza/Service/Service";
+import { ServiceContainer } from "./Lavenza/Service/ServiceContainer";
 import { Talent } from "./Lavenza/Talent/Talent";
+import { TalentManager } from "./Lavenza/Talent/TalentManager";
 
 // Load Environment Variables from .env file at the root of the project.
 DotEnv.config();
@@ -75,9 +84,15 @@ module.exports = {
   TalentManager,
 
   // Services.
-  // Services are similar to Confidants, but are much more intricate.
-  // Shoutouts to Nier!
+  Catalogue,
+  DirectoryLoader,
+  EventSubscriber,
+  FileLoader,
   Gestalt,
+  Loader,
+  PluginSeeker,
+  Resonator,
+  ServiceContainer,
 
   // Classes & Models.
   // These are classes that are extended or used across the application. We import them here once.
@@ -86,6 +101,7 @@ module.exports = {
   CommandClientHandler,
   PromptException,
   Resonance,
+  Service,
   Talent,
 
   // Enums.

@@ -6,7 +6,7 @@
  */
 
 // Imports.
-import { Resonance } from "../../../../lib/Lavenza/Bot/Resonance/Resonance";
+import { Resonance } from "../../../../lib/Lavenza/Resonance/Resonance";
 
 import { Command } from "./Command";
 

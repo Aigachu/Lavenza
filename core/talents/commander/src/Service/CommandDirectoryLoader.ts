@@ -68,7 +68,7 @@ export class CommandDirectoryLoader extends DirectoryLoader<Command> {
 
       return;
     }
-    command = new command[config.class](id, config.key, commandDirectoryPath);
+    command = new command[path.basename(config.class, ".js")](id, config.key, commandDirectoryPath);
 
     // Now let's successfully register the command to the Talent.
     // Commands have build tasks too and are also singletons. We'll run them here.

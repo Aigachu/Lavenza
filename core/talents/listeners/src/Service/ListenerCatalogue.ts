@@ -6,28 +6,50 @@
  */
 
 // Imports.
+import { Bot } from "../../../../lib/Lavenza/Bot/Bot";
 import { Catalogue } from "../../../../lib/Lavenza/Service/Catalogue/Catalogue";
-import { ServiceContainer } from "../../../../lib/Lavenza/Service/ServiceContainer";
-import { Listener } from "../Listener";
-
-import { ListenerFileLoader } from "./ListenerFileLoader";
+import { Talent } from "../../../../lib/Lavenza/Talent/Talent";
+import { Listener } from "../Listener/Listener";
 
 /**
- * Provides a static class with helper functions pertaining to commands.
+ * Provides a Catalogue for Listeners.
  */
 export class ListenerCatalogue extends Catalogue<Listener> {
 
   /**
-   * From a given path, load commands into the repository via the CommandDirectoryLoader.
+   * Store an array of listeners in a library designed for a given bot.
    *
-   * @return
-   *   The commands loaded from the provided path.
+   * @param listeners
+   *   Array of listeners.
+   * @param entity
+   *   Entity to store the listeners for.
    */
-  public async loadListeners(pathToLoadFrom: string): Promise<Listener[]> {
-    const loadedListeners = await ServiceContainer.get(ListenerFileLoader).load(pathToLoadFrom);
-    this.repository = [...this.repository, ...loadedListeners];
+  public async storeListenersForEntity(listeners: Listener[], entity: Bot | Talent): Promise<void> {
+    // If a bot, we set the catalogue library id to the Bots's ID with a unique key.
+    if (entity instanceof Bot) {
+      await this.store(listeners, `bot::${entity.id}`);
+    }
+    // If a talent, we set the catalogue library id to the Talent's Machine Name with a unique key.
+    if (entity instanceof Talent) {
+      await this.store(listeners, `talent::${entity.machineName}`);
+    }
+  }
 
-    return loadedListeners;
+  /**
+   * Store an array of listeners in a library designed for a given bot.
+   *
+   * @param entity
+   *   Entity to get the listeners for.
+   */
+  public async getListenersForEntity(entity: Bot | Talent): Promise<Listener[]> {
+    // If a bot, we set the catalogue library id to the Bots's ID with a unique key.
+    if (entity instanceof Bot) {
+      return this.library(`bot::${entity.id}`);
+    }
+    // If a talent, we set the catalogue library id to the Talent's Machine Name with a unique key.
+    if (entity instanceof Talent) {
+      return this.library(`talent::${entity.machineName}`);
+    }
   }
 
 }

@@ -1,3 +1,9 @@
 # Ignore TS files.
 # We don't need to publish any typescript files.
 core/**/*.ts
+
+# Ignore .idea files.
+.idea
+
+# Ignore test files.
+tests/**

@@ -1,0 +1,43 @@
+#
+# Runtime Flow.
+#
+runtime:
+  synthesis:
+    - { service: listeners.manager, priority: 4500}
+
+# Services for the Listeners Talent.
+services:
+  # Management service for listeners.
+  listeners.manager:
+    class: src/Service/ListenerManager
+    dependencies:
+      - talent.catalogue
+      - bot.catalogue
+
+  # Loader service for listeners.
+  listeners.loader:
+    class: src/Service/ListenerFileLoader
+
+  # Catalogue service for listeners.
+  listeners.catalogue:
+    class: src/Service/ListenerCatalogue
+    dependencies:
+      - listener.loader
+
+  # Plugin Seeker service for listeners.
+  listeners.plugin_seeker:
+    class: src/Service/ListenerPluginSeeker
+    dependencies:
+      - listener.catalogue
+      - talent.catalogue
+      - bot.catalogue
+    tags:
+      - 'plugin_seeker'
+
+  # Resonator service for listeners.
+  listeners.resonator:
+    class: src/Service/ListenerResonator
+    dependencies:
+      - listener.catalogue
+    tags:
+      - 'resonator'

@@ -6,19 +6,16 @@
  */
 
 // Imports.
+import { Bot } from "../../../../lib/Lavenza/Bot/Bot";
+import { PluginSeeker } from "../../../../lib/Lavenza/Service/PluginSeeker/PluginSeeker";
 import { ServiceContainer } from "../../../../lib/Lavenza/Service/ServiceContainer";
-import { PluginSeeker } from "../../../../lib/Lavenza/Talent/Service/PluginSeeker";
 import { Talent } from "../../../../lib/Lavenza/Talent/Talent";
 import { Command } from "../Command/Command";
 
 import { CommandCatalogue } from "./CommandCatalogue";
 
 /**
- * Provides an abstract class for a Plugin Seeker.
- *
- * Talents can blend functionality between each other with Plugins. Plugin Seekers can be defined that will loop
- * through all loaded talents and attempt to find specific classes at a defined path. These classes will be loaded and
- * can be acted upon.
+ * Provides a plugin seeker for Commands.
  */
 export class CommandPluginSeeker extends PluginSeeker<Command> {
 
@@ -35,19 +32,18 @@ export class CommandPluginSeeker extends PluginSeeker<Command> {
   protected loader: string = "command.loader";
 
   /**
-   * After talents are loaded with the specified loader, you can customize what happens for each set of plugins loaded
-   * for a Talent.
+   * After plugins are loaded with the specified loader, you can customize what happens for each set of plugins.
    *
    * Each seeker must specify this function.
    *
    * @param plugins
    *   Loaded plugins, if any.
-   * @param talent
-   *   Talent these plugins were loaded for.
+   * @param entity
+   *   Entity these plugins were loaded for.
    */
-  protected async plug(plugins: Command[], talent: Talent): Promise<void> {
-    // Set these loaded commands up in the Command Catalogue with the sections map.
-    await ServiceContainer.get(CommandCatalogue).store(plugins, talent.machineName);
+  protected async plug(plugins: Command[], entity: Bot | Talent): Promise<void> {
+    // Set loaded commands up in the Listener Catalogue with the sections map.
+    await ServiceContainer.get(CommandCatalogue).storeCommandsForEntity(plugins, entity);
   }
 
 }

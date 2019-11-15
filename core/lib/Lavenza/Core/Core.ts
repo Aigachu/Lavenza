@@ -12,18 +12,19 @@ import * as prompts from "prompts";
 
 // Imports.
 import * as PackageInfo from "../../../../package.json";
-import { BotManager } from "../Bot/Service/BotManager";
+import { BotManager } from "../Bot/BotManager";
 import { Akechi } from "../Confidant/Akechi";
-import { Igor } from "../Confidant/Igor";
 import { Morgana } from "../Confidant/Morgana";
 import { Sojiro } from "../Confidant/Sojiro";
 import { Yoshida } from "../Confidant/Yoshida";
-import { Gestalt } from "../Service/Gestalt/Gestalt";
+import { Gestalt } from "../Gestalt/Gestalt";
+import { EventSubscriber } from "../Service/EventSubscriber/EventSubscriber";
+import { PluginSeeker } from "../Service/PluginSeeker/PluginSeeker";
+import { RuntimeProcessId } from "../Service/RuntimeProcessId";
 import { Service } from "../Service/Service";
 import { ServiceContainer } from "../Service/ServiceContainer";
 import { ServiceType } from "../Service/ServiceType";
-import { TalentCatalogue } from "../Talent/Service/TalentCatalogue";
-import { TalentManager } from "../Talent/Service/TalentManager";
+import { TalentManager } from "../Talent/TalentManager";
 
 import { CoreSettings } from "./CoreSettings";
 
@@ -84,6 +85,11 @@ export class Core {
    * Store Core settings of the application.
    */
   public static settings: CoreSettings;
+
+  /**
+   * Store the current status of the application.
+   */
+  public static status: CoreStatus = CoreStatus.sleep;
 
   /**
    * Stores Lavenza's version.
@@ -164,7 +170,7 @@ export class Core {
     }
 
     // Now we'll perform core service loading.
-    await ServiceContainer.load(path.resolve(__dirname, "../lavenza.services.yml"));
+    await ServiceContainer.load(path.resolve(__dirname, "../core.services.yml"));
 
     // Return the core so we can chain functions.
     return Core;
@@ -173,11 +179,15 @@ export class Core {
   /**
    * PERSONA!
    *
-   * This function starts the application. It runs all of the preparations, then runs the application afterwards.
+   * This function goes through the 4 main phases of execution in the application:
+   *  - Genesis: The creation of base core functionalities and classes. Very primordial setup steps are in this phase.
+   *  - Synthesis: Linking of various parts of the application.
+   *  - Statis: Stabilization and database connections and initializations.
+   *  - Symbiosis: The final stage where everything runs in harmony!
    *
-   * All tasks done in the PREPARATION phase are in the build() function.
+   * Services are used to manage all of these steps and isolate functionality intotheir own environments.
    *
-   * All tasks done in the EXECUTION phase are in the run() function.
+   * Refer to "core.services.yml" for a list of services declared in Lavenza, as well as their runtime order.
    */
   public static async summon(): Promise<void> {
     // If settings aren't set, it means that initialization was bypassed. We can't allow that.
@@ -185,33 +195,24 @@ export class Core {
       return;
     }
 
-    /*
-     * Fire genesis tasks.
-     *
-     * This is the primordial phase of Lavenza's execution.
-     */
-    await Core.genesis().catch(Igor.stop);
+    // Set the core status to "GENESIS" & perform genesis tasks for all services.
+    Core.status = CoreStatus.genesis;
+    await ServiceContainer.tasks(RuntimeProcessId.genesis);
 
-    /*
-     * Fire build tasks.
-     *
-     * This is the first phase of Lavenza's execution.
-     */
-    await Core.build().catch(Igor.stop);
+    // Set the core status to "SYNTHESIS" & perform synthesis tasks for all services
+    Core.status = CoreStatus.synthesis;
+    await ServiceContainer.tasks(RuntimeProcessId.synthesis);
 
-    /*
-    * Fire arrangements.
-    *
-    * This is the second phase of Lavenza's execution.
-    */
-    await Core.arrange().catch(Igor.stop);
+    // Set the core status to "STATIS" & perform statis tasks for all services.
+    Core.status = CoreStatus.statis;
+    await ServiceContainer.tasks(RuntimeProcessId.statis);
 
-    /*
-     * Start running.
-     *
-     * This is the final phase, concluding the execution of Lavenza.
-     */
-    await Core.run().catch(Igor.stop);
+    // Set the core status to "SYMBIOSYS" & perform symbiosis tasks for all services.
+    Core.status = CoreStatus.symbiosis;
+    await ServiceContainer.tasks(RuntimeProcessId.symbiosis);
+
+    // Set the core status to "RUNNING".
+    Core.status = CoreStatus.running;
 
     // Some more flavor text.
     await Morgana.success("Lavenza should now be running! Scroll up in the logs to see if any errors occurred and handle them as needed. :)");
@@ -226,10 +227,10 @@ export class Core {
   }
 
   /**
-   * Obtain Gestalt.
+   * Obtain Gestalt service.
    *
    * @return
-   *   The Gestalt service.
+   *   The Gestalt databse service.
    */
   public static gestalt(): Gestalt {
     return Core.service(Gestalt);
@@ -253,107 +254,6 @@ export class Core {
    */
   public static talentManager(): TalentManager {
     return Core.service(TalentManager);
-  }
-
-  /**
-   * Run all genesis tasks.
-   *
-   * This involves:
-   *  - Loading all defined PRIMORDIAL services.
-   *  - Loading talents and their defined services.
-   *  - Running all genesis tasks for these services.
-   *
-   *  The order in which Services run their build() functions is determined by the 'priority' key for each Service,
-   *  defined in the definition file.
-   */
-  private static async genesis(): Promise<void> {
-    // Some more flavor text.
-    await Morgana.status("BEGIN PHASE 0 - GENESIS");
-
-    // Now we'll perform genesis tasks for all primordial services after sorting them appropriately.
-    await ServiceContainer.services.sort(Service.prioritySortGenesis);
-    for (const service of ServiceContainer.services) {
-      if (service.primordial === true) {
-        await service.genesis();
-      }
-    }
-
-    // Some more flavor.
-    await Morgana.success("GENESIS COMPLETED SUCCESSFULLY");
-  }
-
-  /**
-   * Run all build tasks.
-   *
-   * This involves:
-   *  - Loading all defined services for the Core.
-   *  - Running build() function tasks for all loaded Services.
-   *
-   *  The order in which Services run their build() functions is determined by the 'priority' key for each Service,
-   *  defined in the definition file.
-   */
-  private static async build(): Promise<void> {
-    // Some more flavor text.
-    await Morgana.status("BEGIN PHASE 1 - BUILD");
-
-    // Now we'll perform build tasks for all services after sorting them appropriately.
-    await ServiceContainer.services.sort(Service.prioritySortGenesis);
-    for (const service of ServiceContainer.services) {
-      await service.build();
-    }
-
-    // Some more flavor.
-    await Morgana.success("BUILD COMPLETED SUCCESSFULLY");
-  }
-
-  /**
-   * Run all arrangement tasks.
-   *
-   * This involves:
-   *  - Loading all defined services for the Core.
-   *  - Running arrange() function tasks for all loaded Services.
-   *
-   * The order in which Services run their arrange() functions is determined by the 'priority' key for each Service,
-   * defined in the definition file.
-   */
-  private static async arrange(): Promise<void> {
-    // Some more flavor text.
-    await Morgana.status("BEGIN PHASE 2 - ARRANGEMENTS");
-
-    // Now we'll perform arrangement tasks for all services after sorting them appropriately.
-    await ServiceContainer.services.sort(Service.prioritySortGenesis);
-    for (const service of ServiceContainer.services) {
-      await console.log(`Running arrangement tasks for Service: ${service.id}.`);
-      await service.arrange();
-    }
-
-    process.exit(1);
-
-    // Some more flavor.
-    await Morgana.success("ARRANGEMENTS COMPLETED SUCCESSFULLY");
-  }
-
-  /**
-   * Run all execution tasks.
-   *
-   * This involves:
-   *  - Authenticating all bots.
-   *
-   * The order in which Services run their run() functions is determined by the 'priority' key for each Service,
-   * defined in the definition file.
-   */
-  private static async run(): Promise<void> {
-    // Some more flavor text.
-    await Morgana.status("BEGIN FINAL PHASE - EXECUTION");
-
-    // Now we'll perform execution tasks for all services after sorting them appropriately.
-    await ServiceContainer.services.sort(Service.prioritySortGenesis);
-    for (const service of ServiceContainer.services) {
-      await console.log(`Running execution tasks for Service: ${service.id}.`);
-      await service.run();
-    }
-
-    process.exit(1);
   }
 
   /**

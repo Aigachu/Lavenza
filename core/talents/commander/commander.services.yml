@@ -1,0 +1,35 @@
+#
+# Runtime Flow.
+#
+runtime:
+  synthesis:
+    - { service: commander.manager, priority: 4400}
+
+# Services for the Commander Talent.
+services:
+  # Management service for commands.
+  commander.manager:
+    class: src/Service/CommandManager
+    dependencies:
+      - talent.catalogue
+      - bot.catalogue
+
+  # Loader service for commands.
+  command.loader:
+    class: src/Service/CommandDirectoryLoader
+
+  # Catalogue service for commands.
+  command.catalogue:
+    class: src/Service/CommandCatalogue
+    dependencies:
+      - command.loader
+
+  # Plugin Seeker service for commands.
+  command.plugin_seeker:
+    class: src/Service/CommandPluginSeeker
+    dependencies:
+      - command.catalogue
+      - talent.catalogue
+      - bot.catalogue
+    tags:
+      - 'plugin_seeker'

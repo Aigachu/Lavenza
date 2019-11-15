@@ -11,11 +11,10 @@ import * as path from "path";
 // Imports.
 import { Bot } from "../Bot/Bot";
 import { Akechi } from "../Confidant/Akechi";
-import { Core } from "../Core/Core";
+import { ServiceContainer } from "../Service/ServiceContainer";
 import { AssociativeObject } from "../Types";
 
 import { TalentConfigurations } from "./TalentConfigurations";
-import { ServiceContainer } from "../Service/ServiceContainer";
 
 /**
  * Provides a base class for 'Talents'.
@@ -59,9 +58,9 @@ export class Talent {
   public machineName: string;
 
   /**
-   * Perform build tasks.
+   * Perform genesis tasks.
    *
-   * Each talent will call this function once to set their properties.
+   * Each talent will call this function once to set their properties in the genesis phase of the application.
    *
    * @param config
    *   The configuration used to build the Talent. Provided from a 'config.yml' file found in the Talent's folder.
@@ -71,29 +70,6 @@ export class Talent {
     this.machineName = path.basename(config.directory); // Here we get the name of the directory and set it as the ID.
     this.config = config;
     this.directory = config.directory;
-
-    // Each talent can expose services of its own. We'll load them here.
-    await this.loadTalentServices();
-  }
-
-  // tslint:disable-next-line:comment-format
-  // noinspection JSUnusedGlobalSymbols
-  /**
-   * Get the active configuration from the database for this Talent, in the context of a Bot.
-   *
-   * Bots can override talent configurations for themselves. As a result, in the database, we must store configurations
-   * specific to this talent in the bot's database table.
-   *
-   * @param bot
-   *   The bot context for the configuration we want to fetch. Each bot can have different configuration overrides
-   *   for talents.
-   *
-   * @returns
-   *   The active database configuration for the talent configuration, specific to a given Bot.
-   */
-  public async getActiveConfigForBot(bot: Bot): Promise<TalentConfigurations> {
-    // Await Gestalt's API call to get the configuration from the storage.
-    return await Core.gestalt().get(`/bots/${bot.id}/talents/${this.machineName}/config`) as TalentConfigurations;
   }
 
   /**
@@ -112,14 +88,14 @@ export class Talent {
   /**
    * Load services that may be defined in this Talent.
    */
-  private async loadTalentServices(): Promise<void> {
+  public async loadTalentServices(): Promise<void> {
     // Check if a services.yml file exists in this talent.
-    if (!await Akechi.fileExists(`${this.directory}/services.yml`)) {
+    if (!await Akechi.fileExists(`${this.directory}/${this.machineName}.services.yml`)) {
       return;
     }
 
     // Otherwise, use the ServiceContainer to load the specified services.
-    await ServiceContainer.load(`${this.directory}/services.yml`);
+    await ServiceContainer.load(`${this.directory}/${this.machineName}.services.yml`);
   }
 
 }

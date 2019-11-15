@@ -40,7 +40,7 @@ export abstract class FileLoader<T> extends Loader<T> {
     let files: string[] = await Akechi.getFilesFrom(root);
 
     // Filter the obtained list to exclude files that are not of the type specified.
-    files = files.filter((listenerPath) => !listenerPath.endsWith(this.fileType));
+    files = files.filter((listenerPath) => listenerPath.endsWith(this.fileType));
 
     // We'll throw an error for this function if the 'Listeners' directory doesn't exist or is empty.
     // This error should be caught and handled above.

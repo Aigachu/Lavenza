@@ -10,9 +10,8 @@ import * as path from "path";
 
 // Imports.
 import { Morgana } from "../../../../lib/Lavenza/Confidant/Morgana";
-import { Sojiro } from "../../../../lib/Lavenza/Confidant/Sojiro";
 import { FileLoader } from "../../../../lib/Lavenza/Service/Loader/FileLoader";
-import { Listener } from "../Listener";
+import { Listener } from "../Listener/Listener";
 
 /**
  * Provides an abstract class for special services that are used to discover bonds between Talents.
@@ -39,11 +38,8 @@ export class ListenerFileLoader extends FileLoader<Listener> {
     listener = new listener[path.basename(listenerFilePath, ".js")]();
 
     // If the require fails or the result is empty, we stop.
-    if (Sojiro.isEmpty(listener)) {
-      await Morgana.warn(
-        "A Listener class could not be loaded: {{listener}}.",
-        {listener: listenerFilePath},
-      );
+    if (!listener) {
+      await Morgana.warn(`A Listener class could not be loaded: ${listenerFilePath}.`);
 
       return;
     }

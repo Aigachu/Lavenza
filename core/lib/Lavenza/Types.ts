@@ -6,8 +6,8 @@
  */
 
 // Imports.
-import { ClientType } from "./Bot/Client/ClientType";
-import { ClientUser } from "./Bot/Client/ClientUser";
+import { ClientType } from "./Client/ClientType";
+import { ClientUser } from "./Client/ClientUser";
 
 /**
  * Declare an interface for a basic associative object.
