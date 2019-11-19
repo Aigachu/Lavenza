@@ -45,7 +45,7 @@ export class Morgana {
     // Setting 'any' since we're using the 'colors' module here but TS can't tell.
     // tslint:disable-next-line:no-any
     let output: any = await Yoshida.translate(message, replacers, locale);
-    output = `Lavenza: ${output}`;
+    output = `${output}`;
 
     // Depending on the type, we send different types of outputs.
     switch (type) {
@@ -74,6 +74,13 @@ export class Morgana {
         break;
       }
 
+      // Wonderful messages.
+      case "wonderful": {
+        console.log(output.silly);
+        break;
+      }
+
+
       // By default, do a regular log.
       default: {
         console.log(output);
@@ -97,6 +104,14 @@ export class Morgana {
    */
   public static async status(message: string, replacers: {} = undefined): Promise<void>  {
     await Morgana.log(message, replacers, "status");
+  }
+
+  /**
+   * Shortcut function to set a wonderful message.
+   * @inheritDoc
+   */
+  public static async wonderful(message: string, replacers: {} = undefined): Promise<void>  {
+    await Morgana.log(message, replacers, "wonderful");
   }
 
   /**

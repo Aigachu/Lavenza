@@ -29,7 +29,7 @@ export class ListenerPluginSeeker extends PluginSeeker<Listener> {
    *
    * This loader can be a FileLoader, DirectoryLoader or a custom defined loader that extends the Loader class.
    */
-  protected loader: string = "listener.listener.loaderloader";
+  protected loader: string = "listeners.loader";
 
   /**
    * After plugins are loaded with the specified loader, you can customize what happens for each set of plugins.

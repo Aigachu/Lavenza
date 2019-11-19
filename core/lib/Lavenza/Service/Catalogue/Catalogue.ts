@@ -12,8 +12,6 @@ import * as lodash from "lodash";
 import { Sojiro } from "../../Confidant/Sojiro";
 import { Service } from "../Service";
 
-import { Library } from "./Library";
-
 /**
  * Provides a base class for Catalogues.
  *
@@ -37,7 +35,7 @@ export abstract class Catalogue<T> extends Service {
    * A concrete example would be a FoodCatalogue. You store Food items in it. When you store Food items, you can tag
    * it with different Libraries to store it in, such as 'fruits' if the Food you're storing is a Fruit.
    */
-  protected libraries: Array<Library<T>>;
+  protected libraries: Map<string, T[]> = new Map();
 
   /**
    * Retrieve a full list of all items, regardless of storage.
@@ -47,13 +45,17 @@ export abstract class Catalogue<T> extends Service {
   }
 
   /**
-   * Retrieve a subset of the catalogue given a unique library ID.
+   * Retrieve a library of the catalogue given a unique library ID.
    *
    * @param id
    *   The id of the library to retrieve.
    */
   public library(id: string): T[] {
-    return this.libraries.find((library: Library<T>) => library.id === id).objects || undefined;
+    if (!this.libraries.get(id)) {
+      return [];
+    }
+
+    return this.libraries.get(id);
   }
 
   /**
@@ -114,10 +116,17 @@ export abstract class Catalogue<T> extends Service {
       payload = [payload];
     }
 
+    // First, we push the object into the repository.
+    this.repository = [...this.repository, ...payload];
+
+    // Unique values.
+    this.repository = lodash.uniq(this.repository);
+
     // We'll add the payload to the appropriate library.
-    let currentObjectList = this.library(library) || [];
-    currentObjectList = lodash.union([...currentObjectList, ...payload]);
-    this.libraries.push({id: library, objects: currentObjectList});
+    const libObjects = this.libraries.get(library) || [];
+    let objects = [...libObjects, ...payload];
+    objects = lodash.uniq(objects);
+    this.libraries.set(library, objects);
   }
 
   /**
@@ -133,8 +142,8 @@ export abstract class Catalogue<T> extends Service {
     if (!this.library(library) || await Sojiro.isEmpty(this.library(library))) {
       return;
     }
-    const currentSectionList = this.library(library);
-    await Sojiro.removeFromArray(currentSectionList, item);
+    const currentObjectList = this.library(library);
+    await Sojiro.removeFromArray(currentObjectList, item);
   }
 
   /**
@@ -152,13 +161,17 @@ export abstract class Catalogue<T> extends Service {
     }
 
     // First, we push the object into the repository.
-    this.repository = lodash.union([...this.repository, ...payload]);
+    this.repository = [...this.repository, ...payload];
 
-    // If a section is specified, we'll add the payload to the appropriate section.
+    // Unique values.
+    this.repository = lodash.uniq(this.repository);
+
+    // If a library is specified, we'll add the payload to the appropriate one.
     if (library) {
-      let currentObjectList = this.library(library) || [];
-      currentObjectList = lodash.union([...currentObjectList, ...payload]);
-      this.libraries.push({id: library, objects: currentObjectList});
+      const libObjects = this.libraries.get(library) || [];
+      let objects = [...libObjects, ...payload];
+      objects = lodash.uniq(objects);
+      this.libraries.set(library, objects);
     }
   }
 
@@ -173,7 +186,7 @@ export abstract class Catalogue<T> extends Service {
   public async pop(item: T, library?: string): Promise<void> {
     // Remove the item from the repository itself and all sections.
     await Sojiro.removeFromArray(this.repository, item);
-    this.libraries.forEach(async (lib) => Sojiro.removeFromArray(lib.objects, item));
+    this.libraries.forEach(async (lib) => Sojiro.removeFromArray(lib, item));
   }
 
 }

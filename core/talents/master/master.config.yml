@@ -12,7 +12,8 @@ class: 'Master'
 
 # Set dependencies for this talent.
 # This talent will not be enabled if any of its dependencies aren't enabled.
-dependencies: []
+dependencies:
+  - commander
 
 # Determine which clients this talent should be enabled in.
 # If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.

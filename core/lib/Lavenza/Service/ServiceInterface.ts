@@ -37,6 +37,16 @@ export interface ServiceInterface {
   talent?: string;
 
   /**
+   * Build the service.
+   *
+   * Since constructors can't be async, and we may want to do async tasks to build parts of a service, Services can
+   * implement an asynchronous build function.
+   *
+   * This can be used to initialize some class properties we may want.
+   */
+  build(): Promise<void>;
+
+  /**
    * Perform genesis tasks to prepare a service during the primordial stages of runtime.
    *
    * Genesis goes through the very first initializations of the application.

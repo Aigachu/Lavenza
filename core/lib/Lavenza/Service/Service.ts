@@ -65,4 +65,13 @@ export abstract class Service implements ServiceInterface {
     this.talent = talent;
   }
 
+  /**
+   * Default build tasks for services.
+   *
+   * @inheritDoc
+   */
+  public async build(): Promise<void> {
+    // Do nothing by default. Each service can implement its own build tasks.
+  }
+
 }

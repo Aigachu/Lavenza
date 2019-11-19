@@ -17,15 +17,12 @@ import { Akechi } from "../Confidant/Akechi";
 import { Morgana } from "../Confidant/Morgana";
 import { Sojiro } from "../Confidant/Sojiro";
 import { Prompt } from "../Prompt/Prompt";
-import { ServiceContainer } from "../Service/ServiceContainer";
-import { TalentCatalogue } from "../Talent/TalentCatalogue";
 import { AssociativeObject, Joker } from "../Types";
 
 import {
   BotConfigurations,
 } from "./BotConfigurations";
 import { BotEnvironmentVariables } from "./BotEnvironmentVariables";
-
 
 /**
  * Provides a class for Bots.
@@ -192,7 +189,7 @@ export class Bot {
    * @returns
    *   The requested client configuration from the base files.
    */
-  public async getClientConfig(clientType: ClientType): Promise<BotClientConfig> {
+  public async getClientConfig(clientType: ClientType | string): Promise<BotClientConfig> {
     // Determine path to client configuration.
     const pathToClientConfig = `${this.directory}/clients/${clientType}.yml`;
 
@@ -254,7 +251,7 @@ export class Bot {
   private async setJoker(): Promise<void> {
     // Await processing of all clients.
     for (const [key, client] of Object.entries(this.clients)) {
-      const config = await this.getClientConfig(ClientType[key]);
+      const config = await this.getClientConfig(key);
       this.joker[key] = await client.getUser(config.joker);
     }
   }

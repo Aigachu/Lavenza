@@ -11,9 +11,11 @@ import * as path from "path";
 // Imports.
 import { Bot } from "../Bot/Bot";
 import { Akechi } from "../Confidant/Akechi";
+import { Igor } from "../Confidant/Igor";
 import { ServiceContainer } from "../Service/ServiceContainer";
 import { AssociativeObject } from "../Types";
 
+import { TalentCatalogue } from "./TalentCatalogue";
 import { TalentConfigurations } from "./TalentConfigurations";
 
 /**
@@ -58,6 +60,11 @@ export class Talent {
   public machineName: string;
 
   /**
+   * Flag to mark a talent as loaded.
+   */
+  public loaded: boolean = false;
+
+  /**
    * Perform genesis tasks.
    *
    * Each talent will call this function once to set their properties in the genesis phase of the application.
@@ -86,9 +93,32 @@ export class Talent {
   }
 
   /**
-   * Load services that may be defined in this Talent.
+   * Load this talent.
+   *
+   * Loading a talent consists of checking if any dependencies exist and loading any dependent talents as well.
+   *
+   * If all goes well, services for all talents will be loaded.
    */
-  public async loadTalentServices(): Promise<void> {
+  public async load(): Promise<void> {
+    // If this talent has already been loaded, we can exit.
+    if (this.loaded) {
+      return;
+    }
+
+    // First, we do dependency checks.
+    for (const dependency of this.config.dependencies) {
+      // Attempt to load the dependency from the catalogue.
+      const dependencyTalent = ServiceContainer.get(TalentCatalogue).getTalent(dependency);
+
+      // Check if the Talent exists, and exit with an error it if doesn't.
+      if (!dependencyTalent) {
+        await Igor.throw(`The "${this.machineName}" talent has the "${dependencyTalent.machineName}" talent set as a dependency, but this dependency doesn't exist. Please add this talent, or remove it from the talents specified in the bot.`);
+      }
+
+      // Otherwise, we load the dependency talent as well.
+      await dependencyTalent.load();
+    }
+
     // Check if a services.yml file exists in this talent.
     if (!await Akechi.fileExists(`${this.directory}/${this.machineName}.services.yml`)) {
       return;
@@ -96,6 +126,9 @@ export class Talent {
 
     // Otherwise, use the ServiceContainer to load the specified services.
     await ServiceContainer.load(`${this.directory}/${this.machineName}.services.yml`);
+
+    // Mark this talent as loaded.
+    this.loaded = true;
   }
 
 }

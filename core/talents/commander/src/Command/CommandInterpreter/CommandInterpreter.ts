@@ -7,14 +7,15 @@
 
 // Modules.
 import * as minimist from "minimist";
-import { Bot } from "../../../../../lib/Lavenza/Bot/Bot";
 
 // Imports.
 import { Morgana } from "../../../../../lib/Lavenza/Confidant/Morgana";
 import { Sojiro } from "../../../../../lib/Lavenza/Confidant/Sojiro";
 import { Resonance } from "../../../../../lib/Lavenza/Resonance/Resonance";
+import { ServiceContainer } from "../../../../../lib/Lavenza/Service/ServiceContainer";
 import { Instruction } from "../../Instruction/Instruction";
 import { CommandCatalogue } from "../../Service/CommandCatalogue";
+import { CommandComposer } from "../../Service/CommandComposer";
 import { Command } from "../Command";
 
 /**
@@ -22,7 +23,7 @@ import { Command } from "../Command";
  *
  * This class will determine if a command has been heard by the Bot. It takes a resonance and analyzes it accordingly.
  */
-export class CommandInterpreter {
+export abstract class CommandInterpreter {
 
   /**
    * Interpret a Resonance, attempting to find a command in the raw content.
@@ -30,9 +31,9 @@ export class CommandInterpreter {
    * @param resonance
    *   The Resonance that will be interpreted.
    */
-  public static async interpret(resonance: Resonance): Promise<Instruction> {
+  public async interpret(resonance: Resonance): Promise<Instruction> {
     // Return the instruction. If no instruction was found, we simply return undefined here.
-    return CommandInterpreter.getInstruction(resonance);
+    return this.getInstruction(resonance);
   }
 
   /**
@@ -46,10 +47,9 @@ export class CommandInterpreter {
    * @returns
    *   Returns an Instruction will all relevant information about the command in it.
    */
-  private static async getInstruction(resonance: Resonance): Promise<Instruction> {
+  public async getInstruction(resonance: Resonance): Promise<Instruction> {
     // Initialize some variables.
     const content = resonance.content;
-    const bot = resonance.bot;
     const client = resonance.client;
 
     // Split content with spaces.
@@ -58,7 +58,7 @@ export class CommandInterpreter {
 
     // Get command prefix.
     // If there is a command prefix override for this client, we will set it. If not, we grab the default.
-    const cprefix = await bot.getCommandPrefix(resonance);
+    const cprefix = await this.getCommandPrefix(resonance);
 
     // If the content doesn't start with the command prefix or the bot tag, it's not a command.
     // @todo - In Discord, we want to be able to tag the bot.
@@ -81,18 +81,12 @@ export class CommandInterpreter {
     }
 
     // Attempt to fetch the command from the Command Catalogue.
-    const command = CommandCatalogue.commands.find((cmd: Command) => cmd.key === splitContent[1].toLowerCase() || cmd.aliases.includes(splitContent[1].toLowerCase()));
+    const botCommands = await ServiceContainer.get(CommandCatalogue).getCommandsForEntity(resonance.bot);
+    const command = botCommands.find((cmd: Command) => cmd.key === splitContent[1].toLowerCase() || cmd.aliases.includes(splitContent[1].toLowerCase()));
 
     // If the command doesn't exist, we'll stop here.
     if (!command) {
       await Morgana.warn("No command found in message...");
-
-      return undefined;
-    }
-
-    // If the command isn't linked to this bot, we'll stop here.
-    if (!resonance.bot.commands.includes(command.id)) {
-      await Morgana.warn("Command found, but not linked to this bot...");
 
       return undefined;
     }
@@ -110,16 +104,17 @@ export class CommandInterpreter {
     const args = minimist(splitContent.slice(2));
 
     // Return our crafted Order.
-    return {
-      arguments: args,
+    return new Instruction(
+      resonance,
       command,
-      config: {
-        base: await command.getActiveConfigForBot(resonance.bot),
-        client: await command.getActiveClientConfig(resonance.client.type, resonance.bot),
+      cprefix,
+      {
+        base: await ServiceContainer.get(CommandComposer).getActiveCommandConfigForBot(command, resonance.bot),
+        client: await ServiceContainer.get(CommandComposer).getActiveCommandClientConfigForBot(command, resonance.client.type, resonance.bot),
       },
-      content: splitContent.slice(2)
-        .join(" "),
-    };
+      args,
+      splitContent.slice(2).join(" "),
+    );
   }
 
   /**
@@ -131,7 +126,7 @@ export class CommandInterpreter {
    * @returns
    *   Returns the command prefix we need to check for.
    */
-  private async getCommandPrefix(resonance: Resonance): Promise<string> {
+  public async getCommandPrefix(resonance: Resonance): Promise<string> {
     // Get the configuration.
     const botConfig = await resonance.bot.config;
 
@@ -140,15 +135,32 @@ export class CommandInterpreter {
 
     // Variable to store retrieved command prefix.
     // Using the client, fetch appropriate command prefix configured in a client.
-    let commandprefix = await resonance.client.getCommandPrefix(resonance) || undefined;
+    let clientCommandprefix = await this.getCommandPrefixForClient(resonance) || undefined;
 
     // Reset it to undefined if it's empty.
-    if (Sojiro.isEmpty(commandprefix)) {
-      commandprefix = undefined;
+    // I kind of forgot why I did this. LOL.
+    if (Sojiro.isEmpty(clientCommandprefix)) {
+      clientCommandprefix = undefined;
     }
 
     // By default, return the following.
-    return commandprefix || botClientConfig.commandPrefix || botConfig.commandPrefix;
+    return clientCommandprefix || botClientConfig.commandPrefix || botConfig.commandPrefix;
   }
 
+  /**
+   * Get the command prefix for a specific client from a resonance.
+   *
+   * Each command interpreter for a specific client must implement its own way to find this, as configurations may
+   * differ.
+   *
+   * @param resonance
+   *   The Resonance we're taking a look at. We'll look at the information for the given bot to determine the prefix.
+   *
+   * @returns
+   *   Returns the command prefix we need to check for.
+   */
+  public abstract async getCommandPrefixForClient(resonance: Resonance): Promise<string>;
+
 }
+
+

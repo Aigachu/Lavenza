@@ -29,7 +29,7 @@ export class CommandPluginSeeker extends PluginSeeker<Command> {
    *
    * This loader can be a FileLoader, DirectoryLoader or a custom defined loader that extends the Loader class.
    */
-  protected loader: string = "command.loader";
+  protected loader: string = "commander.loader";
 
   /**
    * After plugins are loaded with the specified loader, you can customize what happens for each set of plugins.

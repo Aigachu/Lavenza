@@ -17,3 +17,5 @@ enum CoreStatus {
   running = "running",
   maintenance = "maintenance",
 }
+
+export { CoreStatus };

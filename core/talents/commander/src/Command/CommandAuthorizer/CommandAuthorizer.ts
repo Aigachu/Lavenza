@@ -6,13 +6,17 @@
  */
 
 // Imports.
+import { Bot } from "../../../../../lib/Lavenza/Bot/Bot";
+import { ClientType } from "../../../../../lib/Lavenza/Client/ClientType";
 import { Igor } from "../../../../../lib/Lavenza/Confidant/Igor";
 import { Morgana } from "../../../../../lib/Lavenza/Confidant/Morgana";
 import { Sojiro } from "../../../../../lib/Lavenza/Confidant/Sojiro";
-import { Bot } from "../../../../../lib/Lavenza/Bot/Bot";
-import { ClientType } from "../../../../../lib/Lavenza/Client/ClientType";
 import { Eminence } from "../../../../../lib/Lavenza/Eminence/Eminence";
+import { GestaltComposer } from "../../../../../lib/Lavenza/Gestalt/GestaltComposer";
 import { Resonance } from "../../../../../lib/Lavenza/Resonance/Resonance";
+import { ServiceContainer } from "../../../../../lib/Lavenza/Service/ServiceContainer";
+import { Instruction } from "../../Instruction/Instruction";
+import { CommandComposer } from "../../Service/CommandComposer";
 import { Command } from "../Command";
 import { CommandCooldownManager } from "../CommandCooldownManager/CommandCooldownManager";
 
@@ -29,6 +33,11 @@ export abstract class CommandAuthorizer {
    * The Resonance containing the command that was heard.
    */
   protected resonance: Resonance;
+
+  /**
+   * The Instruction built from the resonance.
+   */
+  protected instruction: Instruction;
 
   /**
    * The Bot the command was invoked from.
@@ -68,13 +77,14 @@ export abstract class CommandAuthorizer {
    *
    * @param command
    *   The command that was found in the Resonance.
-   * @param resonance
-   *   The resonance that we are trying to locate a command in.
+   * @param instruction
+   *   The instruction that we are trying to authorize a command for.
    */
-  protected constructor(command: Command, resonance: Resonance) {
-    this.resonance = resonance;
-    this.bot = resonance.bot;
-    this.type = resonance.client.type;
+  protected constructor(command: Command, instruction: Instruction) {
+    this.resonance = instruction.resonance;
+    this.instruction = instruction;
+    this.bot = instruction.resonance.bot;
+    this.type = instruction.resonance.client.type;
     this.command = command;
   }
 
@@ -89,19 +99,19 @@ export abstract class CommandAuthorizer {
     // We build all the configurations we'll need to make our authority checks.
     // Bot Configurations.
     this.configurations.bot = {
-      base: await this.bot.getActiveConfig(),
-      client: await this.bot.getActiveClientConfig(this.type),
+      base: await ServiceContainer.get(GestaltComposer).getActiveConfigForBot(this.bot),
+      client: await ServiceContainer.get(GestaltComposer).getActiveClientConfigForBot(this.bot, this.type),
     };
 
     // Command Configurations.
     this.configurations.command = {
-      base: await this.command.getActiveConfigForBot(this.bot),
-      client: await this.command.getActiveClientConfig(this.type, this.bot),
-      parameters: await this.command.getParameterConfig(),
+      base: await ServiceContainer.get(CommandComposer).getActiveCommandConfigForBot(this.command, this.bot),
+      client: await ServiceContainer.get(CommandComposer).getActiveCommandClientConfigForBot(this.command, this.type, this.bot),
+      parameters: await ServiceContainer.get(CommandComposer).getActiveParameterConfigForBot(this.command, this.bot),
     };
 
     // Client configurations.
-    this.configurations.client = await this.resonance.client.getActiveConfigurations();
+    this.configurations.client = await ServiceContainer.get(GestaltComposer).getActiveConfigForClient(this.resonance.client);
   }
 
   /**
@@ -329,7 +339,7 @@ export abstract class CommandAuthorizer {
    */
   private async validateCommandArguments(): Promise<boolean> {
     // Get the arguments we need.
-    const args = await this.resonance.getArguments();
+    const args = await this.instruction.arguments;
 
     // If there are no arguments, we have nothing to validate.
     if (Sojiro.isEmpty(args._) && args.length === 1) {
@@ -407,7 +417,7 @@ export abstract class CommandAuthorizer {
    *   Returns true if the command is on cooldown. False otherwise.
    */
   private async validateCooldown(): Promise<boolean> {
-    return CommandCooldownManager.check(this.resonance);
+    return CommandCooldownManager.check(this.instruction);
   }
 
 }

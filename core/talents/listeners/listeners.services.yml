@@ -2,8 +2,11 @@
 # Runtime Flow.
 #
 runtime:
+  genesis:
   synthesis:
     - { service: listeners.manager, priority: 4500}
+  statis:
+  symbiosis:
 
 # Services for the Listeners Talent.
 services:
@@ -22,13 +25,13 @@ services:
   listeners.catalogue:
     class: src/Service/ListenerCatalogue
     dependencies:
-      - listener.loader
+      - listeners.loader
 
   # Plugin Seeker service for listeners.
   listeners.plugin_seeker:
     class: src/Service/ListenerPluginSeeker
     dependencies:
-      - listener.catalogue
+      - listeners.catalogue
       - talent.catalogue
       - bot.catalogue
     tags:
@@ -38,6 +41,6 @@ services:
   listeners.resonator:
     class: src/Service/ListenerResonator
     dependencies:
-      - listener.catalogue
+      - listeners.catalogue
     tags:
       - 'resonator'

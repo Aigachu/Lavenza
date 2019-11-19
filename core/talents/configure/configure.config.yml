@@ -1,0 +1,20 @@
+# Read-Friendly Name of the Talent.
+name: 'Configure'
+
+# Talent description.
+description: 'Provides tons of useful utility commands for your bot that allows management of configurations.'
+
+# Talent Version.
+version: 1.0.0
+
+# Path to the main class of the Talent, relative to this directory.
+class: 'Configure'
+
+# Set dependencies for this talent.
+# This talent will not be enabled if any of its dependencies aren't enabled.
+dependencies:
+  - commander
+
+# Determine which clients this talent should be enabled in.
+# If unset or set to '*', this command will work on ALL CLIENTS. Be advised and plan your code accordingly.
+clients: '*'

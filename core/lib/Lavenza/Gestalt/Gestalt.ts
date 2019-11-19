@@ -6,20 +6,14 @@
  */
 
 // Imports.
-import { Bot } from "../Bot/Bot";
-import { BotCatalogue } from "../Bot/BotCatalogue";
-import { BotConfigurations } from "../Bot/BotConfigurations";
-import { BotClientConfig } from "../Client/ClientConfigurations";
-import { ClientType } from "../Client/ClientType";
-import { Morgana } from "../Confidant/Morgana";
 import { Sojiro } from "../Confidant/Sojiro";
+import { Core } from "../Core/Core";
+import { CoreStatus } from "../Core/CoreStatus";
 import { Service } from "../Service/Service";
 import { ServiceContainer } from "../Service/ServiceContainer";
-import { Talent } from "../Talent/Talent";
-import { TalentCatalogue } from "../Talent/TalentCatalogue";
-import { TalentConfigurations } from "../Talent/TalentConfigurations";
 import { AbstractObject } from "../Types";
 
+import { Composer } from "./Composer/Composer";
 import { Chronicler } from "./StorageService/Chronicler/Chronicler";
 import { StorageService } from "./StorageService/StorageService";
 
@@ -68,178 +62,31 @@ export class Gestalt extends Service {
   /**
    * Perform Gestalt's statis tasks.
    *
-   * This creates all database entries needed for the application to function properly.
+   * During statis, the main Gestalt service will load all services that hold the "composer" tag.
    *
-   * For every service declared in the application, Gestalt will run a gestalt() function if a Service implements it.
+   * These services will implement a compose() function that is used to instantiate and bootstrap all database tables
+   * and collections needed for the application to run appropriately.
    *
    * @inheritDoc
    */
   public async statis(): Promise<void> {
-    // @TODO - Run each service's Gestalt handler.
-    // @TODO - We can do the same logic as the Plugin Seekers & Event Subscribers.
-
-    // Creation of i18n collection.
-    // All data pertaining to translations will be saved here.
-    await this.createCollection("/i18n");
-
-    // Some flavor.
-    await Morgana.status("Loading bots database...");
-
-    // Creation of the Bots collection.
-    await this.createCollection("/bots");
-
-    // Run Gestalt handlers for each Bot.
-    for (const bot of await ServiceContainer.get(BotCatalogue).all()) {
-      // Initialize the database collection for this bot if it doesn't already exist.
-      await this.createCollection(`/bots/${bot.id}`);
-
-      // Initialize the database collection for this bot's configurations if it doesn't already exist.
-      await this.createCollection(`/bots/${bot.id}/config`);
-
-      // Sync core bot config to the database.
-      await this.sync(bot.config, `/bots/${bot.id}/config/core`);
-
-      // Initialize i18n database collection for this bot if it doesn't already exist.
-      await this.createCollection(`/i18n/${bot.id}`);
-
-      // Initialize i18n database collection for this bot's clients configurations if it doesn't already exist.
-      await this.createCollection(`/i18n/${bot.id}/clients`);
-
-      // Create a database collection for the talents granted to a bot.
-      await this.createCollection(`/bots/${bot.id}/talents`);
-
-      // For all Talents belonging to this bot, we run additional tasks.
-      for (const botTalent of await ServiceContainer.get(TalentCatalogue).getTalentsForBot(bot)) {
-        // Create a database collection for the talents granted to a Bot.
-        await this.createCollection(`/bots/${bot.id}/talents/${botTalent.machineName}`);
-
-        // Await the synchronization of data between the Talent's default configuration and the database configuration.
-        await this.sync(botTalent.config, `/bots/${bot.id}/talents/${botTalent.machineName}/config`);
-      }
-
-      // For all Clients belonging to this bot, we run additional tasks.
-      for (const client of Object.values(bot.clients)) {
-        // Make sure database collection exists for this client for the given bot.
-        await this.createCollection(`/bots/${bot.id}/clients/${client.type}`);
-
-        // Initialize i18n database collection for this client if it doesn't already exist.
-        await this.createCollection(`/i18n/${bot.id}/clients/${client.type}`);
-
-        // Run each client's gestalt handler.
-        await client.gestalt();
-      }
-
-      // Create a database collection for Commands belonging to a Bot.
-      // await this.createCollection(`/bots/${bot.id}/commands`);
-
-      // Await the bootstrapping of Commands data.
-      // await Promise.all(bot.commands.map(async (command) => {
-      //   // Create a database collection for commands belonging to a Bot.
-      //   await this.createCollection(`/bots/${this.id}/commands/${command.id}`);
-      //
-      //   // Synchronization of data between the Command's default configuration and the database configuration.
-      //   await this.sync(command.config, `/bots/${this.id}/commands/${command.id}/config`);
-      // }));
-
-      // Create a database collection for the clients belonging to a Bot.
-      await this.createCollection(`/bots/${bot.id}/clients`);
+    // We'll only do the following tasks if the Core is in the proper status.
+    // Composers will only run if the Lavenza Core is completely finished preparations.
+    if (Core.status !== CoreStatus.statis) {
+      return;
     }
 
-    // Some flavor.
-    await Morgana.success("Bots database loaded!");
+    // Obtain all composer services.
+    const composers = ServiceContainer.getServicesWithTag("composer") as Composer[];
 
-    // Some flavor.
-    await Morgana.status("Loading talents database...");
+    // Sort resonators in order of defined priority.
+    composers.sort((a, b) => b.priority - a.priority);
 
-    // Creation of the Talents collection.
-    await this.createCollection("/talents");
-
-    // Run Gestalt handlers for each Talent.
-    for (const talent of ServiceContainer.get(TalentCatalogue).all()) {
-      // Initialize the database collection for this talent if it doesn't already exist.
-      await this.createCollection(`/talents/${talent.machineName}`);
+    // Run them all.
+    for (const composer of composers) {
+      // For each composer, we run the compose() function.
+      await composer.compose();
     }
-
-    // Some flavor.
-    await Morgana.success("Talents database loaded!");
-
-    // Some flavor text for the console.
-    await Morgana.success("Gestalt database successfully bootstrapped!");
-  }
-
-  /**
-   * Get the active configuration from the database for this Bot.
-   *
-   * If no active configuration is found, it is fetched from the base configurations and synced to the database.
-   *
-   * @param bot
-   *   Bot to get configurations for.
-   *
-   * @returns
-   *   Returns the configuration fetched from the database.
-   */
-  public async getActiveConfigForBot(bot: Bot): Promise<BotConfigurations> {
-    // Attempt to get the active configuration from the database.
-    const activeConfig = await this.get(`/bots/${this.id}/config/core`);
-    if (!Sojiro.isEmpty(activeConfig)) {
-      return activeConfig as BotConfigurations;
-    }
-
-    // Sync it to the database.
-    await this.sync(bot.config, `/bots/${this.id}/config/core`);
-
-    // Return the configuration.
-    return bot.config;
-  }
-
-  /**
-   * Retrieve active client configuration for this bot.
-   *
-   * If no active configuration is found, it is fetched from the base configurations and synced to the database.
-   *
-   * @param bot
-   *   Bot to get configurations for.
-   * @param clientType
-   *   The type of client configuration to return for the bot.
-   *
-   * @returns
-   *   The requested client configuration straight from the database.
-   */
-  public async getActiveClientConfigForBot(bot: Bot, clientType: ClientType): Promise<BotClientConfig> {
-    // Attempt to get the active configuration from the database.
-    const activeConfig = await this.get(`/bots/${this.id}/config/${clientType}`);
-    if (!Sojiro.isEmpty(activeConfig)) {
-      return activeConfig as BotClientConfig;
-    }
-
-    // If we don't find any configurations in the database, we'll fetch it normally and then save it.
-    const config = await bot.getClientConfig(clientType);
-
-    // Sync it to the database.
-    await this.sync(config, `/bots/${this.id}/config/${clientType}`);
-
-    // Return the configuration.
-    return config;
-  }
-
-  /**
-   * Get the active configuration from the database for this Talent, in the context of a Bot.
-   *
-   * Bots can override talent configurations for themselves. As a result, in the database, we must store configurations
-   * specific to this talent in the bot's database table.
-   *
-   * @param talent
-   *   The talent we want to fetch configurations for.
-   * @param bot
-   *   The bot context for the configuration we want to fetch. Each bot can have different configuration overrides
-   *   for talents.
-   *
-   * @returns
-   *   The active database configuration for the talent configuration, specific to a given Bot.
-   */
-  public async getActiveTalentConfigForBot(talent: Talent, bot: Bot): Promise<TalentConfigurations> {
-    // Await Gestalt's API call to get the configuration from the storage.
-    return await this.get(`/bots/${bot.id}/talents/${talent.machineName}/config`) as TalentConfigurations;
   }
 
   /**

@@ -11,7 +11,6 @@ import { BotCatalogue } from "../../Bot/BotCatalogue";
 import { Sojiro } from "../../Confidant/Sojiro";
 import { Talent } from "../../Talent/Talent";
 import { TalentCatalogue } from "../../Talent/TalentCatalogue";
-import { AbstractObject } from "../../Types";
 import { Loader } from "../Loader/Loader";
 import { Service } from "../Service";
 import { ServiceContainer } from "../ServiceContainer";
@@ -53,7 +52,7 @@ export abstract class PluginSeeker<T> extends Service {
     // Loop through the Talents Catalogue
     await Promise.all(ServiceContainer.get(TalentCatalogue).all().map(async (talent: Talent) => {
       // Apply the defined loader to the specified path.
-      const seekerPath = `${talent.directory}/src/${this.path}`;
+      const seekerPath = `${talent.directory}/${this.path}`;
       const loader = ServiceContainer.get(this.loader) as Loader<T>;
       const loadedPlugins = await loader.load(seekerPath);
       if (!Sojiro.isEmpty(loadedPlugins)) {
@@ -64,7 +63,7 @@ export abstract class PluginSeeker<T> extends Service {
     // Loop through the Bots Catalogue
     await Promise.all(ServiceContainer.get(BotCatalogue).all().map(async (bot: Bot) => {
       // Apply the defined loader to the specified path.
-      const seekerPath = `${bot.directory}/src/${this.path}`;
+      const seekerPath = `${bot.directory}/${this.path}`;
       const loader = ServiceContainer.get(this.loader) as Loader<T>;
       const loadedPlugins = await loader.load(seekerPath);
       if (!Sojiro.isEmpty(loadedPlugins)) {

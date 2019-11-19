@@ -22,7 +22,7 @@ import { TwitchChannel } from "./Entity/TwitchChannel";
 import { TwitchMessage } from "./Entity/TwitchMessage";
 import { TwitchUser } from "./Entity/TwitchUser";
 import {
-  BotTwitchClientConfig,
+  BotTwitchClientConfig, TwitchClientChannelConfigurations,
 } from "./TwitchConfigurations";
 
 /**
@@ -136,6 +136,23 @@ export class TwitchClient extends Client {
    * @inheritDoc
    */
   public async gestalt(): Promise<void> {
+    // We sync the client configurations.
+    const channels = await Core.gestalt().sync({}, `/bots/${this.bot.id}/clients/${this.type}/channels`);
+
+    // Generate configuration for each channel.
+    await Promise.all(this.config.channels.map(async (channel) => {
+      // For all guilds, we initialize this default configuration.
+      const baseChannelConfig: TwitchClientChannelConfigurations = {
+        commandPrefix: this.bot.config.commandPrefix,
+        name: channel,
+        userEminences: {},
+      };
+      if (!(channel in channels)) {
+        channels[channel] = baseChannelConfig;
+      }
+      await Core.gestalt().update(`/bots/${this.bot.id}/clients/${this.type}/channels`, channels);
+    }));
+
     // Initialize i18n contexts, creating them if they don't exist.
     // Translations are manageable through all of these contexts.
     await Core.gestalt().sync({}, `/i18n/${this.bot.id}/clients/${this.type}/channels`);

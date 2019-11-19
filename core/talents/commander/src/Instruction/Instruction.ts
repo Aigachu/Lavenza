@@ -6,57 +6,80 @@
  */
 
 // Imports.
-import { Command } from "../../../talents/commander/src/Command/Command";
-import {
-  CommandClientConfig,
-  CommandConfigurations,
-} from "../../../talents/commander/src/Command/CommandConfigurations";
-import { AbstractObject } from "../Types";
+import { Resonance } from "../../../../lib/Lavenza/Resonance/Resonance";
+import { AbstractObject } from "../../../../lib/Lavenza/Types";
+import { Command } from "../Command/Command";
+
+import { InstructionCommandConfig } from "./InstructionCommandConfig";
 
 /**
- * Provides an "Instruction" model that regroups information about a command that was interpreted from a message.
+ * Provides a class for Instructions, entities that regroup information about a command that was interpreted from a
+ * resonance.
  *
  * This class will contain relevant information surrounding the command called.
  *
  * Instructions are sent for approval before they carry out the command.
  */
-export interface Instruction {
+export class Instruction {
+
+  /**
+   * The resonance this instruction was parsed from.
+   */
+  public resonance: Resonance;
+
+  /**
+   * The command prefix used to build this instruction.
+   *
+   * Can come in handy to save this here.
+   */
+  public prefix: string;
 
   /**
    * Arguments of the command received, if any.
    */
-  arguments: AbstractObject;
+  public arguments: AbstractObject;
 
   /**
    * Command that contained the current Order.
    */
-  command: Command;
+  public command: Command;
 
   /**
    * Store active configurations of the command this instruction is for.
    */
-  config: InstructionCommandConfig;
+  public config: InstructionCommandConfig;
 
   /**
-   * Raw content of the message that was deciphered as an order.
+   * Raw content of the message that was deciphered.
+   *
+   * This is different than the raw content of the resonance, as it will strip any text used to invoke the command.
+   *
+   * i.e. In a message such as "$ping hi", "$ping " will be stripped, and content will only contain "hi".
    */
-  content: string;
-
-}
-
-/**
- * Provide an interface for Instruction configurations, which are simply a regrouping of the command's configurations.
- */
-export interface InstructionCommandConfig {
+  public content: string;
 
   /**
-   * Base configurations of the command.
+   * Constructor for Instructions.
+   *
+   * @param resonance
+   *   The Resonance that this instruction was parsed from.
+   * @param command
+   *   The command that was loaded.
+   * @param prefix
+   *   The command prefix used to build this instruction.
+   * @param config
+   *   The command configurations.
+   * @param args
+   *   The arguments parsed from the command.
+   * @param content
+   *   The raw content of the instruction.
    */
-  base: CommandConfigurations;
-
-  /**
-   * Client specific configurations of the command for the instruction.
-   */
-  client: CommandClientConfig;
+  public constructor(resonance: Resonance, command: Command, prefix: string, config: InstructionCommandConfig, args: AbstractObject, content: string) {
+    this.resonance = resonance;
+    this.config = config;
+    this.command = command;
+    this.arguments = args;
+    this.content = content;
+  }
 
 }

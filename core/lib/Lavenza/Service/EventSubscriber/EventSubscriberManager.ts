@@ -33,6 +33,11 @@ export class EventSubscriberManager extends Service {
     // Through the catalogue, we get the array of subscription records that are stored in the appropriate library.
     const records = ServiceContainer.get(SubscriptionRecordCatalogue).library(`${client.type}::${event}`);
 
+    // If there are no records, we can exit here.
+    if (!records) {
+      return;
+    }
+
     // We want to sort each record by priority real fast.
     records.sort((a, b) => b.priority - a.priority);
 

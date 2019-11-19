@@ -55,9 +55,9 @@ export class Yoshida {
     let googleTranslate: Translate;
 
     // If a project ID is set, we can set up translate.
-    if (Core.settings.services.google.translate.enabled && Core.settings.services.google.translate.projectId) {
+    if (Core.settings.features.google.translate.enabled && Core.settings.features.google.translate.projectId) {
       // Your Google Cloud Platform project ID is fetched from the .env file.
-      const googleTranslateProjectId: string = Core.settings.services.google.translate.projectId;
+      const googleTranslateProjectId: string = Core.settings.features.google.translate.projectId;
 
       // Instantiates a translation client.
       const googleTranslateConfig: AbstractObject = {};

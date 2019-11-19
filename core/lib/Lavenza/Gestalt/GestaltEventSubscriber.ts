@@ -8,12 +8,12 @@
 // Imports.
 import { Guild } from "discord.js";
 
-import { ClientType } from "../../../../lib/Lavenza/Client/ClientType";
-import { DiscordClient } from "../../../../lib/Lavenza/Client/Discord/DiscordClient";
-import { DiscordClientGuildConfigurations } from "../../../../lib/Lavenza/Client/Discord/DiscordConfigurations";
-import { EventSubscriber } from "../../../../lib/Lavenza/Service/EventSubscriber/EventSubscriber";
-import { EventSubscriptions } from "../../../../lib/Lavenza/Service/EventSubscriber/EventSubscription";
-import { ServiceContainer } from "../../../../lib/Lavenza/Service/ServiceContainer";
+import { ClientType } from "../Client/ClientType";
+import { DiscordClient } from "../Client/Discord/DiscordClient";
+import { DiscordClientGuildConfigurations } from "../Client/Discord/DiscordConfigurations";
+import { EventSubscriber } from "../Service/EventSubscriber/EventSubscriber";
+import { EventSubscriptions } from "../Service/EventSubscriber/EventSubscription";
+import { ServiceContainer } from "../Service/ServiceContainer";
 
 import { Gestalt } from "./Gestalt";
 
@@ -24,22 +24,27 @@ import { Gestalt } from "./Gestalt";
 export abstract class GestaltEventSubscriber extends EventSubscriber {
 
   /**
-   * Inject the Gestalt Service through DI.
+   * House the gestalt service that will be injected through DI with the build() function.
    */
-  public gestaltService: Gestalt = ServiceContainer.get(Gestalt);
+  public gestaltService: Gestalt;
+
+  /**
+   * Build tasks for the gestalt event subscriber.
+   */
+  public async build(): Promise<void> {
+    this.gestaltService = ServiceContainer.get(Gestalt);
+  }
 
   /**
    * Get the list of subscribed events for given clients.
    */
   public getEventSubcriptions(): EventSubscriptions {
-    const subscriptions = {};
-
-    // Discord Client event subscriptions.
-    subscriptions[ClientType.Discord] = {
-      guildCreate: "discordOnGuildCreate",
+    return {
+      [ClientType.Discord]: {
+        guildCreate: { method: "discordOnGuildCreate", priority: 5000 },
+      },
+      [ClientType.Twitch]: {},
     };
-
-    return subscriptions as EventSubscriptions;
   }
 
   /**

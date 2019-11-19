@@ -10,6 +10,7 @@ import { BotCatalogue } from "../../../../../lib/Lavenza/Bot/BotCatalogue";
 import { Resonance } from "../../../../../lib/Lavenza/Resonance/Resonance";
 import { ServiceContainer } from "../../../../../lib/Lavenza/Service/ServiceContainer";
 import { Command } from "../../../../commander/src/Command/Command";
+import { Instruction } from "../../../../commander/src/Instruction/Instruction";
 
 /**
  * Shutdown Command.
@@ -23,7 +24,7 @@ export class Shutdown extends Command {
    *
    * @inheritDoc
    */
-  public async execute(resonance: Resonance): Promise<void> {
+  public async execute(instruction: Instruction, resonance: Resonance): Promise<void> {
     // The raw content here should be the ID of the bot we want to shutdown.
     // We'll attempt the load the bot with this content.
     const botToShutdown = ServiceContainer.get(BotCatalogue).getBot(resonance.content);

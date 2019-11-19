@@ -32,10 +32,10 @@ config:
     # Enter their machine names in an array here.
     autoboot: []
 
-# In some cases, Lavenza can connect to exterior services if you choose to connect them.
-# This will all be managed here.
-services:
-  # Google Services.
+# In some cases, Lavenza can connect to exterior applications if you choose to connect them.
+# This will all be managed here through Features.
+features:
+  # Google Features.
   google:
     # Google Translate Cloud API
     # If desired, Google Translate can be activated in Lavenza. As a result, when you use translation functions in your

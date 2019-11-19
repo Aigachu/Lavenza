@@ -12,6 +12,7 @@ import * as DotEnv from "dotenv";
 // Imports.
 import { Command } from "../talents/commander/src/Command/Command";
 import { CommandClientHandler } from "../talents/commander/src/Command/CommandClientHandler";
+import { CommandComposer } from "../talents/commander/src/Service/CommandComposer";
 
 import { BotManager } from "./Lavenza/Bot/BotManager";
 import { ClientType } from "./Lavenza/Client/ClientType";
@@ -22,20 +23,33 @@ import { Morgana } from "./Lavenza/Confidant/Morgana";
 import { Sojiro } from "./Lavenza/Confidant/Sojiro";
 import { Yoshida } from "./Lavenza/Confidant/Yoshida";
 import { Core } from "./Lavenza/Core/Core";
+import { Composer } from "./Lavenza/Gestalt/Composer/Composer";
 import { Gestalt } from "./Lavenza/Gestalt/Gestalt";
+import { GestaltComposer } from "./Lavenza/Gestalt/GestaltComposer";
+import { GestaltEventSubscriber } from "./Lavenza/Gestalt/GestaltEventSubscriber";
+import { Chronicler } from "./Lavenza/Gestalt/StorageService/Chronicler/Chronicler";
+import { StorageService } from "./Lavenza/Gestalt/StorageService/StorageService";
 import { PromptException } from "./Lavenza/Prompt/Exception/PromptException";
 import { PromptExceptionType } from "./Lavenza/Prompt/Exception/PromptExceptionType";
+import { Prompt } from "./Lavenza/Prompt/Prompt";
+import { PromptResonator } from "./Lavenza/Prompt/PromptResonator";
 import { Resonance } from "./Lavenza/Resonance/Resonance";
+import { ResonanceEventSubscriber } from "./Lavenza/Resonance/ResonanceEventSubscriber";
 import { Resonator } from "./Lavenza/Resonance/Resonator/Resonator";
 import { Catalogue } from "./Lavenza/Service/Catalogue/Catalogue";
 import { EventSubscriber } from "./Lavenza/Service/EventSubscriber/EventSubscriber";
+import { EventSubscriberManager } from "./Lavenza/Service/EventSubscriber/EventSubscriberManager";
+import { SubscriptionRecordCatalogue } from "./Lavenza/Service/EventSubscriber/SubscriptionRecordCatalogue";
 import { DirectoryLoader } from "./Lavenza/Service/Loader/DirectoryLoader";
 import { FileLoader } from "./Lavenza/Service/Loader/FileLoader";
 import { Loader } from "./Lavenza/Service/Loader/Loader";
 import { PluginSeeker } from "./Lavenza/Service/PluginSeeker/PluginSeeker";
+import { PluginSeekerManager } from "./Lavenza/Service/PluginSeeker/PluginSeekerManager";
 import { Service } from "./Lavenza/Service/Service";
 import { ServiceContainer } from "./Lavenza/Service/ServiceContainer";
 import { Talent } from "./Lavenza/Talent/Talent";
+import { TalentCatalogue } from "./Lavenza/Talent/TalentCatalogue";
+import { TalentDirectoryLoader } from "./Lavenza/Talent/TalentDirectoryLoader";
 import { TalentManager } from "./Lavenza/Talent/TalentManager";
 
 // Load Environment Variables from .env file at the root of the project.
@@ -78,30 +92,41 @@ module.exports = {
   Sojiro,
   Yoshida,
 
-  // Managers.
-  // These classes will manage big parts of the application that are integral.
-  BotManager,
-  TalentManager,
-
   // Services.
-  Catalogue,
+  BotManager,
+  CommandComposer,
   DirectoryLoader,
-  EventSubscriber,
+  EventSubscriberManager,
   FileLoader,
   Gestalt,
-  Loader,
-  PluginSeeker,
-  Resonator,
+  GestaltComposer,
+  GestaltEventSubscriber,
+  PluginSeekerManager,
+  PromptResonator,
+  ResonanceEventSubscriber,
   ServiceContainer,
+  SubscriptionRecordCatalogue,
+  TalentCatalogue,
+  TalentDirectoryLoader,
+  TalentManager,
 
   // Classes & Models.
   // These are classes that are extended or used across the application. We import them here once.
   // They are linked in the global variable for easy access to outside applications.
+  Catalogue,
+  Chronicler,
   Command,
   CommandClientHandler,
+  Composer,
+  EventSubscriber,
+  Loader,
+  PluginSeeker,
+  Prompt,
   PromptException,
   Resonance,
+  Resonator,
   Service,
+  StorageService,
   Talent,
 
   // Enums.

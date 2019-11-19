@@ -45,10 +45,9 @@ export class ListenerFileLoader extends FileLoader<Listener> {
     }
 
     // Run listener build tasks.
-    // We only do this to assign the talent to the listener. That way, the listener can access the Talent.
     await listener.build();
 
-    // If everything goes smoothly, we register the listener to the Talent.
+    // If everything goes smoothly, we return the listener.
     return listener;
   }
 

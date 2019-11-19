@@ -9,7 +9,7 @@
 import * as path from "path";
 
 // Imports.
-import { Akechi } from "../../../../../../lib/Lavenza/Confidant/Akechi";
+import { Akechi } from "../../../../Confidant/Akechi";
 import { Item } from "../Item/Item";
 
 /**

@@ -127,15 +127,17 @@ export class ServiceContainer {
     // Set all the services we loaded.
     ServiceContainer.services = [...ServiceContainer.services, ...services];
 
-    // Check Service dependencies.
+    // Check Service dependencies and run build functions.
     for (const service of ServiceContainer.services) {
       // Check if all dependencies exist for this service.
       for (const dependency of service.dependencies) {
         // If the dependency isn't loaded, we exit with an error.
         if (!ServiceContainer.services.find((srv) => srv.id === dependency)) {
-          await Igor.throw(`Service "${service.id}" depends on non-existent service "${dependency}. Please verify that all needed services exist and are instantiated during runtime."`);
+          await Igor.throw(`Service "${service.id}" depends on non-existent service "${dependency}". Please verify that all needed services exist and are instantiated during runtime."`);
         }
       }
+      // Run build tasks.
+      await service.build();
     }
 
     // Load Runtime Flows.
@@ -185,14 +187,18 @@ export class ServiceContainer {
   public static async tasks(process: RuntimeProcessId): Promise<void> {
     // If there are no tasks for this process, we should quit out.
     if (!ServiceContainer.runtimeTasks[process]) {
-      await Morgana.warn(`There are no runtime tasks specified for the "${process}" process. Skipping this step.`);
+      await Morgana.warn(`There are no runtime tasks specified for the "${process}" process. Proceeding...`);
 
       return;
     }
 
     for (const task of ServiceContainer.runtimeTasks[process]) {
-      await Morgana.status(`Running "${process}" tasks for service "${task.service.id}" with method "${task.method}". This task has priority ${task.priority}.`);
+      await Morgana.status(`TASK ${task.priority}: ${task.service.id}->${task.method}() ...`);
       await task.service[task.method]();
+      await Morgana.success("Done!");
+      if (ServiceContainer.runtimeTasks[process].indexOf(task) !== ServiceContainer.runtimeTasks[process].length - 1) {
+        await Morgana.status("\n");
+      }
     }
   }
 

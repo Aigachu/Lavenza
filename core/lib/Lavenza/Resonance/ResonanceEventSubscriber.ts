@@ -11,6 +11,7 @@ import { ClientFactory } from "../Client/ClientFactory";
 import { ClientMessage } from "../Client/ClientMessage";
 import { ClientType } from "../Client/ClientType";
 import { Core } from "../Core/Core";
+import { CoreStatus } from "../Core/CoreStatus";
 import { EventSubscriber } from "../Service/EventSubscriber/EventSubscriber";
 import { EventSubscriptions } from "../Service/EventSubscriber/EventSubscription";
 import { ServiceContainer } from "../Service/ServiceContainer";
@@ -27,16 +28,13 @@ export class ResonanceEventSubscriber extends EventSubscriber {
    * Get the list of subscribed events for given clients.
    */
   public getEventSubcriptions(): EventSubscriptions {
-    // Initialize the subscriptions.
-    const subscriptions = {};
-
-    // Discord Client event subscriptions.
-    subscriptions[ClientType.Discord] = {
-      // When the "message" event occurs, fire the "resonate" function with a priority of "5000".
-      message: { method: "resonate", priority: 5000 },
+    return {
+      [ClientType.Discord]: {
+        // When the "message" event occurs, fire the "resonate" function with a priority of "5000".
+        message: { method: "resonate", priority: 5000 },
+      },
+      [ClientType.Twitch]: {},
     };
-
-    return subscriptions as EventSubscriptions;
   }
 
   /**

@@ -9,10 +9,10 @@
 import * as lodash from "lodash";
 
 // Imports.
-import { Akechi } from "../../../../../lib/Lavenza/Confidant/Akechi";
-import { Sojiro } from "../../../../../lib/Lavenza/Confidant/Sojiro";
-import { Core } from "../../../../../lib/Lavenza/Core/Core";
-import { AbstractObject } from "../../../../../lib/Lavenza/Types";
+import { Akechi } from "../../../Confidant/Akechi";
+import { Sojiro } from "../../../Confidant/Sojiro";
+import { Core } from "../../../Core/Core";
+import { AbstractObject } from "../../../Types";
 import { StorageService } from "../StorageService";
 
 import { Collection } from "./Collection/Collection";

@@ -5,6 +5,7 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
+import { Sojiro } from "../../../../lib/Lavenza/Confidant/Sojiro";
 // Imports.
 import { Resonance } from "../../../../lib/Lavenza/Resonance/Resonance";
 import { Resonator } from "../../../../lib/Lavenza/Resonance/Resonator/Resonator";
@@ -33,6 +34,11 @@ export abstract class ListenerResonator extends Resonator {
   public async resonate(resonance: Resonance): Promise<void> {
     // Get all listeners for the bot.
     const listeners = await ServiceContainer.get(ListenerCatalogue).getListenersForEntity(resonance.bot);
+
+    // If there are no listeners, we can return.
+    if (Sojiro.isEmpty(listeners)) {
+      return;
+    }
 
     // Run all listeners.
     await Promise.all(listeners.map((listener) => listener.listen(resonance)));

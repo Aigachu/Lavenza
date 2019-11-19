@@ -7,8 +7,8 @@
 
 // Imports.
 import { BotConfigurations } from "../../../../../lib/Lavenza/Bot/BotConfigurations";
-import { BotClientConfig, ClientConfigurations, CommandClientConfig } from "../../../../../lib/Lavenza/Client/ClientConfigurations";
-import { CommandConfigurations, CommandParameterConfig } from "../CommandConfigurations";
+import { BotClientConfig, ClientConfigurations } from "../../../../../lib/Lavenza/Client/ClientConfigurations";
+import { CommandClientConfig, CommandConfigurations, CommandParameterConfig } from "../CommandConfigurations";
 
 /**
  * Provide an interface for a Command Authorizer's collection of configurations.

@@ -28,7 +28,7 @@ import { BotClientConfig } from "../ClientConfigurations";
 import { ClientType } from "../ClientType";
 
 import {
-  BotDiscordClientConfig,
+  BotDiscordClientConfig, DiscordClientGuildConfigurations,
 } from "./DiscordConfigurations";
 
 /**
@@ -168,6 +168,22 @@ export class DiscordClient extends Client {
    * @inheritDoc
    */
   public async gestalt(): Promise<void> {
+    // Guild Configurations Sync.
+    const guilds = await Core.gestalt().sync({}, `/bots/${this.bot.id}/clients/${this.type}/guilds`);
+
+    // Set up initial guild configurations.
+    await Promise.all(this.connector.guilds.map(async (guild) => {
+      const baseGuildConfig: DiscordClientGuildConfigurations = {
+        commandPrefix: await this.bot.config.commandPrefix,
+        name: guild.name,
+        userEminences: {},
+      };
+      if (!(guild.id in guilds)) {
+        guilds[guild.id] = baseGuildConfig;
+      }
+      await Core.gestalt().update(`/bots/${this.bot.id}/clients/${this.type}/guilds`, guilds);
+    }));
+
     // Initialize i18n contexts, creating them if they don't exist.
     // Translations are manageable through all of these contexts.
     await Core.gestalt().sync({}, `/i18n/${this.bot.id}/clients/${this.type}/guilds`);

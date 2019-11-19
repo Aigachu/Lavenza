@@ -9,13 +9,13 @@ runtime:
     - { service: talent.manager, priority: 2000 }
     - { service: plugin_seeker.manager, priority: 1000 }
   synthesis:
-    - { service: talent.manager, priority: 5000 }
-    - { service: gestalt, priority: 4000 }
+    - { service: bot.manager, priority: 4000 }
     - { service: event_subscriber.manager, priority: 3000 }
   statis:
     - { service: bot.manager, priority: 5000 }
     - { service: gestalt, priority: 4000 }
     - { service: talent.manager, priority: 3000 }
+  symbiosis:
 
 #
 # Service definitions.
@@ -33,11 +33,21 @@ services:
 
   # Event Subscriber for the Database service.
   gestalt.event_subscriber:
-    class: Gestalt/GestaltEventSubsriber
+    class: Gestalt/GestaltEventSubscriber
     dependencies:
       - gestalt
     tags:
       - 'event_subscriber'
+
+  # Composer for the Database service.
+  gestalt.composer:
+    class: Gestalt/GestaltComposer
+    dependencies:
+      - gestalt
+      - bot.catalogue
+      - talent.catalogue
+    tags:
+      - 'composer'
 
   #
   # Loader Service service for Talents.
@@ -93,6 +103,14 @@ services:
   #
   event_subscriber.manager:
     class: Service/EventSubscriber/EventSubscriberManager
+    dependencies:
+      - event_subscriber.subscription_records.catalogue
+
+  #
+  # Event Subscriber Subscription Record Catalogue Service.
+  #
+  event_subscriber.subscription_records.catalogue:
+    class: Service/EventSubscriber/SubscriptionRecordCatalogue
     dependencies: []
 
   #
@@ -104,8 +122,18 @@ services:
 
   #
   # Event Subscriber for the Resonance methodology.
+  #
   resonance.event_subscriber:
     class: Resonance/ResonanceEventSubscriber
     dependencies: []
     tags:
       - 'event_subscriber'
+
+  #
+  # Prompt Resonator Service.
+  #
+  prompt.resonator:
+    class: Prompt/PromptResonator
+    dependencies: []
+    tags:
+      - 'resonator'

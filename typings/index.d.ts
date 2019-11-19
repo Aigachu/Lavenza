@@ -1,4 +1,10 @@
 /* tslint:disable:completed-docs only-arrow-functions max-classes-per-file no-any file-name-casing */
+import { BotManager } from "../core/lib/Lavenza/Bot/BotManager";
+import { Gestalt } from "../core/lib/Lavenza/Gestalt/Gestalt";
+import { Service } from "../core/lib/Lavenza/Service/Service";
+import { ServiceType } from "../core/lib/Lavenza/Service/ServiceType";
+import { TalentManager } from "../core/lib/Lavenza/Talent/TalentManager";
+
 /**
  * Project Lavenza
  * Copyright 2017-2019 Aigachu, All Rights Reserved
@@ -23,7 +29,15 @@ declare module "lavenza" {
       };
     };
     public static settings: CoreSettings;
+    public static status: CoreStatus;
     private static version: string;
+    public static async initialize(root: string): Promise<Core>;
+    public static async summon(): Promise<void>;
+    public static service<S extends Service>(id: ServiceType<S> | string): S;
+    public static gestalt(): Gestalt;
+    public static botManager(): BotManager;
+    public static talentManager(): TalentManager;
+    private static setPaths(rootPath: string): Promise<void>;
   }
 
   export class Akechi {
@@ -372,6 +386,16 @@ declare module "lavenza" {
     INVALID_RESPONSE = "invalid-response",
     MISC = "miscellaneous",
     MAX_RESET_EXCEEDED = "max-reset-exceeded",
+  }
+
+  enum CoreStatus {
+    sleep = "asleep",
+    genesis = "genesis",
+    synthesis = "synthesis",
+    statis = "statis",
+    symbiosis = "symbiosis",
+    running = "running",
+    maintenance = "maintenance",
   }
 
   // === Interfaces (Types) ===

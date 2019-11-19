@@ -21,20 +21,18 @@ export abstract class Listener {
 
   /**
    * The Talent that declared this listener.
+   * This property simply exists in case a user would like to assign a talent to their listener.
    */
   protected talent: Talent;
 
   /**
    * Perform build tasks.
    *
-   * Since Listeners will be singletons, there is no constructor. Listeners can call this function once to set
-   * their properties.
-   *
-   * @param talent
-   *   The talent that this listener belongs to, if any.
+   * Since Listeners will sometimes need to build data asynchronously,they can call this function once to set
+   * their properties and more.
    */
-  public async build(talent?: Talent): Promise<void> {
-    this.talent = talent;
+  public async build(): Promise<void> {
+    // The base build() function for listeners doesn't do anything. Additional assignments may be done in this function.
   }
 
   /**

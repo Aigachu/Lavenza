@@ -42,8 +42,8 @@ export class ListenerCatalogue extends Catalogue<Listener> {
    *   Entity to get the listeners for.
    */
   public async getListenersForEntity(entity: Bot | Talent): Promise<Listener[]> {
-    // If a bot, we set the catalogue library id to the Bots's ID with a unique key.
     if (entity instanceof Bot) {
+      // If a bot, we set the catalogue library id to the Bots's ID with a unique key.
       return this.library(`bot::${entity.id}`);
     }
     // If a talent, we set the catalogue library id to the Talent's Machine Name with a unique key.

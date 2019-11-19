@@ -46,7 +46,7 @@ export class TalentManager extends Service {
       // If the dependency isn't found in this bot's config, we shouldn't load this talent.
       if (!bot.config.talents.includes(dependency)) {
         // Send a warning to the console.
-        await Morgana.warn(
+        await Morgana.error(
           "The '{{talent}}' talent requires the '{{parent}}' talent to exist and to be enabled, but this is not the case. It will not be activated for {{bot}}.",
           {
             bot: bot.id,
@@ -69,7 +69,15 @@ export class TalentManager extends Service {
    */
   private static async initializeTalentsForBot(bot: Bot): Promise<void> {
     // Await the processing of all of this bot's talents.
-    for (const talent of await ServiceContainer.get(TalentCatalogue).getTalentsForBot(bot)) {
+    const talents = await ServiceContainer.get(TalentCatalogue).getTalentsForBot(bot);
+
+    // If the bot has no talents, we can return.
+    if (!talents) {
+      return;
+    }
+
+    // Otherwise, run initialization tasks for all talents in a bot.
+    for (const talent of talents) {
       // Run this talent's initialize function for this bot.
       await talent.initialize(bot);
     }
@@ -113,35 +121,36 @@ export class TalentManager extends Service {
     }
 
     // Await the processing of all talents in the bot's config object.
-    await Promise.all(bot.config.talents.map(async (talentMachineName) => {
-      // Then, we'll check if this talent exists in the Catalogue.
-      // This happens if another bot already loaded it.
-      // If it exists, we're good.
+    for (const talentMachineName of bot.config.talents) {
+      // Attempt to load the talent from the catalogue.
       const talent = ServiceContainer.get(TalentCatalogue).getTalent(talentMachineName);
-      if (!ServiceContainer.get(TalentCatalogue).getTalent(talentMachineName)) {
-        // Send a warning message to the console.
-        await Igor.throw("Tried to validate '{{talent}}' talent for {{bot}}, but it does not exist.", {talent: talentMachineName, bot: bot.id});
 
-        return;
+      // Check if the Talent exists, and exit it if doesn't.
+      if (!talent) {
+        await Igor.exit(`The "${bot.id}" bot has the "${talentMachineName}" talent enabled for it, but this talent doesn't exist. Please add this talent, or remove it from the talents specified in the bot.`);
       }
 
       // Await validation of talents configured.
       // This basically checks if the talent entered is valid. Invalid ones are removed from the array.
       if (!await TalentManager.validateTalentDependencies(talent, bot)) {
-        await Sojiro.removeFromArray(bot.config.talents, talent.machineName);
+        bot.config.talents = Sojiro.removeFromArray(bot.config.talents, talent.machineName);
 
         return;
       }
 
+      // We will also load this talent.
+      // If the talent exists, we want to load it.
+      await talent.load();
+
       // If all is good, we grant this talent to the bot through assignation in the Catalogue.
       await ServiceContainer.get(TalentCatalogue).assignTalentToBot(talent, bot);
-    })).catch(Igor.throw);
+    }
   }
 
   /**
    * Genesis handler for the TalentManager Service.
    *
-   * This runs in the genesis phase of the application.
+   * We enable talents that need to be enabled. Only talents that are enabled in bots are enabled.
    *
    * @see Core.summon();
    *
@@ -150,30 +159,6 @@ export class TalentManager extends Service {
   public async genesis(): Promise<void> {
     // From the loaded bots, we want to see which talents we need to enable.
     // This genesis task must run after the BotCatalogue's genesis task.
-    for (const bot of ServiceContainer.get(BotCatalogue).all()) {
-      // Loop in the array of configured talents for the bot.
-      for (const talentMachineName of bot.config.talents) {
-        // Attempt to load the talent from the catalogue.
-        const foundTalent = ServiceContainer.get(TalentCatalogue).getTalent(talentMachineName);
-
-        // Check if the Talent exists, and exit it if doesn't.
-        if (!foundTalent) {
-          await Igor.throw(`The "${bot}" bot has the "${talentMachineName}" talent enabled for it, but this talent doesn't exist. Please add this talent, or remove it from the talents specified in the bot.`);
-        }
-
-        // If the talent exists, we want to load services for it.
-        await foundTalent.loadTalentServices();
-      }
-    }
-  }
-
-  /**
-   * Synthesis handler for the TalentManager.
-   *
-   * @inheritDoc
-   */
-  public async synthesis(): Promise<void> {
-    // Now we want to loop through all bots in the bot catalogue, and set up mapping for each bot to their respective talents.
     for (const bot of ServiceContainer.get(BotCatalogue).all()) {
       await TalentManager.grantTalentsToBot(bot);
     }

@@ -6,7 +6,8 @@
  */
 
 // Imports.
-import { AbstractObject } from "../../../../lib/Lavenza/Types";
+
+import { AbstractObject } from "../../Types";
 
 /**
  * Provides a base abstract class for Storage Services.

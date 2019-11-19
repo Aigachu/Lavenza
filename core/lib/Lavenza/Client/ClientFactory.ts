@@ -104,13 +104,13 @@ export class ClientFactory {
 
       // Create a DiscordClient if the type is Discord.
       case ClientType.Discord: {
-        resonance = new DiscordResonance(message.content, message as Message, client.bot, client);
+        resonance = new DiscordResonance(message.content, message as Message, client.bot, client as DiscordClient);
         break;
       }
 
       // Create a TwitchClient if the type is Discord.
       case ClientType.Twitch: {
-        resonance = new TwitchResonance(message.content, message as TwitchMessage, client.bot, client);
+        resonance = new TwitchResonance(message.content, message as TwitchMessage, client.bot, client as TwitchClient);
       }
     }
 

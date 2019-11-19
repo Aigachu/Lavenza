@@ -9,6 +9,8 @@
 import { Resonance } from "../Resonance/Resonance";
 import { Resonator } from "../Resonance/Resonator/Resonator";
 
+import { Prompt } from "./Prompt";
+
 /**
  * Provides a Resonator for Prompts.
  *
@@ -26,7 +28,8 @@ export abstract class PromptResonator extends Resonator {
    */
   public async resonate(resonance: Resonance): Promise<void> {
     // Fire all of the bot's prompts, if any.
-    await Promise.all(resonance.bot.prompts.map(async (prompt) => {
+    // @TODO - Prompts can have a catalogue of their own.
+    await Promise.all(resonance.bot.prompts.map(async (prompt: Prompt) => {
       // Fire the listen function.
       await prompt.listen(resonance);
     }));

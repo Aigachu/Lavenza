@@ -6,7 +6,7 @@
  */
 
 // Imports.
-import { Akechi } from "../../../../../../lib/Lavenza/Confidant/Akechi";
+import { Akechi } from "../../../../Confidant/Akechi";
 
 /**
  * Provides a model to manage YAML files in the Chronicler.

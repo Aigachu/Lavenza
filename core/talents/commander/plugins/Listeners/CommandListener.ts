@@ -8,8 +8,8 @@
 // Imports.
 import { Resonance } from "../../../../lib/Lavenza/Resonance/Resonance";
 import { Listener } from "../../../listeners/src/Listener/Listener";
+import { ClientUtilityFactory } from "../../src/Command/Client/ClientUtilityFactory";
 import { CommandCooldownManager } from "../../src/Command/CommandCooldownManager/CommandCooldownManager";
-import { CommandInterpreter } from "../../src/Command/CommandInterpreter/CommandInterpreter";
 
 /**
  * Provides a Listener that listens for commands when messages are heard by a Bot.
@@ -28,7 +28,8 @@ export class CommandListener extends Listener {
   public async listen(resonance: Resonance): Promise<void> {
     // Use the CommandInterpreter to find out if there's a command in the resonance.
     // If there's a command, the interpreter will return an instruction that will be assigned to the Resonance we heard.
-    const instruction = await CommandInterpreter.interpret(resonance);
+    const interpreter = await ClientUtilityFactory.buildCommandInterpreter(resonance);
+    const instruction = await interpreter.interpret(resonance);
 
     // If there is no instruction, we do nothing after all.
     if (!instruction) {
@@ -36,10 +37,9 @@ export class CommandListener extends Listener {
     }
 
     // If the help option is used, we fire the help function of the command and return.
-    const args = await resonance.getArguments();
-    if (args._.includes("help") || "help" in args) {
+    if (instruction.arguments._.includes("help") || "help" in instruction.arguments) {
       // We don't use await here, or this would probably halt the whole program while the command executes.
-      resonance.executeHelp()
+      instruction.command.help(instruction)
         .then(() => {
           // Do nothing.
         });
@@ -49,18 +49,19 @@ export class CommandListener extends Listener {
 
     // Now that we know a command has been found, we need to pass it through the right Authorizer.
     // We use a factory to build an appropriate authorizer.
-    const authorized = await resonance.client.authorize(await resonance.getCommand(), resonance);
+    const authorizer = await ClientUtilityFactory.buildCommandAuthorizer(instruction);
+    const authorized = await authorizer.authorize();
     if (!authorized) {
       return;
     }
 
     // If a command was found and authorized, execute it.
     // We don't use await here, or this would probably halt the whole program while the command executes.
-    resonance.executeCommand()
+    instruction.command.execute(instruction, resonance)
       .then(async () => {
         // Activate cooldown for this command.
         // @TODO - We MAY need to take this out of the above then() and set it to execute synchronously. We'll see.
-        CommandCooldownManager.setCooldown(resonance)
+        CommandCooldownManager.setCooldown(instruction)
           .then(async () => {
             // Do nothing for now!
           });

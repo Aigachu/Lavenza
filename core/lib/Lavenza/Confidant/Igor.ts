@@ -101,4 +101,34 @@ export class Igor {
     throw new Error(output);
   }
 
+  /**
+   * Exits with a custom message.
+   *
+   * @param error
+   *   The error caught.
+   * @param replacers
+   *   If an array of strings is set here, it will be used to replace any
+   *   placeholders in the text provided above.
+   * @param locale
+   *   Locale determining the language to send the error in.
+   */
+  public static async exit(
+    error: Error | string,
+    // tslint:disable-next-line:no-unnecessary-initializer
+    replacers: {} = undefined,
+    locale: string = process.env.CONSOLE_LOCALE,
+  ): Promise<void> {
+    // If the error is an instance of the error class, simply throw it.
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    // Get the output's translation.
+    const output: string = await Yoshida.translate(error, replacers, locale);
+
+    // Throw the error with the built output.
+    await Morgana.error(output);
+    process.exit(1);
+  }
+
 }

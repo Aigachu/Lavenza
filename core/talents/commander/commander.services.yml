@@ -2,8 +2,11 @@
 # Runtime Flow.
 #
 runtime:
+  genesis:
   synthesis:
-    - { service: commander.manager, priority: 4400}
+    - { service: commander.manager, priority: 4400 }
+  statis:
+  symbiosis:
 
 # Services for the Commander Talent.
 services:
@@ -15,21 +18,30 @@ services:
       - bot.catalogue
 
   # Loader service for commands.
-  command.loader:
+  commander.loader:
     class: src/Service/CommandDirectoryLoader
 
   # Catalogue service for commands.
-  command.catalogue:
+  commander.catalogue:
     class: src/Service/CommandCatalogue
     dependencies:
-      - command.loader
+      - commander.loader
 
   # Plugin Seeker service for commands.
-  command.plugin_seeker:
+  commander.plugin_seeker:
     class: src/Service/CommandPluginSeeker
     dependencies:
-      - command.catalogue
+      - commander.catalogue
       - talent.catalogue
       - bot.catalogue
     tags:
       - 'plugin_seeker'
+
+  # Composer for Commands.
+  commander.composer:
+    class: src/Service/CommandComposer
+    dependencies:
+      - gestalt
+      - bot.catalogue
+    tags:
+      - 'composer'

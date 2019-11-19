@@ -9,19 +9,18 @@
 import * as path from "path";
 
 // Imports.
-import { Akechi } from "../../../../lib/Lavenza/Confidant/Akechi";
+import { ClientType } from "../../../../lib/Lavenza/Client/ClientType";
 import { Igor } from "../../../../lib/Lavenza/Confidant/Igor";
 import { Morgana } from "../../../../lib/Lavenza/Confidant/Morgana";
 import { Sojiro } from "../../../../lib/Lavenza/Confidant/Sojiro";
-import { Gestalt } from "../../../gestalt/src/Service/Gestalt";
+import { Resonance } from "../../../../lib/Lavenza/Resonance/Resonance";
 import { Talent } from "../../../../lib/Lavenza/Talent/Talent";
 import { AbstractObject } from "../../../../lib/Lavenza/Types";
-import { Bot } from "../../../../lib/Lavenza/Bot/Bot";
-import { CommandClientConfig } from "../../../../lib/Lavenza/Client/ClientConfigurations";
-import { ClientType } from "../../../../lib/Lavenza/Client/ClientType";
-import { Resonance } from "../../../../lib/Lavenza/Resonance/Resonance";
+import { Instruction } from "../Instruction/Instruction";
 
-import { CommandConfigurations, CommandParameterConfig } from "./CommandConfigurations";
+import { ClientUtilityFactory } from "./Client/ClientUtilityFactory";
+import { CommandConfigurations } from "./CommandConfigurations";
+
 
 /**
  * Provides a base class for Commands.
@@ -64,6 +63,7 @@ export abstract class Command {
 
   /**
    * The Talent that declared this Command and manages it.
+   * This property simply exists in case a user would like to assign a talent to their command.
    */
   protected talent: Talent;
 
@@ -91,130 +91,12 @@ export abstract class Command {
    *
    * @param config
    *   Configuration read from the command's '.config.yml' file in the command's directory.
-   * @param talent
-   *   Talent that this command is a child of.
    */
-  public async build(config: CommandConfigurations, talent?: Talent): Promise<void> {
-    this.talent = talent;
+  public async build(config: CommandConfigurations): Promise<void> {
     this.config = config;
     this.directory = config.directory;
     this.key = config.key;
     this.aliases = config.aliases;
-  }
-
-  /**
-   * Get the active configuration from the database for this Talent, in the context of a Bot.
-   *
-   * @param bot
-   *   The bot context for the configuration we want to fetch. Each bot can have different configuration overrides
-   *   for talents.
-   *
-   * @returns
-   *   Returns the configuration fetched from the database.
-   */
-  public async getActiveConfigForBot(bot: Bot): Promise<CommandConfigurations> {
-    return await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/config`) as CommandConfigurations;
-  }
-
-  /**
-   * Retrieve active client configuration for a specific client in a bot.
-   *
-   * "Active" configuration refers to the configuration found in the database.
-   *
-   * @param clientType
-   *   The type of client configuration to return for the bot.
-   * @param bot
-   *   Bot to get this configuration for.
-   *
-   * @returns
-   *   The requested client configuration.
-   */
-  public async getActiveClientConfig(clientType: ClientType, bot: Bot): Promise<CommandClientConfig> {
-    // Attempt to get the active configuration from the database.
-    const activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/${clientType}`) as CommandClientConfig;
-    if (!Sojiro.isEmpty(activeConfig)) {
-      return activeConfig;
-    }
-
-    // If we don't find any configurations in the database, we'll fetch it normally and then save it.
-    const config = await this.getClientConfig(clientType);
-
-    // Sync it to the database.
-    await Gestalt.sync(config, `/bots/${bot.id}/commands/${this.id}/${clientType}`);
-
-    // Return the configuration.
-    return config;
-  }
-
-  /**
-   * Retrieve configuration for a specific client.
-   *
-   * @param clientType
-   *   The type of client configuration to return for the bot.
-   *
-   * @returns
-   *   The requested client configuration.
-   */
-  public async getClientConfig(clientType: ClientType): Promise<CommandClientConfig> {
-    // Determine path to client configuration.
-    const pathToClientConfig = `${this.directory}/${clientType}.yml`;
-
-    // Attempt to fetch client configuration.
-    if (!await Akechi.fileExists(pathToClientConfig)) {
-      return undefined;
-    }
-
-    // Load configuration since it exists.
-    return await Akechi.readYamlFile(pathToClientConfig) as CommandClientConfig;
-  }
-
-  /**
-   * Retrieve active parameter configuration for the command in a specific bot
-   *
-   * "Active" configuration refers to the configuration found in the database.
-   *
-   * @param bot
-   *   Bot to get this configuration for.
-   *
-   * @returns
-   *   The requested parameter configuration for the given bot obtained frm the database.
-   */
-  public async getActiveParameterConfig(bot: Bot): Promise<CommandParameterConfig> {
-    // Attempt to get the active configuration from the database.
-    const activeConfig = await Gestalt.get(`/bots/${bot.id}/commands/${this.id}/parameters`) as CommandParameterConfig;
-    if (!Sojiro.isEmpty(activeConfig)) {
-      return activeConfig;
-    }
-
-    // If we don't find any configurations in the database, we'll fetch it normally and then save it.
-    const config = await this.getParameterConfig();
-
-    // Sync it to the database.
-    await Gestalt.sync(config, `/bots/${bot.id}/commands/${this.id}/parameters`);
-
-    // Return the configuration.
-    return config;
-  }
-
-  /**
-   * Retrieve parameter configuration for this command.
-   *
-   * @returns
-   *   The parameter configuration obtained from the core files.
-   */
-  public async getParameterConfig(): Promise<CommandParameterConfig> {
-    // Determine path to client configuration.
-    const pathToParameterConfig = `${this.directory}/parameters.yml`;
-
-    // Attempt to fetch client configuration.
-    if (!await Akechi.fileExists(pathToParameterConfig)) {
-      return {} as unknown as CommandParameterConfig;
-    }
-
-    // Load configuration since it exists.
-    const config = await Akechi.readYamlFile(pathToParameterConfig) as CommandParameterConfig;
-
-    return Sojiro.isEmpty(config) ? {} as unknown as CommandParameterConfig : config;
   }
 
   /**
@@ -226,10 +108,14 @@ export abstract class Command {
    *
    * You can access the bot through the resonance, as well as any of the bot's clients.
    *
+   * @param instruction
+   *   Instruction that was built with this command.
+   *   Contains information pertaining to command arguments, command prefix and more.
    * @param resonance
-   *   Resonance that invoked this command. All information about the client and message are here.
+   *   Resonance that invoked this command.
+   *   Contains information pertaining to the client that the command was invoked in, the bot that was invoked and more.
    */
-  public abstract async execute(resonance: Resonance): Promise<void>;
+  public abstract async execute(instruction: Instruction, resonance: Resonance): Promise<void>;
 
   /**
    * Execute client specific tasks if needed.
@@ -303,12 +189,15 @@ export abstract class Command {
    *
    * You can access the bot through the resonance, as well as any of the bot's clients.
    *
-   * @param resonance
-   *   Resonance that invoked this command. All information about the client and message are here.
+   * @param instruction
+   *   Instruction that invoked this command. All information about the client and message are here.
    */
-  public async help(resonance: Resonance): Promise<void> {
-    // Fire the client's help handler.
-    await resonance.client.help(this, resonance);
+  public async help(instruction: Instruction): Promise<void> {
+    // Obtain the appropriate help handler.
+    const handler = await ClientUtilityFactory.buildCommandHelpHandler(instruction);
+
+    // Fire the help handler.
+    await handler.help(instruction);
   }
 
   /**

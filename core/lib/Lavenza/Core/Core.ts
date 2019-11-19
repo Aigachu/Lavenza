@@ -18,8 +18,6 @@ import { Morgana } from "../Confidant/Morgana";
 import { Sojiro } from "../Confidant/Sojiro";
 import { Yoshida } from "../Confidant/Yoshida";
 import { Gestalt } from "../Gestalt/Gestalt";
-import { EventSubscriber } from "../Service/EventSubscriber/EventSubscriber";
-import { PluginSeeker } from "../Service/PluginSeeker/PluginSeeker";
 import { RuntimeProcessId } from "../Service/RuntimeProcessId";
 import { Service } from "../Service/Service";
 import { ServiceContainer } from "../Service/ServiceContainer";
@@ -27,6 +25,7 @@ import { ServiceType } from "../Service/ServiceType";
 import { TalentManager } from "../Talent/TalentManager";
 
 import { CoreSettings } from "./CoreSettings";
+import { CoreStatus } from "./CoreStatus";
 
 /**
  * Provides class for the Core of the Lavenza application.
@@ -107,7 +106,9 @@ export class Core {
    */
   public static async initialize(root: string = path.dirname(require.main.filename)): Promise<Core> {
     // Some flavor text for the console.
-    await Morgana.success(`Initializing (v${Core.version})...`);
+    await Morgana.success("-----------------------------------------------");
+    await Morgana.success(`INITIALIZING LAVENZA (v${Core.version})...`);
+    await Morgana.success("-----------------------------------------------");
 
     // Path to the Lavenzafile.
     const pathToLavenzafile = `${root}/.lavenza.yml`;
@@ -196,18 +197,30 @@ export class Core {
     }
 
     // Set the core status to "GENESIS" & perform genesis tasks for all services.
+    await Morgana.warn("-----------------------------------------------");
+    await Morgana.warn("[-- PHASE 1/4: GENESIS --]");
+    await Morgana.warn("-----------------------------------------------");
     Core.status = CoreStatus.genesis;
     await ServiceContainer.tasks(RuntimeProcessId.genesis);
 
     // Set the core status to "SYNTHESIS" & perform synthesis tasks for all services
+    await Morgana.warn("-----------------------------------------------");
+    await Morgana.warn("[-- PHASE 2/4: SYNTHESIS --]");
+    await Morgana.warn("-----------------------------------------------");
     Core.status = CoreStatus.synthesis;
     await ServiceContainer.tasks(RuntimeProcessId.synthesis);
 
     // Set the core status to "STATIS" & perform statis tasks for all services.
+    await Morgana.warn("-----------------------------------------------");
+    await Morgana.warn("[-- PHASE 3/4: STATIS --]");
+    await Morgana.warn("-----------------------------------------------");
     Core.status = CoreStatus.statis;
     await ServiceContainer.tasks(RuntimeProcessId.statis);
 
     // Set the core status to "SYMBIOSYS" & perform symbiosis tasks for all services.
+    await Morgana.warn("-----------------------------------------------");
+    await Morgana.warn("[-- PHASE 4/4: SYMBIOSIS --]");
+    await Morgana.warn("-----------------------------------------------");
     Core.status = CoreStatus.symbiosis;
     await ServiceContainer.tasks(RuntimeProcessId.symbiosis);
 
@@ -215,6 +228,13 @@ export class Core {
     Core.status = CoreStatus.running;
 
     // Some more flavor text.
+    await Morgana.success("-----------------------------------------------");
+    await Morgana.wonderful(`██╗    ██╗ ██████╗ ███╗   ██╗██████╗ ███████╗██████╗ ███████╗██╗   ██╗██╗     ██╗
+██║    ██║██╔═══██╗████╗  ██║██╔══██╗██╔════╝██╔══██╗██╔════╝██║   ██║██║     ██║
+██║ █╗ ██║██║   ██║██╔██╗ ██║██║  ██║█████╗  ██████╔╝█████╗  ██║   ██║██║     ██║
+██║███╗██║██║   ██║██║╚██╗██║██║  ██║██╔══╝  ██╔══██╗██╔══╝  ██║   ██║██║     ╚═╝
+╚███╔███╔╝╚██████╔╝██║ ╚████║██████╔╝███████╗██║  ██║██║     ╚██████╔╝███████╗██╗
+ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝      ╚═════╝ ╚══════╝╚═╝`);
     await Morgana.success("Lavenza should now be running! Scroll up in the logs to see if any errors occurred and handle them as needed. :)");
   }
 

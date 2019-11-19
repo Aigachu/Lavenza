@@ -7,7 +7,7 @@
 
 // Imports.
 import { Sojiro } from "../../../../../lib/Lavenza/Confidant/Sojiro";
-import { Resonance } from "../../../../../lib/Lavenza/Resonance/Resonance";
+import { Instruction } from "../../Instruction/Instruction";
 import { CommandCooldownConfig } from "../CommandConfigurations";
 
 /**
@@ -25,24 +25,19 @@ export class CommandCooldownManager {
   /**
    * Heat up a command, rendering it unusable in certain contexts.
    *
-   * @param resonance
-   *   Resonance containing all necessary information to set the cooldown.
-   *   The resonance contains information on the client it's heard from, command used and bot invoked from.
+   * @param instruction
+   *   Instruction containing all necessary information to set the cooldown.
+   *   The instruction contains information on the resonance, which contains info about the client it's heard from,
+   *   the command used and bot invoked from.
    */
-  public static async setCooldown(resonance: Resonance): Promise<void> {
-    // If for whatever reason there is no command set to this Resonance, we return.
-    const command = await resonance.getCommand();
-    if (!command) {
-      return;
-    }
-
+  public static async setCooldown(instruction: Instruction): Promise<void> {
     // We'll build a cooldown signature given the configurations.
     // First, we get the core command configurations.
-    const commandBaseConfig = resonance.instruction.config.base;
+    const commandBaseConfig = instruction.config.base;
     const commandBaseCooldownConfig = commandBaseConfig.cooldown;
 
     // Then, we get the command's client configurations.
-    const commandClientConfig = resonance.instruction.config.client;
+    const commandClientConfig = instruction.config.client;
     const commandClientCooldownConfig = commandClientConfig.cooldown as CommandCooldownConfig || {} as unknown as CommandCooldownConfig;
 
     // Now we determine the cooldowns given the configuration objects above.
@@ -59,14 +54,14 @@ export class CommandCooldownManager {
       // Get global signature for the command's usage.
       // When we say Global, we meant Globally within the scope of a Client.
       // This is subject to change in the future.
-      const globalSign = await CommandCooldownManager.signature(resonance);
+      const globalSign = await CommandCooldownManager.signature(instruction);
       await CommandCooldownManager.heat(globalSign, globalCooldownDuration);
     }
 
     // If the user cooldown is set to 0, we don't need to do anything.
     if (userCooldownDuration !== 0) {
       // Get user signature for the command's usage.
-      const userSign = await CommandCooldownManager.signature(resonance, [resonance.author.id]);
+      const userSign = await CommandCooldownManager.signature(instruction, [instruction.resonance.author.id]);
 
       // Heat up the command.
       await CommandCooldownManager.heat(userSign, userCooldownDuration);
@@ -106,13 +101,13 @@ export class CommandCooldownManager {
   /**
    * Check if a command is heated.
    *
-   * @param resonance
-   *   Resonance to check for, that includes information on the  command and more.
+   * @param instruction
+   *   Instruction to check for, that includes information on the  command and more.
    */
-  public static async check(resonance: Resonance): Promise<boolean> {
+  public static async check(instruction: Instruction): Promise<boolean> {
     // Contexts to check.
-    const globalSign = await CommandCooldownManager.signature(resonance);
-    const userSign = await CommandCooldownManager.signature(resonance, [resonance.author.id]);
+    const globalSign = await CommandCooldownManager.signature(instruction);
+    const userSign = await CommandCooldownManager.signature(instruction, [instruction.resonance.author.id]);
 
     return CommandCooldownManager.cooldowns.includes(globalSign) || CommandCooldownManager.cooldowns.includes(userSign);
   }
@@ -133,13 +128,14 @@ export class CommandCooldownManager {
    *    This code may be extended in the future to have the possibility to extend further supplements PER CLIENT.
    *    It may also be extended in the future to have interclient global cooldowns.
    *
-   * @param resonance
-   *   The resonance to build a signature for.
+   * @param instruction
+   *   The instruction to build a signature for.
    * @param supplements
    *   Supplements that should be added to the unique signature.
    */
-  private static async signature(resonance: Resonance, supplements: string[] = []): Promise<string> {
-    let signature = `${resonance.bot.id}::${resonance.client.type}::${resonance.instruction.command.key}`;
+  private static async signature(instruction: Instruction, supplements: string[] = []): Promise<string> {
+    const resonance = instruction.resonance;
+    let signature = `${resonance.bot.id}::${resonance.client.type}::${instruction.command.key}`;
     for (const supplement of supplements) {
       signature += `::${supplement}`;
     }

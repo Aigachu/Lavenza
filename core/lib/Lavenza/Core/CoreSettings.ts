@@ -27,9 +27,9 @@ export interface CoreSettings {
   config: CoreConfigurationsSettings;
 
   /**
-   * Store services configurations.
+   * Store features configurations.
    */
-  services: CoreServiceSettings;
+  features: CoreFeaturesSettings;
 
 }
 
@@ -77,31 +77,31 @@ export interface CoreBotSettings {
 /**
  * Store settings pertaining to many services Lavenza can use.
  */
-export interface CoreServiceSettings {
+export interface CoreFeaturesSettings {
 
   /**
    * Store google service settings.
    */
-  google: CoreGoogleServiceSettings;
+  google: CoreGoogleFeatureSettings;
 
 }
 
 /**
  * Store the settings for the Google service.
  */
-export interface CoreGoogleServiceSettings {
+export interface CoreGoogleFeatureSettings {
 
   /**
    * Store google translate settings.
    */
-  translate: CoreGoogleServiceTranslateSettings;
+  translate: CoreGoogleFeatureTranslateSettings;
 
 }
 
 /**
  * Store settings pertaining to Google's Translate service.
  */
-export interface CoreGoogleServiceTranslateSettings {
+export interface CoreGoogleFeatureTranslateSettings {
 
   /**
    * Store whether or not this service is enabled.
