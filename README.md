@@ -21,10 +21,9 @@ It is fully written in [Typescript](http://www.typescriptlang.org/) and is fully
 ## Installation & Quickstart
 **Node.js 6.0.0 or newer is required to run Lavenza.**
 
-### Use NPM to install the package & run `npm link`
+### Use NPM to install the package.
 ```bash
 npm install lavenza;
-npm link;
 ```
 
 ### Run Lavenza's provisioning script and follow the instructions.
