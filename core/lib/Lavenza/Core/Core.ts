@@ -7,6 +7,7 @@
  */
 
 // Modules.
+import * as colors from "colors";
 import * as path from "path";
 import * as prompts from "prompts";
 
@@ -26,6 +27,24 @@ import { TalentManager } from "../Talent/TalentManager";
 
 import { CoreSettings } from "./CoreSettings";
 import { CoreStatus } from "./CoreStatus";
+
+// Configure colors for console.
+// Set console color themes.
+/** @see https://www.npmjs.com/package/colors */
+colors.setTheme(
+  {
+    data: "grey",
+    debug: "blue",
+    error: "red",
+    help: "cyan",
+    input: "grey",
+    prompt: "grey",
+    silly: "rainbow",
+    status: "blue",
+    success: "cyan",
+    verbose: "cyan",
+    warning: "yellow",
+  });
 
 /**
  * Provides class for the Core of the Lavenza application.

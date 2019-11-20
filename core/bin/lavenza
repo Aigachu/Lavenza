@@ -338,6 +338,9 @@ async function provision(args, bypassIntro = false) {
     await provisionSetup();
   }
 
+  // Load the environment.
+  await loadEnvironment();
+
   // If we reach here, we've gone through all the necessary checks and everything's good!
 //   message(`                     __                      __
 //                     |  \\                    |  \\

@@ -16,7 +16,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Imports.
-const Command_1 = require("../../../../../../../core/talents/commander/src/Command/Command");
+const lavenza_1 = require("lavenza");
 /**
  * Ping command.
  *
@@ -24,7 +24,7 @@ const Command_1 = require("../../../../../../../core/talents/commander/src/Comma
  *
  * A great testing command.
  */
-class Ping extends Command_1.Command {
+class Ping extends lavenza_1.Command {
     /**
      * This is the static build function of the command.
      *
@@ -56,10 +56,10 @@ class Ping extends Command_1.Command {
      *
      * @inheritDoc
      */
-    execute(resonance) {
+    execute(instruction, resonance) {
         return __awaiter(this, void 0, void 0, function* () {
             if (resonance.content === "ping") {
-                resonance.reply("Pong! Hi bitches!");
+                resonance.__reply("Pong! Hi bitches!");
             }
             // Sending a reply with the built-in reply() function in the resonance.
             // Resonances come with a shortcut function called reply() built in.

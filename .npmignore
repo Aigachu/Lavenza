@@ -5,5 +5,10 @@ core/**/*.ts
 # Ignore .idea files.
 .idea
 
+# Ignore development files.
+docker-compose.yml
+tsconfig.json
+tslint.json
+
 # Ignore test files.
 tests/**

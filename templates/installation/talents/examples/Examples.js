@@ -7,12 +7,12 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 // Imports.
-const Talent_1 = require("../../../../core/lib/Lavenza/Talent/Talent");
+const lavenza_1 = require("lavenza");
 /**
  * Example Talent.
  *
  * This class can do *anything* or *nothing*. It's an entry point for extended development of features.
  */
-class Examples extends Talent_1.Talent {
+class Examples extends lavenza_1.Talent {
 }
 exports.Examples = Examples;

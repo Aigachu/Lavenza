@@ -16,13 +16,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Imports.
-const CommandClientHandler_1 = require("../../../../../../../../../core/talents/commander/src/Command/CommandClientHandler");
+const lavenza_1 = require("lavenza");
 /**
  * A simple Twitch client handler for the Pong command.
  *
  * This class simply executes the tasks for a given command, in the context of a client.
  */
-class Handler extends CommandClientHandler_1.CommandClientHandler {
+class Handler extends lavenza_1.CommandClientHandler {
     /**
      * Execute this handler's tasks.
      *

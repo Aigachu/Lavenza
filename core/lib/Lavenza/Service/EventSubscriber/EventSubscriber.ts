@@ -26,5 +26,6 @@ export abstract class EventSubscriber extends Service {
    * Get the list of subscribed events for given clients.
    */
   public abstract getEventSubcriptions(): EventSubscriptions;
+
 }
 

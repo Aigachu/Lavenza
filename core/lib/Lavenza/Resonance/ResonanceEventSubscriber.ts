@@ -33,7 +33,10 @@ export class ResonanceEventSubscriber extends EventSubscriber {
         // When the "message" event occurs, fire the "resonate" function with a priority of "5000".
         message: { method: "resonate", priority: 5000 },
       },
-      [ClientType.Twitch]: {},
+      [ClientType.Twitch]: {
+        // When the "message" event occurs, fire the "resonate" function with a priority of "5000".
+        message: { method: "resonate", priority: 5000 },
+      },
     };
   }
 

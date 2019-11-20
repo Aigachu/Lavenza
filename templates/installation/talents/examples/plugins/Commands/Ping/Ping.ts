@@ -54,7 +54,7 @@ export class Ping extends Command {
    */
   public async execute(instruction: Instruction, resonance: Resonance): Promise<void> {
     if (resonance.content === "ping") {
-      resonance.__reply("Pong! Hi bitches!");
+      await resonance.__reply("Pong! Hi bitches!");
     }
 
     // Sending a reply with the built-in reply() function in the resonance.
