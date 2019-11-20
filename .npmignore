@@ -9,6 +9,7 @@ core/**/*.ts
 docker-compose.yml
 tsconfig.json
 tslint.json
+.lavenza.yml
 
 # Ignore test files.
 tests/**
