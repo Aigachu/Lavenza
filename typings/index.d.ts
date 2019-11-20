@@ -484,9 +484,9 @@ declare module "lavenza" {
       onResponse: (resonance: Resonance, prompt: Prompt) => Promise<void>,
       onError?: (error: PromptException) => Promise<void>)
       : Promise<void>;
-    public reply(content: string, personalizationTag: string): Promise<unknown>;
+    public reply(content: string, personalizationTag?: string): Promise<unknown>;
     public __reply(...parameters: unknown[]): Promise<unknown>;
-    public send(destination: unknown, content: string, personalizationTag: string): Promise<unknown>;
+    public send(destination: unknown, content: string, personalizationTag?: string): Promise<unknown>;
     public __send(destination: unknown, ...parameters: unknown[]): Promise<unknown>;
     public abstract typeFor(seconds: number, destination: unknown): Promise<void>;
     protected abstract doSend(bot: Bot, destination: unknown, content: string): Promise<unknown>;
