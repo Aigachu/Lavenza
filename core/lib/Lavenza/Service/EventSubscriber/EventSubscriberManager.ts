@@ -44,7 +44,7 @@ export class EventSubscriberManager extends Service {
     // Loop through all the records and run those that we need to run.
     for (const record of records) {
       // First, we check if the service defined in the record is a service that is available for the bot in the client.
-      if (record.service.talent && !(record.service.talent in client.bot.config.talents)) {
+      if (record.service.talent && !client.bot.config.talents.includes(record.service.talent)) {
         continue;
       }
 

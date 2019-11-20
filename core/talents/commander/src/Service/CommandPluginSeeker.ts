@@ -22,7 +22,7 @@ export class CommandPluginSeeker extends PluginSeeker<Command> {
   /**
    * The desired path relative to the talent's root directory where you'd like the service to search for Plugins.
    */
-  protected path: string = "Plugins/Commands";
+  protected path: string = "plugins/Commands";
 
   /**
    * ID of a loader defined to act upon all items found in the defined path.

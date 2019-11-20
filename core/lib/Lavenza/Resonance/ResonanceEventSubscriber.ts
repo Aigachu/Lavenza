@@ -79,7 +79,7 @@ export class ResonanceEventSubscriber extends EventSubscriber {
     // Run them all.
     for (const resonator of resonators) {
       // First, we check if the service defined is a service that is available for the bot in the client.
-      if (resonator.talent && !(resonator.talent in client.bot.config.talents)) {
+      if (resonator.talent && !client.bot.config.talents.includes(resonator.talent)) {
         continue;
       }
 

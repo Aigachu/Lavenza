@@ -125,7 +125,7 @@ export class Talent {
     }
 
     // Otherwise, use the ServiceContainer to load the specified services.
-    await ServiceContainer.load(`${this.directory}/${this.machineName}.services.yml`);
+    await ServiceContainer.load(`${this.directory}/${this.machineName}.services.yml`, this.machineName);
 
     // Mark this talent as loaded.
     this.loaded = true;
