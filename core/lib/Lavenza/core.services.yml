@@ -75,6 +75,16 @@ services:
       - bot.catalogue
 
   #
+  # Talent Resonator Service.
+  #
+  talent.resonator:
+    class: Talent/TalentResonator
+    dependencies:
+      - talent.catalogue
+    tags:
+      - 'resonator'
+
+  #
   # Loader Service service for Bots.
   #
   bot.loader:
@@ -132,7 +142,7 @@ services:
   #
   # Functional Door Resonator Service.
   #
-  functional_door.resonator:
+  functional.resonator:
     class: Functional/FunctionalResonator
     dependencies:
       - talent.catalogue
