@@ -1,15 +1,21 @@
 # Ignore TS files.
 # We don't need to publish any typescript files.
-core/**/*.ts
+/core/**/*.ts
 
-# Ignore .idea files.
+# Ignore .idea folders.
 .idea
 
+# Ignore .env files everywhere.
+.env
+
 # Ignore development files.
-docker-compose.yml
-tsconfig.json
-tslint.json
-.lavenza.yml
+/docker-compose.yml
+/tsconfig.json
+/tslint.json
+/.lavenza.yml
 
 # Ignore test files.
-tests/**
+/tests/**
+
+# Mac Files.
+.DS_Store
