@@ -6,9 +6,23 @@
  */
 
 // Imports.
+import { Resonance } from "../../lib/Lavenza/Resonance/Resonance";
 import { Talent } from "../../lib/Lavenza/Talent/Talent";
 
 /**
  * WONDERFUL!
  */
-export class Wonderful extends Talent {}
+export class Wonderful extends Talent {
+
+  /**
+   * Resonator function for the Wonderful talent.
+   *
+   * @inheritDoc
+   */
+  public async resonate(resonance: Resonance): Promise<void> {
+    if (resonance.content === "wonderful") {
+      await resonance.__reply("Wonderful! <3");
+    }
+  }
+
+}

@@ -16,7 +16,7 @@ import { Prompt } from "./Prompt";
  *
  * Prompts are a core functionality in the framework and will implement their own resonator.
  */
-export abstract class PromptResonator extends Resonator {
+export class PromptResonator extends Resonator {
 
   /**
    * The priority of the Resonator. This determines the order in which Resonators will resonate.

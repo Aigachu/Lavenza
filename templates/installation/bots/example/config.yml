@@ -1,9 +1,9 @@
 # Reader-Friendly name of the bot.
-name: 'Example'
+name: 'Mikuchu'
 
 # Main command prefix.
 # The command prefix can be overridden per client. A default one is necessary, though.
-commandPrefix: '!'
+commandPrefix: '°'
 
 # Default Locale.
 # Set the default language the bot will speak in.
@@ -14,11 +14,19 @@ locale: 'en'
 # You must enter the exact name of the directory of the talent.
 # Talents are like bundles of features that can be used by the bot.
 talents:
-  - examples
+  - cleverbot
+  - coinflip
+  - commander
+  - configure
+  - eightball
+  - gestalt
+  - i18n
+  - minigames
+  - wonderful
 
 # Clients
 # Configurations for which clients this bot will access.
-# For each client added, a respective CLIENT_NAME.yml must be found in this directory with the client's configuration.
+# For each client added, a respective clients/CLIENT_NAME.yml must be found in this directory with the client's configuration.
 # You can always find example templates of these files in the example bot!
 #
 # Supported Clients:
@@ -26,3 +34,4 @@ talents:
 # - Twitch
 clients:
   - Discord
+  - Twitch

@@ -17,6 +17,7 @@ import { AssociativeObject } from "../Types";
 
 import { TalentCatalogue } from "./TalentCatalogue";
 import { TalentConfigurations } from "./TalentConfigurations";
+import { Resonance } from "../Resonance/Resonance";
 
 /**
  * Provides a base class for 'Talents'.
@@ -65,6 +66,26 @@ export class Talent {
   public loaded: boolean = false;
 
   /**
+   * Priority number of a talent.
+   *
+   * The Talent's priority rating will affect the order in which certain actions in the application execute.
+   */
+  public priority: number = 0;
+
+  /**
+   * Resonate with a message heard in a bot.
+   *
+   * This is the default implementation of the function. All Talents can choose to resonate and do tasks when messages
+   * are heard.
+   *
+   * @param resonance
+   *   The Resonance heard in the bot.
+   */
+  public async resonate(resonance: Resonance): Promise<void> {
+    // Do nothing by default!
+  }
+
+  /**
    * Perform genesis tasks.
    *
    * Each talent will call this function once to set their properties in the genesis phase of the application.
@@ -76,6 +97,7 @@ export class Talent {
     // Initialize fields.
     this.machineName = path.basename(config.directory); // Here we get the name of the directory and set it as the ID.
     this.config = config;
+    this.priority = config.priority || 0;
     this.directory = config.directory;
   }
 

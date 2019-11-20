@@ -5,8 +5,8 @@
  * License: https://github.com/Aigachu/Lavenza-II/blob/master/LICENSE
  */
 
-import { Sojiro } from "../../../../lib/Lavenza/Confidant/Sojiro";
 // Imports.
+import { Sojiro } from "../../../../lib/Lavenza/Confidant/Sojiro";
 import { Resonance } from "../../../../lib/Lavenza/Resonance/Resonance";
 import { Resonator } from "../../../../lib/Lavenza/Resonance/Resonator/Resonator";
 import { ServiceContainer } from "../../../../lib/Lavenza/Service/ServiceContainer";
@@ -16,12 +16,12 @@ import { ListenerCatalogue } from "./ListenerCatalogue";
 /**
  * Provides a resonator for Listeners.
  */
-export abstract class ListenerResonator extends Resonator {
+export class ListenerResonator extends Resonator {
 
   /**
    * The priority of the Resonator. This determines the order in which Resonators will resonate.
    */
-  public abstract priority: number = 4000;
+  public priority: number = 4000;
 
   /**
    * Resonate function for the Listeners talent.

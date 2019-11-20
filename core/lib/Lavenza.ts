@@ -40,6 +40,7 @@ import { Yoshida } from "./Lavenza/Confidant/Yoshida";
 import { Core } from "./Lavenza/Core/Core";
 import { CoreStatus } from "./Lavenza/Core/CoreStatus";
 import { Eminence } from "./Lavenza/Eminence/Eminence";
+import { FunctionalResonator } from "./Lavenza/Functional/FunctionalResonator";
 import { Composer } from "./Lavenza/Gestalt/Composer/Composer";
 import { Gestalt } from "./Lavenza/Gestalt/Gestalt";
 import { GestaltComposer } from "./Lavenza/Gestalt/GestaltComposer";
@@ -100,6 +101,7 @@ module.exports = {
   DirectoryLoader,
   EventSubscriberManager,
   FileLoader,
+  FunctionalResonator,
   Gestalt,
   GestaltComposer,
   GestaltEventSubscriber,

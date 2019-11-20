@@ -134,8 +134,7 @@ export class TalentManager extends Service {
       // This basically checks if the talent entered is valid. Invalid ones are removed from the array.
       if (!await TalentManager.validateTalentDependencies(talent, bot)) {
         bot.config.talents = Sojiro.removeFromArray(bot.config.talents, talent.machineName);
-
-        return;
+        continue;
       }
 
       // We will also load this talent.

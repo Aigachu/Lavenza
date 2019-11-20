@@ -6,26 +6,25 @@
  */
 
 // Imports.
-import { Resonance } from "../../../../lib/Lavenza/Resonance/Resonance";
-import { Listener } from "../../../listeners/src/Listener/Listener";
-import { ClientUtilityFactory } from "../../src/Command/Client/ClientUtilityFactory";
-import { CommandCooldownManager } from "../../src/Command/CommandCooldownManager/CommandCooldownManager";
+import { Resonance } from "../../lib/Lavenza/Resonance/Resonance";
+import { Talent } from "../../lib/Lavenza/Talent/Talent";
+
+import { ClientUtilityFactory } from "./src/Command/Client/ClientUtilityFactory";
+import { CommandCooldownManager } from "./src/Command/CommandCooldownManager/CommandCooldownManager";
 
 /**
- * Provides a Listener that listens for commands when messages are heard by a Bot.
- *
- * The CommandListener will handle the determination of whether a received Resonance contains a command or not.
- *
- * All the logic for commands starts here.
+ * Core Talent to allow management of commands in a Bot.
  */
-export class CommandListener extends Listener {
+export class Commander extends Talent {
 
   /**
-   * Listen to a resonance and act upon it.
+   * Resonator function for the Commander talent.
+   *
+   * This will attempt to search for a command in a message and do that command if necessary.
    *
    * @inheritDoc
    */
-  public async listen(resonance: Resonance): Promise<void> {
+  public async resonate(resonance: Resonance): Promise<void> {
     // Use the CommandInterpreter to find out if there's a command in the resonance.
     // If there's a command, the interpreter will return an instruction that will be assigned to the Resonance we heard.
     const interpreter = await ClientUtilityFactory.buildCommandInterpreter(resonance);

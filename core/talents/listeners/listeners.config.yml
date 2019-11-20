@@ -2,13 +2,13 @@
 name: 'Listeners'
 
 # Talent description.
-description: 'Exposes features related to Listeners management.'
+description: 'Exposes the ability to have Listener plugins per talent. Basically easy, OOP resonance hooks.'
 
 # Talent Version.
 version: 1.0.0
 
 # Path to the main class of the Talent, relative to this directory.
-class: 'src/Listeners'
+class: 'Listeners'
 
 # Set dependencies for this talent.
 # This talent will not be enabled if any of its dependencies aren't enabled.

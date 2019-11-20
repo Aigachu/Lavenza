@@ -105,7 +105,7 @@ export class ServiceContainer {
     for (const [serviceId, definition] of Object.entries(serviceDefinitions)) {
       // If his service already exists, we should exit with an error.
       if (services.find((srv: Service) => srv.id === serviceId)) {
-        await Igor.throw(`Duplicate services "${serviceId}". Please adjust service names accordingly.`);
+        await Igor.throw(`Duplicate services {${serviceId}}. Please adjust service names accordingly.`);
       }
 
       // Get the true path to the service, relative to the location of the definition file.
@@ -113,7 +113,7 @@ export class ServiceContainer {
 
       // If the service file doesn't exist, we stop here and exit the program completely.
       if (!Akechi.fileExists(serviceFilePath)) {
-        await Igor.throw(`The requested service file "${serviceFilePath}" for service "${serviceFilePath}" does not exist.`);
+        await Igor.throw(`The requested service file "${serviceFilePath}" for service {${serviceFilePath}} does not exist.`);
       }
 
       // We will simply require the file here.
@@ -122,6 +122,9 @@ export class ServiceContainer {
 
       // Assign the service to the variable we defined.
       services.push(service);
+
+      // Tasty flavour.
+      await Morgana.success(`Successfully loaded the {${service.id}} service.`);
     }
 
     // Set all the services we loaded.
@@ -133,7 +136,7 @@ export class ServiceContainer {
       for (const dependency of service.dependencies) {
         // If the dependency isn't loaded, we exit with an error.
         if (!ServiceContainer.services.find((srv) => srv.id === dependency)) {
-          await Igor.throw(`Service "${service.id}" depends on non-existent service "${dependency}". Please verify that all needed services exist and are instantiated during runtime."`);
+          await Igor.throw(`Service {${service.id}} depends on non-existent service {${dependency}}. Please verify that all needed services exist and are instantiated during runtime."`);
         }
       }
       // Run build tasks.
@@ -156,7 +159,7 @@ export class ServiceContainer {
       for (const serviceDefinition of processServices) {
         // If the service doesn't exist, for whatever reason, we should exit.
         if (!ServiceContainer.serviceExists(serviceDefinition.service)) {
-          await Igor.throw(`The defined service "${serviceDefinition.service}" does not exist or was not loaded. Please verify your .services.yml files!`);
+          await Igor.throw(`The defined service {${serviceDefinition.service}} does not exist or was not loaded. Please verify your .services.yml files!`);
         }
 
         // Otherwise, we're good.
@@ -193,11 +196,11 @@ export class ServiceContainer {
     }
 
     for (const task of ServiceContainer.runtimeTasks[process]) {
-      await Morgana.status(`TASK ${task.priority}: ${task.service.id}->${task.method}() ...`);
+      await Morgana.status(`TASK ${task.priority}: {${task.service.id}}->${task.method}() ...`);
       await task.service[task.method]();
       await Morgana.success("Done!");
       if (ServiceContainer.runtimeTasks[process].indexOf(task) !== ServiceContainer.runtimeTasks[process].length - 1) {
-        await Morgana.status("\n");
+        await Morgana.status("\r");
       }
     }
   }

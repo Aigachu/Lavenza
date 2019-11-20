@@ -41,6 +41,11 @@ export interface TalentConfigurations {
   name: string;
 
   /**
+   * Priority rating of the talent.
+   */
+  priority: number;
+
+  /**
    * The version number of the Talent.
    */
   version: string;

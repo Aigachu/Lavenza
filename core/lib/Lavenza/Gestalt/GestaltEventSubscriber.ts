@@ -21,7 +21,7 @@ import { Gestalt } from "./Gestalt";
 /**
  * Provides an event subscriber for the Gestalt talent.
  */
-export abstract class GestaltEventSubscriber extends EventSubscriber {
+export class GestaltEventSubscriber extends EventSubscriber {
 
   /**
    * House the gestalt service that will be injected through DI with the build() function.

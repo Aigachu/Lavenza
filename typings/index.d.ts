@@ -1,4 +1,11 @@
 /* tslint:disable:completed-docs only-arrow-functions max-classes-per-file no-any file-name-casing */
+import { Akechi } from "../core/lib/Lavenza/Confidant/Akechi";
+import { BotFunctionalDoor } from "../core/lib/Lavenza/Functional/BotFunctionalDoor";
+import { Resonance } from "../core/lib/Lavenza/Resonance/Resonance";
+import { Resonator } from "../core/lib/Lavenza/Resonance/Resonator/Resonator";
+import { ServiceContainer } from "../core/lib/Lavenza/Service/ServiceContainer";
+import { TalentCatalogue } from "../core/lib/Lavenza/Talent/TalentCatalogue";
+
 /**
  * Project Lavenza
  * Copyright 2017-2019 Aigachu, All Rights Reserved
@@ -175,6 +182,11 @@ declare module "lavenza" {
     public load(root: string): Promise<T[]>;
   }
 
+  export class FunctionalResonator extends Resonator {
+    public priority: number = 4500;
+    public resonate(resonance: Resonance): Promise<void>;
+  }
+
   export class Gestalt {
     private storageService: StorageService;
     public genesis(): Promise<void>;
@@ -197,7 +209,7 @@ declare module "lavenza" {
     public getActiveTalentConfigForBot(talent: Talent, bot: Bot): Promise<TalentConfigurations>;
   }
 
-  export abstract class GestaltEventSubscriber extends EventSubscriber {
+  export class GestaltEventSubscriber extends EventSubscriber {
     public gestaltService: Gestalt;
     public build(): Promise<void>;
     public getEventSubcriptions(): EventSubscriptions;
@@ -224,7 +236,7 @@ declare module "lavenza" {
     protected plug(plugins: Listener[], entity: Bot | Talent): Promise<void>;
   }
 
-  export abstract class ListenerResonator extends Resonator {
+  export class ListenerResonator extends Resonator {
     public abstract priority: number;
     public resonate(resonance: Resonance): Promise<void>;
   }
@@ -234,7 +246,7 @@ declare module "lavenza" {
     public genesis(): Promise<void>;
   }
 
-  export abstract class PromptResonator extends Resonator {
+  export class PromptResonator extends Resonator {
     public priority: number;
     public resonate(resonance: Resonance): Promise<void>;
   }
@@ -514,6 +526,7 @@ declare module "lavenza" {
     public directory: string;
     public machineName: string;
     public loaded: boolean;
+    public resonate(resonance: Resonance): Promise<void>;
     public build(config: TalentConfigurations): Promise<void>;
     public initialize(bot: Bot): Promise<void>;
     public load(): Promise<void>;
@@ -667,6 +680,10 @@ declare module "lavenza" {
 
   interface ClientChannel {
     id: string;
+  }
+
+  interface BotFunctionalDoor {
+    resonate?(resonance: Resonance): Promise<void>;
   }
 
   interface BotConfigurations {
