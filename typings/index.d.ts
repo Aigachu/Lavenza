@@ -358,11 +358,11 @@ declare module "lavenza" {
 
   export class DiscordPrompt extends Prompt {
     public user: User;
-    public line: Channel | TextChannel | DMChannel | GroupDMChannel;
+    public line: TextChannel | DMChannel | GroupDMChannel | User;
     public resonance: DiscordResonance;
     public constructor(
       user: User,
-      line: Channel | TextChannel | DMChannel | GroupDMChannel,
+      line: TextChannel | DMChannel | GroupDMChannel | User,
       resonance: DiscordResonance,
       lifespan: number,
       onResponse: (resonance: DiscordResonance, prompt: DiscordPrompt) => Promise<void>,
@@ -376,14 +376,14 @@ declare module "lavenza" {
     public message: Message;
     public client: DiscordClient;
     public author: User;
-    public channel: Channel | TextChannel | DMChannel | GroupDMChannel;
-    public origin: Channel | TextChannel | DMChannel | GroupDMChannel;
+    public channel: TextChannel | DMChannel | GroupDMChannel | User;
+    public origin: TextChannel | DMChannel | GroupDMChannel | User;
     public guild: Guild;
     public constructor(content: string, message: Message, bot: Bot, client: Client);
     public getLocale(): Promise<string>;
     public resolveOrigin(): Promise<Channel>;
     public resolvePrivacy(): Promise<string>;
-    public typeFor(seconds: number, destination: TextChannel | DMChannel | GroupDMChannel): Promise<void>;
+    public typeFor(seconds: number, destination: TextChannel | DMChannel | GroupDMChannel | User): Promise<void>;
     protected doSend(bot: Bot, destination: TextChannel, content: string): Promise<Message | Message[]>;
   }
 

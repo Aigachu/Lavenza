@@ -40,12 +40,12 @@ export class DiscordResonance extends Resonance {
   /**
    * The Channel where the message was heard.
    */
-  public channel: Channel | TextChannel | DMChannel | GroupDMChannel;
+  public channel: TextChannel | DMChannel | GroupDMChannel | User;
 
   /**
    * The origin of the message in the form of data from the client.
    */
-  public origin: Channel | TextChannel | DMChannel | GroupDMChannel;
+  public origin: TextChannel | DMChannel | GroupDMChannel | User;
 
   /**
    * The Guild (Discord Server) where the message was heard.
