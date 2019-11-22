@@ -12,11 +12,11 @@ It is fully written in [Typescript](http://www.typescriptlang.org/) and is fully
 - Twitch
 
 **Future Clients**
-- Slack (V3)
+- Slack (V4)
 - Messenger (V4)
-- Youtube (V4)
+- Youtube (V5)
 - WhatsApp (Maybe?...)
-- Skype (God I don't know...)
+- Skype (Meh...)
 
 ## Installation & Quickstart
 **Node.js 6.0.0 or newer is required to run Lavenza.**
