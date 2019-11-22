@@ -1,11 +1,4 @@
 /* tslint:disable:completed-docs only-arrow-functions max-classes-per-file no-any file-name-casing */
-import { Akechi } from "../core/lib/Lavenza/Confidant/Akechi";
-import { BotFunctionalDoor } from "../core/lib/Lavenza/Functional/BotFunctionalDoor";
-import { Resonance } from "../core/lib/Lavenza/Resonance/Resonance";
-import { Resonator } from "../core/lib/Lavenza/Resonance/Resonator/Resonator";
-import { ServiceContainer } from "../core/lib/Lavenza/Service/ServiceContainer";
-import { TalentCatalogue } from "../core/lib/Lavenza/Talent/TalentCatalogue";
-
 /**
  * Project Lavenza
  * Copyright 2017-2019 Aigachu, All Rights Reserved
@@ -381,10 +374,11 @@ declare module "lavenza" {
 
   export class DiscordResonance extends Resonance {
     public message: Message;
-    public author: User;
-    public guild: Guild;
-    public channel: Channel | TextChannel | DMChannel | GroupDMChannel;
     public client: DiscordClient;
+    public author: User;
+    public channel: Channel | TextChannel | DMChannel | GroupDMChannel;
+    public origin: Channel | TextChannel | DMChannel | GroupDMChannel;
+    public guild: Guild;
     public constructor(content: string, message: Message, bot: Bot, client: Client);
     public getLocale(): Promise<string>;
     public resolveOrigin(): Promise<Channel>;
@@ -470,10 +464,10 @@ declare module "lavenza" {
     public bot: Bot;
     public client: Client;
     public author: ClientUser;
+    public channel: ClientChannel;
     public origin: unknown;
     public locale: string;
     public private: string;
-    public channel: ClientChannel;
     protected constructor(content: string, message: ClientMessage, bot: Bot, client: Client);
     public build(): Promise<void>;
     public isPrivate(): Promise<boolean>;
@@ -550,9 +544,10 @@ declare module "lavenza" {
 
   export class TwitchResonance extends Resonance {
     public message: TwitchMessage;
+    public client: TwitchClient;
     public author: TwitchUser;
     public channel: TwitchChannel;
-    public client: TwitchClient;
+    public origin: TwitchChannel;
     public constructor(content: string, message: TwitchMessage, bot: Bot, client: TwitchClient);
     public getLocale(): Promise<string>;
     public typeFor(seconds: number, destination?: string): Promise<void>;

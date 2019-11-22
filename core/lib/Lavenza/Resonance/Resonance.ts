@@ -55,6 +55,11 @@ export abstract class Resonance {
   public author: ClientUser;
 
   /**
+   * The location where this message was heard. Type relative to the client.
+   */
+  public channel: ClientChannel;
+
+  /**
    * The origin of the message in the form of data from the client.
    */
   public origin: unknown;
@@ -69,11 +74,6 @@ export abstract class Resonance {
    * Whether the message was private or not. Depending on the privacy, it will be either 'public' or 'private'.
    */
   public private: string;
-
-  /**
-   * The location where this message was heard. Type relative to the client.
-   */
-  public channel: ClientChannel;
 
   /**
    * Resonance constructor.

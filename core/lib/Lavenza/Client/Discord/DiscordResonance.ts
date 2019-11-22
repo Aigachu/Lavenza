@@ -28,14 +28,14 @@ export class DiscordResonance extends Resonance {
   public message: Message;
 
   /**
+   * The Client connected to this Resonance.
+   */
+  public client: DiscordClient;
+
+  /**
    * The Message object obtained from the Discord Client.
    */
   public author: User;
-
-  /**
-   * The Guild (Discord Server) where the message was heard.
-   */
-  public guild: Guild;
 
   /**
    * The Channel where the message was heard.
@@ -43,9 +43,14 @@ export class DiscordResonance extends Resonance {
   public channel: Channel | TextChannel | DMChannel | GroupDMChannel;
 
   /**
-   * The Client connected to this Resonance.
+   * The origin of the message in the form of data from the client.
    */
-  public client: DiscordClient;
+  public origin: Channel | TextChannel | DMChannel | GroupDMChannel;
+
+  /**
+   * The Guild (Discord Server) where the message was heard.
+   */
+  public guild: Guild;
 
   /**
    * DiscordResonance constructor.

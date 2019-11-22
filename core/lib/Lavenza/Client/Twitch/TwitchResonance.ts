@@ -29,6 +29,11 @@ export class TwitchResonance extends Resonance {
   public message: TwitchMessage;
 
   /**
+   * The Channel where the message was heard.
+   */
+  public client: TwitchClient;
+
+  /**
    * The Message object obtained from the Discord Client.
    */
   public author: TwitchUser;
@@ -39,9 +44,9 @@ export class TwitchResonance extends Resonance {
   public channel: TwitchChannel;
 
   /**
-   * The Channel where the message was heard.
+   * The origin of the message in the form of data from the client.
    */
-  public client: TwitchClient;
+  public origin: TwitchChannel;
 
   /**
    * DiscordResonance constructor.
