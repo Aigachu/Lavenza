@@ -120,7 +120,7 @@ switch to another programming language AGAIN! Who knows what the future holds!
 > As always, ENJOY THE CODE! 
 
 # ***- November 25th, 2019 -***
-> So...One yeah huh. Wow.
+> So...One year huh. Wow.
 >
 > Here I am in Greece, at 7:45 AM, typing up another preface for this project. I must really cherish Lavenza. HAHA.
 >
