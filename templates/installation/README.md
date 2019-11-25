@@ -3,7 +3,7 @@ Hello and welcome to Lavenza! This is the root of your Lavenza installation.
 
 Configurations for your bots will be done in this directory.
 
-The guide below assumes that you already read and went through the **README found at the root of this repository**! Give that a look if you haven't.
+The guide below assumes that you already read and went through the [**README found at the root of the Lavenza Repository**](https://github.com/Aigachu/Lavenza)! Give that a look if you haven't.
 
 ## Quickstart After Provisioning
 If you went through things normally, you should be here **after** having done the `lavenza provision` command. 

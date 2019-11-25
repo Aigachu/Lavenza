@@ -293,6 +293,8 @@ export class DiscordClient extends Client {
   /**
    * Send a embed to a channel.
    *
+   * @TODO - We really gotta define an interface for the embed object LOL.
+   *
    * @see https://leovoel.github.io/embed-visualizer/
    *
    * @param destination

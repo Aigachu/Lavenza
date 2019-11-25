@@ -118,3 +118,38 @@ switch to another programming language AGAIN! Who knows what the future holds!
 > Alright, I think I've written enough. Let's get back to work! :D
 >
 > As always, ENJOY THE CODE! 
+
+# ***- November 25th, 2019 -***
+> So...One yeah huh. Wow.
+>
+> Here I am in Greece, at 7:45 AM, typing up another preface for this project. I must really cherish Lavenza. HAHA.
+>
+> Hello again! Welcome to yet another entry it what seems to be a chronicle of the development of this framework of mine,
+where I empty my thoughts and think about the future. HAHA. Trust me, this is more therapeutic than it seems.
+>
+> I find it funny how the last entry was two months ago and I ended with "Lavenza III is on the horizon!". Truth is, we're
+already at Lavenza IV. The changes I made after dropping version III were...Huge, to say the least. But man is Lavenza IV clean.
+>
+> Lavenza feels even more like a framework now. There are mountains of work to do until I can truly say that the project is complete,
+but in its current state it's definitely usable and accomplishes A LOT. Making multiple bots has never been easier for me, and I've done
+so much. Bash commands for an interactive process...Service container logic to allow for intricate feature development...God, so much.
+>
+> By day, I work a 9 to 5 as a Drupal developer. Anyone that has touched Drupal will **feel** it's inspiration when looking at the inner
+workings of the framework. I inspired myself from Drupal a lot, or at least the good parts of it. But it just makes me wonder...How many
+more technologies will I touch in the next few years? And how many of them will inspire me enough that I bleed its essence into this project?
+>
+> Exciting, honestly. To think about how Lavenza V or Lavenza VI will look. But for now, I think we're good.
+>
+> As I love to say, I'm no god nor do I even consider myself a good developer. There are excellent developers out there that enjoy it more
+and are miles better at it than I am. But I just realize how important it is to do something, for yourself, and to be proud of it.
+>
+> Chances are Lavenza IV will be on version IV for awhile. Far longer than version III's lifecycle! LOL! But it isn't because I have nothing
+left to do. There is still a lot to be done, a lot to improve and clean up. Hell, more clients to configure and cover support for. But version IV
+is where we'll do a lot of stabilization and cleanup. That, and another project has begun. The first official project of mine to make use of Lavenza: 
+[Estrella](https://github.com/Aigachu/Estrella).
+>
+> ...Why am I even adding a link there? It's a private project! HAHA. But hey, if you have access to that, then know that it's an honor to work with you.
+>
+> Anyways, it's time for enjoy the rest of my time in Athens. Next preface? When Lavenza V drops.
+>
+> See you then.
