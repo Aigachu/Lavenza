@@ -38,6 +38,6 @@ joker: 'YOUR_TWITCH_USERNAME'
 #
 # As in the example below, add entries that take up a TWITCH_USERNAME: EMINENCE_ID format. The entries added here will be
 # the baseline configuration. Additional configurations can be customized later on per twitch channel.
-userRoles:
-  TWITCH_USERNAME: Aficionado
-  TWITCH_USERNAME_2: Confidant
+userEminences:
+  'TWITCH_USERNAME': Aficionado
+  'TWITCH_USERNAME_2': Confidant

@@ -34,7 +34,7 @@ joker: 'YOUR_DISCORD_ID'
 #
 # As in the example below, add entries that take up a DISCORD_USER_ID: EMINENCE_ID format. The entries added here will be
 # the baseline configuration. Additional configuration can be set per discord server.
-userRoles:
-  DISCORD_USER_ID: Aficionado
-  DISCORD_USER_ID_2: Confidant
-  DISCORD_USER_ID_3: Thief
+userEminences:
+  'DISCORD_USER_ID': Aficionado
+  'DISCORD_USER_ID_2': Confidant
+  'DISCORD_USER_ID_3': Thief
