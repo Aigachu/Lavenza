@@ -214,18 +214,29 @@ export abstract class Command {
   public async allowedInClient(clientType: ClientType): Promise<boolean> {
     // Initialize variables for what we'll be checking.
     let allowedForTalent = true;
+    let allowedForCommand = true;
 
-    if (this.talent) {
-      allowedForTalent =
-        (!Sojiro.isEmpty(this.talent.config.clients) && this.talent.config.clients !== "*" && (this.talent.config.clients.includes(clientType) || this.talent.config.clients === clientType))
-        || Sojiro.isEmpty(this.talent.config.clients)
-        || this.talent.config.clients === "*";
+    // If a talent is set for this command and there are client configurations, we'll be adjusting the flag.
+    if (this.talent && this.talent.config.clients && this.talent.config.clients !== "*") {
+      // We adjust the flag if we need to.
+      if (Array.isArray(this.talent.config.clients) && !this.talent.config.clients.includes(clientType)) {
+        allowedForTalent = false;
+      }
+      if (this.talent.config.clients !== clientType) {
+        allowedForTalent = false;
+      }
     }
 
-    const allowedForCommand =
-      (!Sojiro.isEmpty(this.config.clients) && this.config.clients !== "*" && (this.config.clients.includes(clientType) || this.config.clients === clientType))
-      || Sojiro.isEmpty(this.config.clients)
-      || this.config.clients === "*";
+    // Now we do command checks.
+    if (this.config.clients && this.config.clients !== "*") {
+      // We adjust the flag if we need to.
+      if (Array.isArray(this.config.clients) && !this.config.clients.includes(clientType)) {
+        allowedForCommand = false;
+      }
+      if (this.config.clients !== clientType) {
+        allowedForCommand = false;
+      }
+    }
 
     return allowedForTalent && allowedForCommand;
   }
