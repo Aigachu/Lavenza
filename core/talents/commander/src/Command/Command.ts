@@ -234,7 +234,7 @@ export abstract class Command {
       if (Array.isArray(this.config.clients) && (!this.config.clients.includes(clientType) && !this.config.clients.includes(clientTypeCapital))) {
         allowedForCommand = false;
       }
-      if (!Array.isArray(this.talent.config.clients) && this.config.clients !== clientType) {
+      if (!Array.isArray(this.config.clients) && this.config.clients !== clientType) {
         allowedForCommand = false;
       }
     }
