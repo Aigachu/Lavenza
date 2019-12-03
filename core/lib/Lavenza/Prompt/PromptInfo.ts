@@ -11,6 +11,7 @@ import { ClientChannel } from "../Client/ClientChannel";
 import { ClientType } from "../Client/ClientType";
 import { ClientUser } from "../Client/ClientUser";
 import { Resonance } from "../Resonance/Resonance";
+import { AbstractObject } from "../Types";
 
 import { PromptException } from "./Exception/PromptException";
 import { Prompt } from "./Prompt";
@@ -64,7 +65,7 @@ export interface PromptInfo {
   /**
    * Optional function that acts upon response of the prompt.
    */
-  onResponse?(resonance: Resonance, prompt: Prompt): Promise<void>;
+  onResponse?(resonance: Resonance, prompt: Prompt): Promise<string | AbstractObject>;
 
   /**
    * Optional function that acts upon a prompt exception.

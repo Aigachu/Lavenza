@@ -13,7 +13,6 @@ import { Bot } from "../Bot/Bot";
 import { ClientChannel } from "../Client/ClientChannel";
 import { ClientType } from "../Client/ClientType";
 import { ClientUser } from "../Client/ClientUser";
-import { Igor } from "../Confidant/Igor";
 import { Sojiro } from "../Confidant/Sojiro";
 import { Resonance } from "../Resonance/Resonance";
 import { AbstractObject } from "../Types";
@@ -74,7 +73,7 @@ export abstract class Prompt {
   /**
    * Function containing actions to undertake when the prompt is answered.
    */
-  public onResponse: (resonance: Resonance, prompt: Prompt) => Promise<void>;
+  public onResponse: (resonance: Resonance, prompt: Prompt) => Promise<string | AbstractObject>;
 
   /**
    * Function containing actions to undertake if an invalid answer is given for the prompt.
@@ -178,7 +177,11 @@ export abstract class Prompt {
 
         // Fire the callback if any.
         if (this.onResponse) {
-          await this.onResponse(resonance, this);
+          // If the response returns something other than undefined, we can resolve with it.
+          const onResponseResult = await this.onResponse(resonance, this);
+          if (onResponseResult) {
+            resolve(onResponseResult);
+          }
         }
 
         await this.disable();
@@ -213,7 +216,7 @@ export abstract class Prompt {
    * @returns
    *   Resolution of the prompt (newly reset), or an error.
    */
-  public async reset({error = ""}: AbstractObject): Promise<void> {
+  public async reset({error = ""}: AbstractObject): Promise<string | AbstractObject> {
     if (this.resetCount === 2) {
       await this.error(PromptExceptionType.MAX_RESET_EXCEEDED);
 
@@ -223,8 +226,8 @@ export abstract class Prompt {
       await this.error(error);
     }
     this.resetCount += 1;
-    await this.await()
-      .catch(Igor.pocket);
+
+    return this.await();
   }
 
   /**
