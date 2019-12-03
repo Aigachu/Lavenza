@@ -231,7 +231,7 @@ export abstract class Command {
     // Now we do command checks.
     if (this.config.clients && this.config.clients !== "*") {
       // We adjust the flag if we need to.
-      if (Array.isArray(this.config.clients) && (!this.config.clients.includes(clientType) && !this.talent.config.clients.includes(clientTypeCapital))) {
+      if (Array.isArray(this.config.clients) && (!this.config.clients.includes(clientType) && !this.config.clients.includes(clientTypeCapital))) {
         allowedForCommand = false;
       }
       if (this.config.clients !== clientType) {
