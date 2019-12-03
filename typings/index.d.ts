@@ -682,7 +682,7 @@ declare module "lavenza" {
     user?: ClientUser;
     channel?: ClientChannel;
     timeLimit?: number;
-    onResponse?(resonance: Resonance, prompt: Prompt): Promise<string | AbstractObject>;
+    onResponse?(resonance: Resonance, prompt: Prompt): Promise<string | AbstractObject | void>;
     onError?(error: PromptException): Promise<void>;
   }
 
