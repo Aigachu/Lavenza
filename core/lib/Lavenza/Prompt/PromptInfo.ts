@@ -65,7 +65,7 @@ export interface PromptInfo {
   /**
    * Optional function that acts upon response of the prompt.
    */
-  onResponse?(resonance: Resonance, prompt: Prompt): Promise<string | AbstractObject>;
+  onResponse?(resonance: Resonance, prompt: Prompt): Promise<string | AbstractObject | void>;
 
   /**
    * Optional function that acts upon a prompt exception.

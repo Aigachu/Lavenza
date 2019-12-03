@@ -122,7 +122,7 @@ export abstract class Resonance {
    * @param promptInfo
    *   Info used to build the prompt object.
    */
-  public async prompt(promptInfo: PromptInfo): Promise<string | AbstractObject> {
+  public async prompt(promptInfo: PromptInfo): Promise<string | AbstractObject | void> {
     // Set prompt user info tied to this resonance if we must.
     if (!promptInfo.user) {
       promptInfo.user = this.author;

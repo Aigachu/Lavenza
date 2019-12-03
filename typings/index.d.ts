@@ -421,15 +421,15 @@ declare module "lavenza" {
     public user: ClientUser;
     public channel: ClientChannel;
     public timeLimit: number;
-    public onResponse: (resonance: Resonance, prompt: Prompt) => Promise<string | AbstractObject>;
+    public onResponse: (resonance: Resonance, prompt: Prompt) => Promise<string | AbstractObject | void>;
     public onError: (error: Error) => Promise<void>;
     public ee: EventEmitter;
     public timer: Timeout;
     public resetCount: number;
     protected constructor(promptInfo: PromptInfo);
     public listen(resonance: Resonance): Promise<void>;
-    public await(): Promise<void>;
-    public reset({error}: AbstractObject): Promise<string | AbstractObject>;
+    public await(): Promise<string | AbstractObject | void>;
+    public reset({error}: AbstractObject): Promise<string | AbstractObject | void>;
     public disable(): Promise<void>;
     public error(type: PromptExceptionType): Promise<void>;
     protected abstract condition(resonance: Resonance): Promise<boolean>;

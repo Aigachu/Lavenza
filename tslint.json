@@ -40,6 +40,9 @@
     // We'll make it a house rule that parameter reassignment should be done at the beginning of functions if need be.
     "no-parameter-reassignment": false,
 
+    // This rule really just pissed me off at some point and slowed me down. LOL!
+    "invalid-void": false,
+
     // === Adjusted Rules ===
     // We don't want type definitions everywhere as it causes needless noise. Here we specify this.
     "typedef": {

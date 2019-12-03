@@ -73,7 +73,7 @@ export abstract class Prompt {
   /**
    * Function containing actions to undertake when the prompt is answered.
    */
-  public onResponse: (resonance: Resonance, prompt: Prompt) => Promise<string | AbstractObject>;
+  public onResponse: (resonance: Resonance, prompt: Prompt) => Promise<string | AbstractObject | void>;
 
   /**
    * Function containing actions to undertake if an invalid answer is given for the prompt.
@@ -145,7 +145,7 @@ export abstract class Prompt {
    * @returns
    *   Resolution of the prompt, or an error.
    */
-  public await(): Promise<string | AbstractObject> {
+  public await(): Promise<string | AbstractObject | void> {
     // Send message if we have to.
     if (this.message) {
       this.resonance.send(this.channel, this.message).catch(() => {
@@ -216,7 +216,7 @@ export abstract class Prompt {
    * @returns
    *   Resolution of the prompt (newly reset), or an error.
    */
-  public async reset({error = ""}: AbstractObject): Promise<string | AbstractObject> {
+  public async reset({error = ""}: AbstractObject): Promise<string | AbstractObject | void> {
     if (this.resetCount === 2) {
       await this.error(PromptExceptionType.MAX_RESET_EXCEEDED);
 

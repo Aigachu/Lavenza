@@ -15,6 +15,7 @@ import { Sojiro } from "../../../../../../../lib/Lavenza/Confidant/Sojiro";
 import { PromptExceptionType } from "../../../../../../../lib/Lavenza/Prompt/Exception/PromptExceptionType";
 import { Prompt } from "../../../../../../../lib/Lavenza/Prompt/Prompt";
 import { Resonance } from "../../../../../../../lib/Lavenza/Resonance/Resonance";
+import { AbstractObject } from "../../../../../../../lib/Lavenza/Types";
 import { Coinflip } from "../../Coinflip";
 
 /**
@@ -201,14 +202,14 @@ export class GuessGameArgHandler {
             }
           }
         },
-        onResponse: async (responseResonance: Resonance, prompt: Prompt) => {
+        onResponse: async (responseResonance: Resonance, prompt: Prompt): Promise<string | AbstractObject | void> => {
           if (responseResonance.content.toLowerCase() !== Guess.Same && responseResonance.content.toLowerCase() !== Guess.Different) {
             await prompt.reset({error: PromptExceptionType.INVALID_RESPONSE});
           }
         },
         timeLimit: 10,
         user: guesser,
-      });
+      }) as string;
 
     // Now we'll try to determine what the guesser said.
     const guess = await GuessGameArgHandler.resolveGuess(guesserInput.toLowerCase());
@@ -394,7 +395,7 @@ export class GuessGameArgHandler {
             "::COINFLIP-GUESS_GAME_OPPONENT_FAILED_CONFIRMATION",
           );
         },
-        onResponse: async (responseResonance) => {
+        onResponse: async (responseResonance: Resonance): Promise<string | AbstractObject | void> => {
           // If the opponent sends a confirmation, we set confirmation to true.
           // Otherwise, send a sad message. :(
           confirmation = await Sojiro.isConfirmation(responseResonance.content);
