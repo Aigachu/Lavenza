@@ -217,21 +217,15 @@ export abstract class Command {
 
     if (this.talent) {
       allowedForTalent =
-        !Sojiro.isEmpty(this.talent.config.clients)
-        && this.talent.config.clients !== "*"
-        && (this.talent.config.clients.includes(clientType)
-        || this.talent.config.clients === clientType)
-        || (Sojiro.isEmpty(this.talent.config.clients)
-        || this.talent.config.clients === "*");
+        (!Sojiro.isEmpty(this.talent.config.clients) && this.talent.config.clients !== "*" && (this.talent.config.clients.includes(clientType) || this.talent.config.clients === clientType))
+        || Sojiro.isEmpty(this.talent.config.clients)
+        || this.talent.config.clients === "*";
     }
 
     const allowedForCommand =
-      !Sojiro.isEmpty(this.config.clients)
-      && this.config.clients !== "*"
-      && (this.config.clients.includes(clientType)
-      || this.config.clients === clientType)
-    || (Sojiro.isEmpty(this.config.clients)
-      || this.config.clients === "*");
+      (!Sojiro.isEmpty(this.config.clients) && this.config.clients !== "*" && (this.config.clients.includes(clientType) || this.config.clients === clientType))
+      || Sojiro.isEmpty(this.config.clients)
+      || this.config.clients === "*";
 
     return allowedForTalent && allowedForCommand;
   }
