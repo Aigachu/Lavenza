@@ -15,8 +15,8 @@ import { ClientUser } from "../Client/ClientUser";
 import { Igor } from "../Confidant/Igor";
 import { Sojiro } from "../Confidant/Sojiro";
 import { Yoshida } from "../Confidant/Yoshida";
-import { PromptException } from "../Prompt/Exception/PromptException";
-import { Prompt } from "../Prompt/Prompt";
+import { PromptInfo } from "../Prompt/PromptInfo";
+import { AbstractObject } from "../Types";
 
 /**
  * Provides a model that regroups information about a message received from a client.
@@ -119,44 +119,39 @@ export abstract class Resonance {
   /**
    * Set up a prompt to a specified user.
    *
-   * Prompts are interactive ways to query information from a user in a seamless conversational way.
-   *
-   * Commands can issue prompts to expect input from the user in their next messages. For example, is a user uses the
-   * '!ping' command, in the code we can use Prompts to prompt the user for information afterwards. The prompt can send
-   * a message along the lines of "Pong! How are you?" and act upon the next reply the person that initially called the
-   * command writes (Or act upon any future message really).
-   *
-   * @param user
-   *   User that is being prompted.
-   * @param line
-   *   The communication line for this prompt. Basically, where we want the interaction to happen.
-   * @param lifespan
-   *   The lifespan of this Prompt.
-   *   If the bot doesn't receive an answer in time, we cancel the prompt.
-   *   10 seconds is the average time a white boy waits for a reply from a girl he's flirting with after sending her a
-   *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO! Thank you
-   *   AVION for this wonderful advice!
-   * @param onResponse
-   *   The callback function that runs once a response has been heard.
-   * @param onError
-   *   The callback function that runs once a failure occurs. Failure includes not getting a response.
+   * @param promptInfo
+   *   Info used to build the prompt object.
    */
-  public async prompt(
-    user: ClientUser,
-    line: unknown,
-    lifespan: number,
-    onResponse: (resonance: Resonance, prompt: Prompt) => Promise<void>,
-    onError: (error: PromptException) => Promise<void> = async (e) => { console.log(e); })
-    : Promise<void> {
+  public async prompt(promptInfo: PromptInfo): Promise<string | AbstractObject> {
+    // Set prompt user info tied to this resonance if we must.
+    if (!promptInfo.user) {
+      promptInfo.user = this.author;
+    }
+
+    // Set prompt channel info tied to this resonance if we must.
+    if (!promptInfo.channel) {
+      promptInfo.channel = this.channel;
+    }
+
+    // Set prompt channel info tied to this resonance if we must.
+    if (!promptInfo.clientType) {
+      promptInfo.clientType = this.client.type;
+    }
+
+    // Set prompt bot.
+    promptInfo.bot = this.bot;
+
+    // Set resonance.
+    promptInfo.resonance = this;
+
     // Build the prompt.
-    const prompt = await ClientFactory.buildPrompt(this.client, user, line, this, lifespan, onResponse, onError);
+    const prompt = await ClientFactory.buildPrompt(promptInfo);
 
     // Set the prompt to the bot.
     this.bot.prompts.push(prompt);
 
     // Await resolution of the prompt.
-    await prompt.await()
-      .catch(Igor.pocket);
+    return prompt.await();
   }
 
   /**

@@ -10,6 +10,8 @@ import { EventEmitter } from "events";
 
 // Imports.
 import { Bot } from "../Bot/Bot";
+import { ClientChannel } from "../Client/ClientChannel";
+import { ClientType } from "../Client/ClientType";
 import { ClientUser } from "../Client/ClientUser";
 import { Igor } from "../Confidant/Igor";
 import { Sojiro } from "../Confidant/Sojiro";
@@ -18,6 +20,8 @@ import { AbstractObject } from "../Types";
 
 import { PromptException } from "./Exception/PromptException";
 import { PromptExceptionType } from "./Exception/PromptExceptionType";
+import { PromptInfo } from "./PromptInfo";
+import { PromptType } from "./PromptType";
 import Timeout = NodeJS.Timeout;
 
 /**
@@ -28,29 +32,44 @@ import Timeout = NodeJS.Timeout;
 export abstract class Prompt {
 
   /**
+   * The type of Prompt this is.
+   */
+  public type: PromptType = PromptType.Text;
+
+  /**
+   * The Bot handling the prompt.
+   */
+  public resonance: Resonance;
+
+  /**
+   * The Bot handling the prompt.
+   */
+  public bot: Bot;
+
+  /**
+   * Message to send with the prompt.
+   */
+  public message: string;
+
+  /**
+   * The client this prompt expects to get a response in.
+   */
+  public clientType: ClientType;
+
+  /**
    * The user that is being prompted for a response.
    */
   public user: ClientUser;
 
   /**
-   * The communication line for this prompt.
+   * The communication channel where this prompt should be resolved.
    */
-  public line: unknown;
+  public channel: ClientChannel;
 
   /**
-   * The resonance containing the message tied to this prompt.
+   * The time limit to answer this prompt in seconds.
    */
-  public resonance: Resonance;
-
-  /**
-   * The time limit to answer this prompt.
-   */
-  public lifespan: number;
-
-  /**
-   * The user that sent the message invoking this prompt.
-   */
-  public requester: unknown;
+  public timeLimit: number = 10;
 
   /**
    * Function containing actions to undertake when the prompt is answered.
@@ -61,11 +80,6 @@ export abstract class Prompt {
    * Function containing actions to undertake if an invalid answer is given for the prompt.
    */
   public onError: (error: Error) => Promise<void>;
-
-  /**
-   * The Bot handling all of this.
-   */
-  public bot: Bot;
 
   /**
    * Event Emitter.
@@ -85,41 +99,20 @@ export abstract class Prompt {
   /**
    * Prompt constructor.
    *
-   * @param user
-   *   User that is being prompted.
-   * @param line
-   *   The communication line for this prompt. Basically, where we want the interaction to happen.
-   * @param resonance
-   *   The Resonance tied to this prompt.
-   * @param lifespan
-   *   The lifespan of this Prompt.
-   *   If the bot doesn't receive an answer in time, we cancel the prompt.
-   *   10 seconds is the average time a white boy waits for a reply from a girl he's flirting with after sending her a
-   *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO!
-   * @param onResponse
-   *   The callback function that runs once a response has been heard.
-   * @param onError
-   *   The callback function that runs once a failure occurs. Failure includes not getting a response.
-   * @param bot
-   *   The Bot this prompt is being created for.
+   * @param promptInfo
+   *   Object containing relevant information about this prompt.
    */
-  protected constructor(
-    user: ClientUser,
-    line: unknown,
-    resonance: Resonance,
-    lifespan: number,
-    onResponse: (resonance: Resonance, prompt: Prompt) => Promise<void>,
-    onError: (error: PromptException) => Promise<void>,
-    bot: Bot,
-  ) {
-    this.user = user;
-    this.line = line;
-    this.resonance = resonance;
-    this.lifespan = lifespan;
-    this.requester = resonance.author;
-    this.onResponse = onResponse;
-    this.onError = onError;
-    this.bot = bot;
+  public constructor(promptInfo: PromptInfo) {
+    this.type = promptInfo.type || PromptType.Text;
+    this.resonance = promptInfo.resonance;
+    this.bot = promptInfo.bot;
+    this.message = promptInfo.message;
+    this.user = promptInfo.user;
+    this.channel = promptInfo.channel;
+    this.clientType = promptInfo.clientType;
+    this.timeLimit = promptInfo.timeLimit || 10;
+    this.onResponse = promptInfo.onResponse;
+    this.onError = promptInfo.onError;
   }
 
   /**
@@ -133,7 +126,7 @@ export abstract class Prompt {
    */
   public async listen(resonance: Resonance): Promise<void> {
     // If the resonance that was just heard is not from the same client, we do nothing.
-    if (resonance.client.type !== this.resonance.client.type) {
+    if (resonance.client.type !== this.clientType) {
       return;
     }
 
@@ -153,36 +146,56 @@ export abstract class Prompt {
    * @returns
    *   Resolution of the prompt, or an error.
    */
-  public await(): Promise<void> {
+  public await(): Promise<string | AbstractObject> {
+    // Send message if we have to.
+    if (this.message) {
+      this.resonance.send(this.channel, this.message).catch(() => {
+        return;
+      });
+    }
+
     // We manage the Promise here.
     return new Promise((resolve, reject) => {
       // Set the bomb. We'll destroy the prompt if it takes too long to execute.
-      this.timer = setTimeout(async () => {
-        // Check if the prompt still exists after the time has elapsed.
-        if (this.bot.prompts.includes(this)) {
-          // If the lifespan depletes, we remove the prompt.
-          await this.disable();
-          const exception = new PromptException(PromptExceptionType.NO_RESPONSE, "No response was provided in the time given. Firing error handler.");
-          await this.onError(exception);
-          reject();
-        }
-      },                      this.lifespan * 1000);
+      this.timer = setTimeout(
+        async () => {
+          // Check if the prompt still exists after the time has elapsed.
+          if (this.bot.prompts.includes(this)) {
+            // If the lifespan depletes, we remove the prompt.
+            await this.disable();
+            const exception = new PromptException(PromptExceptionType.NO_RESPONSE, "No response was provided in the time given. Firing error handler.");
+            await this.onError(exception);
+            reject();
+          }
+        },
+        this.timeLimit * 1000);
 
       // If we get a response, we clear the bomb and return early.
-      this.ee.on("prompt-response", async (resonance) => {
+      this.ee.on("prompt-response", async (resonance: Resonance) => {
         // Clear timeouts and event listeners since we got a response.
         await this.clearTimer();
         await this.clearListeners();
 
-        // Fire the callback.
-        await this.onResponse(resonance, this)
-          .catch(async (e) => {
-            const exception = new PromptException(PromptExceptionType.MISC, e);
-            await this.onError(exception);
-          });
+        // Fire the callback if any.
+        if (this.onResponse) {
+          await this.onResponse(resonance, this);
+        }
 
         await this.disable();
-        resolve();
+
+        // Depending on the type, we want to return different values.
+        switch (this.type) {
+          // For text Prompts, we simply return the text entered by the user.
+          case PromptType.Text: {
+            resolve(resonance.content);
+            break;
+          }
+
+          // By default, we don't return anything.
+          default: {
+            resolve();
+          }
+        }
       });
     });
   }
@@ -230,8 +243,10 @@ export abstract class Prompt {
    *   Type of PromptException to fire.
    */
   public async error(type: PromptExceptionType): Promise<void> {
-    const exception = new PromptException(type);
-    await this.onError(exception);
+    if (this.onError) {
+      const exception = new PromptException(type);
+      await this.onError(exception);
+    }
   }
 
   /**

@@ -13,6 +13,7 @@ import { ClientType } from "../../../../../../../lib/Lavenza/Client/ClientType";
 import { ClientUser } from "../../../../../../../lib/Lavenza/Client/ClientUser";
 import { Sojiro } from "../../../../../../../lib/Lavenza/Confidant/Sojiro";
 import { PromptExceptionType } from "../../../../../../../lib/Lavenza/Prompt/Exception/PromptExceptionType";
+import { Prompt } from "../../../../../../../lib/Lavenza/Prompt/Prompt";
 import { Resonance } from "../../../../../../../lib/Lavenza/Resonance/Resonance";
 import { Coinflip } from "../../Coinflip";
 
@@ -76,7 +77,7 @@ export class GuessGameArgHandler {
       resonance,
       {
         userInput: input,
-     },
+      },
       "getOpponent",
     ) as ClientUser;
 
@@ -163,60 +164,63 @@ export class GuessGameArgHandler {
     await resonance.__reply("You have 10 seconds...**Starting now.**\n\nType in **Same** or **Different**!", "::COINFLIP-GUESS_GAME_RANDOM_PLAYER_GUESS_START");
 
     // Start up a prompt for the guesser's input.
-    await resonance.prompt(
-      guesser,
-      resonance.message.channel,
-      10,
-      async (responseResonance, prompt) => {
-        // Now we'll try to determine what the guesser said.
-        const guess = await GuessGameArgHandler.resolveGuess(responseResonance.content.toLowerCase());
-
-        // If the guesser says 'same', and the results are in fact the same, then they win.
-        if (guess === Guess.Same && challengerResult === opponentResult) {
-          victor = "guesser";
-        } else if (guess === Guess.Different && challengerResult !== opponentResult) {
-          victor = "guesser";
-        } else if (guess !== Guess.Same && guess !== Guess.Different) {
-          await prompt.reset({error: PromptExceptionType.INVALID_RESPONSE});
-        } else {
-          victor = "prayer";
-        }
-      },
-      async (error) => {
-        // Depending on the type of error, you can send different replies.
-        switch (error.type) {
-          // This is ran when no response is provided.
-          case PromptExceptionType.NO_RESPONSE: {
-            // Failing to reply will simply send a different message.
-            await resonance.__reply(
-              "AAAHH {{guesser}}, you failed to respond in time! This is considered a forfeit. As such, the victor is {{victor}}!!! Congratulations!",
-              {
-                victor: prayer,
-              },
-              "::COINFLIP-GUESS_GAME_GUESSER_NO_RESPONSE",
-            );
-            break;
-          }
-
-          // This is ran when the max amount of resets is hit.
-          case PromptExceptionType.MAX_RESET_EXCEEDED: {
-            // Failing to reply will simply send a different message.
-            await resonance.__reply(
-              "{{guesser}}, COME ON! It's either **Same** or **Different**!!! WHAT DON'T YOU GET?!\nUgh whatever! The victor is {{victor}}. ENJOY YOUR FREEBIE!",
-              {
-                victor: prayer,
-              },
-              "::COINFLIP-GUESS_GAME_GUESSER_MAX_TRIES",
+    const guesserInput = await resonance.prompt(
+      {
+        onError: async (error) => {
+          // Depending on the type of error, you can send different replies.
+          switch (error.type) {
+            // This is ran when no response is provided.
+            case PromptExceptionType.NO_RESPONSE: {
+              // Failing to reply will simply send a different message.
+              await resonance.__reply(
+                "AAAHH {{guesser}}, you failed to respond in time! This is considered a forfeit. As such, the victor is {{victor}}!!! Congratulations!",
+                {
+                  victor: prayer,
+                },
+                "::COINFLIP-GUESS_GAME_GUESSER_NO_RESPONSE",
               );
-            break;
-          }
+              break;
+            }
 
-          // This is the message sent when no response is provided.
-          case PromptExceptionType.INVALID_RESPONSE: {
-            await resonance.__reply("That's not a valid answer {{guesser}}! It's either **Same** or **Different**! Try again!", "::COINFLIP-GUESS_GAME_GUESSER_INVALID_INPUT");
+            // This is ran when the max amount of resets is hit.
+            case PromptExceptionType.MAX_RESET_EXCEEDED: {
+              // Failing to reply will simply send a different message.
+              await resonance.__reply(
+                "{{guesser}}, COME ON! It's either **Same** or **Different**!!! WHAT DON'T YOU GET?!\nUgh whatever! The victor is {{victor}}. ENJOY YOUR FREEBIE!",
+                {
+                  victor: prayer,
+                },
+                "::COINFLIP-GUESS_GAME_GUESSER_MAX_TRIES",
+              );
+              break;
+            }
+
+            // This is the message sent when no response is provided.
+            case PromptExceptionType.INVALID_RESPONSE: {
+              await resonance.__reply("That's not a valid answer {{guesser}}! It's either **Same** or **Different**! Try again!", "::COINFLIP-GUESS_GAME_GUESSER_INVALID_INPUT");
+            }
           }
-        }
+        },
+        onResponse: async (responseResonance: Resonance, prompt: Prompt) => {
+          if (responseResonance.content.toLowerCase() !== Guess.Same && responseResonance.content.toLowerCase() !== Guess.Different) {
+            await prompt.reset({error: PromptExceptionType.INVALID_RESPONSE});
+          }
+        },
+        timeLimit: 10,
+        user: guesser,
       });
+
+    // Now we'll try to determine what the guesser said.
+    const guess = await GuessGameArgHandler.resolveGuess(guesserInput.toLowerCase());
+
+    // If the guesser says 'same', and the results are in fact the same, then they win.
+    if (guess === Guess.Same && challengerResult === opponentResult) {
+      victor = "guesser";
+    } else if (guess === Guess.Different && challengerResult !== opponentResult) {
+      victor = "guesser";
+    } else {
+      victor = "prayer";
+    }
 
     // If the victor isn't determined, there is nothing left to say!
     if (!victor) {
@@ -236,7 +240,7 @@ export class GuessGameArgHandler {
         result: challengerResult,
       },
       "::COINFLIP-GUESS_GAME_REVEAL_FIRST_COIN",
-      );
+    );
 
     // Add some typing suspense.
     await resonance.typeFor(2, resonance.message.channel);
@@ -248,7 +252,7 @@ export class GuessGameArgHandler {
         result: opponentResult,
       },
       "::COINFLIP-GUESS_GAME_REVEAL_SECOND_COIN",
-      );
+    );
 
     // If the guesser wins, we have some text.
     if (victor && victor === "guesser") {
@@ -283,9 +287,6 @@ export class GuessGameArgHandler {
    *   Resonance that issued the command.
    */
   public static async promptForInput(command: Coinflip, resonance: Resonance): Promise<string> {
-    // Initialize variable to store input.
-    let input = "";
-
     // Depending on the client, handle the sending of the message properly.
     await resonance.__reply(
       "Who would you like to challenge?",
@@ -296,29 +297,20 @@ export class GuessGameArgHandler {
     );
 
     // Activate a prompt waiting for the user to tell us who they want to duel.
-    // Noinspection JSUnusedLocalSymbols
-    await resonance.prompt(
-      resonance.author,
-      resonance.message.channel,
-      10,
-      async (responseResonance) => {
-        // Set whatever input the user provided. We'll return it later.
-        input = responseResonance.content;
-      },
-      async () => {
-        // Depending on the client, handle the sending of the message properly.
-        await resonance.__reply(
-          "...Since you decided to ignore my question, I'm canceling the game! Feel free to try again later when you're ready, {{user}}!",
-          {
-            user: resonance.author,
-          },
-          "::COINFLIP-GUESS_GAME_ASK_NO_RESPONSE",
-        );
-
-        input = undefined;
-     });
-
-    return input;
+    return await resonance.prompt(
+      {
+        onError: async () => {
+          // Depending on the client, handle the sending of the message properly.
+          await resonance.__reply(
+            "...Since you decided to ignore my question, I'm canceling the game! Feel free to try again later when you're ready, {{user}}!",
+            {
+              user: resonance.author,
+            },
+            "::COINFLIP-GUESS_GAME_ASK_NO_RESPONSE",
+          );
+        },
+        timeLimit: 10,
+      }) as string;
   }
 
   /**
@@ -391,26 +383,27 @@ export class GuessGameArgHandler {
     // Start up a prompt for the opponent's input.
     // Noinspection JSUnusedLocalSymbols
     await resonance.prompt(
-      opponent,
-      resonance.message.channel,
-      10,
-      async (responseResonance) => {
-        // If the opponent sends a confirmation, we set confirmation to true.
-        // Otherwise, send a sad message. :(
-        confirmation = await Sojiro.isConfirmation(responseResonance.content);
-        if (!confirmation) {
-          await resonance.__reply("Aww ok. Maybe another time then!", "::COINFLIP-GUESS_GAME_DECLINED");
-        }
-      },
-      async () => {
-        // Failing to reply will simply send a different message.looks like th
-        await resonance.__reply(
-          "Hmm, they're not available right now. Try again later!",
-          {
-            opponent,
-          },
-          "::COINFLIP-GUESS_GAME_OPPONENT_FAILED_CONFIRMATION",
-        );
+      {
+        onError: async () => {
+          // Failing to reply will simply send a different message.
+          await resonance.__reply(
+            "Hmm, they're not available right now. Try again later!",
+            {
+              opponent,
+            },
+            "::COINFLIP-GUESS_GAME_OPPONENT_FAILED_CONFIRMATION",
+          );
+        },
+        onResponse: async (responseResonance) => {
+          // If the opponent sends a confirmation, we set confirmation to true.
+          // Otherwise, send a sad message. :(
+          confirmation = await Sojiro.isConfirmation(responseResonance.content);
+          if (!confirmation) {
+            await resonance.__reply("Aww ok. Maybe another time then!", "::COINFLIP-GUESS_GAME_DECLINED");
+          }
+        },
+        timeLimit: 10,
+        user: opponent,
       });
 
     return confirmation;

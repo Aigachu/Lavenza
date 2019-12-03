@@ -19,16 +19,6 @@ import { DiscordResonance } from "./DiscordResonance";
 export class DiscordPrompt extends Prompt {
 
   /**
-   * The user that is being prompted for a response.
-   */
-  public user: User;
-
-  /**
-   * The communication line for this prompt.
-   */
-  public line: Channel | TextChannel | DMChannel | GroupDMChannel;
-
-  /**
    * Resonance to use to create this prompt.
    *
    * @inheritDoc
@@ -36,19 +26,14 @@ export class DiscordPrompt extends Prompt {
   public resonance: DiscordResonance;
 
   /**
-   * @inheritDoc
+   * The user that is being prompted for a response.
    */
-  public constructor(
-    user: User,
-    line: Channel | TextChannel | DMChannel | GroupDMChannel,
-    resonance: DiscordResonance,
-    lifespan: number,
-    onResponse: (resonance: DiscordResonance, prompt: DiscordPrompt) => Promise<void>,
-    onError: (error: Error) => Promise<void>,
-    bot: Bot,
-  ) {
-    super(user, line, resonance, lifespan, onResponse, onError, bot);
-  }
+  public user: User;
+
+  /**
+   * The communication channel for this prompt.
+   */
+  public channel: Channel | TextChannel | DMChannel | GroupDMChannel;
 
   /**
    * Set condition for discord prompts.
@@ -57,7 +42,7 @@ export class DiscordPrompt extends Prompt {
    */
   protected async condition(resonance: DiscordResonance): Promise<boolean> {
     // In Discord, we wait for the next message that comes from the author, in the configured 'line'.
-    return resonance.message.channel.id === this.line.id && resonance.message.author.id === this.user.id;
+    return resonance.message.channel.id === this.channel.id && resonance.message.author.id === this.user.id;
   }
 
 }

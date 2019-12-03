@@ -6,7 +6,6 @@
  */
 
 // Imports.
-import { Bot } from "../../Bot/Bot";
 import { Prompt } from "../../Prompt/Prompt";
 
 import { TwitchChannel } from "./Entity/TwitchChannel";
@@ -19,16 +18,6 @@ import { TwitchResonance } from "./TwitchResonance";
 export class TwitchPrompt extends Prompt {
 
   /**
-   * The user that is being prompted for a response.
-   */
-  public user: TwitchUser;
-
-  /**
-   * The communication line for this prompt.
-   */
-  public line: TwitchChannel;
-
-  /**
    * Resonance to use to create this prompt.
    *
    * @inheritDoc
@@ -36,19 +25,14 @@ export class TwitchPrompt extends Prompt {
   public resonance: TwitchResonance;
 
   /**
-   * @inheritDoc
+   * The user that is being prompted for a response.
    */
-  public constructor(
-    user: TwitchUser,
-    line: TwitchChannel,
-    resonance: TwitchResonance,
-    lifespan: number,
-    onResponse: (resonance: TwitchResonance, prompt: TwitchPrompt) => Promise<void>,
-    onError: (error: Error) => Promise<void>,
-    bot: Bot,
-  ) {
-    super(user, line, resonance, lifespan, onResponse, onError, bot);
-  }
+  public user: TwitchUser;
+
+  /**
+   * The communication channel for this prompt.
+   */
+  public channel: TwitchChannel;
 
   /**
    * Set condition for twitch prompts.
@@ -57,7 +41,7 @@ export class TwitchPrompt extends Prompt {
    */
   protected async condition(resonance: TwitchResonance): Promise<boolean> {
     // In Twitch, we wait for the next message that comes from the same user.
-    return resonance.message.channel.id === this.line.id && resonance.message.author.id === this.user.id;
+    return resonance.message.channel.id === this.channel.id && resonance.message.author.id === this.user.id;
   }
 
 }

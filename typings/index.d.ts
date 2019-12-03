@@ -357,18 +357,9 @@ declare module "lavenza" {
   }
 
   export class DiscordPrompt extends Prompt {
-    public user: User;
-    public line: TextChannel | DMChannel | GroupDMChannel | User;
     public resonance: DiscordResonance;
-    public constructor(
-      user: User,
-      line: TextChannel | DMChannel | GroupDMChannel | User,
-      resonance: DiscordResonance,
-      lifespan: number,
-      onResponse: (resonance: DiscordResonance, prompt: DiscordPrompt) => Promise<void>,
-      onError: (error: Error) => Promise<void>,
-      bot: Bot,
-    );
+    public user: User;
+    public channel: TextChannel | DMChannel | GroupDMChannel | User;
     protected condition(resonance: DiscordResonance): Promise<boolean>;
   }
 
@@ -422,26 +413,20 @@ declare module "lavenza" {
   }
 
   export abstract class Prompt {
-    public user: ClientUser;
-    public line: unknown;
+    public type: PromptType;
     public resonance: Resonance;
-    public lifespan: number;
-    public requester: unknown;
+    public bot: Bot;
+    public message: string;
+    public clientType: ClientType;
+    public user: ClientUser;
+    public channel: ClientChannel;
+    public timeLimit: number;
     public onResponse: (resonance: Resonance, prompt: Prompt) => Promise<void>;
     public onError: (error: Error) => Promise<void>;
-    public bot: Bot;
     public ee: EventEmitter;
     public timer: Timeout;
     public resetCount: number;
-    protected constructor(
-      user: ClientUser,
-      line: unknown,
-      resonance: Resonance,
-      lifespan: number,
-      onResponse: (resonance: Resonance, prompt: Prompt) => Promise<void>,
-      onError: (error: PromptException) => Promise<void>,
-      bot: Bot,
-    );
+    protected constructor(promptInfo: PromptInfo);
     public listen(resonance: Resonance): Promise<void>;
     public await(): Promise<void>;
     public reset({error}: AbstractObject): Promise<void>;
@@ -471,13 +456,7 @@ declare module "lavenza" {
     protected constructor(content: string, message: ClientMessage, bot: Bot, client: Client);
     public build(): Promise<void>;
     public isPrivate(): Promise<boolean>;
-    public prompt(
-      user: ClientUser,
-      line: unknown,
-      lifespan: number,
-      onResponse: (resonance: Resonance, prompt: Prompt) => Promise<void>,
-      onError?: (error: PromptException) => Promise<void>)
-      : Promise<void>;
+    public prompt(promptInfo: PromptInfo): Promise<string | AbstractObject>;
     public reply(content: string, personalizationTag?: string): Promise<unknown>;
     public __reply(...parameters: unknown[]): Promise<unknown>;
     public send(destination: unknown, content: string, personalizationTag?: string): Promise<unknown>;
@@ -527,18 +506,9 @@ declare module "lavenza" {
   }
 
   export class TwitchPrompt extends Prompt {
-    public user: TwitchUser;
-    public line: TwitchChannel;
     public resonance: TwitchResonance;
-    public constructor(
-      user: TwitchUser,
-      line: TwitchChannel,
-      resonance: TwitchResonance,
-      lifespan: number,
-      onResponse: (resonance: TwitchResonance, prompt: TwitchPrompt) => Promise<void>,
-      onError: (error: Error) => Promise<void>,
-      bot: Bot,
-    );
+    public user: TwitchUser;
+    public channel: TwitchChannel;
     protected condition(resonance: TwitchResonance): Promise<boolean>;
   }
 
@@ -578,6 +548,10 @@ declare module "lavenza" {
     Confidant,
     Thief,
     Joker,
+  }
+
+  enum PromptType {
+    Text = "text",
   }
 
   enum PromptExceptionType {
@@ -697,6 +671,19 @@ declare module "lavenza" {
     TWITCH_OAUTH_TOKEN: string;
     TWITCH_CLIENT_ID: string;
     CLEVER_BOT_API_KEY: string;
+  }
+
+  interface PromptInfo {
+    type?: PromptType;
+    resonance?: Resonance;
+    bot?: Bot;
+    message?: string;
+    clientType?: ClientType;
+    user?: ClientUser;
+    channel?: ClientChannel;
+    timeLimit?: number;
+    onResponse?(resonance: Resonance, prompt: Prompt): Promise<void>;
+    onError?(error: PromptException): Promise<void>;
   }
 
   interface TalentConfigurations {

@@ -11,6 +11,7 @@ import { Message, TextChannel, User } from "discord.js";
 import { Bot } from "../Bot/Bot";
 import { PromptException } from "../Prompt/Exception/PromptException";
 import { Prompt } from "../Prompt/Prompt";
+import { PromptInfo } from "../Prompt/PromptInfo";
 import { Resonance } from "../Resonance/Resonance";
 
 import { Client } from "./Client";
@@ -122,77 +123,30 @@ export class ClientFactory {
   }
 
   /**
-   * Set up a prompt to a specified user.
+   * Build and return a Prompt Object specific to a client.
    *
-   * Prompts are interactive ways to query information from a user in a seamless conversational way.
-   *
-   * Commands can issue prompts to expect input from the user in their next messages. For example, is a user uses the
-   * '!ping' command, in the code we can use Prompts to prompt the user for information afterwards. The prompt can send
-   * a message along the lines of "Pong! How are you?" and act upon the next reply the person that initially called the
-   * command writes (Or act upon any future message really).
-   *
-   * @param client
-   *   Client to build the prompt for.
-   * @param user
-   *   User that is being prompted.
-   * @param line
-   *   The communication line for this prompt. Basically, where we want the interaction to happen.
-   * @param resonance
-   *   The Resonance tied to this prompt.
-   * @param lifespan
-   *   The lifespan of this Prompt.
-   *   If the bot doesn't receive an answer in time, we cancel the prompt.
-   *   10 seconds is the average time a white boy waits for a reply from a girl he's flirting with after sending her a
-   *   message. You want to triple that normally. You're aiming for a slightly more patient white boy. LMAO! Thank you
-   *   AVION for this wonderful advice!
-   * @param onResponse
-   *   The callback function that runs once a response has been heard.
-   * @param onError
-   *   The callback function that runs once a failure occurs. Failure includes not getting a response.
+   * @param promptInfo
+   *   Info used to build the prompt object.
    *
    * @returns
    *   A prompt that will be active and set to this client's bot.
    */
-  public static async buildPrompt(
-    client: Client,
-    user: unknown,
-    line: unknown,
-    resonance: Resonance,
-    lifespan: number,
-    onResponse: (resonance: Resonance, prompt: Prompt) => Promise<void>,
-    onError: (error: PromptException) => Promise<void>)
-    : Promise<Prompt> {
+  public static async buildPrompt(promptInfo: PromptInfo): Promise<Prompt> {
     // Initialize the object.
     let prompt: Prompt;
 
     // Depending on the requested type, we build the appropriate client.
-    switch (client.type) {
+    switch (promptInfo.clientType) {
 
       // Create a DiscordClient if the type is Discord.
       case ClientType.Discord: {
-        prompt = new DiscordPrompt(
-          user as User,
-          line as TextChannel,
-          resonance as DiscordResonance,
-          lifespan,
-          onResponse,
-          onError,
-          client.bot,
-        );
+        prompt = new DiscordPrompt(promptInfo);
         break;
       }
 
       // Create a TwitchClient if the type is Discord.
       case ClientType.Twitch: {
-        prompt = new TwitchPrompt(
-          user as TwitchUser,
-          line as TwitchChannel,
-          resonance as TwitchResonance,
-          lifespan,
-          onResponse,
-          onError,
-          client.bot,
-        );
+        prompt = new TwitchPrompt(promptInfo);
       }
 
     }
