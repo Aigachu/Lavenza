@@ -215,11 +215,12 @@ export abstract class Command {
     // Initialize variables for what we'll be checking.
     let allowedForTalent = true;
     let allowedForCommand = true;
+    const clientTypeCapital = clientType.charAt(0).toUpperCase() + clientType.slice(1);
 
     // If a talent is set for this command and there are client configurations, we'll be adjusting the flag.
     if (this.talent && this.talent.config.clients && this.talent.config.clients !== "*") {
       // We adjust the flag if we need to.
-      if (Array.isArray(this.talent.config.clients) && !this.talent.config.clients.includes(clientType)) {
+      if (Array.isArray(this.talent.config.clients) && (!this.talent.config.clients.includes(clientType) && !this.talent.config.clients.includes(clientTypeCapital))) {
         allowedForTalent = false;
       }
       if (this.talent.config.clients !== clientType) {
@@ -230,7 +231,7 @@ export abstract class Command {
     // Now we do command checks.
     if (this.config.clients && this.config.clients !== "*") {
       // We adjust the flag if we need to.
-      if (Array.isArray(this.config.clients) && !this.config.clients.includes(clientType)) {
+      if (Array.isArray(this.config.clients) && (!this.config.clients.includes(clientType) && !this.talent.config.clients.includes(clientTypeCapital))) {
         allowedForCommand = false;
       }
       if (this.config.clients !== clientType) {
