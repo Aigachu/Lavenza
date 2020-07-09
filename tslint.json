@@ -58,9 +58,9 @@
     },
 
     // OOP Environment, we'll be using PascalCase for all of our files here.
-    "file-name-casing": {
-      "options": "pascal-case"
-    },
+    "file-name-casing": [
+      true, "pascal-case"
+    ],
 
     // We won't prefix our interfaces with I. They will have quite similar names though.
     // Interfaces will ended end with "Interface", "Configurations", "Schema" or "Settings" for the most part.
