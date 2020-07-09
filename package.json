@@ -5,6 +5,7 @@
   "main": "core/lib/Lavenza.js",
   "types": "typings/index.d.ts",
   "scripts": {
+    "lavenza": "./core/bin/lavenza",
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "tsc && ./core/bin/lavenza run",
     "dev": "docker-compose up --detach --no-recreate && ./node_modules/nodemon/bin/nodemon.js -e ts  --exec \"npm run compile\""
@@ -40,29 +41,29 @@
     "@google-cloud/translate": "^2.1.4",
     "cleverbot": "^1.0.1",
     "colors": "^1.4.0",
-    "discord.js": "^11.5.1",
+    "discord.js": "^11.6.4",
     "dotenv": "^8.2.0",
     "fs-readfile-promise": "^3.0.1",
-    "i18n": "^0.8.4",
-    "js-yaml": "^3.13.1",
+    "i18n": "^0.8.6",
+    "js-yaml": "^3.14.0",
     "jsonic": "^0.3.1",
-    "lodash": "^4.17.15",
-    "minimist": "^1.2.0",
-    "moment": "^2.24.0",
-    "moment-timezone": "^0.5.27",
+    "lodash": "^4.17.19",
+    "minimist": "^1.2.5",
+    "moment": "^2.27.0",
+    "moment-timezone": "^0.5.31",
     "ncp": "^2.0.0",
     "parse-reminder": "^1.2.0",
-    "prompts": "^2.2.1",
-    "rimraf": "^3.0.0",
+    "prompts": "^2.3.2",
+    "rimraf": "^3.0.2",
     "thesaurus-com": "^1.2.3",
     "tmi.js": "^1.5.0",
     "twitch-api-v5": "^2.0.4",
-    "underscore": "^1.9.1"
+    "underscore": "^1.10.2"
   },
   "devDependencies": {
-    "@types/node": "^12.11.7",
+    "@types/node": "^12.12.48",
     "nodemon": "^1.19.4",
-    "tslint": "^5.20.0",
-    "typescript": "^3.6.4"
+    "tslint": "^5.20.1",
+    "typescript": "^3.9.6"
   }
 }
