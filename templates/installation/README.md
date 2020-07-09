@@ -5,10 +5,11 @@ Configurations for your bots will be done in this directory.
 
 The guide below assumes that you already read and went through the [**README found at the root of the Lavenza Repository**](https://github.com/Aigachu/Lavenza)! Give that a look if you haven't.
 
-## Quickstart After Provisioning
-If you went through things normally, you should be here **after** having done the `lavenza provision` command. 
+## Quickstart After Installation
+If you went through things normally, you should be here **after** having done either the **Manual Installation** or the **CLI Installation** steps in the README at the root of the Lavenza module!
 If you went through the whole process, including configuration of clients for your bot, then in theory you should be good to go!
-You can try the following command via command line to see if it works out or explodes:
+
+If you have the CLI setup, you can try the following commands via command line to see if it works out or explodes:
 
 ```bash
 lavenza summon;
@@ -47,7 +48,7 @@ Lavenza.initialize().then(() => {
 });
 ```
 
-## Command List
+## CLI Command List
 - `lavenza provision` - Runs the provisioning script and attempts to repair broken configurations or installations.
 - `lavenza summon` - Runs Lavenza.
 - `lavenza generate` - Generate a Bot, Command or Talent.
@@ -57,7 +58,7 @@ Lavenza.initialize().then(() => {
 This detailed part of the guide will really get into the nitty gritty of things! It's a good read if you want to get used to the framework.
 
 ### Provisioning
-`lavenza provision` is the goto command for setting up the barebones of the framework. This command will handle 3 main things:
+`lavenza provision` is the goto cli command for setting up the barebones of the framework. This command will handle 3 main things:
 
 1. The creation of your **Lavenzafile** (`.lavenza.yml`).
 2. The provisioning of your **installation directory**, or **Lavenzaroot**.
@@ -77,9 +78,9 @@ Each folder found in the installation path is integral to the framework. Below a
 - `/talents` - Folder to house custom talents you may want to develop for the bot (or obtain from others!). This is mostly for advanced OOP stuff, so don't worry about it for now.
 
 ### Configuring a Bot
-Provisioning Lavenza should have taken you through the interactive process of setting up a bot. Below we'll explain what exactly happens here.
+Installing Lavenza should have taken you through the process of setting up a bot. Below we'll explain what exactly happens here.
 
-For every bot you have, a dedicated folder will be created for each bot in the `/bots` folder.
+For every bot you have, a dedicated folder will be created for them in the `/bots` folder.
 Say you have a bot named `emma`, then all of emma's configurations will be located at `/bots/emma`, relative to Lavenza's installation path.
 
 Each file in here is important! Let's go through them:
@@ -90,7 +91,7 @@ Each file in here is important! Let's go through them:
 Information like authentication tokens will be found in this file.
 
 When you provision or generate a bot and customize clients for it through the command line, a new `.env` file will be generated for you.
-Alternatively, you can always copy the `.env.example` file's contents to manually create a new one and repopulate the information.
+Alternatively, you can always manually copy the `/bots/example/.env.example` file's contents to manually create a new one and repopulate the information.
 
 Without this file, your bots will not connect to any clients!
 
@@ -106,7 +107,7 @@ Discord will always be enabled by default since it's the main Client this framew
 #### Client Configuration Files (discord.yml, twitch.yml)
 These files are used for client specific configurations.
 
-The **Command Prefix** can be overriden here for specific clients.
+The **Command Prefix** can be overridden here for specific clients.
 
 The **Joker** entry is another way of saying **Admin**. Essentially, you must enter your own unique identifier here so that your
 bot always knows who it's maker is. This can come in handy in the future for specific core features that can help you!
@@ -118,11 +119,11 @@ and adjust them as needed.
 Running multiple bots is fairly simple! 
 
 First, you'll need a folder for each bot you'd like to run. You can use the `lavenza generate bot` command to do this via command line.
-Alternatively, you can copy the `example` folder that comes with the installation and do it manually.
+Alternatively, you can copy the `/bots/example` folder that comes with the installation and do it manually.
 
 After configuring multiple bots, go into your `.lavenza.yml` file and scroll to the `autoboot` section.
 
-Here, all you have to do is add the bots you'd like Lavenza to automatically activate whenever you summon!
+Here, all you have to do is add the bots you'd like Lavenza to automatically activate whenever you run the framework!
 
 #### Master Bot's `boot` & `shudown` commands
 If you have bots configured, but don't want them to boot automatically, you can omit them from the `autoboots` configuration and
@@ -137,7 +138,7 @@ Try it out! It's pretty neat.
 - Multi-client communications
 - Translations & Google Translate
 - Custom Talents & Commands
-- Personalizations
+- Personalization
 - Confidants
 - User Eminence
 - Prompts
