@@ -27,10 +27,10 @@ export class FunctionalResonator extends Resonator {
    */
   public async resonate(resonance: Resonance): Promise<void> {
     // Otherwise, check if a functional file exists for the bot.
-    const botFunctDoor = `${resonance.bot.directory}/${resonance.bot.id}.js`;
-    if (await Akechi.fileExists(botFunctDoor)) {
-      const botFunct = await require(botFunctDoor) as BotFunctionalDoor;
-      await botFunct.resonate(resonance);
+    const botFunctionalDoorScript = `${resonance.bot.directory}/${resonance.bot.id}.js`;
+    if (await Akechi.fileExists(botFunctionalDoorScript)) {
+      const script = await require(botFunctionalDoorScript) as BotFunctionalDoor;
+      await script.resonate(resonance);
     }
   }
 

@@ -646,8 +646,13 @@ async function generateBot(botMachineName = undefined) {
   }
 
   // With this name, we'll simply create a folder with the default template at the repository path.
-  await copyFilesAsync(`${root}/templates/bot`, await getBotPath(botMachineName));
-  await message(`Files for the "${botMachineName}" bot have been created at "${await getBotPath(botMachineName)}"!`, "success");
+  let botPath = await getBotPath(botMachineName);
+  await copyFilesAsync(`${root}/templates/bot`, botPath);
+  await message(`Files for the "${botMachineName}" bot have been created at "${botPath}"!`, "success");
+
+  // Copy the functional script over.
+  await copyFilesAsync(`${root}/templates/files/bot/bot.js`, `${botPath}/${botMachineName}.js`);
+  await message(`"${botMachineName}.js" has been created at "${botPath}/${botMachineName}.js"!`, "success");
 
   // Space them shits out.
   newline();
@@ -677,7 +682,7 @@ async function generateBot(botMachineName = undefined) {
   if (!await confirm()) {
     await message(`Okay! Then you're all done! Make sure to customize client connections for ${botMachineName} before running the application.`, "info");
     await message(`You can do this at anytime by running "lavenza customize clients ${botMachineName}" in the command line.`, "info");
-    await message(`This can also be done manually by creating and populating a .env file at "${await getBotPath(botMachineName)}". You can use .env.example as a guide!`, "info");
+    await message(`This can also be done manually by creating and populating a .env file at "${botPath}". You can use .env.example as a guide!`, "info");
     return botMachineName;
   }
 
@@ -776,7 +781,7 @@ async function discordClientSetupForBot(bot) {
     // This means we already have environment data set.
     // For Discord, we check if the following values exist.
     if (botEnvironments[bot].DISCORD_TOKEN || botEnvironments[bot].DISCORD_CLIENT_ID) {
-      // We tell them that some values are already set and may be overriden.
+      // We tell them that some values are already set and may be overridden.
       message(`A .env file already exists for ${bot} and the values in it will likely be overriden if you proceed.
       \nDo you still wish to go on with the setup?`, "warning");
 
