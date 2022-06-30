@@ -105,7 +105,7 @@ and good enough for me to make others use it. And that's going to be the goal st
 
 ----
 
-> # ***- June 29, 2022 - Byebye Lavenza! -***
+# ***- June 29, 2022 - Byebye Lavenza! -***
 
 > It's time to say goodbye to this amazing project of mine. :'(
 >
