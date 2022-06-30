@@ -17,18 +17,24 @@
 > Y'know, when you have a hard time explaining your own project to others, you may have an issue. LOL!
 > 
 > Lavenza was a perfect tool for me, myself and I. But I designed it with the purpose of making bot development easier.
+> This was a long arduous task. It started with me wanting to plug a bot to both Twitch & Discord, and it turned into me
+> adding Google Translation, message personalizations, permissions per guilds and twitch channels, essentially
+> replicating Drupal's Services, Plugins & Event Subscriber systems, rewriting everything in Typescript...
 > 
-> I DID achieve that, but it got so far, only I knew how much easier it made it. Anyone else attempting to use it would
-> easily get lost in the sauce, to say the least.
+> It never ENDED!
+> 
+> I DID achieve my goal in the end though. But it went so far that only I knew how much easier it made bot development. 
+> Anyone else that would attempt to use it would easily get lost in the sauce, to say the least.
 > 
 > Version 5 never came and it never will. Instead, I've started a new project from scratch. Currently a private one, but
-> we'll see where it goes. With Discord being way different than it was 4 years ago, there are a myriad of new
+> we'll see where it goes. With Discord being way different from it was 4 years ago, there are a myriad of new
 > possibilities. And it's the main reason why I decided to leave Lavenza behind: She was heavily tuned to the archaic
-> way of things. Using prefixes for bot commands (Which I'll still have to do on Twitch unfortunately LOL).
+> way of things. Using prefixes for bot commands (Which I'll still have to do on Twitch unfortunately LOL), having a
+> file storage database, among other things.
 > 
 > So as I type this, while I do feel a little sad to let Lavenza go...I'm also excited for what comes next.
 > 
-> This next project will be way simpler and optimized. No more confusing class names. No more convuluted systems.
+> This next project will be way simpler and optimized. No more confusing class names. No more convoluted systems.
 > 
 > It's just going to be straight to the point. You get your bot token. You create a couple of classes for commands. And
 > boom. You're up and running.
