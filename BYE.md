@@ -1,57 +1,3 @@
-# ***- June 29, 2022 - Byebye Lavenza! -***
-
-> It's time to say goodbye to this amazing project of mine. :'(
->
-> Now I won't make this as long as the other entries here. I just want to say a nice farewell to this hobby-project that
-> turned into something way bigger than I expected. I didn't think I'd ever say this, but it became a little too big!
-> 
-> Diving back into the code 4 years later made me realize just how far I'd taken it. I got carried away and forgot one
-> of the most important development principles that a past manager once taught me: KISS. 
-> 
-> Keep It Stupid Simple.
-> 
-> The first time I knew I had gone too far was when someone asked me this question: "Hey Aiga, what's Lavenza?".
-> 
-> I didn't know what to say really. "Lavenza isn't a bot". That's the first thought that came to mind.
-> 
-> Y'know, when you have a hard time explaining your own project to others, you may have an issue. LOL!
-> 
-> Lavenza was a perfect tool for me, myself and I. But I designed it with the purpose of making bot development easier.
-> This was a long arduous task. It started with me wanting to plug a bot to both Twitch & Discord, and it turned into me
-> adding Google Translation, message personalizations, permissions per guilds and twitch channels, essentially
-> replicating Drupal's Services, Plugins & Event Subscriber systems, rewriting everything in Typescript...
-> 
-> It never ENDED!
-> 
-> I DID achieve my goal in the end though. But it went so far that only I knew how much easier it made bot development. 
-> Anyone else that would attempt to use it would easily get lost in the sauce, to say the least.
-> 
-> Version 5 never came and it never will. Instead, I've started a new project from scratch. Currently a private one, but
-> we'll see where it goes. With Discord being way different from it was 4 years ago, there are a myriad of new
-> possibilities. And it's the main reason why I decided to leave Lavenza behind: She was heavily tuned to the archaic
-> way of things. Using prefixes for bot commands (Which I'll still have to do on Twitch unfortunately LOL), having a
-> file storage database, among other things.
-> 
-> So as I type this, while I do feel a little sad to let Lavenza go...I'm also excited for what comes next.
-> 
-> This next project will be way simpler and optimized. No more confusing class names. No more convoluted systems.
-> 
-> It's just going to be straight to the point. You get your bot token. You create a couple of classes for commands. And
-> boom. You're up and running.
-> 
-> I'll be losing a lot of cheery-picky extensive customization options, but I'll be gaining something invaluable: The
-> ability to easily bring along friends for the ride.
-> 
-> Cause everything is better with friends, right?
-> 
-> Thank you for everything, Lavenza. :)
-> 
-> .....Why the heck am I still writing these LOL!
-> 
-> I'll see you guys around. PEACE!
-
-----
-
 # ***- November 15, 2018 -***
 > ...Oh! Hi! Didn't see you there.
 >
@@ -77,6 +23,8 @@ and looks to follow clean design patterns as much as possible, despite Javascrip
 tendency to be more procedural...That in itself is a battle, but it's not impossible!
 >
 >In any case...I don't even know why I'm writing a preface. Enjoy the code!
+
+----
 
 # ***- September 06, 2019 -***
 > ...OH! Hello again!
@@ -111,6 +59,8 @@ switch to another programming language AGAIN! Who knows what the future holds!
 > Alright, I think I've written enough. Let's get back to work! :D
 >
 > As always, ENJOY THE CODE!
+
+----
 
 # ***- November 25th, 2019 -***
 > So...One year huh. Wow.
@@ -152,3 +102,59 @@ and good enough for me to make others use it. And that's going to be the goal st
 > ...Anyways, it's time for enjoy the rest of my time in Athens. Next preface? When Lavenza V drops.
 >
 > See you then.
+
+----
+
+> # ***- June 29, 2022 - Byebye Lavenza! -***
+
+> It's time to say goodbye to this amazing project of mine. :'(
+>
+> Now I won't make this as long as the other entries here. I just want to say a nice farewell to this hobby-project that
+> turned into something way bigger than I expected. I didn't think I'd ever say this, but it became a little too big!
+>
+> Diving back into the code 4 years later made me realize just how far I'd taken it. I got carried away and forgot one
+> of the most important development principles that a past manager once taught me: KISS.
+>
+> Keep It Stupid Simple.
+>
+> The first time I knew I had gone too far was when someone asked me this question: "Hey Aiga, what's Lavenza?".
+>
+> I didn't know what to say really. "Lavenza isn't a bot". That's the first thought that came to mind.
+>
+> Y'know, when you have a hard time explaining your own project to others, you may have an issue. LOL!
+>
+> Lavenza was a perfect tool for me, myself and I. But I designed it with the purpose of making bot development easier.
+> This was a long arduous task. It started with me wanting to plug a bot to both Twitch & Discord, and it turned into me
+> adding Google Translation, message personalizations, permissions per guilds and twitch channels, essentially
+> replicating Drupal's Services, Plugins & Event Subscriber systems, rewriting everything in Typescript...
+>
+> It never ENDED!
+>
+> I DID achieve my goal in the end though. But it went so far that only I knew how much easier it made bot development.
+> Anyone else that would attempt to use it would easily get lost in the sauce, to say the least.
+>
+> Version 5 never came and it never will. Instead, I've started a new project from scratch. Currently a private one, but
+> we'll see where it goes. With Discord being way different from it was 4 years ago, there are a myriad of new
+> possibilities. And it's the main reason why I decided to leave Lavenza behind: She was heavily tuned to the archaic
+> way of things. Using prefixes for bot commands (Which I'll still have to do on Twitch unfortunately LOL), having a
+> file storage database, among other things.
+>
+> So as I type this, while I do feel a little sad to let Lavenza go...I'm also excited for what comes next.
+>
+> This next project will be way simpler and optimized. No more confusing class names. No more convoluted systems.
+>
+> It's just going to be straight to the point. You get your bot token. You create a couple of classes for commands. And
+> boom. You're up and running.
+>
+> I'll be losing a lot of cheery-picky extensive customization options, but I'll be gaining something invaluable: The
+> ability to easily bring along friends for the ride.
+>
+> Cause everything is better with friends, right?
+>
+> Thank you for everything, Lavenza. :)
+>
+> .....Why the heck am I still writing these LOL!
+>
+> I'll see you guys around. PEACE!
+
+----
